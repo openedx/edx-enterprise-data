@@ -65,8 +65,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     enterprise_api_client = EnterpriseAPIClient(
-        os.environ.get('OAUTH_KEY'),
-        os.environ.get('OAUTH_SECRET')
+        os.environ.get('LMS_OAUTH_KEY'),
+        os.environ.get('LMS_OAUTH_SECRET')
     )
 
     if args.enterprise_customer:
