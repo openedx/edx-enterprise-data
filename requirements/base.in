@@ -6,6 +6,6 @@ celery==3.1.18                          # Run task workers in other locations
 unicodecsv==0.14.1                      # Allows exporting CSV with unicode support (a drop-in replacement for built-in csv module)
 requests==2.9.1                         # Required for SAPSuccessFactorsAPIClient
 edx-rest-api-client==1.7.1              # For accessing the Enrollment API (and possibly other edX APIs)
+awscli==1.11.58                         # for assuming aws roles for sending email via SES
 boto3
 pycrypto
-
