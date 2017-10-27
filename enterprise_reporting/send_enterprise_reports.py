@@ -60,7 +60,7 @@ def cleanup_files(enterprise_id):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-e', '--enterprise_customer', required=False, type=str,
+    parser.add_argument('-e', '--enterprise-customer', required=False, type=str,
                         help="EnterpriseCustomer UUID.")
 
     args = parser.parse_args()

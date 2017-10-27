@@ -27,6 +27,7 @@ class EnterpriseReportSender(object):
     VERTICA_QUERY_FIELDS = (
         'enterprise_user_id',
         'lms_user_id',
+        'uid_stripped',
         'enrollment_created_timestamp',
         'consent_granted',
         'course_id',
@@ -45,7 +46,7 @@ class EnterpriseReportSender(object):
     REPORT_FILE_NAME_FORMAT = "{path}/{enterprise_id}_{date}.{extension}"
     REPORT_EMAIL_SUBJECT = 'edX Learner Report'
     REPORT_EMAIL_BODY = ''
-    REPORT_EMAIL_FROM_EMAIL = os.environ.get('ENTERPRISE_REPORTING_FROM_ADDRESS')
+    REPORT_EMAIL_FROM_EMAIL = os.environ.get('SEND_EMAIL_FROM')
 
     FILE_WRITE_DIRECTORY = '/tmp'
 
