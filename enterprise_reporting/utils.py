@@ -29,6 +29,8 @@ FREQUENCY_TYPE_DAILY = 'daily'
 FREQUENCY_TYPE_MONTHLY = 'monthly'
 FREQUENCY_TYPE_WEEKLY = 'weekly'
 
+AWS_REGION = 'us-east-1'
+
 
 def compress_and_encrypt(filename, password):
     """
@@ -69,10 +71,10 @@ def send_email_with_attachment(subject, body, from_email, to_email, filename):
     msg.attach(part)
 
     # connect to SES
-    client = boto3.client('ses')
+    client = boto3.client('ses', region_name=AWS_REGION)
 
     # and send the message
-    result = client.send_raw_email(msg.as_string(), source=msg['From'], destinations=[msg['To']])
+    result = client.send_raw_email(RawMessage={'Data': msg.as_string()}, Source=msg['From'], Destinations=[msg['To']])
     LOGGER.debug(result)
 
 
