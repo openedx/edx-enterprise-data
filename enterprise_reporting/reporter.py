@@ -27,7 +27,7 @@ class EnterpriseReportSender(object):
     VERTICA_QUERY_FIELDS = (
         'enterprise_user_id',
         'lms_user_id',
-        'uid_stripped',
+        'enterprise_sso_uid',
         'enrollment_created_timestamp',
         'consent_granted',
         'course_id',
