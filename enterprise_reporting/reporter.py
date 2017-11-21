@@ -45,7 +45,12 @@ class EnterpriseReportSender(object):
     )
     REPORT_FILE_NAME_FORMAT = "{path}/{enterprise_id}_{date}.{extension}"
     REPORT_EMAIL_SUBJECT = '{enterprise_name} edX Learner Data'
-    REPORT_EMAIL_BODY = ''
+    REPORT_EMAIL_BODY ="""
+Please find attached employee progress data for courses on edX.
+For any questions or concerns, please contact your edX sales representative.
+Thanks,
+The edX for Business Team
+"""
     REPORT_EMAIL_FROM_EMAIL = os.environ.get('SEND_EMAIL_FROM')
 
     FILE_WRITE_DIRECTORY = '/tmp'
