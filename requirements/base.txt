@@ -6,25 +6,30 @@
 #
 amqp==1.4.9               # via kombu
 anyjson==0.3.3            # via kombu
+asn1crypto==0.23.0        # via cryptography
 awscli==1.11.178
 billiard==3.3.0.23        # via celery
 boto3==1.4.7
 botocore==1.7.36          # via awscli, boto3, s3transfer
 celery==3.1.18
+cffi==1.11.2              # via cryptography
 click==6.7                # via pip-tools
 colorama==0.3.7           # via awscli
+cryptography==1.9
 docutils==0.14            # via awscli, botocore
 edx-rest-api-client==1.7.1
+enum34==1.1.6             # via cryptography
 first==2.0.1              # via pip-tools
 future==0.16.0            # via vertica-python
-futures==3.1.1            # via s3transfer
+idna==2.6                 # via cryptography
+ipaddress==1.0.18         # via cryptography
 jmespath==0.9.3           # via boto3, botocore
 kombu==3.0.37             # via celery
 pip-tools==1.10.1
 pluggy==0.5.2             # via tox
 py==1.4.34                # via tox
 pyasn1==0.3.7             # via rsa
-pycrypto==2.6.1
+pycparser==2.18           # via cffi
 pyjwt==1.5.3              # via edx-rest-api-client
 pyminizip==0.2.1
 python-dateutil==2.6.1    # via botocore, vertica-python
@@ -33,7 +38,7 @@ pyyaml==3.12              # via awscli
 requests==2.9.1
 rsa==3.4.2                # via awscli
 s3transfer==0.1.11        # via awscli, boto3
-six==1.11.0               # via pip-tools, python-dateutil, tox, vertica-python
+six==1.11.0               # via cryptography, pip-tools, python-dateutil, tox, vertica-python
 slumber==0.7.1            # via edx-rest-api-client
 tox==2.9.1
 unicodecsv==0.14.1

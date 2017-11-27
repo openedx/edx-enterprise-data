@@ -7,19 +7,22 @@ from __future__ import absolute_import, unicode_literals
 import base64
 import datetime
 import logging
+import os
 import pytz
 import re
-import os
-
-import pyminizip
-
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 
-from Crypto.Cipher import AES
-
 import boto3
+import pyminizip
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.ciphers import Cipher
+from cryptography.hazmat.primitives.ciphers.algorithms import AES
+from cryptography.hazmat.primitives.ciphers.modes import CFB
+
+from six import text_type
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -111,5 +114,10 @@ def decrypt_string(string, iv, base64_decode=True):
         string = base64.b64decode(string)
         iv = base64.b64decode(iv)
     secret = os.environ.get('ENTERPRISE_REPORTING_SECRET')
-    aes = AES.new(secret, AES.MODE_CFB, iv)
-    return aes.decrypt(string).decode('utf8')
+    if isinstance(secret, text_type):
+        secret = secret.encode('utf-8')
+    if isinstance(string, text_type):
+        string = string.encode('utf-8')
+    cipher = Cipher(AES(secret), CFB(iv), backend=default_backend())
+    decryptor = cipher.decryptor()
+    return decryptor.update(string) + decryptor.finalize()
