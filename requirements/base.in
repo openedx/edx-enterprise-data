@@ -8,4 +8,4 @@ requests==2.9.1                         # Required for SAPSuccessFactorsAPIClien
 edx-rest-api-client==1.7.1              # For accessing the Enrollment API (and possibly other edX APIs)
 awscli==1.11.178                        # for assuming aws roles for sending email via SES
 boto3==1.4.7
-pycrypto
+cryptography==1.9
