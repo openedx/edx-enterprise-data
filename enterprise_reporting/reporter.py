@@ -44,8 +44,13 @@ class EnterpriseReportSender(object):
         'user_current_enrollment_mode',
     )
     REPORT_FILE_NAME_FORMAT = "{path}/{enterprise_id}_{date}.{extension}"
-    REPORT_EMAIL_SUBJECT = 'edX Learner Report'
-    REPORT_EMAIL_BODY = ''
+    REPORT_EMAIL_SUBJECT = '{enterprise_name} edX Learner Data'
+    REPORT_EMAIL_BODY ="""
+Please find attached employee progress data for courses on edX.
+For any questions or concerns, please contact your edX sales representative.
+Thanks,
+The edX for Business Team
+"""
     REPORT_EMAIL_FROM_EMAIL = os.environ.get('SEND_EMAIL_FROM')
 
     FILE_WRITE_DIRECTORY = '/tmp'
@@ -86,11 +91,15 @@ class EnterpriseReportSender(object):
             decrypt_string(self.reporting_config['password'], self.reporting_config['initialization_vector'])
         )
 
+        data_report_subject = self.REPORT_EMAIL_SUBJECT.format(
+            enterprise_name=enterprise_customer_name
+        )
+
         # email the file to the email address in the configuration
         LOGGER.debug('Sending encrypted data to {}'.format(enterprise_customer_name))
         try:
             send_email_with_attachment(
-                self.REPORT_EMAIL_SUBJECT,
+                data_report_subject,
                 self.REPORT_EMAIL_BODY,
                 self.REPORT_EMAIL_FROM_EMAIL,
                 self.reporting_config['email'],
