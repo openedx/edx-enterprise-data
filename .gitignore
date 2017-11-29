@@ -72,3 +72,5 @@ default.db
 # Geckodriver for Jasmine
 geckodriver/
 
+# Script output
+.output/
