@@ -77,12 +77,18 @@ The edX for Business Team
 
         LOGGER.info('Starting process to send email report to {}'.format(enterprise_customer_name))
 
-        # initialize base csv file and file writer
-        data_report_file_name, data_report_file_writer = self._create_data_report_csv_writer()
-
-        # query vertica and write each row to the file
-        LOGGER.debug('Querying Vertica for data for {}'.format(enterprise_customer_name))
-        data_report_file_writer.writerows(self._query_vertica())
+        # Query vertica and write output to csv file.
+        data_report_file_name = self.REPORT_FILE_NAME_FORMAT.format(
+            path=self.FILE_WRITE_DIRECTORY,
+            enterprise_id=self.reporting_config['enterprise_customer']['uuid'],
+            date=datetime.datetime.now().strftime("%Y-%m-%d"),
+            extension='csv',
+        )
+        with open(data_report_file_name, 'w') as data_report_file:
+            data_report_file_writer = csv.writer(data_report_file)
+            data_report_file_writer.writerow(self.VERTICA_QUERY_FIELDS)
+            LOGGER.debug('Querying Vertica for data for {}'.format(enterprise_customer_name))
+            data_report_file_writer.writerows(self._query_vertica())
 
         # create a password encrypted zip file
         LOGGER.debug('Encrypting data report for {}'.format(enterprise_customer_name))
@@ -109,21 +115,6 @@ The edX for Business Team
             LOGGER.exception('Failed to send email for {}'.format(enterprise_customer_name))
 
         self._cleanup()
-
-    def _create_data_report_csv_writer(self):
-        """
-        Create a csv file and file writer with the field headers for the data report.
-        """
-        data_report_file_name = self.REPORT_FILE_NAME_FORMAT.format(
-            path=self.FILE_WRITE_DIRECTORY,
-            enterprise_id=self.reporting_config['enterprise_customer']['uuid'],
-            date=datetime.datetime.now().strftime("%Y-%m-%d"),
-            extension='csv',
-        )
-        data_report_file = open(data_report_file_name, 'w')  # pylint: disable=open-builtin
-        data_report_file_writer = csv.writer(data_report_file)
-        data_report_file_writer.writerow(self.VERTICA_QUERY_FIELDS)
-        return data_report_file_name, data_report_file_writer
 
     def _query_vertica(self):
         """
