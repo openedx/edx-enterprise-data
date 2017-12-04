@@ -71,7 +71,12 @@ MISSING_ENROLLMENT_QUERY = '''
 def export_data(data, report_name_prefix):
     if data:
         now = datetime.datetime.now()
-        csv_filename = '.output/{}_{}.csv'.format(
+        output_dir = '.output'
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        csv_filename = '{}/{}_{}.csv'.format(
+            output_dir,
             report_name_prefix,
             now.strftime('%Y%m%d%H%M')
         )
