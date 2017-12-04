@@ -10,9 +10,18 @@ and sharing your analysis with others.
 To run this script:
 
 1. Create edx-enterprise-data virtualenv.
-2. Install python requirements with `pip install -r requirements/base.txt
-3. Run `python enterprise_reporting/export_edxapp_data.py`.
-4. Find CSV output in the .output directory at the root of this repository.
+2. Install python requirements with `pip install -r requirements/dev.txt`.
+3. Set environment variables required by mysql-connector:
+    $ export MYSQLXPB_PROTOBUF_INCLUDE_DIR=/usr/local/opt/protobuf/include
+    $ export MYSQLXPB_PROTOBUF_LIB_DIR=/usr/local/opt/protobuf/lib
+    $ export MYSQLXPB_PROTOC=/usr/local/opt/protobuf/bin/protoc
+4. Set environment variables required to connect to mysql:
+    $ export MYSQL_HOST=[mysql hostname]
+    $ export MYSQL_USERNAME=[mysql username]
+    $ export MYSQL_PASSWORD=[mysql password]
+    $ export MYSQL_DATABASE=[mysql database name]
+5. Run `python enterprise_reporting/export_edxapp_data.py`.
+6. Find CSV output in the .output directory at the root of this repository.
 """
 
 import csv
