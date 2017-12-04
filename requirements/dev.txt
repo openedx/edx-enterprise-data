@@ -25,6 +25,7 @@ idna==2.6                 # via cryptography
 ipaddress==1.0.18         # via cryptography
 jmespath==0.9.3           # via boto3, botocore
 kombu==3.0.37             # via celery
+mysql-connector==2.2.3
 pip-tools==1.11.0
 pluggy==0.6.0             # via tox
 py==1.5.2                 # via tox
