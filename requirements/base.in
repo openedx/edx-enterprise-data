@@ -9,3 +9,4 @@ edx-rest-api-client==1.7.1              # For accessing the Enrollment API (and 
 awscli==1.11.178                        # for assuming aws roles for sending email via SES
 boto3==1.4.7
 cryptography==1.9
+paramiko==2.4

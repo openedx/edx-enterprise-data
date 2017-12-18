@@ -13,10 +13,10 @@ import sys
 import os
 
 from enterprise_reporting.clients.enterprise import EnterpriseAPIClient
-from enterprise_reporting.reporter import EnterpriseReportSender
+from enterprise_reporting.reporter import EnterpriseReportSender, EnterpriseReportSenderFactory
 from enterprise_reporting.utils import is_current_time_in_schedule
 
-logging.basicConfig()
+logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
 
@@ -33,7 +33,7 @@ def send_data(reporting_config):
     ))
 
     try:
-        reporter = EnterpriseReportSender(reporting_config)
+        reporter = EnterpriseReportSenderFactory.create(reporting_config)
         reporter.send_enterprise_report()
     except Exception:  # pylint: disable=broad-except
         exception_message = 'Data report failed to send for {enterprise_customer}'.format(
