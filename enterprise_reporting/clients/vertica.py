@@ -4,6 +4,7 @@ Client for connecting to a Vertica database.
 """
 from __future__ import absolute_import, unicode_literals
 
+import datetime
 from logging import getLogger
 
 import vertica_python
@@ -52,7 +53,13 @@ class VerticaClient(object):
         cursor = self.connection.cursor()
         cursor.execute(query)
         for row in cursor.iterate():
-            yield row
+            formatted_row = []
+            for value in row:
+                if isinstance(value, datetime.datetime):
+                    formatted_row.append(value.strftime('%Y-%m-%d %H:%M:%S'))
+                else:
+                    formatted_row.append(value)
+            yield formatted_row
 
     def fetch_results(self, query):
         """
