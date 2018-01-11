@@ -8,6 +8,7 @@ import csv
 import datetime
 import logging
 import os
+import paramiko
 from smtplib import SMTPException
 from uuid import UUID
 
@@ -15,6 +16,48 @@ from enterprise_reporting.clients.vertica import VerticaClient
 from enterprise_reporting.utils import compress_and_encrypt, send_email_with_attachment, decrypt_string
 
 LOGGER = logging.getLogger(__name__)
+
+
+class EnterpriseReportSenderFactory(object):
+    """
+    Factory that creates the EnterpriseReportSender given a reporting configuration.
+    """
+
+    @staticmethod
+    def create(reporting_config):
+        """
+        Creates the EnterpriseReportSender and all of its dependencies.
+        """
+        enterprise_customer_name = reporting_config['enterprise_customer']['name']
+        vertica_client = VerticaClient(
+            os.environ.get('VERTICA_HOST'),
+            os.environ.get('VERTICA_USERNAME'),
+            os.environ.get('VERTICA_PASSWORD')
+        )
+        if reporting_config['delivery_method'] == 'email':
+            LOGGER.debug('{} is configured to send the report via email to {}'.format(
+                enterprise_customer_name,
+                reporting_config['email'],
+            ))
+            delivery_method = EmailDeliveryMethod(
+                reporting_config['email'],
+                decrypt_string(reporting_config['password'], reporting_config['initialization_vector']),
+                enterprise_customer_name
+            )
+        elif reporting_config['delivery_method'] == 'sftp':
+            LOGGER.debug('{} is configured to send the report via sftp'.format(enterprise_customer_name))
+            delivery_method = SFTPDeliveryMethod(
+                reporting_config['sftp_hostname'],
+                reporting_config['sftp_port'],
+                reporting_config['sftp_username'],
+                decrypt_string(reporting_config['sftp_password'], reporting_config['initialization_vector']),
+                reporting_config['sftp_file_path'],
+                enterprise_customer_name
+            )
+        else:
+            raise Exception
+
+        return EnterpriseReportSender(reporting_config, vertica_client, delivery_method)
 
 
 class EnterpriseReportSender(object):
@@ -50,28 +93,15 @@ class EnterpriseReportSender(object):
         'user_current_enrollment_mode',
     )
     REPORT_FILE_NAME_FORMAT = "{path}/{enterprise_id}_{date}.{extension}"
-    REPORT_EMAIL_SUBJECT = '{enterprise_name} edX Learner Data'
-    REPORT_EMAIL_BODY ="""
-Please find attached employee progress data for courses on edX.
-For any questions or concerns, please contact your edX sales representative.
-Thanks,
-The edX for Business Team
-"""
-    REPORT_EMAIL_FROM_EMAIL = os.environ.get('SEND_EMAIL_FROM')
-
     FILE_WRITE_DIRECTORY = '/tmp'
 
-    def __init__(self, reporting_config):
+    def __init__(self, reporting_config, vertica_client, delivery_method):
         """
         Initialize with an EnterpriseCustomerReportingConfiguration.
         """
         self.reporting_config = reporting_config
-        self.vertica_client = VerticaClient(
-            os.environ.get('VERTICA_HOST'),
-            os.environ.get('VERTICA_USERNAME'),
-            os.environ.get('VERTICA_PASSWORD')
-        )
-        self.vertica_client.connect()
+        self.vertica_client = vertica_client
+        self.delivery_method = delivery_method
 
     def send_enterprise_report(self):
         """
@@ -81,9 +111,10 @@ The edX for Business Team
         """
         enterprise_customer_name = self.reporting_config['enterprise_customer']['name']
 
-        LOGGER.info('Starting process to send email report to {}'.format(enterprise_customer_name))
+        LOGGER.info('Starting process to send report to {}'.format(enterprise_customer_name))
 
         # Query vertica and write output to csv file.
+        self.vertica_client.connect()
         data_report_file_name = self.REPORT_FILE_NAME_FORMAT.format(
             path=self.FILE_WRITE_DIRECTORY,
             enterprise_id=self.reporting_config['enterprise_customer']['uuid'],
@@ -96,29 +127,8 @@ The edX for Business Team
             LOGGER.debug('Querying Vertica for data for {}'.format(enterprise_customer_name))
             data_report_file_writer.writerows(self._query_vertica())
 
-        # create a password encrypted zip file
-        LOGGER.debug('Encrypting data report for {}'.format(enterprise_customer_name))
-        data_report_zip_name = compress_and_encrypt(
-            data_report_file_name,
-            decrypt_string(self.reporting_config['password'], self.reporting_config['initialization_vector'])
-        )
-
-        data_report_subject = self.REPORT_EMAIL_SUBJECT.format(
-            enterprise_name=enterprise_customer_name
-        )
-
-        # email the file to the email address in the configuration
-        LOGGER.debug('Sending encrypted data to {}'.format(enterprise_customer_name))
-        try:
-            send_email_with_attachment(
-                data_report_subject,
-                self.REPORT_EMAIL_BODY,
-                self.REPORT_EMAIL_FROM_EMAIL,
-                self.reporting_config['email'],
-                data_report_zip_name
-            )
-        except SMTPException:
-            LOGGER.exception('Failed to send email for {}'.format(enterprise_customer_name))
+        # Send the data based on the delivery method.
+        self.delivery_method.send(data_report_file_name)
 
         self._cleanup()
 
@@ -138,3 +148,94 @@ The edX for Business Team
         Perform various cleanup operations after we've attempted (successfully or not) to send a report.
         """
         self.vertica_client.close_connection()
+
+
+class EmailDeliveryMethod(object):
+    """
+    Class that handles sending an enterprise report file via email as an encrypted zip file.
+    """
+
+    REPORT_EMAIL_SUBJECT = '{enterprise_name} edX Learner Data'
+    REPORT_EMAIL_BODY = """
+    Please find attached employee progress data for courses on edX.
+    For any questions or concerns, please contact your edX sales representative.
+    Thanks,
+    The edX for Business Team
+    """
+    REPORT_EMAIL_FROM_EMAIL = os.environ.get('SEND_EMAIL_FROM')
+
+    def __init__(self, email, password, enteprise_customer_name):
+        self.email = email
+        self.password = password
+        self.enterprise_customer_name = enteprise_customer_name
+
+    def send(self, enterprise_report_file_name):
+        """
+        Send the given file with the configured information.
+        """
+        # create a password encrypted zip file
+        LOGGER.info('Encrypting data report for {}'.format(self.enterprise_customer_name))
+        data_report_zip_name = compress_and_encrypt(enterprise_report_file_name, self.password)
+
+        data_report_subject = self.REPORT_EMAIL_SUBJECT.format(
+            enterprise_name=self.enterprise_customer_name
+        )
+
+        # email the file to the email address in the configuration
+        LOGGER.info('Sending encrypted data to {}'.format(self.enterprise_customer_name))
+        try:
+            send_email_with_attachment(
+                data_report_subject,
+                self.REPORT_EMAIL_BODY,
+                self.REPORT_EMAIL_FROM_EMAIL,
+                self.email,
+                data_report_zip_name
+            )
+            LOGGER.info('Email report with encrypted zip successfully sent to {} for {}'.format(
+                self.email,
+                self.enterprise_customer_name
+            ))
+        except SMTPException:
+            LOGGER.exception('Failed to send email report to {} for {}'.format(
+                self.email,
+                self.enterprise_customer_name
+            ))
+
+
+class SFTPDeliveryMethod(object):
+    """
+    Class that handles sending an enterprise report file via SFTP.
+    """
+
+    def __init__(self, hostname, port, username, password, file_path, enterprise_customer_name):
+        self.hostname = hostname
+        self.port = port
+        self.username = username
+        self.password = password
+        self.file_path = file_path
+        self.enterprise_customer_name = enterprise_customer_name
+
+    def send(self, enterprise_report_file_name):
+        """
+        Send the given file with the configured information.
+        """
+        LOGGER.info('Connecting via sftp to remote host {} for {}'.format(
+            self.hostname,
+            self.enterprise_customer_name
+        ))
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(
+            hostname=self.hostname,
+            port=self.port,
+            username=self.username,
+            password=self.password,
+        )
+        sftp = ssh.open_sftp()
+        sftp.put(
+            enterprise_report_file_name,
+            os.path.join(self.file_path, os.path.basename(enterprise_report_file_name))
+        )
+        sftp.close()
+        ssh.close()
+        LOGGER.info('Successfully sent report via sftp for {}'.format(self.enterprise_customer_name))
