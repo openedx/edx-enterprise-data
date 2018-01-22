@@ -10,3 +10,4 @@ awscli==1.11.178                        # for assuming aws roles for sending ema
 boto3==1.4.7
 cryptography==1.9
 paramiko==2.4
+Django==1.8.18
