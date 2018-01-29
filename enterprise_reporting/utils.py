@@ -4,7 +4,6 @@ Utility functions for Enterprise Reporting.
 """
 from __future__ import absolute_import, unicode_literals
 
-import base64
 import datetime
 import logging
 import os
@@ -16,12 +15,8 @@ from email.mime.multipart import MIMEMultipart
 
 import boto3
 import pyminizip
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.ciphers import Cipher
-from cryptography.hazmat.primitives.ciphers.algorithms import AES
-from cryptography.hazmat.primitives.ciphers.modes import CFB
-
-from six import text_type
+from cryptography.fernet import Fernet
+from django.utils.encoding import force_text
 
 
 LOGGER = logging.getLogger(__name__)
@@ -106,18 +101,9 @@ def is_current_time_in_schedule(frequency, hour_of_day, day_of_month=None, day_o
     return False
 
 
-def decrypt_string(string, iv, base64_decode=True):
+def decrypt_string(string):
     """
-    Decrypts a string using a shared secret and a given initialization vector (iv).
+    Decrypts a string that was encrypted using Fernet symmetric encryption.
     """
-    if base64_decode:
-        string = base64.b64decode(string)
-        iv = base64.b64decode(iv)
-    secret = os.environ.get('ENTERPRISE_REPORTING_SECRET')
-    if isinstance(secret, text_type):
-        secret = secret.encode('utf-8')
-    if isinstance(string, text_type):
-        string = string.encode('utf-8')
-    cipher = Cipher(AES(secret), CFB(iv), backend=default_backend())
-    decryptor = cipher.decryptor()
-    return decryptor.update(string) + decryptor.finalize()
+    fernet = Fernet(os.environ.get('FERNET_KEY'))
+    return force_text(fernet.decrypt(bytes(string)))

@@ -41,7 +41,7 @@ class EnterpriseReportSenderFactory(object):
             ))
             delivery_method = EmailDeliveryMethod(
                 reporting_config['email'],
-                decrypt_string(reporting_config['password'], reporting_config['initialization_vector']),
+                decrypt_string(reporting_config['encrypted_password']),
                 enterprise_customer_name
             )
         elif reporting_config['delivery_method'] == 'sftp':
@@ -50,7 +50,7 @@ class EnterpriseReportSenderFactory(object):
                 reporting_config['sftp_hostname'],
                 reporting_config['sftp_port'],
                 reporting_config['sftp_username'],
-                decrypt_string(reporting_config['sftp_password'], reporting_config['initialization_vector']),
+                decrypt_string(reporting_config['encrypted_sftp_password']),
                 reporting_config['sftp_file_path'],
                 enterprise_customer_name
             )
