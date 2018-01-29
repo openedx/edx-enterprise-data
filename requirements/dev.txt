@@ -23,7 +23,7 @@ edx-rest-api-client==1.7.1
 enum34==1.1.6             # via cryptography
 first==2.0.1              # via pip-tools
 future==0.16.0            # via vertica-python
-futures==3.2.0            # via s3transfer
+futures==3.2.0 ; python_version == "2.7"
 idna==2.6                 # via cryptography
 ipaddress==1.0.19         # via cryptography
 jmespath==0.9.3           # via boto3, botocore
