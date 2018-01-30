@@ -105,5 +105,5 @@ def decrypt_string(string):
     """
     Decrypts a string that was encrypted using Fernet symmetric encryption.
     """
-    fernet = Fernet(os.environ.get('FERNET_KEY'))
+    fernet = Fernet(os.environ.get('LMS_FERNET_KEY'))
     return force_text(fernet.decrypt(bytes(string)))
