@@ -17,6 +17,7 @@ import boto3
 import pyminizip
 from cryptography.fernet import Fernet
 from django.utils.encoding import force_text
+from fernet_fields.hkdf import derive_fernet_key
 
 
 LOGGER = logging.getLogger(__name__)
@@ -105,5 +106,9 @@ def decrypt_string(string):
     """
     Decrypts a string that was encrypted using Fernet symmetric encryption.
     """
-    fernet = Fernet(os.environ.get('LMS_FERNET_KEY'))
+    fernet = Fernet(
+        derive_fernet_key(
+            os.environ.get('LMS_FERNET_KEY')
+        )
+    )
     return force_text(fernet.decrypt(bytes(string)))
