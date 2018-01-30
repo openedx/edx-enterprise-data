@@ -111,4 +111,4 @@ def decrypt_string(string):
             os.environ.get('LMS_FERNET_KEY')
         )
     )
-    return force_text(fernet.decrypt(bytes(string)))
+    return force_text(fernet.decrypt(bytes(string, 'utf-8')))
