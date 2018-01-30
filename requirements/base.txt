@@ -17,6 +17,7 @@ cffi==1.11.4              # via bcrypt, cryptography, pynacl
 click==6.7                # via pip-tools
 colorama==0.3.7           # via awscli
 cryptography==1.9
+django-fernet-fields==0.5
 django==1.8.18
 docutils==0.14            # via awscli, botocore
 edx-rest-api-client==1.7.1

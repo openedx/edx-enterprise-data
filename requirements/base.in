@@ -11,4 +11,5 @@ boto3==1.4.7
 cryptography==1.9
 paramiko==2.4
 Django==1.8.18
+django-fernet-fields==0.5
 futures==3.2.0; python_version == "2.7"
