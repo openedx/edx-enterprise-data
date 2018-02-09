@@ -7,18 +7,19 @@ from __future__ import absolute_import, unicode_literals
 import datetime
 import logging
 import os
-import pytz
 import re
-from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from io import open  # pylint: disable=redefined-builtin
 
 import boto3
 import pyminizip
+import pytz
 from cryptography.fernet import Fernet
-from django.utils.encoding import force_text
 from fernet_fields.hkdf import derive_fernet_key
 
+from django.utils.encoding import force_text
 
 LOGGER = logging.getLogger(__name__)
 

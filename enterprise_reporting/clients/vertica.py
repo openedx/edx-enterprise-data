@@ -9,7 +9,6 @@ from logging import getLogger
 
 import vertica_python
 
-
 LOGGER = getLogger(__name__)
 
 

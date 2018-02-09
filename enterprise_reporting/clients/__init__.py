@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
+"""
+Clients used to access third party systems.
+"""
 
 from __future__ import absolute_import, unicode_literals
 
 import os
 from time import time
 from functools import wraps
-from six.moves.urllib.parse import parse_qs, urlparse
+from six.moves import urllib
 
 from edx_rest_api_client.client import EdxRestApiClient
 
@@ -86,7 +89,7 @@ def traverse_pagination(response, endpoint):
 
     next_page = response.get('next')
     while next_page:
-        querystring = parse_qs(urlparse(next_page).query, keep_blank_values=True)
+        querystring = urllib.parse.parse_qs(urllib.parse.urlparse(next_page).query, True)
         response = endpoint.get(**querystring)
         results += response.get('results', [])
         next_page = response.get('next')

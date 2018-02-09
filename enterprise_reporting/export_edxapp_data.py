@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 """
+Export edx data (mysql or vertica) into a csv file.
+
 This script provides the framework for querying the edxapp mysql database
 or the Vertica-based data warehouse and outputting the result of your
 query to a CSV file.
@@ -23,20 +25,19 @@ To run this script:
 5. Run `python enterprise_reporting/export_edxapp_data.py`.
 6. Find CSV output in the .output directory at the root of this repository.
 """
+from __future__ import absolute_import, unicode_literals
 
 import csv
 import datetime
 import logging
 import os
 import sys
-from collections import defaultdict
+from io import open  # pylint: disable=redefined-builtin
 
 import mysql.connector
 import vertica_python
 
-
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 MISSING_ENROLLMENT_QUERY = '''
     SELECT
@@ -78,6 +79,9 @@ MISSING_ENROLLMENT_QUERY = '''
 
 
 def export_data(data, report_name_prefix):
+    """
+    Export given data to a csv report.
+    """
     if data:
         now = datetime.datetime.now()
         output_dir = '.output'
@@ -103,6 +107,12 @@ def export_data(data, report_name_prefix):
 
 
 def fetch_lms_data(query):
+    """
+    Return the results of the given query against a mysql database.
+
+    Uses the following environment variables to connnect to the database:
+    MYSQL_HOST, MYSQL_HOST, MYSQL_PASSWORD, MYSQL_DATABASE
+    """
     data = []
     connection_info = {
         'host': os.environ.get('MYSQL_HOST'),
@@ -122,6 +132,12 @@ def fetch_lms_data(query):
 
 
 def fetch_vertica_data(query):
+    """
+    Return the results of the given query against a vertica database.
+
+    Uses the following environment variables to connnect to the database:
+    VERTICA_HOST, VERTICA_USERNAME, VERTICA_PASSWORD, VERTICA_DATABASE
+    """
     connection_info = {
         'host': os.environ.get('VERTICA_HOST'),
         'user': os.environ.get('VERTICA_USERNAME'),
@@ -136,6 +152,8 @@ def fetch_vertica_data(query):
 
 def export_missing_enterprise_enrollments():
     """
+    Find and export missing enterprise enrollments.
+
     Run query to find course enrollments which could potentially be
     considered Enterprise enrollments, but are not currently recorded
     as such.
