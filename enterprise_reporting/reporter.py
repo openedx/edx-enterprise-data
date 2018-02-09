@@ -165,7 +165,7 @@ class EmailDeliveryMethod(object):
     REPORT_EMAIL_FROM_EMAIL = os.environ.get('SEND_EMAIL_FROM')
 
     def __init__(self, email, password, enteprise_customer_name):
-        self.email = email
+        self.email = email if isinstance(email, list) else [email] # convert to list if it's not already
         self.password = password
         self.enterprise_customer_name = enteprise_customer_name
 
@@ -181,7 +181,7 @@ class EmailDeliveryMethod(object):
             enterprise_name=self.enterprise_customer_name
         )
 
-        # email the file to the email address in the configuration
+        # email the file to the email address(es) in the configuration
         LOGGER.info('Sending encrypted data to {}'.format(self.enterprise_customer_name))
         try:
             send_email_with_attachment(
@@ -192,7 +192,7 @@ class EmailDeliveryMethod(object):
                 data_report_zip_name
             )
             LOGGER.info('Email report with encrypted zip successfully sent to {} for {}'.format(
-                self.email,
+                ', '.join(self.email),
                 self.enterprise_customer_name
             ))
         except SMTPException:

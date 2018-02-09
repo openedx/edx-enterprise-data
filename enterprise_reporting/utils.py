@@ -73,7 +73,7 @@ def send_email_with_attachment(subject, body, from_email, to_email, filename):
     client = boto3.client('ses', region_name=AWS_REGION)
 
     # and send the message
-    result = client.send_raw_email(RawMessage={'Data': msg.as_string()}, Source=msg['From'], Destinations=[msg['To']])
+    result = client.send_raw_email(RawMessage={'Data': msg.as_string()}, Source=msg['From'], Destinations=msg['To'])
     LOGGER.debug(result)
 
 
