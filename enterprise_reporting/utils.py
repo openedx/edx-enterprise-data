@@ -54,7 +54,10 @@ def send_email_with_attachment(subject, body, from_email, to_email, filename):
     msg = MIMEMultipart()
     msg['Subject'] = subject
     msg['From'] = from_email
-    msg['To'] = to_email
+
+    # NOTE: msg['To'] is in the headers of the email and must be a string.
+    # The actual list of emails is used in the client.send_raw_email method below.
+    msg['To'] = ','.join(to_email)
 
     # what a recipient sees if they don't use an email reader
     msg.preamble = 'Multipart message.\n'
@@ -72,9 +75,10 @@ def send_email_with_attachment(subject, body, from_email, to_email, filename):
     # connect to SES
     client = boto3.client('ses', region_name=AWS_REGION)
 
-    # and send the message
-    result = client.send_raw_email(RawMessage={'Data': msg.as_string()}, Source=msg['From'], Destinations=msg['To'])
-    LOGGER.debug(result)
+    # and send the message to each email address independently
+    for email in to_email:
+        result = client.send_raw_email(RawMessage={'Data': msg.as_string()}, Source=msg['From'], Destinations=[email])
+        LOGGER.debug(result)
 
 
 def is_current_time_in_schedule(frequency, hour_of_day, day_of_month=None, day_of_week=None):
