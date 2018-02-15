@@ -51,30 +51,34 @@ def send_email_with_attachment(subject, body, from_email, to_email, filename):
 
     Adapted from https://gist.github.com/yosemitebandit/2883593
     """
-    msg = MIMEMultipart()
-    msg['Subject'] = subject
-    msg['From'] = from_email
-    msg['To'] = to_email
-
-    # what a recipient sees if they don't use an email reader
-    msg.preamble = 'Multipart message.\n'
-
-    # the message body
-    part = MIMEText(body)
-    msg.attach(part)
-
-    # the attachment
-    part = MIMEApplication(open(filename, 'rb').read())
-    part.add_header('Content-Disposition', 'attachment', filename=os.path.basename(filename))
-    part.set_type('application/zip')
-    msg.attach(part)
-
     # connect to SES
     client = boto3.client('ses', region_name=AWS_REGION)
 
-    # and send the message
-    result = client.send_raw_email(RawMessage={'Data': msg.as_string()}, Source=msg['From'], Destinations=msg['To'])
-    LOGGER.debug(result)
+    # the message body
+    msg_body = MIMEText(body)
+    
+    # the attachment
+    msg_attachment = MIMEApplication(open(filename, 'rb').read())
+    msg_attachment.add_header('Content-Disposition', 'attachment', filename=os.path.basename(filename))
+    msg_attachment.set_type('application/zip')
+
+    # iterate over each email in the list to send emails independently
+    for email in to_email:
+        msg = MIMEMultipart()
+        msg['Subject'] = subject
+        msg['From'] = from_email
+        msg['To'] = email
+
+        # what a recipient sees if they don't use an email reader
+        msg.preamble = 'Multipart message.\n'
+
+        # attach the message body and attachment
+        msg.attach(msg_body)
+        msg.attach(msg_attachment)
+
+        # and send the message
+        result = client.send_raw_email(RawMessage={'Data': msg.as_string()}, Source=msg['From'], Destinations=[email])
+        LOGGER.debug(result)
 
 
 def is_current_time_in_schedule(frequency, hour_of_day, day_of_month=None, day_of_week=None):
