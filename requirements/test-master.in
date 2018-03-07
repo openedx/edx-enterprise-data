@@ -1,0 +1,3 @@
+django==1.11.5                          # Application server
+djangorestframework==3.6.2              # REST API extensions for Django
+edx-drf-extensions==1.2.3               # edX extensions to django rest framework

@@ -5,12 +5,11 @@ Sends an Enterprise Customer's data file to a configured destination.
 
 from __future__ import absolute_import, unicode_literals
 
-import logging
-
 import argparse
+import logging
+import os
 import re
 import sys
-import os
 
 from enterprise_reporting.clients.enterprise import EnterpriseAPIClient
 from enterprise_reporting.reporter import EnterpriseReportSender, EnterpriseReportSenderFactory
@@ -20,20 +19,20 @@ logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
 
-def send_data(reporting_config):
+def send_data(config):
     """
-    Function to send data report to each enterprise.
+    Send data report to each enterprise.
 
     Args:
-        reporting_config
+        config
     """
-    enterprise_customer_name = reporting_config['enterprise_customer']['name']
+    enterprise_customer_name = config['enterprise_customer']['name']
     LOGGER.info('Kicking off job to send report for {}'.format(
         enterprise_customer_name
     ))
 
     try:
-        reporter = EnterpriseReportSenderFactory.create(reporting_config)
+        reporter = EnterpriseReportSenderFactory.create(config)
         reporter.send_enterprise_report()
     except Exception:  # pylint: disable=broad-except
         exception_message = 'Data report failed to send for {enterprise_customer}'.format(
@@ -41,7 +40,7 @@ def send_data(reporting_config):
         )
         LOGGER.exception(exception_message)
 
-    cleanup_files(reporting_config['enterprise_customer']['uuid'])
+    cleanup_files(config['enterprise_customer']['uuid'])
     LOGGER.info('Finished job to send report for {}'.format(
         enterprise_customer_name
     ))
@@ -49,7 +48,7 @@ def send_data(reporting_config):
 
 def cleanup_files(enterprise_id):
     """
-    Cleans up any files created by sending the enterprise report.
+    Clean up any files created by sending the enterprise report.
     """
     directory = EnterpriseReportSender.FILE_WRITE_DIRECTORY
     pattern = r'{}'.format(enterprise_id)
@@ -58,7 +57,10 @@ def cleanup_files(enterprise_id):
             os.remove(os.path.join(directory, f))
 
 
-if __name__ == "__main__":
+def process_reports():
+    """
+    Process and send reports based on the arguments passed.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('-e', '--enterprise-customer', required=False, type=str,
                         help="EnterpriseCustomer UUID.")
@@ -90,4 +92,7 @@ if __name__ == "__main__":
                     reporting_config['day_of_week'])):
             send_data(reporting_config)
 
+
+if __name__ == "__main__":
+    process_reports()
     sys.exit(0)

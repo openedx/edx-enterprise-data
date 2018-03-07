@@ -8,12 +8,13 @@ import csv
 import datetime
 import logging
 import os
-import paramiko
+from io import open  # pylint: disable=redefined-builtin
 from smtplib import SMTPException
 from uuid import UUID
 
+import paramiko
 from enterprise_reporting.clients.vertica import VerticaClient
-from enterprise_reporting.utils import compress_and_encrypt, send_email_with_attachment, decrypt_string
+from enterprise_reporting.utils import compress_and_encrypt, decrypt_string, send_email_with_attachment
 
 LOGGER = logging.getLogger(__name__)
 
@@ -26,7 +27,7 @@ class EnterpriseReportSenderFactory(object):
     @staticmethod
     def create(reporting_config):
         """
-        Creates the EnterpriseReportSender and all of its dependencies.
+        Create the EnterpriseReportSender and all of its dependencies.
         """
         enterprise_customer_name = reporting_config['enterprise_customer']['name']
         vertica_client = VerticaClient(
@@ -165,6 +166,9 @@ class EmailDeliveryMethod(object):
     REPORT_EMAIL_FROM_EMAIL = os.environ.get('SEND_EMAIL_FROM')
 
     def __init__(self, email, password, enteprise_customer_name):
+        """
+        Initialize the Email Delivery Method.
+        """
         self.email = email if isinstance(email, list) else [email] # convert to list if it's not already
         self.password = password
         self.enterprise_customer_name = enteprise_customer_name
@@ -208,6 +212,9 @@ class SFTPDeliveryMethod(object):
     """
 
     def __init__(self, hostname, port, username, password, file_path, enterprise_customer_name):
+        """
+        Initialize the SFTP Delivery Method.
+        """
         self.hostname = hostname
         self.port = port
         self.username = username
