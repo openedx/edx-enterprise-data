@@ -26,6 +26,7 @@ class EnterpriseAPIClient(EdxOAuth2APIClient):
         """
         return self._load_data(
             self.ENTERPRISE_REPORTING_ENDPOINT,
+            should_traverse_pagination=True,
             **kwargs
         )
 
