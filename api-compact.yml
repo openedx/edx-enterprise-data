@@ -1,0 +1,118 @@
+# Enterprise Data customer-facing API definitions
+# Note, while this document is not strictly to Swagger spec, each HTTP method's
+# definition _must_ be to spec or the downstream ref will fail.
+#
+# Clients must include an Authorization header with OAuth2 access token in order to communicate:
+#   Authorization: JWT {access_token}
+#
+#
+# Available service endpoints -- note that alternate endpoints may be presented at the API Gateway tier:
+# GET /v1/enterprise-customer/{uuid}/learner-summary/
+
+apigateway_responses_with_mapping_template_for_uuid: &apigateway_responses_with_mapping_template_for_uuid
+  default:
+    statusCode: "400"
+  200:
+    statusCode: "200"
+    responseTemplates:
+      # Response body mapping template, this template is used for updating
+      # "next" and "previous" urls (both host and url path) while preserving
+      # the protocol (http | https) and querystring parameters.
+      application/json: >
+        #set($inputRoot = $input.path('$'))
+        #set($host = $stageVariables.gateway_host)
+        #set($uuid = $input.params('uuid'))
+
+        #set($URLMatchRegex = "(^https?://)[^/]*[^?]*(.*$)")
+        #set($updatedURL = "$1$host$context.resourcePath$2")
+        #set($resourceUuidMatch = "{uuid}")
+
+        {
+          "count": $inputRoot.count,
+          "next": "$inputRoot.next.replaceAll($URLMatchRegex, $updatedURL).replace($resourceUuidMatch, $uuid)",
+          "previous": "$inputRoot.previous.replaceAll($URLMatchRegex, $updatedURL).replace($resourceUuidMatch, $uuid)",
+          "results": $inputRoot.results
+        }
+  401:
+    statusCode: "401"
+  403:
+    statusCode: "403"
+  404:
+    statusCode: "404"
+  429:
+    statusCode: "429"
+  500:
+    statusCode: "500"
+
+responses: &responses
+  200:
+    description: "OK"
+  400:
+    description: "Bad Request"
+  401:
+    description: "Unauthorized"
+  403:
+    description: "Forbidden"
+  404:
+    description: "Not Found"
+  429:
+    description: "Too Many Requests"
+  500:
+    description: "Internal Server Error"
+
+produces: &produces
+  - "application/json"
+  - "application/csv"
+
+auth_header: &auth_header
+  name: "Authorization"
+  in: "header"
+  required: true
+  type: "string"
+
+uuid_parameter: &uuid_parameter
+  name: "uuid"
+  in: "path"
+  required: true
+  type: "string"
+
+page_qs_parameter: &page_qs_parameter
+  in: "query"
+  name: "page"
+  required: false
+  type: "number"
+
+page_size_qs_parameter: &page_size_qs_parameter
+  in: "query"
+  name: "page_size"
+  required: false
+  type: "number"
+
+# AWS API Gateway vendor extension point. This information is used
+#  by https://github.com/awslabs/aws-apigateway-importer.
+x-amazon-apigateway-integration-enterprise-customer-learner-summary: &apigateway_integration_enterprise_customer_learner_summary
+  responses: *apigateway_responses_with_mapping_template_for_uuid
+  httpMethod: "GET"
+  type: "http"
+  requestParameters:
+    integration.request.header.Authorization: "method.request.header.Authorization"
+    integration.request.path.uuid: "method.request.path.uuid"
+    integration.request.querystring.page: "method.request.querystring.page"
+    integration.request.querystring.page_size: "method.request.querystring.page_size"
+
+endpoints:
+  v1:
+    # GET /v1/enterprise-customer/{uuid}/learner-summary/
+    enterpriseCustomerLearnerSummary:
+        get:
+          produces: *produces
+          parameters:
+            - *auth_header
+            - *uuid_parameter
+            - *page_qs_parameter
+            - *page_size_qs_parameter
+          operationId: "get_enterprise_customer_learner_summary"
+          responses: *responses
+          x-amazon-apigateway-integration:
+            <<: *apigateway_integration_enterprise_customer_learner_summary
+            uri: "https://${stageVariables.analytics_api_host}/enterprise/api/v0/enterprise/{uuid}/enrollments/"
