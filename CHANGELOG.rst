@@ -14,9 +14,9 @@ Change Log
 Unreleased
 ----------
 
-[0.1.2] - 2018-05-01
+[0.1.2 - 0.1.3] - 2018-05-01
 ---------------------
-* Fix for `enterprise_site_id`
+* Clean up field name discrepancy for `enterprise_site_id` and `user_account_creation_timestamp`
 
 [0.1.1] - 2018-04-30
 ---------------------

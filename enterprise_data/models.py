@@ -53,7 +53,7 @@ class EnterpriseEnrollment(models.Model):
     course_duration_weeks = models.CharField(max_length=32, null=True)
     course_min_effort = models.PositiveIntegerField(null=True)
     course_max_effort = models.PositiveIntegerField(null=True)
-    user_account_creation_date = models.DateTimeField(null=True)
+    user_account_creation_timestamp = models.DateTimeField(null=True)
     user_email = models.CharField(max_length=255, null=True)
     user_username = models.CharField(max_length=255, null=True)
 

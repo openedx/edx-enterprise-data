@@ -51,7 +51,7 @@ class TestEnterpriseEnrollmentsView(APITestCase):
                 'lms_user_id': 11,
                 'enterprise_name': 'Enterprise 1',
                 'letter_grade': 'Pass',
-                'user_account_creation_date': '2015-02-12T23:14:35',
+                'user_account_creation_timestamp': '2015-02-12T23:14:35',
                 'passed_timestamp': '2017-05-09T16:27:34.690065',
                 'course_max_effort': 4,
                 'consent_granted': True,
