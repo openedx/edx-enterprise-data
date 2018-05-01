@@ -45,7 +45,7 @@ class EnterpriseEnrollment(models.Model):
     has_passed = models.BooleanField(default=False)
     passed_timestamp = models.DateTimeField(null=True)
     enterprise_sso_uid = models.CharField(max_length=255, null=True)
-    enterprise_sso_site_id = models.PositiveIntegerField(null=True)
+    enterprise_site_id = models.PositiveIntegerField(null=True)
     course_title = models.CharField(max_length=255, null=True)
     course_start = models.DateTimeField(null=True)
     course_end = models.DateTimeField(null=True)

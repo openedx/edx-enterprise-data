@@ -45,7 +45,7 @@ class TestEnterpriseEnrollmentsView(APITestCase):
                 'course_pacing_type': 'instructor_paced',
                 'user_username': 'test_user',
                 'enterprise_sso_uid': 'harry',
-                'enterprise_sso_site_id': None,
+                'enterprise_site_id': None,
                 'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
                 'course_end': '2016-12-01T00:00:00',
                 'lms_user_id': 11,
