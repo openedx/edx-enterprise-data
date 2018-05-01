@@ -22,7 +22,7 @@
       "course_duration_weeks": "8",
       "course_min_effort": 2,
       "course_max_effort": 4,
-      "user_account_creation_date": "2015-02-12 23:14:35",
+      "user_account_creation_timestamp": "2015-02-12 23:14:35",
       "user_email": "test@example.com",
       "user_username": "test_user"
     }
@@ -50,7 +50,7 @@
       "course_duration_weeks": "8",
       "course_min_effort": 2,
       "course_max_effort": 4,
-      "user_account_creation_date": "2015-02-12 23:14:35",
+      "user_account_creation_timestamp": "2015-02-12 23:14:35",
       "user_email": "test@example.com",
       "user_username": "test_user"
     }
@@ -78,7 +78,7 @@
       "course_duration_weeks": "8",
       "course_min_effort": 2,
       "course_max_effort": 4,
-      "user_account_creation_date": "2015-02-12 23:14:35",
+      "user_account_creation_timestamp": "2015-02-12 23:14:35",
       "user_email": "test2@example.com",
       "user_username": "test_user2"
     }

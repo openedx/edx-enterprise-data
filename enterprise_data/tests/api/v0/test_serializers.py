@@ -41,7 +41,7 @@ class TestEnterpriseEnrollmentSerializer(APITestCase):
             "course_duration_weeks": "8",
             "course_min_effort": 2,
             "course_max_effort": 4,
-            "user_account_creation_date": "2015-02-12T23:14:35Z",
+            "user_account_creation_timestamp": "2015-02-12T23:14:35Z",
             "user_email": "test@example.com",
             "user_username": "test_user"
         }
@@ -66,7 +66,7 @@ class TestEnterpriseEnrollmentSerializer(APITestCase):
             'course_pacing_type': 'instructor_paced',
             'enterprise_sso_uid': 'harry',
             'course_end': '2016-12-01T00:00:00Z',
-            'user_account_creation_date': '2015-02-12T23:14:35Z',
+            'user_account_creation_timestamp': '2015-02-12T23:14:35Z',
             'passed_timestamp': '2017-05-09T16:27:34.690065Z',
             'course_max_effort': 4,
             'user_email': 'test@example.com',
