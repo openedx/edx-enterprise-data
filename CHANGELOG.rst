@@ -14,9 +14,13 @@ Change Log
 Unreleased
 ----------
 
+[0.1.2] - 2018-05-01
+---------------------
+* Fix for `enterprise_site_id`
+
 [0.1.1] - 2018-04-30
 ---------------------
-* Add `enterprise_sso_site_id` to response and align `enterprise_sso_uid` with the proper field from the pipeline.
+* Add `enterprise_site_id` to response and align `enterprise_sso_uid` with the proper field from the pipeline.
 
 
 [0.1.0] - 2018-03-07
