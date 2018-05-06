@@ -8,18 +8,20 @@ import datetime
 import logging
 import os
 import re
+from collections import OrderedDict
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from io import open  # pylint: disable=redefined-builtin
 
 import boto3
-import pyminizip
 import pytz
 from cryptography.fernet import Fernet
 from fernet_fields.hkdf import derive_fernet_key
 
 from django.utils.encoding import force_text
+
+import pyminizip
 
 LOGGER = logging.getLogger(__name__)
 
@@ -32,18 +34,16 @@ FREQUENCY_TYPE_WEEKLY = 'weekly'
 AWS_REGION = 'us-east-1'
 
 
-def compress_and_encrypt(filename, password):
+def compress_and_encrypt(files, password):
     """
     Given a file and a password, create an encrypted zip file. Return the new filename.
     """
-    zip_filename = re.sub(r'\.(\w+)$', '.zip', filename)
-    if filename == zip_filename:
-        LOGGER.warn('Unable to determine filename for compressing {}, '
-                    'file must have a valid extension that is not .zip'.format(filename))
-        return None
-
-    pyminizip.compress(filename, zip_filename, password, COMPRESSION_LEVEL)
-    return zip_filename
+    multiple_files = len(files) > 1
+    # Replace the data and report type with just `.zip`.
+    zipfile = re.sub(r'(_(\w+))?\.(\w+)$', '.zip', files[0].name)
+    compression = pyminizip.compress_multiple if multiple_files else pyminizip.compress
+    compression([f.name for f in files] if multiple_files else files[0].name, zipfile, password, COMPRESSION_LEVEL)
+    return zipfile
 
 
 def send_email_with_attachment(subject, body, from_email, to_email, filename):
@@ -116,4 +116,81 @@ def decrypt_string(string):
             os.environ.get('LMS_FERNET_KEY')
         )
     )
+
     return force_text(fernet.decrypt(bytes(string, 'utf-8')))
+
+
+def flatten_dict(d, target='key' or 'value'):
+    """
+    Flattens a dict object into a list.
+
+    The behavior is as such for targeting keys:
+        * Each key is concatenated into the list.
+        * Each key with a list value has the list's indices formatted (see [1]) and concatenated into the list.
+        * Each key with a dict value has the dict's sub-keys formatted (see [1]) and concatenated into the list.
+        * Sub-objects are recursively flattened.
+
+    The behavior is as such for targeting values:
+        * Each non-list value is concatenated into the list.
+        * Each list value has its entries concatenated into the list.
+        * Sub-objects are recursively flattened.
+
+    WARNING: Appropriately flattening lists with a mixture of dict and non-dict objects within them is unsupported.
+
+    [1]: The nested-value formatting function can be found nested within this function. (No pun intended).
+
+    # TODO: This beastly mess of a house of cards *needs* a refactor at some point. Make do with comments for now.
+    # TODO: This can probably be separated into a dedicated Python library somewhere sometime in the future.
+    """
+    def format_nested(nested, _key=None):
+        if _key is None:
+            _key = key
+        return '{}_{}'.format(_key, nested)
+
+    flattened = []
+    target_is_key = target == 'key'
+    for key, value in OrderedDict(sorted(d.items())).items():
+
+        # Simple case: recursively flatten the dictionary.
+        if isinstance(value, dict):
+            flattened += map(
+                format_nested if target_is_key else lambda x: x,
+                flatten_dict(value, target=target)
+            )
+
+        # We are suddenly in muddy waters, because lists can have multiple types within them in JSON.
+        elif isinstance(value, list):
+            items_are_dict = [isinstance(item, dict) for item in value]
+            items_are_list = [isinstance(item, list) for item in value]
+
+            # To help reduce the complexity here, let's not support this case.
+            # Besides, most sensible APIs won't bump into this case.
+            if any(items_are_dict) and not all(items_are_dict):
+                raise NotImplementedError("Ability to flatten dict with list of mixed dict and non-dict types "
+                                          "is not currently supported")
+
+            # Same here, this is just weird.
+            if any(items_are_list):
+                raise NotImplementedError("Ability to flatten a dict with lists within lists "
+                                          "is not currently supported. And we'd like to ask you to take it easy.")
+
+            # This case is common, but a little complex.
+            elif all(items_are_dict):
+                for index, item in enumerate(value):
+                    _flattened_dict = flatten_dict(item, target=target)
+
+                    # In this case we actually want to prepend the dict's index in the list to each flattened dict.
+                    if target_is_key:
+                        _flattened_dict = [format_nested(flattened_item, _key=index)
+                                           for flattened_item in _flattened_dict]
+
+                    flattened += map(format_nested if target_is_key else lambda x: x, _flattened_dict)
+
+            # All items are non-dict, so just directly add either the index or the value.
+            else:
+                flattened += map(format_nested, range(len(value))) if target_is_key else value
+
+        # Kindergarten -- just add to the list.
+        else:
+            flattened.append(key if target_is_key else value)
+    return flattened

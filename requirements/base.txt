@@ -29,27 +29,27 @@ first==2.0.1              # via pip-tools
 future==0.16.0            # via vertica-python
 futures==3.2.0 ; python_version == "2.7"
 idna==2.6                 # via cryptography
-ipaddress==1.0.19         # via cryptography
+ipaddress==1.0.22         # via cryptography
 jmespath==0.9.3           # via boto3, botocore
 kombu==3.0.37             # via celery
 paramiko==2.4
-pip-tools==1.11.0
+pip-tools==2.0.2
 pluggy==0.6.0             # via tox
-py==1.5.2                 # via tox
+py==1.5.3                 # via tox
 pyasn1==0.4.2             # via paramiko, rsa
 pycparser==2.18           # via cffi
-pyjwt==1.5.3              # via djangorestframework-jwt, edx-rest-api-client
+pyjwt==1.6.1              # via djangorestframework-jwt, edx-rest-api-client
 pyminizip==0.2.1
 pynacl==1.2.1             # via paramiko
-python-dateutil==2.6.1    # via botocore, edx-drf-extensions, vertica-python
-pytz==2018.3              # via celery, django, vertica-python
+python-dateutil==2.7.2    # via botocore, edx-drf-extensions, vertica-python
+pytz==2018.4              # via celery, django, vertica-python
 pyyaml==3.12              # via awscli
 requests==2.9.1
 rsa==3.4.2                # via awscli
 s3transfer==0.1.13        # via awscli, boto3
 six==1.11.0
 slumber==0.7.1            # via edx-rest-api-client
-tox==2.9.1
+tox==3.0.0
 unicodecsv==0.14.1
 vertica-python==0.7.3
-virtualenv==15.1.0        # via tox
+virtualenv==15.2.0        # via tox

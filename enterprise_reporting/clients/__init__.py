@@ -6,7 +6,7 @@ Clients used to access third party systems.
 from __future__ import absolute_import, unicode_literals
 
 import os
-from time import time
+from datetime import datetime
 from functools import wraps
 from six.moves import urllib
 
@@ -23,20 +23,19 @@ class EdxOAuth2APIClient(object):
     API_BASE_URL = LMS_ROOT_URL + '/api/'
     APPEND_SLASH = False
 
-    def __init__(self, client_id, client_secret):
+    def __init__(self, client_id=None, client_secret=None):
         """
         Connect to the REST API.
         """
-        self.client_id = client_id
-        self.client_secret = client_secret
-        self.expires_at = 0
+        self.client_id = client_id or os.environ.get('LMS_OAUTH_KEY')
+        self.client_secret = client_secret or os.environ.get('LMS_OAUTH_SECRET')
+        self.expires_at = datetime.utcnow()
         self.client = None
 
     def connect(self):
         """
         Connect to the REST API, authenticating with an access token retrieved with our client credentials.
         """
-
         access_token, expires_at = EdxRestApiClient.get_oauth_access_token(
             self.LMS_OAUTH_HOST + '/oauth2/access_token',
             self.client_id,
@@ -52,7 +51,7 @@ class EdxOAuth2APIClient(object):
         """
         Return True if the JWT token has expired, False if not.
         """
-        return int(time()) > self.expires_at
+        return datetime.utcnow() > self.expires_at
 
     @staticmethod
     def refresh_token(func):
