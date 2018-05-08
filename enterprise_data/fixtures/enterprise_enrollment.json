@@ -24,7 +24,8 @@
       "course_max_effort": 4,
       "user_account_creation_timestamp": "2015-02-12 23:14:35",
       "user_email": "test@example.com",
-      "user_username": "test_user"
+      "user_username": "test_user",
+      "course_key": "edX/Open_DemoX"
     }
   },
   {
@@ -52,7 +53,8 @@
       "course_max_effort": 4,
       "user_account_creation_timestamp": "2015-02-12 23:14:35",
       "user_email": "test@example.com",
-      "user_username": "test_user"
+      "user_username": "test_user",
+      "course_key": "edX/Open_DemoX"
     }
   },
   {
@@ -80,7 +82,8 @@
       "course_max_effort": 4,
       "user_account_creation_timestamp": "2015-02-12 23:14:35",
       "user_email": "test2@example.com",
-      "user_username": "test_user2"
+      "user_username": "test_user2",
+      "course_key": "edX/Open_DemoX"
     }
   }
 ]

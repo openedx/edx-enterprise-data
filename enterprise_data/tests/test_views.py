@@ -55,7 +55,8 @@ class TestEnterpriseEnrollmentsView(APITestCase):
                 'passed_timestamp': '2017-05-09T16:27:34.690065',
                 'course_max_effort': 4,
                 'consent_granted': True,
-                'user_email': 'test@example.com'
+                'user_email': 'test@example.com',
+                'course_key': 'edX/Open_DemoX',
             }],
             'next': None,
             'start': 0,
