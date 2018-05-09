@@ -56,6 +56,7 @@ class EnterpriseEnrollment(models.Model):
     user_account_creation_timestamp = models.DateTimeField(null=True)
     user_email = models.CharField(max_length=255, null=True)
     user_username = models.CharField(max_length=255, null=True)
+    course_key = models.CharField(max_length=255, null=True)
 
     def __str__(self):
         """

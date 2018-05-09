@@ -43,7 +43,8 @@ class TestEnterpriseEnrollmentSerializer(APITestCase):
             "course_max_effort": 4,
             "user_account_creation_timestamp": "2015-02-12T23:14:35Z",
             "user_email": "test@example.com",
-            "user_username": "test_user"
+            "user_username": "test_user",
+            "course_key": "edX/Open_DemoX"
         }
 
     def test_enrollment_serialization(self):
@@ -70,7 +71,8 @@ class TestEnterpriseEnrollmentSerializer(APITestCase):
             'passed_timestamp': '2017-05-09T16:27:34.690065Z',
             'course_max_effort': 4,
             'user_email': 'test@example.com',
-            'user_username': 'test_user'
+            'user_username': 'test_user',
+            'course_key': 'edX/Open_DemoX'
         }
         serializer = EnterpriseEnrollmentSerializer(self.enrollment_data)
         assert serializer.data == expected_serialized_data
