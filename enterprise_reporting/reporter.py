@@ -66,33 +66,64 @@ class EnterpriseReportSender(object):
     Class that handles the process of sending a data report to an Enterprise Customer.
     """
 
-    VERTICA_QUERY = ("SELECT {fields} FROM business_intelligence.enterprise_enrollment"
-                     " WHERE enterprise_id = '{enterprise_id}' AND consent_granted = 1")
+    VERTICA_QUERY = (
+        "SELECT {fields} "
+        "FROM "
+        "    business_intelligence.enterprise_enrollment AS enterprise_enrollment "
+        "LEFT JOIN "
+        "    lms_read_replica.student_courseenrollment AS lms_course_enrollment "
+        "ON ("
+        "    enterprise_enrollment.lms_user_id = lms_course_enrollment.user_id "
+        "    AND enterprise_enrollment.course_id = lms_course_enrollment.course_id"
+        ") "
+        "LEFT JOIN "
+        "    business_intelligence.enterprise_user_course_redemption AS enterprise_course_redemption "
+        "ON ("
+        "    enterprise_enrollment.lms_user_id = enterprise_course_redemption.user_id "
+        "    AND enterprise_enrollment.course_id = enterprise_course_redemption.course_id"
+        ")"
+        "WHERE enterprise_id = '{enterprise_id}' AND consent_granted = 1"
+    )
     VERTICA_QUERY_FIELDS = (
+        'enterprise_enrollment.enterprise_user_id',
+        'enterprise_enrollment.lms_user_id',
+        'enterprise_enrollment.enterprise_sso_uid',
+        'enterprise_enrollment.enrollment_created_timestamp',
+        'enterprise_enrollment.consent_granted',
+        'enterprise_enrollment.course_id',
+        'enterprise_enrollment.course_title',
+        'enterprise_enrollment.course_duration',
+        'enterprise_enrollment.course_min_effort',
+        'enterprise_enrollment.course_max_effort',
+        'enterprise_enrollment.user_account_creation_date',
+        'enterprise_enrollment.user_email',
+        'enterprise_enrollment.user_username',
+        'enterprise_enrollment.user_age',
+        'enterprise_enrollment.user_level_of_education',
+        'enterprise_enrollment.user_gender',
+        'enterprise_enrollment.user_country_code',
+        'enterprise_enrollment.country_name',
+        'enterprise_enrollment.has_passed',
+        'enterprise_enrollment.passed_timestamp',
+        'enterprise_enrollment.time_spent_hours',
+        'enterprise_enrollment.last_activity_date',
+        'enterprise_enrollment.user_current_enrollment_mode',
+        'lms_course_enrollment.is_active',
+        'enterprise_course_redemption.order_number',
+        'enterprise_course_redemption.offer_id',
+        'enterprise_course_redemption.coupon_code',
+    )
+
+    ALLOWED_REPORT_FIELDS_FOR_UNENROLLMENT = [
         'enterprise_user_id',
         'lms_user_id',
-        'enterprise_sso_uid',
         'enrollment_created_timestamp',
-        'consent_granted',
-        'course_id',
-        'course_title',
-        'course_duration',
-        'course_min_effort',
-        'course_max_effort',
-        'user_account_creation_date',
-        'user_email',
-        'user_username',
-        'user_age',
-        'user_level_of_education',
-        'user_gender',
-        'user_country_code',
-        'country_name',
-        'has_passed',
-        'passed_timestamp',
-        'time_spent_hours',
-        'last_activity_date',
-        'user_current_enrollment_mode',
-    )
+        'is_active',
+        'order_number',
+        'offer_id',
+        'coupon_code',
+    ]
+
     REPORT_FILE_NAME_FORMAT = "{path}/{enterprise_id}_{date}.{extension}"
     FILE_WRITE_DIRECTORY = '/tmp'
 
@@ -122,16 +153,33 @@ class EnterpriseReportSender(object):
             date=datetime.datetime.now().strftime("%Y-%m-%d"),
             extension='csv',
         )
-        with open(data_report_file_name, 'w') as data_report_file:
-            data_report_file_writer = csv.writer(data_report_file)
-            data_report_file_writer.writerow(self.VERTICA_QUERY_FIELDS)
-            LOGGER.debug('Querying Vertica for data for {}'.format(enterprise_customer_name))
-            data_report_file_writer.writerows(self._query_vertica())
+        self._export_data(enterprise_customer_name, data_report_file_name)
 
         # Send the data based on the delivery method.
         self.delivery_method.send(data_report_file_name)
 
         self._cleanup()
+
+    def _export_data(self, enterprise_customer_name, data_report_file_name):
+        """
+        Export given data to a csv report.
+        """
+        with open(data_report_file_name, 'w') as data_report_file:
+            data_report_file_writer = csv.writer(data_report_file)
+            data_report_file_writer.writerow(self.VERTICA_QUERY_FIELDS)
+
+            LOGGER.debug('Querying Vertica for data for {}'.format(enterprise_customer_name))
+            vertica_data_rows = self._query_vertica()
+
+            for row in vertica_data_rows:
+                if not row['is_active']:
+                    # Null out all progress related data if enterprise learner
+                    # has unenrolled from the related course
+                    for key, value in row.items():
+                        if key not in self.ALLOWED_REPORT_FIELDS_FOR_UNENROLLMENT:
+                            row[key] = ''
+
+                data_report_file_writer.writerow(row.values())
 
     def _query_vertica(self):
         """
