@@ -26,6 +26,7 @@ upgrade: ## update the requirements/*.txt files with the latest packages satisfy
 	pip-compile --upgrade -o requirements/travis.txt requirements/travis.in
 	pip-compile --upgrade -o requirements/test.txt requirements/base.in requirements/test.in
 	pip-compile --upgrade -o requirements/test-reporting.txt requirements/test-reporting.in
+	pip-compile --upgrade -o requirements/test-master.txt requirements/base.in requirements/test-master.in requirements/test.in
 
 requirements: ## install development environment requirements
 	pip install -qr requirements/base.txt --exists-action w

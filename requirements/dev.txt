@@ -15,7 +15,7 @@ bcrypt==3.1.4             # via paramiko
 billiard==3.3.0.23        # via celery
 boto3==1.4.7
 botocore==1.7.36          # via awscli, boto3, s3transfer
-caniusepython3==6.0.0
+caniusepython3==7.0.0
 celery==3.1.18
 cffi==1.11.5              # via bcrypt, cryptography, pynacl
 click-log==0.1.8          # via edx-lint
@@ -36,10 +36,9 @@ edx-lint==0.5.5
 edx-rest-api-client==1.7.1
 enum34==1.1.6             # via astroid, cryptography
 first==2.0.1              # via pip-tools
-future==0.16.0            # via vertica-python
 futures==3.2.0 ; python_version == "2.7"
 idna==2.6                 # via cryptography
-inflect==0.2.5            # via jinja2-pluralize
+inflect==0.3.1            # via jinja2-pluralize
 ipaddress==1.0.22         # via cryptography
 isort==4.3.4
 jinja2-pluralize==0.3.0   # via diff-cover
@@ -71,8 +70,8 @@ pylint==1.7.1             # via edx-lint, pylint-celery, pylint-django, pylint-p
 pyminizip==0.2.1
 pynacl==1.2.1             # via paramiko
 pyparsing==2.2.0          # via packaging
-python-dateutil==2.7.2    # via botocore, edx-drf-extensions, vertica-python
-pytz==2018.4              # via celery, django, vertica-python
+python-dateutil==2.7.3    # via botocore, edx-drf-extensions
+pytz==2018.4              # via celery, django
 pyyaml==3.12              # via awscli, edx-i18n-tools
 requests-toolbelt==0.8.0  # via twine
 requests==2.9.1
@@ -85,10 +84,9 @@ snowballstemmer==1.2.1    # via pydocstyle
 testfixtures==6.0.2
 tox-battery==0.5
 tox==3.0.0
-tqdm==4.23.2              # via twine
+tqdm==4.23.3              # via twine
 twine==1.11.0
 unicodecsv==0.14.1
-vertica-python==0.7.3
 virtualenv==15.2.0        # via tox
-wheel==0.31.0
+wheel==0.31.1
 wrapt==1.10.11            # via astroid
