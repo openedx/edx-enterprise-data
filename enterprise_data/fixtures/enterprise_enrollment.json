@@ -25,7 +25,9 @@
       "user_account_creation_timestamp": "2015-02-12 23:14:35",
       "user_email": "test@example.com",
       "user_username": "test_user",
-      "course_key": "edX/Open_DemoX"
+      "course_key": "edX/Open_DemoX",
+      "user_country_code": "US",
+      "last_activity_timestamp": "2017-06-23 16:27:34"
     }
   },
   {
@@ -54,7 +56,9 @@
       "user_account_creation_timestamp": "2015-02-12 23:14:35",
       "user_email": "test@example.com",
       "user_username": "test_user",
-      "course_key": "edX/Open_DemoX"
+      "course_key": "edX/Open_DemoX",
+      "user_country_code": "US",
+      "last_activity_timestamp": "2017-06-23 16:27:34"
     }
   },
   {
@@ -83,7 +87,9 @@
       "user_account_creation_timestamp": "2015-02-12 23:14:35",
       "user_email": "test2@example.com",
       "user_username": "test_user2",
-      "course_key": "edX/Open_DemoX"
+      "course_key": "edX/Open_DemoX",
+      "user_country_code": "US",
+      "last_activity_timestamp": "2017-06-23 16:27:34"
     }
   }
 ]
