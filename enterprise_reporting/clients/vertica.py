@@ -5,6 +5,7 @@ Client for connecting to a Vertica database.
 from __future__ import absolute_import, unicode_literals
 
 import datetime
+import os
 from logging import getLogger
 
 import vertica_python
@@ -17,16 +18,16 @@ class VerticaClient(object):
     Client for connecting to Vertica.
     """
 
-    def __init__(self, host, username, password):
+    def __init__(self, host=None, username=None, password=None):
         """
         Instantiate a new client using the Django settings to determine the vertica credentials.
 
         If there are none configured, throw an exception.
         """
         self.connection_info = {
-            'host': host,
-            'user': username,
-            'password': password,
+            'host': host or os.environ.get('VERTICA_HOST'),
+            'user': username or os.environ.get('VERTICA_USERNAME'),
+            'password': password or os.environ.get('VERTICA_PASSWORD'),
             'database': 'warehouse',
         }
 

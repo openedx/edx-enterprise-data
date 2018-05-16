@@ -1,9 +1,10 @@
 language: python
 python:
-- 2.7
-- 3.5
+  - 2.7
+  - 3.5
 env:
-- TOXENV=master
+  - TOXENV=data
+  - TOXENV=reporting
 matrix:
   include:
   - python: 3.5
@@ -11,13 +12,13 @@ matrix:
   - python: 2.7
     env: TOXENV=quality
 cache:
-- pip
+  - pip
 install:
-- pip install -r requirements/travis.txt
+  - pip install -r requirements/travis.txt
 script:
-- if env | grep RUNJSHINT; then make jshint; else tox; fi
+  - tox
 after_success:
-- codecov
+  - codecov
 deploy:
   provider: pypi
   user: edx

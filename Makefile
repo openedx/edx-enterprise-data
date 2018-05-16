@@ -25,6 +25,7 @@ upgrade: ## update the requirements/*.txt files with the latest packages satisfy
 	pip-compile --upgrade -o requirements/quality.txt requirements/base.in requirements/dev-enterprise_data.in requirements/quality.in requirements/test.in
 	pip-compile --upgrade -o requirements/travis.txt requirements/travis.in
 	pip-compile --upgrade -o requirements/test.txt requirements/base.in requirements/test.in
+	pip-compile --upgrade -o requirements/test-reporting.txt requirements/test-reporting.in
 
 requirements: ## install development environment requirements
 	pip install -qr requirements/base.txt --exists-action w
@@ -34,7 +35,7 @@ test: clean ## run tests in the current virtualenv
 	pip install -qr requirements/test.txt --exists-action w
 	py.test
 
-test-all: clean jshint static ## run tests on every supported Python/Django combination
+test-all: clean ## run tests on every supported Python/Django combination
 	tox
 	tox -e quality
 
@@ -43,6 +44,5 @@ validate: test ## run tests and quality checks
 
 isort: ## call isort on packages/files that are checked in quality tests
 	isort --recursive tests enterprise_reporting enterprise_data manage.py setup.py
-
 
 .PHONY: requirements upgrade help
