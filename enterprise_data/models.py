@@ -33,7 +33,7 @@ class EnterpriseEnrollment(models.Model):
         verbose_name = _("Enterprise Enrollment")
         verbose_name_plural = _("Enterprise Enrollments")
 
-    enterprise_id = models.CharField(max_length=32)
+    enterprise_id = models.UUIDField()
     enterprise_name = models.CharField(max_length=255)
     lms_user_id = models.PositiveIntegerField()
     enterprise_user_id = models.PositiveIntegerField()
