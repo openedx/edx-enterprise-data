@@ -3,7 +3,7 @@
     "model": "enterprise_data.EnterpriseEnrollment",
     "pk": 1,
     "fields": {
-      "enterprise_id": "ee5e6b3a-069a-4947-bb8d-d2dbc323396c",
+      "enterprise_id": "ee5e6b3a069a4947bb8dd2dbc323396c",
       "enterprise_name": "Enterprise 1",
       "lms_user_id": 11,
       "enterprise_user_id": 1,
@@ -32,7 +32,7 @@
     "model": "enterprise_data.EnterpriseEnrollment",
     "pk": 2,
     "fields": {
-      "enterprise_id": "ee5e6b3a-069a-4947-bb8d-d2dbc323396c",
+      "enterprise_id": "ee5e6b3a069a4947bb8dd2dbc323396c",
       "enterprise_name": "Enterprise 1",
       "lms_user_id": 11,
       "enterprise_user_id": 1,
