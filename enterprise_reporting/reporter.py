@@ -103,6 +103,8 @@ class EnterpriseReportSender(object):
     def _generate_enterprise_report_progress_csv(self):
         """Query the Enterprise Data API to get progress data to be turned into a CSV."""
         enrollments = EnterpriseDataApiClient().get_enterprise_enrollments(self.enterprise_customer_uuid)['results']
+        if not enrollments:
+            return []
         with open(self.data_report_file_name, 'w') as data_report_file:
             writer = csv.writer(data_report_file)
             writer.writerow(list(OrderedDict(sorted(enrollments[0].items())).keys()))
