@@ -5,7 +5,7 @@ This repository is currently split into 2 folders: enterprise_reporting and ente
 
 ## enterprise_data app
 This django app exposes a REST api endpoint to access enterprise learner activity. The enterprise-data app is published
-to pypi as a library and installed into the [edx-analytics-data-api](github.com/edx/edx-analytics-data-api/) project
+to pypi as a library and installed into the [edx-analytics-data-api](https://github.com/edx/edx-analytics-data-api/) project
 and uses OAuth JWT authentication from [edx-drf-extensions](https://github.com/edx/edx-drf-extensions/blob/master/edx_rest_framework_extensions/authentication.py).
 
 ## enterprise_reporting scripts
