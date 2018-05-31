@@ -10,8 +10,10 @@ import json
 import logging
 from collections import OrderedDict
 from io import open  # pylint: disable=redefined-builtin
+from uuid import UUID
 
 from enterprise_reporting.clients.enterprise import EnterpriseAPIClient, EnterpriseDataApiClient
+from enterprise_reporting.clients.vertica import VerticaClient
 from enterprise_reporting.delivery_method import SFTPDeliveryMethod, SMTPDeliveryMethod
 from enterprise_reporting.utils import decrypt_string, flatten_dict
 
@@ -23,6 +25,34 @@ class EnterpriseReportSender(object):
     """
     Class that handles the process of sending a data report to an Enterprise Customer.
     """
+
+    VERTICA_QUERY = ("SELECT {fields} FROM business_intelligence.enterprise_enrollment"
+                     " WHERE enterprise_id = '{enterprise_id}' AND consent_granted = 1")
+    VERTICA_QUERY_FIELDS = (
+        'enterprise_user_id',
+        'lms_user_id',
+        'enterprise_sso_uid',
+        'enrollment_created_timestamp',
+        'consent_granted',
+        'course_id',
+        'course_title',
+        'course_duration',
+        'course_min_effort',
+        'course_max_effort',
+        'user_account_creation_date',
+        'user_email',
+        'user_username',
+        'user_age',
+        'user_level_of_education',
+        'user_gender',
+        'user_country_code',
+        'country_name',
+        'has_passed',
+        'passed_timestamp',
+        'time_spent_hours',
+        'last_activity_date',
+        'user_current_enrollment_mode',
+    )
 
     FILE_WRITE_DIRECTORY = '/tmp'
 
@@ -101,6 +131,22 @@ class EnterpriseReportSender(object):
         ))()
 
     def _generate_enterprise_report_progress_csv(self):
+        """Query vertica and write output to csv file."""
+        vertica_client = VerticaClient()
+        vertica_client.connect()
+        with open(self.data_report_file_name, 'w') as data_report_file:
+            data_report_file_writer = csv.writer(data_report_file)
+            data_report_file_writer.writerow(self.VERTICA_QUERY_FIELDS)
+            query = self.VERTICA_QUERY.format(
+                fields=','.join(self.VERTICA_QUERY_FIELDS),
+                enterprise_id=UUID(self.enterprise_customer_uuid).hex
+            )
+            LOGGER.debug('Executing this Vertica query: {}'.format(query))
+            data_report_file_writer.writerows(vertica_client.stream_results(query))
+        vertica_client.close_connection()
+        return [data_report_file]
+
+    def _generate_enterprise_report_progress_v2_csv(self):
         """Query the Enterprise Data API to get progress data to be turned into a CSV."""
         enrollments = EnterpriseDataApiClient().get_enterprise_enrollments(self.enterprise_customer_uuid)['results']
         if not enrollments:

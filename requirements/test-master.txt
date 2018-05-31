@@ -7,6 +7,7 @@
 amqp==1.4.9               # via kombu
 anyjson==0.3.3            # via kombu
 asn1crypto==0.24.0        # via cryptography
+atomicwrites==1.1.5       # via pytest
 attrs==18.1.0             # via pytest
 awscli==1.11.178
 bcrypt==3.1.4             # via paramiko
@@ -36,29 +37,30 @@ first==2.0.1              # via pip-tools
 flaky==3.4.0
 freezegun==0.3.10
 funcsigs==1.0.2           # via mock, pytest
+future==0.16.0            # via vertica-python
 futures==3.2.0 ; python_version == "2.7"
 idna==2.6                 # via cryptography
 ipaddress==1.0.22         # via cryptography, faker
 jmespath==0.9.3           # via boto3, botocore
 kombu==3.0.37             # via celery
 mock==2.0.0
-more-itertools==4.1.0     # via pytest
+more-itertools==4.2.0     # via pytest
 paramiko==2.4
 pbr==4.0.3                # via mock
 pip-tools==2.0.2
 pluggy==0.6.0             # via pytest, tox
 py==1.5.3                 # via pytest, pytest-catchlog, tox
-pyasn1==0.4.2             # via paramiko, rsa
+pyasn1==0.4.3             # via paramiko, rsa
 pycparser==2.18           # via cffi
-pyjwt==1.6.1              # via djangorestframework-jwt, edx-rest-api-client
+pyjwt==1.6.4              # via djangorestframework-jwt, edx-rest-api-client
 pyminizip==0.2.1
 pynacl==1.2.1             # via paramiko
 pytest-catchlog==1.2.2
 pytest-cov==2.5.1
 pytest-django==3.2.1
-pytest==3.5.1             # via pytest-catchlog, pytest-cov, pytest-django
-python-dateutil==2.7.3    # via botocore, edx-drf-extensions, faker, freezegun
-pytz==2018.4              # via celery, django
+pytest==3.6.0             # via pytest-catchlog, pytest-cov, pytest-django
+python-dateutil==2.7.3    # via botocore, edx-drf-extensions, faker, freezegun, vertica-python
+pytz==2018.4              # via celery, django, vertica-python
 pyyaml==3.12              # via awscli
 requests==2.9.1
 responses==0.9.0
@@ -70,4 +72,5 @@ testfixtures==6.0.2
 text-unidecode==1.2       # via faker
 tox==3.0.0
 unicodecsv==0.14.1
-virtualenv==15.2.0        # via tox
+vertica-python==0.7.3
+virtualenv==16.0.0        # via tox
