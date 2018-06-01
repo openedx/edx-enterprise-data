@@ -59,6 +59,11 @@ class EnterpriseEnrollment(models.Model):
     course_key = models.CharField(max_length=255, null=True)
     user_country_code = models.CharField(max_length=2, null=True)
     last_activity_date = models.DateField(null=True)
+    coupon_name = models.CharField(max_length=128, null=True)
+    coupon_code = models.CharField(max_length=128, null=True)
+    final_grade = models.FloatField(null=True)
+    course_price = models.DecimalField(decimal_places=2, max_digits=12, null=True)
+    discount_price = models.DecimalField(decimal_places=2, max_digits=12, null=True)
 
     def __str__(self):
         """
