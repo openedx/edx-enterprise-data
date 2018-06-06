@@ -21,7 +21,6 @@ class VerticaClient(object):
     def __init__(self, host=None, username=None, password=None):
         """
         Instantiate a new client using the Django settings to determine the vertica credentials.
-
         If there are none configured, throw an exception.
         """
         self.connection_info = {

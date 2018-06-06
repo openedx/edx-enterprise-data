@@ -8,10 +8,11 @@ import csv
 import datetime
 import json
 import logging
+from collections import OrderedDict
 from io import open  # pylint: disable=redefined-builtin
 from uuid import UUID
 
-from enterprise_reporting.clients.enterprise import EnterpriseAPIClient
+from enterprise_reporting.clients.enterprise import EnterpriseAPIClient, EnterpriseDataApiClient
 from enterprise_reporting.clients.vertica import VerticaClient
 from enterprise_reporting.delivery_method import SFTPDeliveryMethod, SMTPDeliveryMethod
 from enterprise_reporting.utils import decrypt_string, flatten_dict
@@ -143,6 +144,18 @@ class EnterpriseReportSender(object):
             LOGGER.debug('Executing this Vertica query: {}'.format(query))
             data_report_file_writer.writerows(vertica_client.stream_results(query))
         vertica_client.close_connection()
+        return [data_report_file]
+
+    def _generate_enterprise_report_progress_v2_csv(self):
+        """Query the Enterprise Data API to get progress data to be turned into a CSV."""
+        enrollments = EnterpriseDataApiClient().get_enterprise_enrollments(self.enterprise_customer_uuid)['results']
+        if not enrollments:
+            return []
+        with open(self.data_report_file_name, 'w') as data_report_file:
+            writer = csv.writer(data_report_file)
+            writer.writerow(list(OrderedDict(sorted(enrollments[0].items())).keys()))
+            for enrollment in enrollments:
+                writer.writerow(list(OrderedDict(sorted(enrollment.items())).values()))
         return [data_report_file]
 
     def _generate_enterprise_report_catalog_csv(self):

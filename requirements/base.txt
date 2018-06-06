@@ -36,12 +36,12 @@ paramiko==2.4
 pip-tools==2.0.2
 pluggy==0.6.0             # via tox
 py==1.5.3                 # via tox
-pyasn1==0.4.2             # via paramiko, rsa
+pyasn1==0.4.3             # via paramiko, rsa
 pycparser==2.18           # via cffi
-pyjwt==1.6.1              # via djangorestframework-jwt, edx-rest-api-client
+pyjwt==1.6.4              # via djangorestframework-jwt, edx-rest-api-client
 pyminizip==0.2.1
 pynacl==1.2.1             # via paramiko
-python-dateutil==2.7.2    # via botocore, edx-drf-extensions, vertica-python
+python-dateutil==2.7.3    # via botocore, edx-drf-extensions, vertica-python
 pytz==2018.4              # via celery, django, vertica-python
 pyyaml==3.12              # via awscli
 requests==2.9.1
@@ -52,4 +52,4 @@ slumber==0.7.1            # via edx-rest-api-client
 tox==3.0.0
 unicodecsv==0.14.1
 vertica-python==0.7.3
-virtualenv==15.2.0        # via tox
+virtualenv==16.0.0        # via tox
