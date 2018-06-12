@@ -34,7 +34,7 @@ class TestEnterpriseEnrollmentsView(APITestCase):
             'results': [{
                 'enrollment_created_timestamp': '2014-06-27T16:02:38',
                 'user_current_enrollment_mode': 'verified',
-                'last_activity_timestamp': '2017-06-23T16:27:34',
+                'last_activity_date': '2017-06-23',
                 'has_passed': True,
                 'course_id': 'edX/Open_DemoX/edx_demo_course',
                 'id': 2,
