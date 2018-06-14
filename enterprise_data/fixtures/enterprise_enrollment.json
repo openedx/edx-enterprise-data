@@ -27,7 +27,12 @@
       "user_username": "test_user",
       "course_key": "edX/Open_DemoX",
       "user_country_code": "US",
-      "last_activity_date": "2017-06-23"
+      "last_activity_date": "2017-06-23",
+      "coupon_name": "Enterprise Entitlement Coupon",
+      "coupon_code": "PIPNJSUK33P7PTZH",
+      "final_grade": 0.80,
+      "course_price": 200.00,
+      "discount_price": 120.00
     }
   },
   {
@@ -58,7 +63,12 @@
       "user_username": "test_user",
       "course_key": "edX/Open_DemoX",
       "user_country_code": "US",
-      "last_activity_date": "2017-06-23"
+      "last_activity_date": "2017-06-23",
+      "coupon_name": "Enterprise Entitlement Coupon",
+      "coupon_code": "PIPNJSUK33P7PTZH",
+      "final_grade": 0.80,
+      "course_price": 200.00,
+      "discount_price": 120.00
     }
   },
   {
@@ -89,7 +99,12 @@
       "user_username": "test_user2",
       "course_key": "edX/Open_DemoX",
       "user_country_code": "US",
-      "last_activity_date": "2017-06-23"
+      "last_activity_date": "2017-06-23",
+      "coupon_name": "Enterprise Entitlement Coupon",
+      "coupon_code": "PIPNJSUK33P7PTZH",
+      "final_grade": 0.80,
+      "course_price": 200.00,
+      "discount_price": 120.00
     }
   }
 ]
