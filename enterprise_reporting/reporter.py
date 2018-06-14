@@ -64,6 +64,7 @@ class EnterpriseReportSender(object):
         self.enterprise_customer_name = reporting_config['enterprise_customer']['name']
         self.data_type = reporting_config['data_type']
         self.report_type = reporting_config['report_type']
+        self.enterprise_customer_catalog_uuid = reporting_config['_enterprise_customer_catalog_uuid']
 
     @staticmethod
     def create(reporting_config):
@@ -197,7 +198,17 @@ class EnterpriseReportSender(object):
     def __get_content_metadata(self):
         """Get content metadata from the Enterprise Customer Catalog API."""
         enterprise_api_client = EnterpriseAPIClient()
-        LOGGER.info('Gathering all catalog content metadata...')
-        content_metadata = enterprise_api_client.get_content_metadata(self.enterprise_customer_uuid)
+        info_msg = (
+            'Gathering all catalog content metadata...'
+            if not self.enterprise_customer_catalog_uuid else
+            'Looking specifically for metadata from catalog with UUID {}'.format(
+                self.enterprise_customer_catalog_uuid
+            )
+        )
+        LOGGER.info(info_msg)
+        content_metadata = enterprise_api_client.get_content_metadata(
+            self.enterprise_customer_uuid,
+            enterprise_customer_catalog_uuid=self.enterprise_customer_catalog_uuid
+        )
         LOGGER.debug('Gathered this content metadata: {}'.format(content_metadata))
         return content_metadata
