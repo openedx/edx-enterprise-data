@@ -52,7 +52,7 @@ class EnterpriseAPIClient(EdxOAuth2APIClient):
         """Return all content metadata contained in the catalogs associated with an Enterprise Customer."""
         content_metadata = OrderedDict()
         enterprise_customer_catalogs = {
-            'results': ['uuid': enterprise_customer_catalog_uuid]
+            'results': [{'uuid': enterprise_customer_catalog_uuid}]
         } if enterprise_customer_catalog_uuid else self._load_data(
             self.ENTERPRISE_CUSTOMER_CATALOGS_ENDPOINT,
             should_traverse_pagination=True,
