@@ -109,5 +109,42 @@
       "course_price": 200.00,
       "discount_price": 120.00
     }
+  },
+  {
+    "model": "enterprise_data.EnterpriseEnrollment",
+    "pk": 4,
+    "fields": {
+      "enterprise_id": "ee5e6b3a069a4947bb8dd2dbc323396c",
+      "enterprise_name": "Enterprise 1",
+      "lms_user_id": 11,
+      "enterprise_user_id": 3,
+      "course_id": "edX/Open_DemoX/edx_demo_course",
+      "enrollment_created_timestamp": "2014-06-27 16:02:38",
+      "user_current_enrollment_mode": "verified",
+      "consent_granted": 1,
+      "letter_grade": null,
+      "has_passed": 0,
+      "passed_timestamp": null,
+      "enterprise_sso_uid": "harry",
+      "course_title": "All about acceptance testing!",
+      "course_start": "2016-09-01",
+      "course_end": "2016-12-01",
+      "course_pacing_type": "instructor_paced",
+      "course_duration_weeks": "8",
+      "course_min_effort": 2,
+      "course_max_effort": 4,
+      "user_account_creation_timestamp": "2015-02-12 23:14:35",
+      "user_email": "test@example.com",
+      "user_username": "test_user",
+      "course_key": "edX/Open_DemoX",
+      "user_country_code": "US",
+      "last_activity_date": "2017-06-23",
+      "coupon_name": "Enterprise Entitlement Coupon",
+      "coupon_code": "PIPNJSUK33P7PTZH",
+      "offer": "Percentage, 100 (#1234)",
+      "current_grade": 0.80,
+      "course_price": 200.00,
+      "discount_price": 120.00
+    }
   }
 ]

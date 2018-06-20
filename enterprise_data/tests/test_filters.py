@@ -22,7 +22,7 @@ class TestConsentGrantedFilterBackend(APITestCase):
         super(TestConsentGrantedFilterBackend, self).setUp()
         self.user = UserFactory(is_staff=True)
         self.client.force_authenticate(user=self.user)
-        self.url = reverse('v0:enterprise_enrollments',
+        self.url = reverse('v0:enterprise-enrollments-list',
                            kwargs={'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'})
 
     def test_filter_for_list(self):
@@ -33,6 +33,6 @@ class TestConsentGrantedFilterBackend(APITestCase):
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
 
-        # Fixture data for enterprise 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c' contains 2 objects but only 1 with consent
-        assert EnterpriseEnrollment.objects.filter(enterprise_id='ee5e6b3a-069a-4947-bb8d-d2dbc323396c').count() == 2
-        assert len(data['results']) == 1
+        # Fixture data for enterprise 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c' contains 3 objects but only 3 with consent
+        assert EnterpriseEnrollment.objects.filter(enterprise_id='ee5e6b3a-069a-4947-bb8d-d2dbc323396c').count() == 3
+        assert len(data['results']) == 2

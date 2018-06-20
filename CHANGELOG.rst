@@ -14,6 +14,10 @@ Change Log
 Unreleased
 ----------
 
+[0.1.8] - 2018-06-29
+--------------------
+* Introduce endpoint for returning summary data about enterprise enrollments.
+
 [0.1.7] - 2018-06-28
 --------------------
 * Make the enterprise enrollment schema match the field changes made in the pipeline.
