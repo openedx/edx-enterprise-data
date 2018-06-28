@@ -61,7 +61,8 @@ class EnterpriseEnrollment(models.Model):
     last_activity_date = models.DateField(null=True)
     coupon_name = models.CharField(max_length=128, null=True)
     coupon_code = models.CharField(max_length=128, null=True)
-    final_grade = models.FloatField(null=True)
+    offer = models.CharField(max_length=128, null=True)
+    current_grade = models.FloatField(null=True)
     course_price = models.DecimalField(decimal_places=2, max_digits=12, null=True)
     discount_price = models.DecimalField(decimal_places=2, max_digits=12, null=True)
 

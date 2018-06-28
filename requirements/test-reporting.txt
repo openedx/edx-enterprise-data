@@ -7,12 +7,11 @@
 attrs==18.1.0             # via pytest
 coverage==4.5.1           # via pytest-cov
 ddt==1.1.2
-funcsigs==1.0.2           # via mock, pytest
 mock==2.0.0
 more-itertools==4.2.0     # via pytest
-pbr==4.0.3                # via mock
+pbr==4.0.4                # via mock
 pluggy==0.6.0             # via pytest, tox
-py==1.5.3                 # via pytest, tox
+py==1.5.4                 # via pytest, tox
 pytest-cov==2.5.1
 pytest==3.5.1
 six==1.11.0               # via mock, more-itertools, pytest, tox

@@ -46,13 +46,14 @@ class TestEnterpriseEnrollmentSerializer(APITestCase):
             "user_username": "test_user",
             "course_key": "edX/Open_DemoX",
             "enterprise_site_id": 1,
-            "final_grade": 0.80,
+            "current_grade": 0.80,
             "discount_price": "120.00",
             "last_activity_date": "2017-06-23",
             "coupon_code": "PIPNJSUK33P7PTZH",
             "user_country_code": "US",
             "course_price": "200.00",
             "coupon_name": "Enterprise Entitlement Coupon",
+            "offer": "Percentage, 100 (#1234)",
         }
 
         self.course_api_url = '/enterprise/v1/enterprise-catalogs/{enterprise_id}/courses/{course_id}'.format(
