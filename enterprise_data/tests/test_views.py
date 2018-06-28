@@ -61,7 +61,8 @@ class TestEnterpriseEnrollmentsView(APITestCase):
                 'course_key': 'edX/Open_DemoX',
                 'coupon_name': 'Enterprise Entitlement Coupon',
                 'coupon_code': 'PIPNJSUK33P7PTZH',
-                'final_grade': 0.80,
+                'offer': 'Percentage, 100 (#1234)',
+                'current_grade': 0.80,
                 'course_price': '200.00',
                 'discount_price': '120.00',
                 'course_api_url': ('/enterprise/v1/enterprise-catalogs/ee5e6b3a-069a-4947-bb8d-d2dbc323396c'

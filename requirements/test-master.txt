@@ -30,26 +30,22 @@ djangorestframework==3.6.3
 docutils==0.14            # via awscli, botocore
 edx-drf-extensions==1.2.4
 edx-rest-api-client==1.7.1
-enum34==1.1.6             # via cryptography
 factory-boy==2.11.1
-faker==0.8.15             # via factory-boy
+faker==0.8.16             # via factory-boy
 first==2.0.1              # via pip-tools
 flaky==3.4.0
 freezegun==0.3.10
-funcsigs==1.0.2           # via mock, pytest
 future==0.16.0            # via vertica-python
-futures==3.2.0 ; python_version == "2.7"
-idna==2.6                 # via cryptography
-ipaddress==1.0.22         # via cryptography, faker
+idna==2.7                 # via cryptography
 jmespath==0.9.3           # via boto3, botocore
 kombu==3.0.37             # via celery
 mock==2.0.0
 more-itertools==4.2.0     # via pytest
 paramiko==2.4
-pbr==4.0.3                # via mock
+pbr==4.0.4                # via mock
 pip-tools==2.0.2
 pluggy==0.6.0             # via pytest, tox
-py==1.5.3                 # via pytest, pytest-catchlog, tox
+py==1.5.4                 # via pytest, pytest-catchlog, tox
 pyasn1==0.4.3             # via paramiko, rsa
 pycparser==2.18           # via cffi
 pyjwt==1.6.4              # via djangorestframework-jwt, edx-rest-api-client
@@ -57,8 +53,8 @@ pyminizip==0.2.1
 pynacl==1.2.1             # via paramiko
 pytest-catchlog==1.2.2
 pytest-cov==2.5.1
-pytest-django==3.2.1
-pytest==3.6.0             # via pytest-catchlog, pytest-cov, pytest-django
+pytest-django==3.3.2
+pytest==3.6.2             # via pytest-catchlog, pytest-cov, pytest-django
 python-dateutil==2.7.3    # via botocore, edx-drf-extensions, faker, freezegun, vertica-python
 pytz==2018.4              # via celery, django, vertica-python
 pyyaml==3.12              # via awscli
@@ -68,7 +64,7 @@ rsa==3.4.2                # via awscli
 s3transfer==0.1.13        # via awscli, boto3
 six==1.11.0
 slumber==0.7.1            # via edx-rest-api-client
-testfixtures==6.0.2
+testfixtures==6.2.0
 text-unidecode==1.2       # via faker
 tox==3.0.0
 unicodecsv==0.14.1

@@ -24,18 +24,15 @@ djangorestframework==3.6.3  # via edx-drf-extensions
 docutils==0.14            # via awscli, botocore
 edx-drf-extensions==1.2.4
 edx-rest-api-client==1.7.1
-enum34==1.1.6             # via cryptography
 first==2.0.1              # via pip-tools
 future==0.16.0            # via vertica-python
-futures==3.2.0 ; python_version == "2.7"
-idna==2.6                 # via cryptography
-ipaddress==1.0.22         # via cryptography
+idna==2.7                 # via cryptography
 jmespath==0.9.3           # via boto3, botocore
 kombu==3.0.37             # via celery
 paramiko==2.4
 pip-tools==2.0.2
 pluggy==0.6.0             # via tox
-py==1.5.3                 # via tox
+py==1.5.4                 # via tox
 pyasn1==0.4.3             # via paramiko, rsa
 pycparser==2.18           # via cffi
 pyjwt==1.6.4              # via djangorestframework-jwt, edx-rest-api-client
