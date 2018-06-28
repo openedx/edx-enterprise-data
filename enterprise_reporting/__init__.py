@@ -4,4 +4,4 @@ Enterprise data report scripts. These scripts are used by jenkins jobs to delive
 
 from __future__ import absolute_import, unicode_literals
 
-__version__ = "0.1.5"
+__version__ = "0.1.6"

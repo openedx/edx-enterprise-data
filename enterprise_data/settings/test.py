@@ -77,3 +77,5 @@ LMS_BASE_URL = "http://localhost:8000/"
 ROOT_URLCONF = "enterprise_data.urls"
 
 SECRET_KEY = "insecure-secret-key"
+
+USE_TZ = True
