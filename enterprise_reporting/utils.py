@@ -15,13 +15,12 @@ from email.mime.text import MIMEText
 from io import open  # pylint: disable=redefined-builtin
 
 import boto3
+import pyminizip
 import pytz
 from cryptography.fernet import Fernet
 from fernet_fields.hkdf import derive_fernet_key
 
 from django.utils.encoding import force_text
-
-import pyminizip
 
 LOGGER = logging.getLogger(__name__)
 
