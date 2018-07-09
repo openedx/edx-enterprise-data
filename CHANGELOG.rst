@@ -14,6 +14,11 @@ Change Log
 Unreleased
 ----------
 
+[0.1.9] - 2018-07-13
+--------------------
+* Add support for sorting in the `enrollments` endpoint.
+* Fix broken link in `README`.
+
 [0.1.8] - 2018-06-29
 --------------------
 * Introduce endpoint for returning summary data about enterprise enrollments.

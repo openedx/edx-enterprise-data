@@ -9,7 +9,7 @@ from logging import getLogger
 
 from edx_rest_framework_extensions.authentication import JwtAuthentication
 from edx_rest_framework_extensions.paginators import DefaultPagination
-from rest_framework import viewsets
+from rest_framework import filters, viewsets
 from rest_framework.decorators import list_route
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
@@ -32,12 +32,6 @@ class EnterpriseViewSet(viewsets.ViewSet):
     permission_classes = (IsStaffOrEnterpriseUser,)
     CONSENT_GRANTED_FILTER = 'consent_granted'
 
-    def filter_queryset(self, queryset):
-        """
-        Filters queryset to only return consenting learners.
-        """
-        return ConsentGrantedFilterBackend().filter_queryset(self.request, queryset, view=self)
-
     def ensure_data_exists(self, request, data, error_message=None):
         """
         Ensure that the API response brings us valid data. If not, raise an error and log it.
@@ -55,6 +49,13 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
     Viewset for routes related to Enterprise course enrollments.
     """
     serializer_class = serializers.EnterpriseEnrollmentSerializer
+    filter_backends = (ConsentGrantedFilterBackend, filters.OrderingFilter,)
+    FIELDS = (
+        'user_email', 'course_title', 'enrollment_created_timestamp', 'passed_timestamp',
+        'user_current_enrollment_mode', 'course_price', 'coupon_name', 'offer',
+    )
+    ordering_fields = FIELDS
+    ordering = ('user_email',)
 
     def get_queryset(self):
         """
@@ -62,7 +63,6 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         """
         enterprise_id = self.kwargs['enterprise_id']
         enrollments = EnterpriseEnrollment.objects.filter(enterprise_id=enterprise_id)
-        enrollments = self.filter_queryset(enrollments)
         self.ensure_data_exists(
             self.request,
             enrollments,
@@ -115,6 +115,7 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
             - # of course completions.
         """
         enrollments = self.get_queryset()
+        enrollments = self.filter_queryset(enrollments)
         course_completions = self.filter_course_completions(enrollments)
         distinct_learners = self.filter_distinct_learners(enrollments)
         past_week_date = date.today() - timedelta(weeks=1)
