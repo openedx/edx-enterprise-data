@@ -17,7 +17,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
     """
     Tests for EnterpriseEnrollmentsViewSet
     """
-    fixtures = ('enterprise_enrollment',)
+    fixtures = ('enterprise_enrollment', 'enterprise_user', )
 
     def setUp(self):
         super(TestEnterpriseEnrollmentsViewSet, self).setUp()
@@ -131,6 +131,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
             },
             'course_completions': 1,
             'last_updated_date': '2018-08-01T04:14:35Z',
+            'number_of_users': 3,
         }
 
         response = self.client.get(url)

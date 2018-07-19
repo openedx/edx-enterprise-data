@@ -16,7 +16,7 @@ class TestConsentGrantedFilterBackend(APITestCase):
     """
     Test suite for the ``TestConsentGrantedFilterBackend`` filter.
     """
-    fixtures = ('enterprise_enrollment',)
+    fixtures = ('enterprise_enrollment', 'enterprise_user', )
 
     def setUp(self):
         super(TestConsentGrantedFilterBackend, self).setUp()
