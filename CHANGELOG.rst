@@ -14,6 +14,10 @@ Change Log
 Unreleased
 ----------
 
+[0.2.0] - 2018-07-31
+--------------------
+* Add additional authorization check to enterprise data api endpoint.
+
 [0.1.9] - 2018-07-13
 --------------------
 * Add support for sorting in the `enrollments` endpoint.
