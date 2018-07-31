@@ -50,7 +50,8 @@ class TestIsStaffOrEnterpriseUser(TestCase):
         self.enterprise_api_client.return_value.get_enterprise_learner.return_value = {
             'enterprise_customer': {
                 'uuid': self.enterprise_id
-            }
+            },
+            'groups': ['enterprise_data_api_access'],
         }
         self.assertTrue(self.permission.has_permission(self.request, None))
 
@@ -58,6 +59,16 @@ class TestIsStaffOrEnterpriseUser(TestCase):
         self.enterprise_api_client.return_value.get_enterprise_learner.return_value = {
             'enterprise_customer': {
                 'uuid': 'some-other-enterprise-id'
-            }
+            },
+            'groups': ['enterprise_data_api_access'],
+        }
+        self.assertFalse(self.permission.has_permission(self.request, None))
+
+    def test_enterprise_learner_has_no_group_access(self):
+        self.enterprise_api_client.return_value.get_enterprise_learner.return_value = {
+            'enterprise_customer': {
+                'uuid': 'some-other-enterprise-id'
+            },
+            'groups': [],
         }
         self.assertFalse(self.permission.has_permission(self.request, None))

@@ -21,7 +21,9 @@ class IsStaffOrEnterpriseUser(permissions.BasePermission):
     the token.
     """
 
-    def get_user_enterprise_id(self, auth_token, user):
+    ENTERPRISE_DATA_API_GROUP = 'enterprise_data_api_access'
+
+    def get_user_enterprise_data(self, auth_token, user):
         """
         Get the enterprise learner model from the LMS for the given user.
 
@@ -32,7 +34,10 @@ class IsStaffOrEnterpriseUser(permissions.BasePermission):
         if not enterprise_learner_data:
             return None
 
-        return enterprise_learner_data['enterprise_customer']['uuid']
+        return {
+            'enterprise_id': enterprise_learner_data['enterprise_customer']['uuid'],
+            'enterprise_groups': enterprise_learner_data['groups'],
+        }
 
     def has_permission(self, request, view):
         """
@@ -41,12 +46,17 @@ class IsStaffOrEnterpriseUser(permissions.BasePermission):
         if request.user.is_staff:
             return True
 
-        if not hasattr(request.session, 'enterprise_id'):
-            request.session['enterprise_id'] = self.get_user_enterprise_id(request.auth, request.user)
+        if not hasattr(request.session, 'enterprise_id') or not hasattr(request.session, 'enterprise_groups'):
+            enterprise_data = self.get_user_enterprise_data(request.auth, request.user)
+            request.session['enterprise_id'] = enterprise_data['enterprise_id']
+            request.session['enterprise_groups'] = enterprise_data['enterprise_groups']
 
         enterprise_in_url = request.parser_context.get('kwargs', {}).get('enterprise_id', '')
 
-        permitted = request.session['enterprise_id'] == enterprise_in_url
+        permitted = (
+            request.session['enterprise_id'] == enterprise_in_url and
+            self.ENTERPRISE_DATA_API_GROUP in request.session['enterprise_groups']
+        )
         if not permitted:
             LOGGER.warning('User {} denied access to EnterpriseEnrollments for enterprise {}'
                            .format(request.user, enterprise_in_url))
