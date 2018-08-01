@@ -14,6 +14,11 @@ Change Log
 Unreleased
 ----------
 
+[0.2.1] - 2018-08-1
+* Add support to get last_updated_date of enterprise enrollments 
+* Allow api access to enrollments without pagination using `?no_page=true` query parameter 
+* Add .json fixture files to manifest and published package
+
 [0.2.0] - 2018-07-31
 --------------------
 * Add additional authorization check to enterprise data api endpoint.
