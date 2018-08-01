@@ -137,3 +137,16 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         assert response.status_code == status.HTTP_200_OK
         result = response.json()
         assert result == expected_result
+
+    def test_no_page_querystring_skips_pagination(self):
+        url = reverse('v0:enterprise-enrollments-list',
+                      kwargs={'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'})
+        url += '?no_page=true'
+        expected_result = ''
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+        result = response.json()
+
+        # without pagination results are a list, not dict so we assert the data type and length
+        assert isinstance(result, list)
+        assert len(result) == 2

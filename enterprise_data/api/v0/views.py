@@ -115,6 +115,14 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         created_max = queryset.aggregate(Max('created'))
         return created_max['created__max']
 
+    def paginate_queryset(self, queryset):
+        """
+        Allows no_page query param to skip pagination
+        """
+        if 'no_page' in self.request.query_params:
+            return None
+        return super(EnterpriseEnrollmentsViewSet, self).paginate_queryset(queryset)
+
     @list_route()
     def overview(self, request, **kwargs):  # pylint: disable=unused-argument
         """
