@@ -23,4 +23,4 @@ class EnterpriseEnrollmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EnterpriseEnrollment
-        fields = '__all__'
+        exclude = ('created', )

@@ -65,6 +65,7 @@ class EnterpriseEnrollment(models.Model):
     current_grade = models.FloatField(null=True)
     course_price = models.DecimalField(decimal_places=2, max_digits=12, null=True)
     discount_price = models.DecimalField(decimal_places=2, max_digits=12, null=True)
+    created = models.DateTimeField(null=True)
 
     def __str__(self):
         """

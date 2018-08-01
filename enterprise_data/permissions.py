@@ -48,6 +48,8 @@ class IsStaffOrEnterpriseUser(permissions.BasePermission):
 
         if not hasattr(request.session, 'enterprise_id') or not hasattr(request.session, 'enterprise_groups'):
             enterprise_data = self.get_user_enterprise_data(request.auth, request.user)
+            if not enterprise_data:
+                return False
             request.session['enterprise_id'] = enterprise_data['enterprise_id']
             request.session['enterprise_groups'] = enterprise_data['enterprise_groups']
 

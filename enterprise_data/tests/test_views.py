@@ -130,6 +130,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
                 'past_month': 0,
             },
             'course_completions': 1,
+            'last_updated_date': '2018-08-01T04:14:35Z',
         }
 
         response = self.client.get(url)
