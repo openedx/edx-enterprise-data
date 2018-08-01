@@ -72,3 +72,7 @@ class TestIsStaffOrEnterpriseUser(TestCase):
             'groups': [],
         }
         self.assertFalse(self.permission.has_permission(self.request, None))
+
+    def test_no_enterprise_learner_for_user(self):
+        self.enterprise_api_client.return_value.get_enterprise_learner.return_value = {}
+        self.assertFalse(self.permission.has_permission(self.request, None))

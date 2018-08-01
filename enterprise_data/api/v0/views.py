@@ -14,6 +14,8 @@ from rest_framework.decorators import list_route
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
+from django.db.models import Max
+
 from enterprise_data.api.v0 import serializers
 from enterprise_data.filters import ConsentGrantedFilterBackend
 from enterprise_data.models import EnterpriseEnrollment
@@ -106,6 +108,13 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
             one_month_earlier -= one_day
         return one_month_earlier
 
+    def get_max_created_date(self, queryset):
+        """
+        Gets the maximum created timestamp from the queryset.
+        """
+        created_max = queryset.aggregate(Max('created'))
+        return created_max['created__max']
+
     @list_route()
     def overview(self, request, **kwargs):  # pylint: disable=unused-argument
         """
@@ -122,6 +131,7 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         past_month_date = self.subtract_one_month(date.today())
         active_learners_week = self.filter_active_learners(enrollments, past_week_date)
         active_learners_month = self.filter_active_learners(enrollments, past_month_date)
+        last_updated_date = self.get_max_created_date(enrollments)
 
         content = {
             'enrolled_learners': distinct_learners.count(),
@@ -130,5 +140,6 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
                 'past_month': active_learners_month.count(),
             },
             'course_completions': course_completions.count(),
+            'last_updated_date': last_updated_date,
         }
         return Response(content)
