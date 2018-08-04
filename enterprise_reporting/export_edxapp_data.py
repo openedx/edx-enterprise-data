@@ -34,8 +34,9 @@ import os
 import sys
 from io import open  # pylint: disable=redefined-builtin
 
-import mysql.connector
 import vertica_python
+
+import mysql.connector
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 

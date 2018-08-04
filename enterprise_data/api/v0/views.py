@@ -18,7 +18,7 @@ from django.db.models import Max
 
 from enterprise_data.api.v0 import serializers
 from enterprise_data.filters import ConsentGrantedFilterBackend
-from enterprise_data.models import EnterpriseEnrollment
+from enterprise_data.models import EnterpriseEnrollment, EnterpriseUser
 from enterprise_data.permissions import IsStaffOrEnterpriseUser
 
 LOGGER = getLogger(__name__)
@@ -98,6 +98,13 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         """
         return queryset.filter(has_passed=1)
 
+    def filter_number_of_users(self):
+        """
+        Returns number of enterprise users (enrolled AND not enrolled learners)
+        """
+        enterprise_id = self.kwargs['enterprise_id']
+        return EnterpriseUser.objects.filter(enterprise_id=enterprise_id)
+
     def subtract_one_month(self, original_date):
         """
         Returns a date exactly one month prior to the passed in date.
@@ -130,6 +137,7 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
             - # of enrolled learners;
             - # of active learners in the past week/month;
             - # of course completions.
+            - # of enterprise users (LMS)
         """
         enrollments = self.get_queryset()
         enrollments = self.filter_queryset(enrollments)
@@ -138,9 +146,9 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         past_week_date = date.today() - timedelta(weeks=1)
         past_month_date = self.subtract_one_month(date.today())
         active_learners_week = self.filter_active_learners(enrollments, past_week_date)
-        active_learners_month = self.filter_active_learners(enrollments, past_month_date)
         last_updated_date = self.get_max_created_date(enrollments)
-
+        active_learners_month = self.filter_active_learners(enrollments, past_month_date)
+        enterprise_users = self.filter_number_of_users()
         content = {
             'enrolled_learners': distinct_learners.count(),
             'active_learners': {
@@ -149,5 +157,6 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
             },
             'course_completions': course_completions.count(),
             'last_updated_date': last_updated_date,
+            'number_of_users': enterprise_users.count(),
         }
         return Response(content)

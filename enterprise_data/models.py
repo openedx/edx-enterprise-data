@@ -15,16 +15,14 @@ LOGGER = getLogger(__name__)
 
 @python_2_unicode_compatible
 class EnterpriseEnrollment(models.Model):
-    """
-    Enterprise Enrollment is the learner details for a specific course enrollment.
+    """Enterprise Enrollment is the learner details for a specific course enrollment.
 
     This information includes a mix of the learners meta data (email, username, etc), the enterprise they are
     associated with (enterprise_id, enterprise_name, etc), and their status in the course (course_id,
-    letter_grade, has_passed, etc)
-
+    letter_grade, has_passed, etc).
     This is meant to closely mirror the data the Enterprises recieve in the automated report (see enterprise_reporting
     folder in this repo), with the exception of some data that is only calculated in Vertica as this data is pulled from
-    the analytics result store via the analytics-data-api project
+    the analytics result store via the analytics-data-api project.
     """
 
     class Meta:
@@ -74,6 +72,45 @@ class EnterpriseEnrollment(models.Model):
         return "<Enterprise Enrollment for user {user} in {course}>".format(
             user=self.enterprise_user_id,
             course=self.course_id
+        )
+
+    def __repr__(self):
+        """
+        Return uniquely identifying string representation.
+        """
+        return self.__str__()
+
+
+@python_2_unicode_compatible
+class EnterpriseUser(models.Model):
+    """Information includes a mix of the user's meta data.
+
+    Includes (lms_user_id, username, etc), and the enterprise they are associated with (enterprise_id).
+    """
+
+    class Meta:
+        app_label = 'enterprise_data'
+        db_table = 'enterprise_user'
+        verbose_name = _("Enterprise User")
+        verbose_name_plural = _("Enterprise Users")
+
+    enterprise_id = models.UUIDField()
+    lms_user_id = models.PositiveIntegerField()
+    enterprise_user_id = models.PositiveIntegerField()
+    enterprise_sso_uid = models.CharField(max_length=255, null=True)
+    user_account_creation_timestamp = models.DateTimeField(null=True)
+    user_email = models.CharField(max_length=255, null=True)
+    user_username = models.CharField(max_length=255, null=True)
+    user_country_code = models.CharField(max_length=2, null=True)
+    last_activity_date = models.DateField(null=True)
+
+    def __str__(self):
+        """
+        Return a human-readable string representation of the object.
+        """
+        return "<Enterprise User {user} in {enterprise}>".format(
+            user=self.lms_user_id,
+            enterprise=self.enterprise_id
         )
 
     def __repr__(self):
