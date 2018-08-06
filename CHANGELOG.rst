@@ -14,6 +14,11 @@ Change Log
 Unreleased
 ----------
 
+[0.2.2] - 2018-08-06
+--------------------
+* Upgrade Django version to 1.11.15
+
+
 [0.2.1] - 2018-08-1
 * Add support to get last_updated_date of enterprise enrollments 
 * Allow api access to enrollments without pagination using `?no_page=true` query parameter 
