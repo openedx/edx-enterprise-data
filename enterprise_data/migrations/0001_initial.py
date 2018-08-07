@@ -45,25 +45,5 @@ class Migration(migrations.Migration):
                 'verbose_name': 'Enterprise Enrollment',
                 'verbose_name_plural': 'Enterprise Enrollments',
             },
-        ),
-        migrations.CreateModel(
-            name='EnterpriseUser',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('enterprise_id', models.CharField(max_length=32)),
-                ('lms_user_id', models.PositiveIntegerField()),
-                ('enterprise_user_id', models.PositiveIntegerField()),
-                ('enterprise_sso_uid', models.CharField(max_length=255, null=True)),
-                ('user_account_creation_timestamp', models.DateTimeField(null=True)),
-                ('user_email', models.CharField(max_length=255, null=True)),
-                ('user_username', models.CharField(max_length=255, null=True)),
-                ('user_country_code', models.CharField(max_length=2, null=True)),
-                ('last_activity_date', models.DateField(null=True)),       
-            ],
-            options={
-                'db_table': 'enterprise_user',
-                'verbose_name': 'Enterprise User',
-                'verbose_name_plural': 'Enterprise Users',
-            },
         )
     ]
