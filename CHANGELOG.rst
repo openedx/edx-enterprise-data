@@ -13,6 +13,10 @@ Change Log
 
 Unreleased
 ----------
+[0.2.4] - 2018-08-09
+--------------------
+* Enable ordering for all model fields in `EnterpriseEnrollmentsViewSet`.
+
 [0.2.3] - 2018-08-07
 --------------------
 * Fixed migrations for enterprise_user table

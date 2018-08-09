@@ -52,11 +52,7 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
     """
     serializer_class = serializers.EnterpriseEnrollmentSerializer
     filter_backends = (ConsentGrantedFilterBackend, filters.OrderingFilter,)
-    FIELDS = (
-        'user_email', 'course_title', 'enrollment_created_timestamp', 'passed_timestamp',
-        'user_current_enrollment_mode', 'course_price', 'coupon_name', 'offer',
-    )
-    ordering_fields = FIELDS
+    ordering_fields = '__all__'
     ordering = ('user_email',)
 
     def get_queryset(self):
