@@ -4,6 +4,7 @@ Tests for filters in enterprise_data.
 """
 from __future__ import absolute_import, unicode_literals
 
+import mock
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -25,10 +26,14 @@ class TestConsentGrantedFilterBackend(APITestCase):
         self.url = reverse('v0:enterprise-enrollments-list',
                            kwargs={'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'})
 
-    def test_filter_for_list(self):
+    @mock.patch('enterprise_data.permissions.EnterpriseApiClient')
+    def test_filter_for_list(self, mock_enterprise_api_client):
         """
         Filter users through email/username if requesting user is staff, otherwise based off of request user ID.
         """
+        mock_enterprise_api_client.return_value.get_with_access_to.return_value = {
+            'uuid': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
+        }
         response = self.client.get(self.url)
         assert response.status_code == status.HTTP_200_OK
         data = response.json()

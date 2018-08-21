@@ -4,6 +4,7 @@ Tests for views in the `enterprise_data` module.
 """
 from __future__ import absolute_import, unicode_literals
 
+import mock
 from pytest import mark
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -23,10 +24,17 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         super(TestEnterpriseEnrollmentsViewSet, self).setUp()
         self.user = UserFactory(is_staff=True)
         self.client.force_authenticate(user=self.user)
+        enterprise_api_client = mock.patch('enterprise_data.permissions.EnterpriseApiClient')
+        self.enterprise_api_client = enterprise_api_client.start()
+        self.addCleanup(enterprise_api_client.stop)
 
     def test_get_queryset_returns_enrollments(self):
+        enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
+        self.enterprise_api_client.return_value.get_with_access_to.return_value = {
+            'uuid': enterprise_id
+        }
         url = reverse('v0:enterprise-enrollments-list',
-                      kwargs={'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'})
+                      kwargs={'enterprise_id': enterprise_id})
         expected_result = {
             'count': 2,
             'num_pages': 1,
@@ -115,14 +123,22 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         assert result == expected_result
 
     def test_get_queryset_throws_error(self):
+        enterprise_id = '0395b02f-6b29-42ed-9a41-45f3dff8349c'
+        self.enterprise_api_client.return_value.get_with_access_to.return_value = {
+            'uuid': enterprise_id
+        }
         url = reverse('v0:enterprise-enrollments-list',
-                      kwargs={'enterprise_id': '0395b02f-6b29-42ed-9a41-45f3dff8349c'})
+                      kwargs={'enterprise_id': enterprise_id})
         response = self.client.get(url)
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_get_overview_returns_overview(self):
+        enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
+        self.enterprise_api_client.return_value.get_with_access_to.return_value = {
+            'uuid': enterprise_id
+        }
         url = reverse('v0:enterprise-enrollments-overview',
-                      kwargs={'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'})
+                      kwargs={'enterprise_id': enterprise_id})
         expected_result = {
             'enrolled_learners': 2,
             'active_learners': {
@@ -140,10 +156,13 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         assert result == expected_result
 
     def test_no_page_querystring_skips_pagination(self):
+        enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
+        self.enterprise_api_client.return_value.get_with_access_to.return_value = {
+            'uuid': enterprise_id
+        }
         url = reverse('v0:enterprise-enrollments-list',
-                      kwargs={'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'})
+                      kwargs={'enterprise_id': enterprise_id})
         url += '?no_page=true'
-        expected_result = ''
         response = self.client.get(url)
         assert response.status_code == status.HTTP_200_OK
         result = response.json()

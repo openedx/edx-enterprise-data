@@ -23,6 +23,7 @@ class EnterpriseApiClient(EdxRestApiClient):
     """
 
     API_BASE_URL = settings.LMS_BASE_URL + 'enterprise/api/v1/'
+    ENTERPRISE_DATA_API_GROUP = 'enterprise_data_api_access'
 
     def __init__(self, jwt):
         """
@@ -51,6 +52,37 @@ class EnterpriseApiClient(EdxRestApiClient):
 
         if response['count'] > 1:
             raise ParseError('Multiple Enterprise Customer Learners found for user {}'.format(user.username))
+
+        if response['count'] == 0:
+            return None
+
+        return response['results'][0]
+
+    def get_with_access_to(self, user, enterprise_id):
+        """
+        Get the enterprises that this user has access to for the data api permission django group.
+        """
+        try:
+            querystring = {
+                'permissions': [self.ENTERPRISE_DATA_API_GROUP],
+                'enterprise_id': enterprise_id,
+            }
+            endpoint = getattr(self, 'enterprise-customer')
+            endpoint = getattr(endpoint, 'with_access_to')
+            response = endpoint.get(**querystring)
+        except (HttpClientError, HttpServerError) as exc:
+            LOGGER.warning("Unable to retrieve Enterprise Customer with_access_to details for user {}: {}"
+                           .format(user.username, exc))
+            raise exc
+
+        if response.get('results', None) is None:
+            raise NotFound('Unable to process Enterprise Customer with_access_to details for user {}, enterprise {}:'
+                           ' No Results Found'
+                           .format(user.username, enterprise_id))
+
+        if response['count'] > 1:
+            raise ParseError('Multiple Enterprise Customers found for user {}, enterprise id {}'
+                             .format(user.username, enterprise_id))
 
         if response['count'] == 0:
             return None
