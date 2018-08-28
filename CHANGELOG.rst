@@ -13,6 +13,12 @@ Change Log
 
 Unreleased
 ----------
+
+[0.2.5] - 2018-08-28
+--------------------
+* Switching permission model to require enterprise_data_api_access group access
+* Updated requirement versions
+
 [0.2.4] - 2018-08-09
 --------------------
 * Enable ordering for all model fields in `EnterpriseEnrollmentsViewSet`.
