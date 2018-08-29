@@ -26,6 +26,7 @@ class TestEnterpriseEnrollmentSerializer(APITestCase):
             "enterprise_name": "Enterprise 1",
             "lms_user_id": 11,
             "enterprise_user_id": 1,
+            'enrolled_enterprise_user': None,
             "course_id": "edX/Open_DemoX/edx_demo_course",
             "enrollment_created_timestamp": "2014-06-27T16:02:38Z",
             "user_current_enrollment_mode": "verified",

@@ -79,3 +79,4 @@ ROOT_URLCONF = "enterprise_data.urls"
 SECRET_KEY = "insecure-secret-key"
 
 USE_TZ = True
+TIME_ZONE = 'UTC'

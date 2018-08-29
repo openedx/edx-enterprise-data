@@ -7,7 +7,7 @@
 amqp==1.4.9               # via kombu
 anyjson==0.3.3            # via kombu
 asn1crypto==0.24.0        # via cryptography
-atomicwrites==1.1.5       # via pytest
+atomicwrites==1.2.0       # via pytest
 attrs==18.1.0             # via pytest
 awscli==1.11.178
 bcrypt==3.1.4             # via paramiko
@@ -29,10 +29,10 @@ djangorestframework-jwt==1.11.0  # via edx-drf-extensions
 djangorestframework==3.6.3
 docutils==0.14            # via awscli, botocore
 edx-drf-extensions==1.2.4
-edx-rest-api-client==1.7.1
+edx-rest-api-client==1.8.2
 enum34==1.1.6             # via cryptography
 factory-boy==2.11.1
-faker==0.8.17             # via factory-boy
+faker==0.9.0              # via factory-boy
 first==2.0.1              # via pip-tools
 flaky==3.4.0
 freezegun==0.3.10
@@ -46,11 +46,11 @@ kombu==3.0.37             # via celery
 mock==2.0.0
 more-itertools==4.3.0     # via pytest
 paramiko==2.4
-pathlib2==2.3.2           # via pytest
+pathlib2==2.3.2           # via pytest, pytest-django
 pbr==4.2.0                # via mock
 pip-tools==2.0.2
 pluggy==0.7.1             # via pytest, tox
-py==1.5.4                 # via pytest, pytest-catchlog, tox
+py==1.6.0                 # via pytest, pytest-catchlog, tox
 pyasn1==0.4.4             # via paramiko, rsa
 pycparser==2.18           # via cffi
 pyjwt==1.6.4              # via djangorestframework-jwt, edx-rest-api-client
@@ -58,8 +58,8 @@ pyminizip==0.2.1
 pynacl==1.2.1             # via paramiko
 pytest-catchlog==1.2.2
 pytest-cov==2.5.1
-pytest-django==3.3.3
-pytest==3.7.1             # via pytest-catchlog, pytest-cov, pytest-django
+pytest-django==3.4.2
+pytest==3.7.3             # via pytest-catchlog, pytest-cov, pytest-django
 python-dateutil==2.7.3    # via botocore, edx-drf-extensions, faker, freezegun, vertica-python
 pytz==2018.5              # via celery, django, vertica-python
 pyyaml==3.12              # via awscli
@@ -67,7 +67,7 @@ requests==2.9.1
 responses==0.9.0
 rsa==3.4.2                # via awscli
 s3transfer==0.1.13        # via awscli, boto3
-scandir==1.8              # via pathlib2
+scandir==1.9.0            # via pathlib2
 six==1.11.0
 slumber==0.7.1            # via edx-rest-api-client
 testfixtures==6.2.0

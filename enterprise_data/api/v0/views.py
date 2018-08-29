@@ -19,7 +19,7 @@ from django.db.models import Max
 from enterprise_data.api.v0 import serializers
 from enterprise_data.filters import ConsentGrantedFilterBackend
 from enterprise_data.models import EnterpriseEnrollment, EnterpriseUser
-from enterprise_data.permissions import IsStaffOrEnterpriseUser
+from enterprise_data.permissions import HasDataAPIDjangoGroupAccess
 
 LOGGER = getLogger(__name__)
 
@@ -30,7 +30,7 @@ class EnterpriseViewSet(viewsets.ViewSet):
     """
     authentication_classes = (JwtAuthentication,)
     pagination_class = DefaultPagination
-    permission_classes = (IsStaffOrEnterpriseUser,)
+    permission_classes = (HasDataAPIDjangoGroupAccess,)
 
     def ensure_data_exists(self, request, data, error_message=None):
         """
