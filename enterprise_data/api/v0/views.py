@@ -29,10 +29,8 @@ class EnterpriseViewSet(viewsets.ViewSet):
     Base class for all Enterprise view sets.
     """
     authentication_classes = (JwtAuthentication,)
-    filter_backends = (ConsentGrantedFilterBackend,)
     pagination_class = DefaultPagination
     permission_classes = (IsStaffOrEnterpriseUser,)
-    CONSENT_GRANTED_FILTER = 'consent_granted'
 
     def ensure_data_exists(self, request, data, error_message=None):
         """
@@ -54,6 +52,7 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
     filter_backends = (ConsentGrantedFilterBackend, filters.OrderingFilter,)
     ordering_fields = '__all__'
     ordering = ('user_email',)
+    CONSENT_GRANTED_FILTER = 'consent_granted'
 
     def get_queryset(self):
         """
@@ -156,3 +155,22 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
             'number_of_users': enterprise_users.count(),
         }
         return Response(content)
+
+
+class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
+    """
+    Viewset for routes related to Enterprise users.
+    """
+    serializer_class = serializers.EnterpriseUserSerializer
+
+    def get_queryset(self):
+        """
+        Returns learner records for a given enterprise.
+        """
+        enterprise_id = self.kwargs['enterprise_id']
+        qs = EnterpriseUser.objects.filter(enterprise_id=enterprise_id)
+
+        no_enrollments = self.request.query_params.get('has_no_enrollments')
+        if no_enrollments == 'true':
+            qs = qs.filter(enrollments__isnull=True)
+        return qs

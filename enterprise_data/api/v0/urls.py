@@ -14,5 +14,10 @@ router.register(
     views.EnterpriseEnrollmentsViewSet,
     'enterprise-enrollments',
 )
+router.register(
+    r'enterprise/(?P<enterprise_id>.+)/users',
+    views.EnterpriseUsersViewSet,
+    'enterprise-users',
+)
 
 urlpatterns = router.urls

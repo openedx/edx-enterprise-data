@@ -83,7 +83,7 @@ six==1.11.0
 slumber==0.7.1            # via edx-rest-api-client
 snowballstemmer==1.2.1    # via pydocstyle
 testfixtures==6.2.0
-tox-battery==0.5
+tox-battery==0.5.1
 tox==3.0.0
 tqdm==4.24.0              # via twine
 twine==1.11.0

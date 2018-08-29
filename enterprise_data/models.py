@@ -35,6 +35,11 @@ class EnterpriseEnrollment(models.Model):
     enterprise_name = models.CharField(max_length=255)
     lms_user_id = models.PositiveIntegerField()
     enterprise_user_id = models.PositiveIntegerField()
+    enrolled_enterprise_user = models.ForeignKey(
+        'EnterpriseUser',
+        null=True,
+        related_name='enrollments'
+    )
     course_id = models.CharField(max_length=255, help_text='The course the learner is enrolled in.')
     enrollment_created_timestamp = models.DateTimeField()
     user_current_enrollment_mode = models.CharField(max_length=32)

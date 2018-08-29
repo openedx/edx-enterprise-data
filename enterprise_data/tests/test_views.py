@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from test_utils import UserFactory
+from test_utils import EnterpriseEnrollmentFactory, EnterpriseUserFactory, UserFactory
 
 
 @mark.django_db
@@ -41,6 +41,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
                 'course_min_effort': 2,
                 'course_start': '2016-09-01T05:00:00Z',
                 'enterprise_user_id': 1,
+                'enrolled_enterprise_user': None,
                 'user_country_code': 'US',
                 'course_title': 'All about acceptance testing!',
                 'course_duration_weeks': '8',
@@ -77,6 +78,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
                 'course_min_effort': 2,
                 'course_start': '2016-09-01T05:00:00Z',
                 'enterprise_user_id': 3,
+                'enrolled_enterprise_user': None,
                 'user_country_code': 'US',
                 'course_title': 'All about acceptance testing!',
                 'course_duration_weeks': '8',
@@ -151,3 +153,82 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         # without pagination results are a list, not dict so we assert the data type and length
         assert isinstance(result, list)
         assert len(result) == 2
+
+@mark.django_db
+class TestEnterpriseUsersViewSet(APITestCase):
+    """
+    Tests for EnterpriseUsersViewSet
+    """
+
+    def setUp(self):
+        super(TestEnterpriseUsersViewSet, self).setUp()
+        self.user = UserFactory(is_staff=True)
+        self.client.force_authenticate(user=self.user)
+
+        # Make some users and associate some enrollments
+        ent_user1 = EnterpriseUserFactory()
+        ent_user2 = EnterpriseUserFactory()
+        EnterpriseUserFactory()
+        EnterpriseUserFactory()
+        EnterpriseUserFactory()
+        EnterpriseEnrollmentFactory(
+            enrolled_enterprise_user=ent_user1,
+        )
+        EnterpriseEnrollmentFactory(
+            enrolled_enterprise_user=ent_user1,
+        )
+        EnterpriseEnrollmentFactory(
+            enrolled_enterprise_user=ent_user2,
+        )
+
+    def test_viewset_no_query_params(self):
+        """
+        EnterpriseUserViewset should return all users if no filtering query
+        params are present
+        """
+        url = reverse('v0:enterprise-users-list',
+                      kwargs={'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'})
+        response = self.client.get(url)
+        assert response.json()['count'] == 5
+
+    def test_viewset_filter_no_enrollments_false(self):
+        """
+        EnterpriseUserViewset should return all users if no_enrollments query
+        param is specified explicitly as False
+        """
+        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',}
+        params = {'has_no_enrollments': 'false',}
+        url = reverse(
+            'v0:enterprise-users-list',
+            kwargs=kwargs,
+        )
+        response = self.client.get(url, params)
+        assert response.json()['count'] == 5
+
+    def test_viewset_filter_no_enrollments_garbled(self):
+        """
+        EnterpriseUserViewset should return all users if no_enrollments query
+        param value is a random string
+        """
+        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',}
+        params = {'has_no_enrollments': 'asdiqwjodijacvasd',}
+        url = reverse(
+            'v0:enterprise-users-list',
+            kwargs=kwargs,
+        )
+        response = self.client.get(url, params)
+        assert response.json()['count'] == 5
+
+    def test_viewset_filter_no_enrollments_true(self):
+        """
+        EnterpriseUserViewset should only return users with no enrollments if
+        no_enrollments query param is specified as True
+        """
+        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',}
+        params = {'has_no_enrollments': 'true',}
+        url = reverse(
+            'v0:enterprise-users-list',
+            kwargs=kwargs,
+        )
+        response = self.client.get(url, params)
+        assert response.json()['count'] == 3
