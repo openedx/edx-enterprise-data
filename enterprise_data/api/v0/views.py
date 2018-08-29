@@ -168,9 +168,9 @@ class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         Returns learner records for a given enterprise.
         """
         enterprise_id = self.kwargs['enterprise_id']
-        qs = EnterpriseUser.objects.filter(enterprise_id=enterprise_id)
+        users = EnterpriseUser.objects.filter(enterprise_id=enterprise_id)
 
         no_enrollments = self.request.query_params.get('has_no_enrollments')
         if no_enrollments == 'true':
-            qs = qs.filter(enrollments__isnull=True)
-        return qs
+            users = users.filter(enrollments__isnull=True)
+        return users

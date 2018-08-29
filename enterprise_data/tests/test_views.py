@@ -154,6 +154,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         assert isinstance(result, list)
         assert len(result) == 2
 
+
 @mark.django_db
 class TestEnterpriseUsersViewSet(APITestCase):
     """
@@ -196,8 +197,8 @@ class TestEnterpriseUsersViewSet(APITestCase):
         EnterpriseUserViewset should return all users if no_enrollments query
         param is specified explicitly as False
         """
-        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',}
-        params = {'has_no_enrollments': 'false',}
+        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        params = {'has_no_enrollments': 'false', }
         url = reverse(
             'v0:enterprise-users-list',
             kwargs=kwargs,
@@ -210,8 +211,8 @@ class TestEnterpriseUsersViewSet(APITestCase):
         EnterpriseUserViewset should return all users if no_enrollments query
         param value is a random string
         """
-        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',}
-        params = {'has_no_enrollments': 'asdiqwjodijacvasd',}
+        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        params = {'has_no_enrollments': 'asdiqwjodijacvasd', }
         url = reverse(
             'v0:enterprise-users-list',
             kwargs=kwargs,
@@ -224,8 +225,8 @@ class TestEnterpriseUsersViewSet(APITestCase):
         EnterpriseUserViewset should only return users with no enrollments if
         no_enrollments query param is specified as True
         """
-        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',}
-        params = {'has_no_enrollments': 'true',}
+        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        params = {'has_no_enrollments': 'true', }
         url = reverse(
             'v0:enterprise-users-list',
             kwargs=kwargs,
