@@ -170,7 +170,9 @@ class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         enterprise_id = self.kwargs['enterprise_id']
         users = EnterpriseUser.objects.filter(enterprise_id=enterprise_id)
 
-        no_enrollments = self.request.query_params.get('has_no_enrollments')
-        if no_enrollments == 'true':
+        has_enrollments = self.request.query_params.get('has_enrollments')
+        if has_enrollments == 'true':
+            users = users.filter(enrollments__isnull=False).distinct()
+        elif has_enrollments == 'false':
             users = users.filter(enrollments__isnull=True)
         return users

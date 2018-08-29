@@ -189,21 +189,23 @@ class TestEnterpriseUsersViewSet(APITestCase):
         self.enterprise_api_client = enterprise_api_client.start()
         self.addCleanup(enterprise_api_client.stop)
 
-        # Make some users and associate some enrollments
+        # Users without enrollments
+        EnterpriseUserFactory()
+        EnterpriseUserFactory()
+        EnterpriseUserFactory()
+        # Users to be assigned enrollments
         ent_user1 = EnterpriseUserFactory()
         ent_user2 = EnterpriseUserFactory()
-        EnterpriseUserFactory()
-        EnterpriseUserFactory()
-        EnterpriseUserFactory()
-        EnterpriseEnrollmentFactory(
-            enrolled_enterprise_user=ent_user1,
-        )
-        EnterpriseEnrollmentFactory(
-            enrolled_enterprise_user=ent_user1,
-        )
-        EnterpriseEnrollmentFactory(
-            enrolled_enterprise_user=ent_user2,
-        )
+        # Create enrollments and assign to users
+        enrollment = EnterpriseEnrollmentFactory()
+        enrollment.enrolled_enterprise_user = ent_user1
+        enrollment.save()
+        enrollment = EnterpriseEnrollmentFactory()
+        enrollment.enrolled_enterprise_user = ent_user1
+        enrollment.save()
+        enrollment = EnterpriseEnrollmentFactory()
+        enrollment.enrolled_enterprise_user = ent_user2
+        enrollment.save()
 
     def test_viewset_no_query_params(self):
         """
@@ -215,44 +217,44 @@ class TestEnterpriseUsersViewSet(APITestCase):
         response = self.client.get(url)
         assert response.json()['count'] == 5
 
-    def test_viewset_filter_no_enrollments_false(self):
+    def test_viewset_filter_has_enrollments_true(self):
         """
-        EnterpriseUserViewset should return all users if no_enrollments query
-        param is specified explicitly as False
+        EnterpriseUserViewset should return all users that have enrollments
+        if query param value is 'true'
         """
         kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
-        params = {'has_no_enrollments': 'false', }
+        params = {'has_enrollments': 'true', }
         url = reverse(
             'v0:enterprise-users-list',
             kwargs=kwargs,
         )
         response = self.client.get(url, params)
-        assert response.json()['count'] == 5
+        assert response.json()['count'] == 2
 
-    def test_viewset_filter_no_enrollments_garbled(self):
+    def test_viewset_filter_has_enrollments_false(self):
         """
-        EnterpriseUserViewset should return all users if no_enrollments query
-        param value is a random string
+        EnterpriseUserViewset should return all users that do not have
+        enrollments if query param value is 'false'
         """
         kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
-        params = {'has_no_enrollments': 'asdiqwjodijacvasd', }
-        url = reverse(
-            'v0:enterprise-users-list',
-            kwargs=kwargs,
-        )
-        response = self.client.get(url, params)
-        assert response.json()['count'] == 5
-
-    def test_viewset_filter_no_enrollments_true(self):
-        """
-        EnterpriseUserViewset should only return users with no enrollments if
-        no_enrollments query param is specified as True
-        """
-        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
-        params = {'has_no_enrollments': 'true', }
+        params = {'has_enrollments': 'false', }
         url = reverse(
             'v0:enterprise-users-list',
             kwargs=kwargs,
         )
         response = self.client.get(url, params)
         assert response.json()['count'] == 3
+
+    def test_viewset_filter_has_enrollments_garbled(self):
+        """
+        EnterpriseUserViewset should not filter users returned if the value
+        for has_enrollments query param is not a 'true' or 'false'
+        """
+        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        params = {'has_enrollments': 'asdiqwjodijacvasd', }
+        url = reverse(
+            'v0:enterprise-users-list',
+            kwargs=kwargs,
+        )
+        response = self.client.get(url, params)
+        assert response.json()['count'] == 5
