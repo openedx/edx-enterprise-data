@@ -196,16 +196,15 @@ class TestEnterpriseUsersViewSet(APITestCase):
         # Users to be assigned enrollments
         ent_user1 = EnterpriseUserFactory()
         ent_user2 = EnterpriseUserFactory()
-        # Create enrollments and assign to users
-        enrollment = EnterpriseEnrollmentFactory()
-        enrollment.enrolled_enterprise_user = ent_user1
-        enrollment.save()
-        enrollment = EnterpriseEnrollmentFactory()
-        enrollment.enrolled_enterprise_user = ent_user1
-        enrollment.save()
-        enrollment = EnterpriseEnrollmentFactory()
-        enrollment.enrolled_enterprise_user = ent_user2
-        enrollment.save()
+        EnterpriseEnrollmentFactory(
+            enrolled_enterprise_user=ent_user1
+        )
+        EnterpriseEnrollmentFactory(
+            enrolled_enterprise_user=ent_user1
+        )
+        EnterpriseEnrollmentFactory(
+            enrolled_enterprise_user=ent_user2
+        )
 
     def test_viewset_no_query_params(self):
         """
