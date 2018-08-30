@@ -98,6 +98,7 @@ class EnterpriseUser(models.Model):
         db_table = 'enterprise_user'
         verbose_name = _("Enterprise User")
         verbose_name_plural = _("Enterprise Users")
+        ordering = ['-user_email']
 
     enterprise_id = models.UUIDField()
     lms_user_id = models.PositiveIntegerField()

@@ -7,8 +7,12 @@ from __future__ import absolute_import, unicode_literals
 
 from pytest import mark, raises
 from rest_framework.test import APITestCase
+from rest_framework.reverse import reverse
 
-from enterprise_data.api.v0.serializers import EnterpriseEnrollmentSerializer
+from django.test import RequestFactory
+
+from enterprise_data.api.v0.serializers import EnterpriseEnrollmentSerializer, EnterpriseUserSerializer
+from test_utils import EnterpriseEnrollmentFactory, EnterpriseUserFactory, UserFactory
 
 
 @mark.django_db

@@ -79,4 +79,4 @@ class EnterpriseUserFactory(factory.django.DjangoModelFactory):
     user_username = factory.Sequence(u'robot{0}'.format)
     user_email = factory.Sequence(u'robot+test+{0}@edx.org'.format)
     user_country_code = factory.lazy_attribute(lambda x: FAKER.country_code())
-    last_activity_date = datetime(2012, 1, 1)
+    last_activity_date = datetime(2012, 1, 1).date()
