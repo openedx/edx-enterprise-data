@@ -75,9 +75,9 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
 
     def filter_distinct_learners(self, queryset):
         """
-        Filters queryset to include enrollments with a distinct `enterprise_user_id`.
+        Filters queryset to include enrollments with a distinct `enterprise_user`.
         """
-        return queryset.values_list('enterprise_user_id', flat=True).distinct()
+        return queryset.values_list('enterprise_user', flat=True).distinct()
 
     def filter_active_learners(self, queryset, last_activity_date):
         """
