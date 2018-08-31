@@ -49,8 +49,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
                 'id': 2,
                 'course_min_effort': 2,
                 'course_start': '2016-09-01T00:00:00Z',
-                'enterprise_user_id': 1,
-                'enrolled_enterprise_user': None,
+                'enterprise_user': 222,
                 'user_country_code': 'US',
                 'course_title': 'All about acceptance testing!',
                 'course_duration_weeks': '8',
@@ -86,8 +85,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
                 'id': 4,
                 'course_min_effort': 2,
                 'course_start': '2016-09-01T00:00:00Z',
-                'enterprise_user_id': 3,
-                'enrolled_enterprise_user': None,
+                'enterprise_user': 444,
                 'user_country_code': 'US',
                 'course_title': 'All about acceptance testing!',
                 'course_duration_weeks': '8',
@@ -190,20 +188,30 @@ class TestEnterpriseUsersViewSet(APITestCase):
         self.addCleanup(enterprise_api_client.stop)
 
         # Users without enrollments
-        EnterpriseUserFactory()
-        EnterpriseUserFactory()
-        EnterpriseUserFactory()
+        EnterpriseUserFactory(
+            enterprise_user_id=1,
+        )
+        EnterpriseUserFactory(
+            enterprise_user_id=2,
+        )
+        EnterpriseUserFactory(
+            enterprise_user_id=3,
+        )
         # Users to be assigned enrollments
-        ent_user1 = EnterpriseUserFactory()
-        ent_user2 = EnterpriseUserFactory()
-        EnterpriseEnrollmentFactory(
-            enrolled_enterprise_user=ent_user1
+        ent_user1 = EnterpriseUserFactory(
+            enterprise_user_id=4,
+        )
+        ent_user2 = EnterpriseUserFactory(
+            enterprise_user_id=5,
         )
         EnterpriseEnrollmentFactory(
-            enrolled_enterprise_user=ent_user1
+            enterprise_user=ent_user1
         )
         EnterpriseEnrollmentFactory(
-            enrolled_enterprise_user=ent_user2
+            enterprise_user=ent_user1
+        )
+        EnterpriseEnrollmentFactory(
+            enterprise_user=ent_user2
         )
 
     def test_viewset_no_query_params(self):
