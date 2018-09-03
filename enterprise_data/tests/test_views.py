@@ -4,6 +4,8 @@ Tests for views in the `enterprise_data` module.
 """
 from __future__ import absolute_import, unicode_literals
 
+from datetime import date, datetime, timedelta
+
 import mock
 from pytest import mark
 from rest_framework import status
@@ -122,6 +124,37 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         assert response.status_code == status.HTTP_200_OK
         result = response.json()
         assert result == expected_result
+
+    def test_get_queryset_returns_enrollments_with_passed_date_filter(self):
+        enterprise_id = '413a0720-3efe-4cf5-98c8-3b4e42d3c501'
+        url = u"{url}?passed_date=last_week".format(
+            url=reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': enterprise_id})
+        )
+
+        enterprise_user = EnterpriseUserFactory(enterprise_user_id=1234)
+
+        date_today = date.today()
+        in_past_week_passed_dates = [date_today, date_today - timedelta(days=2)]
+        before_past_week_passed_dates = [date_today - timedelta(weeks=2)]
+        passed_dates = in_past_week_passed_dates + before_past_week_passed_dates
+        for index, passed_date in enumerate(passed_dates):
+            EnterpriseEnrollmentFactory(
+                enterprise_user=enterprise_user,
+                enterprise_id=enterprise_id,
+                user_email='user{}@example.com'.format(index),
+                passed_timestamp=passed_date,
+                course_title='course101',
+                has_passed=True,
+                consent_granted=True,
+            )
+
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+        result = response.json()
+        assert result['count'] == len(in_past_week_passed_dates)
+        for enrollment, passed_date in zip(result['results'], in_past_week_passed_dates):
+            assert enrollment['has_passed'] is True
+            assert datetime.strptime(enrollment['passed_timestamp'], "%Y-%m-%dT%H:%M:%SZ").date() == passed_date
 
     def test_get_queryset_throws_error(self):
         enterprise_id = '0395b02f-6b29-42ed-9a41-45f3dff8349c'
