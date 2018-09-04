@@ -52,8 +52,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
                 'id': 2,
                 'course_min_effort': 2,
                 'course_start': '2016-09-01T00:00:00Z',
-                'enterprise_user_id': 1,
-                'enrolled_enterprise_user': None,
+                'enterprise_user': 111,
                 'user_country_code': 'US',
                 'course_title': 'All about acceptance testing!',
                 'course_duration_weeks': '8',
@@ -89,8 +88,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
                 'id': 4,
                 'course_min_effort': 2,
                 'course_start': '2016-09-01T00:00:00Z',
-                'enterprise_user_id': 3,
-                'enrolled_enterprise_user': None,
+                'enterprise_user': 333,
                 'user_country_code': 'US',
                 'course_title': 'All about acceptance testing!',
                 'course_duration_weeks': '8',
@@ -197,22 +195,32 @@ class TestEnterpriseUsersViewSet(APITestCase):
         date_in_future = timezone.now() + one_day
 
         # Users without enrollments
-        EnterpriseUserFactory()
-        EnterpriseUserFactory()
-        EnterpriseUserFactory()
+        EnterpriseUserFactory(
+            enterprise_user_id=1,
+        )
+        EnterpriseUserFactory(
+            enterprise_user_id=2,
+        )
+        EnterpriseUserFactory(
+            enterprise_user_id=3,
+        )
         # Users to be assigned enrollments
-        self.ent_user1 = EnterpriseUserFactory()
-        self.ent_user2 = EnterpriseUserFactory()
+        self.ent_user4 = EnterpriseUserFactory(
+            enterprise_user_id=4,
+        )
+        self.ent_user5 = EnterpriseUserFactory(
+            enterprise_user_id=5,
+        )
         EnterpriseEnrollmentFactory(
-            enrolled_enterprise_user=self.ent_user1,
+            enterprise_user=self.ent_user4,
             course_end=date_in_past,
         )
         EnterpriseEnrollmentFactory(
-            enrolled_enterprise_user=self.ent_user1,
+            enterprise_user=self.ent_user4,
             course_end=date_in_future,
         )
         EnterpriseEnrollmentFactory(
-            enrolled_enterprise_user=self.ent_user2,
+            enterprise_user=self.ent_user5,
             course_end=date_in_future,
         )
 
@@ -306,7 +314,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         """
         kwargs = {
             'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
-            'pk': self.ent_user1.id,
+            'pk': self.ent_user4.id,
         }
         params = {'extra_fields': 'enrollment_count', }
         url = reverse(
@@ -324,7 +332,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         """
         kwargs = {
             'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
-            'pk': self.ent_user1.id,
+            'pk': self.ent_user4.id,
         }
         url = reverse(
             'v0:enterprise-users-detail',

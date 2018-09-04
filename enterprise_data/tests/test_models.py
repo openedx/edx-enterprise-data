@@ -18,10 +18,13 @@ class TestEnterpriseEnrollment(unittest.TestCase):
     """
 
     def setUp(self):
-        enterprise_user_id = 1234
+        enterprise_user = EnterpriseUserFactory(enterprise_user_id=1234)
         course_id = 'course-v1:edX+DemoX+DemoCourse'
 
-        self.enrollment = EnterpriseEnrollmentFactory(enterprise_user_id=enterprise_user_id, course_id=course_id)
+        self.enrollment = EnterpriseEnrollmentFactory(
+            enterprise_user=enterprise_user,
+            course_id=course_id
+        )
         super(TestEnterpriseEnrollment, self).setUp()
 
     @ddt.data(str, repr)

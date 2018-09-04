@@ -24,13 +24,13 @@ class TestEnterpriseEnrollmentSerializer(APITestCase):
     def setUp(self):
         super(TestEnterpriseEnrollmentSerializer, self).setUp()
 
+        EnterpriseUserFactory(enterprise_user_id=1)
         self.enrollment_data = {
             "id": 1,
             "enterprise_id": "ee5e6b3a-069a-4947-bb8d-d2dbc323396c",
             "enterprise_name": "Enterprise 1",
             "lms_user_id": 11,
-            "enterprise_user_id": 1,
-            'enrolled_enterprise_user': None,
+            "enterprise_user": 1,
             "course_id": "edX/Open_DemoX/edx_demo_course",
             "enrollment_created_timestamp": "2014-06-27T16:02:38Z",
             "user_current_enrollment_mode": "verified",
