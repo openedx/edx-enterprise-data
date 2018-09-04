@@ -33,4 +33,4 @@ class EnterpriseUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EnterpriseUser
-        fields = '__all__'
+        exclude = ('created', )
