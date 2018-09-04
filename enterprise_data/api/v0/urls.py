@@ -19,5 +19,10 @@ router.register(
     views.EnterpriseUsersViewSet,
     'enterprise-users',
 )
+router.register(
+    r'enterprise/(?P<enterprise_id>.+)/learner_completed_courses',
+    views.EnterpriseLearnerCompletedCoursesViewSet,
+    'enterprise-learner-completed-courses',
+)
 
 urlpatterns = router.urls
