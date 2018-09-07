@@ -33,14 +33,13 @@ class EnterpriseUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EnterpriseUser
-        fields = '__all__'
+        exclude = ('created', )
 
-    def to_representation(self, obj):
-        obj = super(EnterpriseUserSerializer, self).to_representation(obj)
+    def to_representation(self, instance):
+        representation = super(EnterpriseUserSerializer, self).to_representation(instance)
         request = self.context.get('request')
         extra_fields = request.query_params.get('extra_fields')
         if extra_fields is not None:
             if 'enrollment_count' in extra_fields:
-                user = EnterpriseUser.objects.get(pk=obj['id'])
-                obj['enrollment_count'] = user.enrollments.count()
-        return obj
+                representation['enrollment_count'] = instance.enrollments.count()
+        return representation

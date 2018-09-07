@@ -108,6 +108,7 @@ class EnterpriseUser(models.Model):
     user_username = models.CharField(max_length=255, null=True)
     user_country_code = models.CharField(max_length=2, null=True)
     last_activity_date = models.DateField(null=True)
+    created = models.DateTimeField(null=True)
 
     def __str__(self):
         """

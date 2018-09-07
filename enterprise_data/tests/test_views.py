@@ -5,6 +5,7 @@ Tests for views in the `enterprise_data` module.
 from __future__ import absolute_import, unicode_literals
 
 from datetime import timedelta
+
 import mock
 from pytest import mark
 from rest_framework import status
@@ -233,6 +234,19 @@ class TestEnterpriseUsersViewSet(APITestCase):
                       kwargs={'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'})
         response = self.client.get(url)
         assert response.json()['count'] == 5
+
+    @mock.patch('enterprise_data.api.v0.views.EnterpriseUsersViewSet.paginate_queryset')
+    def test_viewset_no_query_params_no_pagination(self, mock_paginate):
+        """
+        EnterpriseUserViewset should return all users if no filtering query
+        params are present in a list if no pagination occurs
+        """
+        mock_paginate.return_value = None
+        url = reverse('v0:enterprise-users-list',
+                      kwargs={'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'})
+        response = self.client.get(url)
+        assert 'count' not in response.json()
+        assert len(response.json()) == 5
 
     def test_viewset_filter_has_enrollments_true(self):
         """

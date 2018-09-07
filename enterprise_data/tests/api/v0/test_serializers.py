@@ -6,8 +6,8 @@ Tests for the `edx-enterprise` serializer module.
 from __future__ import absolute_import, unicode_literals
 
 from pytest import mark, raises
-from rest_framework.test import APITestCase
 from rest_framework.reverse import reverse
+from rest_framework.test import APITestCase
 
 from django.test import RequestFactory
 

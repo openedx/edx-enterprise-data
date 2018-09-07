@@ -162,25 +162,32 @@ class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
     """
     Viewset for routes related to Enterprise users.
     """
+    queryset = EnterpriseUser.objects.all()
     serializer_class = serializers.EnterpriseUserSerializer
 
-    def get_queryset(self):
+    def list(self, request, **kwargs):
         """
-        Returns learner records for a given enterprise.
+        List view for learner records for a given enterprise.
         """
-        enterprise_id = self.kwargs['enterprise_id']
-        users = EnterpriseUser.objects.filter(enterprise_id=enterprise_id)
+        enterprise_id = kwargs['enterprise_id']
+        users = self.queryset.filter(enterprise_id=enterprise_id)
 
-        has_enrollments = self.request.query_params.get('has_enrollments')
+        has_enrollments = request.query_params.get('has_enrollments')
         if has_enrollments == 'true':
             users = users.filter(enrollments__isnull=False).distinct()
         elif has_enrollments == 'false':
             users = users.filter(enrollments__isnull=True)
 
-        active_courses = self.request.query_params.get('active_courses')
+        active_courses = request.query_params.get('active_courses')
         if active_courses == 'true':
             users = users.filter(enrollments__course_end__gte=timezone.now())
         elif active_courses == 'false':
             users = users.filter(enrollments__course_end__lte=timezone.now())
 
-        return users
+        # Bit to account for pagination
+        page = self.paginate_queryset(users)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(users, many=True)
+        return Response(serializer.data)
