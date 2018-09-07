@@ -29,10 +29,8 @@ class EnterpriseViewSet(viewsets.ViewSet):
     Base class for all Enterprise view sets.
     """
     authentication_classes = (JwtAuthentication,)
-    filter_backends = (ConsentGrantedFilterBackend,)
     pagination_class = DefaultPagination
     permission_classes = (HasDataAPIDjangoGroupAccess,)
-    CONSENT_GRANTED_FILTER = 'consent_granted'
 
     def ensure_data_exists(self, request, data, error_message=None):
         """
@@ -54,6 +52,7 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
     filter_backends = (ConsentGrantedFilterBackend, filters.OrderingFilter,)
     ordering_fields = '__all__'
     ordering = ('user_email',)
+    CONSENT_GRANTED_FILTER = 'consent_granted'
 
     def get_queryset(self):
         """
@@ -156,3 +155,32 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
             'number_of_users': enterprise_users.count(),
         }
         return Response(content)
+
+
+class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
+    """
+    Viewset for routes related to Enterprise users.
+    """
+    queryset = EnterpriseUser.objects.all()
+    serializer_class = serializers.EnterpriseUserSerializer
+
+    def list(self, request, **kwargs):
+        """
+        List view for learner records for a given enterprise.
+        """
+        enterprise_id = kwargs['enterprise_id']
+        users = self.queryset.filter(enterprise_id=enterprise_id)
+
+        has_enrollments = request.query_params.get('has_enrollments')
+        if has_enrollments == 'true':
+            users = users.filter(enrollments__isnull=False).distinct()
+        elif has_enrollments == 'false':
+            users = users.filter(enrollments__isnull=True)
+
+        # Bit to account for pagination
+        page = self.paginate_queryset(users)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(users, many=True)
+        return Response(serializer.data)

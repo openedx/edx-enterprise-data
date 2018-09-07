@@ -34,7 +34,11 @@ class EnterpriseEnrollment(models.Model):
     enterprise_id = models.UUIDField()
     enterprise_name = models.CharField(max_length=255)
     lms_user_id = models.PositiveIntegerField()
-    enterprise_user_id = models.PositiveIntegerField()
+    enterprise_user = models.ForeignKey(
+        'EnterpriseUser',
+        related_name='enrollments',
+        to_field='enterprise_user_id',
+    )
     course_id = models.CharField(max_length=255, help_text='The course the learner is enrolled in.')
     enrollment_created_timestamp = models.DateTimeField()
     user_current_enrollment_mode = models.CharField(max_length=32)
@@ -96,13 +100,14 @@ class EnterpriseUser(models.Model):
 
     enterprise_id = models.UUIDField()
     lms_user_id = models.PositiveIntegerField()
-    enterprise_user_id = models.PositiveIntegerField()
+    enterprise_user_id = models.PositiveIntegerField(unique=True)
     enterprise_sso_uid = models.CharField(max_length=255, null=True)
     user_account_creation_timestamp = models.DateTimeField(null=True)
     user_email = models.CharField(max_length=255, null=True)
     user_username = models.CharField(max_length=255, null=True)
     user_country_code = models.CharField(max_length=2, null=True)
     last_activity_date = models.DateField(null=True)
+    created = models.DateTimeField(null=True)
 
     def __str__(self):
         """

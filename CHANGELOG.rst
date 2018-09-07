@@ -14,6 +14,12 @@ Change Log
 Unreleased
 ----------
 
+[0.2.6] - 2018-08-29
+--------------------
+* Adding EnterpriseUser endpoint support (serializer/viewset/url)
+* Adding ForeignKey relationship between EnterpriseEnrollment and EnterpriseUser
+* Updating some tox-battery requirements
+
 [0.2.5] - 2018-08-28
 --------------------
 * Switching permission model to require enterprise_data_api_access group access

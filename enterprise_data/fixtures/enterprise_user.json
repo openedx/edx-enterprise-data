@@ -5,7 +5,7 @@
       "fields": {
         "enterprise_id": "ee5e6b3a069a4947bb8dd2dbc323396c",
         "lms_user_id": 11,
-        "enterprise_user_id": 1,
+        "enterprise_user_id": 111,
         "enterprise_sso_uid": "harry",
         "user_account_creation_timestamp": "2015-02-12 23:14:35",
         "user_email": "test@example.com",
@@ -20,7 +20,7 @@
       "fields": {
         "enterprise_id": "ee5e6b3a069a4947bb8dd2dbc323396c",
         "lms_user_id": 11,
-        "enterprise_user_id": 1,
+        "enterprise_user_id": 222,
         "enterprise_sso_uid": "harry",
         "user_account_creation_timestamp": "2015-02-12 23:14:35",
         "user_email": "test@example.com",
@@ -35,7 +35,7 @@
       "fields": {
         "enterprise_id": "9339ad5d5363564d7b3d4efbb257384b",
         "lms_user_id": 11,
-        "enterprise_user_id": 2,
+        "enterprise_user_id": 333,
         "enterprise_sso_uid": "harry",
         "user_account_creation_timestamp": "2015-02-12 23:14:35",
         "user_email": "test2@example.com",
@@ -50,7 +50,7 @@
       "fields": {
         "enterprise_id": "ee5e6b3a069a4947bb8dd2dbc323396c",
         "lms_user_id": 11,
-        "enterprise_user_id": 3,
+        "enterprise_user_id": 444,
         "enterprise_sso_uid": "harry",
         "user_account_creation_timestamp": "2015-02-12 23:14:35",
         "user_email": "test@example.com",

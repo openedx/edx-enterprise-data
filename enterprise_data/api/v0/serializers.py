@@ -6,7 +6,7 @@ from __future__ import absolute_import, unicode_literals
 
 from rest_framework import serializers
 
-from enterprise_data.models import EnterpriseEnrollment
+from enterprise_data.models import EnterpriseEnrollment, EnterpriseUser
 
 
 class EnterpriseEnrollmentSerializer(serializers.ModelSerializer):
@@ -23,4 +23,14 @@ class EnterpriseEnrollmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EnterpriseEnrollment
+        exclude = ('created', )
+
+
+class EnterpriseUserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for EnterpriseUser model.
+    """
+
+    class Meta:
+        model = EnterpriseUser
         exclude = ('created', )
