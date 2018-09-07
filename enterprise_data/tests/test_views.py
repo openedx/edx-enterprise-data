@@ -341,8 +341,8 @@ class TestEnterpriseUsersViewSet(APITestCase):
     def test_viewset_enrollment_count_not_present(self):
         """
         EnterpriseUserViewset should ultimately return a response that
-        includes the enrollment_count field if "enrollment_count" is specified
-        in the "extra_fields" query parameter value
+        does not include the "enrollment_count" field if "enrollment_count"
+        is not specified in the "extra_fields" query parameter value
         """
         kwargs = {
             'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
