@@ -354,3 +354,23 @@ class TestEnterpriseUsersViewSet(APITestCase):
         )
         response = self.client.get(url,)
         assert 'enrollment_count' not in response.json()
+
+    def test_no_page_querystring_skips_pagination(self):
+        """
+        EnterpriseUserViewset list view should honor the no_page query param,
+        returning results for in list, which is necessary for csv generation
+        """
+        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        url = reverse(
+            'v0:enterprise-users-list',
+            kwargs=kwargs,
+        )
+        params = {'no_page': 'true', }
+
+        response = self.client.get(url, params)
+        assert response.status_code == status.HTTP_200_OK
+        result = response.json()
+
+        # without pagination results are a list, not dict so we assert the data type and length
+        assert isinstance(result, list)
+        assert len(result) == 5
