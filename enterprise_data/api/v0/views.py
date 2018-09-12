@@ -14,7 +14,7 @@ from rest_framework.decorators import list_route
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
-from django.db.models import Max
+from django.db.models import Count, Max
 
 from enterprise_data.api.v0 import serializers
 from enterprise_data.filters import ConsentGrantedFilterBackend
@@ -42,6 +42,14 @@ class EnterpriseViewSet(viewsets.ViewSet):
             )
             LOGGER.error(error_message)
             raise NotFound(error_message)
+
+    def paginate_queryset(self, queryset):
+        """
+        Allows no_page query param to skip pagination
+        """
+        if 'no_page' in self.request.query_params:
+            return None
+        return super(EnterpriseViewSet, self).paginate_queryset(queryset)
 
 
 class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
@@ -117,14 +125,6 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         created_max = queryset.aggregate(Max('created'))
         return created_max['created__max']
 
-    def paginate_queryset(self, queryset):
-        """
-        Allows no_page query param to skip pagination
-        """
-        if 'no_page' in self.request.query_params:
-            return None
-        return super(EnterpriseEnrollmentsViewSet, self).paginate_queryset(queryset)
-
     @list_route()
     def overview(self, request, **kwargs):  # pylint: disable=unused-argument
         """
@@ -184,3 +184,22 @@ class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
             return self.get_paginated_response(serializer.data)
         serializer = self.get_serializer(users, many=True)
         return Response(serializer.data)
+
+
+class EnterpriseLearnerCompletedCoursesViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
+    """
+    View to manage enterprise learner completed course enrollments.
+    """
+    serializer_class = serializers.LearnerCompletedCoursesSerializer
+
+    def get_queryset(self):
+        """
+        Returns number of completed courses against each learner.
+        """
+        enterprise_id = self.kwargs['enterprise_id']
+        # Get the number of completed courses against a learner.
+        enrollments = EnterpriseEnrollment.objects.filter(
+            enterprise_id=enterprise_id,
+            has_passed=True
+        ).values('user_email').annotate(completed_courses=Count('course_id')).order_by('user_email')
+        return enrollments

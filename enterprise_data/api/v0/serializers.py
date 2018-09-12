@@ -34,3 +34,11 @@ class EnterpriseUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = EnterpriseUser
         exclude = ('created', )
+
+
+class LearnerCompletedCoursesSerializer(serializers.Serializer):    # pylint: disable=abstract-method
+    """
+    Serializer for learner's completed courses.
+    """
+    user_email = serializers.EmailField()
+    completed_courses = serializers.IntegerField()
