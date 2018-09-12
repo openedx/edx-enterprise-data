@@ -14,6 +14,10 @@ Change Log
 Unreleased
 ----------
 
+[0.2.7] - 2018-09-12
+--------------------
+* Add query param to get learners passed in last week
+
 [0.2.6] - 2018-08-29
 --------------------
 * Adding EnterpriseUser endpoint support (serializer/viewset/url)
