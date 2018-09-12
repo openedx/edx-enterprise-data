@@ -35,6 +35,15 @@ class EnterpriseUserSerializer(serializers.ModelSerializer):
         model = EnterpriseUser
         exclude = ('created', )
 
+    def to_representation(self, instance):
+        representation = super(EnterpriseUserSerializer, self).to_representation(instance)
+        request = self.context.get('request')
+        extra_fields = request.query_params.get('extra_fields')
+        if extra_fields is not None:
+            if 'enrollment_count' in extra_fields:
+                representation['enrollment_count'] = instance.enrollments.count()
+        return representation
+
 
 class LearnerCompletedCoursesSerializer(serializers.Serializer):    # pylint: disable=abstract-method
     """

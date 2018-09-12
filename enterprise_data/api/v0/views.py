@@ -15,6 +15,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
 from django.db.models import Count, Max
+from django.utils import timezone
 
 from enterprise_data.api.v0 import serializers
 from enterprise_data.filters import ConsentGrantedFilterBackend
@@ -188,6 +189,12 @@ class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
             users = users.filter(enrollments__isnull=False).distinct()
         elif has_enrollments == 'false':
             users = users.filter(enrollments__isnull=True)
+
+        active_courses = request.query_params.get('active_courses')
+        if active_courses == 'true':
+            users = users.filter(enrollments__course_end__gte=timezone.now())
+        elif active_courses == 'false':
+            users = users.filter(enrollments__course_end__lte=timezone.now())
 
         # Bit to account for pagination
         page = self.paginate_queryset(users)

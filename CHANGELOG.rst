@@ -14,6 +14,10 @@ Change Log
 Unreleased
 ----------
 
+[0.2.8] - 2018-09-12
+--------------------
+* Adding query params on /users/ enpoint for active_courses and enrollment_count
+
 [0.2.7] - 2018-09-12
 --------------------
 * Add query param to get learners passed in last week
