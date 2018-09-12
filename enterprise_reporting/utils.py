@@ -193,3 +193,24 @@ def flatten_dict(d, target='key' or 'value'):
         else:
             flattened.append(key if target_is_key else value)
     return flattened
+
+
+def generate_data(item, target='key' or 'value'):
+    """
+    Either return a list of JSON data objects or
+    List of headers depends upon the target.
+    """
+    data = []
+    target_is_key = target == 'key'
+    for key, value in OrderedDict(sorted(item.items())).items():
+        if target_is_key:
+            data.append(key)
+            continue
+
+        # For empty list we are just writing an empty string ''.
+        if isinstance(value, list) and not len(value):
+            value = ''
+
+        data.append(value)
+
+    return data
