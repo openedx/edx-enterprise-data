@@ -4,7 +4,7 @@ Tests for views in the `enterprise_data` module.
 """
 from __future__ import absolute_import, unicode_literals
 
-from datetime import timedelta
+from datetime import date, datetime, timedelta
 
 import mock
 from pytest import mark
@@ -126,6 +126,37 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         assert response.status_code == status.HTTP_200_OK
         result = response.json()
         assert result == expected_result
+
+    def test_get_queryset_returns_enrollments_with_passed_date_filter(self):
+        enterprise_id = '413a0720-3efe-4cf5-98c8-3b4e42d3c501'
+        url = u"{url}?passed_date=last_week".format(
+            url=reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': enterprise_id})
+        )
+
+        enterprise_user = EnterpriseUserFactory(enterprise_user_id=1234)
+
+        date_today = date.today()
+        in_past_week_passed_dates = [date_today, date_today - timedelta(days=2)]
+        before_past_week_passed_dates = [date_today - timedelta(weeks=2)]
+        passed_dates = in_past_week_passed_dates + before_past_week_passed_dates
+        for index, passed_date in enumerate(passed_dates):
+            EnterpriseEnrollmentFactory(
+                enterprise_user=enterprise_user,
+                enterprise_id=enterprise_id,
+                user_email='user{}@example.com'.format(index),
+                passed_timestamp=passed_date,
+                course_title='course101',
+                has_passed=True,
+                consent_granted=True,
+            )
+
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+        result = response.json()
+        assert result['count'] == len(in_past_week_passed_dates)
+        for enrollment, passed_date in zip(result['results'], in_past_week_passed_dates):
+            assert enrollment['has_passed'] is True
+            assert datetime.strptime(enrollment['passed_timestamp'], "%Y-%m-%dT%H:%M:%SZ").date() == passed_date
 
     def test_get_queryset_throws_error(self):
         enterprise_id = '0395b02f-6b29-42ed-9a41-45f3dff8349c'
@@ -368,9 +399,62 @@ class TestEnterpriseUsersViewSet(APITestCase):
         params = {'no_page': 'true', }
 
         response = self.client.get(url, params)
+
+
+class TestEnterpriseLearnerCompletedCourses(APITestCase):
+    """
+    Tests for EnterpriseLearnerCompletedCoursesViewSet.
+    """
+    fixtures = ('enterprise_enrollment', 'enterprise_user', )
+
+    def setUp(self):
+        super(TestEnterpriseLearnerCompletedCourses, self).setUp()
+        self.user = UserFactory(is_staff=True)
+        self.client.force_authenticate(user=self.user)
+        enterprise_api_client = mock.patch('enterprise_data.permissions.EnterpriseApiClient')
+        self.enterprise_api_client = enterprise_api_client.start()
+        self.addCleanup(enterprise_api_client.stop)
+
+        self.enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
+        self.enterprise_api_client.return_value.get_with_access_to.return_value = {
+            'uuid': self.enterprise_id
+        }
+
+    def test_get_learner_completed_courses(self):
+        """
+        Test that we get correct number of courses completed by a learner.
+        """
+        url = reverse('v0:enterprise-learner-completed-courses-list', kwargs={'enterprise_id': self.enterprise_id})
+        expected_result = {
+            'count': 1,
+            'num_pages': 1,
+            'current_page': 1,
+            'results': [{
+                'completed_courses': 2,
+                'user_email': 'test@example.com'
+            }],
+            'next': None,
+            'start': 0,
+            'previous': None
+        }
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+        result = response.json()
+        assert result == expected_result
+
+    def test_no_page_querystring_skips_pagination(self):
+        """
+        Test that when no_page is passed, pagination is skipped and we get expected response.
+        """
+        url = reverse('v0:enterprise-learner-completed-courses-list',
+                      kwargs={'enterprise_id': self.enterprise_id})
+        url += '?no_page=true'
+        expected_result = [{'completed_courses': 2, 'user_email': 'test@example.com'}]
+        response = self.client.get(url)
         assert response.status_code == status.HTTP_200_OK
         result = response.json()
 
         # without pagination results are a list, not dict so we assert the data type and length
         assert isinstance(result, list)
-        assert len(result) == 5
+        assert len(result) == 1
+        assert result == expected_result

@@ -14,7 +14,7 @@ from rest_framework.decorators import list_route
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
-from django.db.models import Max
+from django.db.models import Count, Max
 from django.utils import timezone
 
 from enterprise_data.api.v0 import serializers
@@ -69,6 +69,18 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         """
         enterprise_id = self.kwargs['enterprise_id']
         enrollments = EnterpriseEnrollment.objects.filter(enterprise_id=enterprise_id)
+
+        # Return only those learners who completed a course in last week
+        passed_date_param = self.request.query_params.get('passed_date')
+        if passed_date_param == 'last_week':
+            date_today = date.today()
+            date_week_before = date_today - timedelta(weeks=1)
+            enrollments = enrollments.filter(
+                has_passed=True,
+                passed_timestamp__lte=date_today,
+                passed_timestamp__gte=date_week_before,
+            )
+
         self.ensure_data_exists(
             self.request,
             enrollments,
@@ -191,3 +203,22 @@ class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
             return self.get_paginated_response(serializer.data)
         serializer = self.get_serializer(users, many=True)
         return Response(serializer.data)
+
+
+class EnterpriseLearnerCompletedCoursesViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
+    """
+    View to manage enterprise learner completed course enrollments.
+    """
+    serializer_class = serializers.LearnerCompletedCoursesSerializer
+
+    def get_queryset(self):
+        """
+        Returns number of completed courses against each learner.
+        """
+        enterprise_id = self.kwargs['enterprise_id']
+        # Get the number of completed courses against a learner.
+        enrollments = EnterpriseEnrollment.objects.filter(
+            enterprise_id=enterprise_id,
+            has_passed=True
+        ).values('user_email').annotate(completed_courses=Count('course_id')).order_by('user_email')
+        return enrollments

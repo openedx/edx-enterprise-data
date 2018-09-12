@@ -43,3 +43,11 @@ class EnterpriseUserSerializer(serializers.ModelSerializer):
             if 'enrollment_count' in extra_fields:
                 representation['enrollment_count'] = instance.enrollments.count()
         return representation
+
+
+class LearnerCompletedCoursesSerializer(serializers.Serializer):    # pylint: disable=abstract-method
+    """
+    Serializer for learner's completed courses.
+    """
+    user_email = serializers.EmailField()
+    completed_courses = serializers.IntegerField()
