@@ -25,6 +25,17 @@ from enterprise_data.permissions import HasDataAPIDjangoGroupAccess
 LOGGER = getLogger(__name__)
 
 
+def subtract_one_month(original_date):
+    """
+    Returns a date exactly one month prior to the passed in date.
+    """
+    one_day = timedelta(days=1)
+    one_month_earlier = original_date - one_day
+    while one_month_earlier.month == original_date.month or one_month_earlier.day > original_date.day:
+        one_month_earlier -= one_day
+    return one_month_earlier
+
+
 class EnterpriseViewSet(viewsets.ViewSet):
     """
     Base class for all Enterprise view sets.
@@ -70,16 +81,7 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         enterprise_id = self.kwargs['enterprise_id']
         enrollments = EnterpriseEnrollment.objects.filter(enterprise_id=enterprise_id)
 
-        # Return only those learners who completed a course in last week
-        passed_date_param = self.request.query_params.get('passed_date')
-        if passed_date_param == 'last_week':
-            date_today = date.today()
-            date_week_before = date_today - timedelta(weeks=1)
-            enrollments = enrollments.filter(
-                has_passed=True,
-                passed_timestamp__lte=date_today,
-                passed_timestamp__gte=date_week_before,
-            )
+        enrollments = self.apply_filters(enrollments)
 
         self.ensure_data_exists(
             self.request,
@@ -94,6 +96,29 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         )
         return enrollments
 
+    def apply_filters(self, queryset):
+        """
+        Filters enrollments based on query params.
+        """
+        query_filters = self.request.query_params
+
+        past_week_date = date.today() - timedelta(weeks=1)
+        past_month_date = subtract_one_month(date.today())
+
+        passed_date_param = query_filters.get('passed_date')
+        if passed_date_param == 'last_week':
+            queryset = self.filter_past_week_completions(queryset)
+
+        learner_activity_param = query_filters.get('learner_activity')
+        if learner_activity_param == 'active_past_week':
+            queryset = self.filter_active_learners(queryset, past_week_date)
+        elif learner_activity_param == 'inactive_past_week':
+            queryset = self.filter_inactive_learners(queryset, past_week_date)
+        elif learner_activity_param == 'inactive_past_month':
+            queryset = self.filter_inactive_learners(queryset, past_month_date)
+
+        return queryset
+
     def filter_distinct_learners(self, queryset):
         """
         Filters queryset to include enrollments with a distinct `enterprise_user_id`.
@@ -104,9 +129,19 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         """
         Filters queryset to include enrollments more recent than the specified `last_activity_date`.
         """
-        return self.filter_distinct_learners(
-            queryset.filter(last_activity_date__gte=last_activity_date)
-        )
+        return queryset.filter(last_activity_date__gte=last_activity_date)
+
+    def filter_inactive_learners(self, queryset, last_activity_date):
+        """
+        Filters queryset to include enrollments more older than the specified `last_activity_date`.
+        """
+        return queryset.filter(last_activity_date__lte=last_activity_date)
+
+    def filter_distinct_active_learners(self, queryset, last_activity_date):
+        """
+        Filters queryset to include distinct enrollments more recent than the specified `last_activity_date`.
+        """
+        return self.filter_distinct_learners(self.filter_active_learners(queryset, last_activity_date))
 
     def filter_course_completions(self, queryset):
         """
@@ -114,22 +149,24 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         """
         return queryset.filter(has_passed=1)
 
+    def filter_past_week_completions(self, queryset):
+        """
+        Filters only those learners who completed a course in last week.
+        """
+        date_today = date.today()
+        date_week_before = date_today - timedelta(weeks=1)
+        return queryset.filter(
+            has_passed=True,
+            passed_timestamp__lte=date_today,
+            passed_timestamp__gte=date_week_before,
+        )
+
     def filter_number_of_users(self):
         """
         Returns number of enterprise users (enrolled AND not enrolled learners)
         """
         enterprise_id = self.kwargs['enterprise_id']
         return EnterpriseUser.objects.filter(enterprise_id=enterprise_id)
-
-    def subtract_one_month(self, original_date):
-        """
-        Returns a date exactly one month prior to the passed in date.
-        """
-        one_day = timedelta(days=1)
-        one_month_earlier = original_date - one_day
-        while one_month_earlier.month == original_date.month or one_month_earlier.day > original_date.day:
-            one_month_earlier -= one_day
-        return one_month_earlier
 
     def get_max_created_date(self, queryset):
         """
@@ -152,10 +189,10 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         course_completions = self.filter_course_completions(enrollments)
         distinct_learners = self.filter_distinct_learners(enrollments)
         past_week_date = date.today() - timedelta(weeks=1)
-        past_month_date = self.subtract_one_month(date.today())
-        active_learners_week = self.filter_active_learners(enrollments, past_week_date)
+        past_month_date = subtract_one_month(date.today())
+        active_learners_week = self.filter_distinct_active_learners(enrollments, past_week_date)
         last_updated_date = self.get_max_created_date(enrollments)
-        active_learners_month = self.filter_active_learners(enrollments, past_month_date)
+        active_learners_month = self.filter_distinct_active_learners(enrollments, past_month_date)
         enterprise_users = self.filter_number_of_users()
         content = {
             'enrolled_learners': distinct_learners.count(),

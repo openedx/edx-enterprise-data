@@ -6,6 +6,7 @@ from __future__ import absolute_import, unicode_literals
 
 from datetime import date, datetime, timedelta
 
+import ddt
 import mock
 from pytest import mark
 from rest_framework import status
@@ -14,10 +15,12 @@ from rest_framework.test import APITestCase
 
 from django.utils import timezone
 
+from enterprise_data.api.v0.views import subtract_one_month
 from enterprise_data.permissions import HasDataAPIDjangoGroupAccess
 from test_utils import EnterpriseEnrollmentFactory, EnterpriseUserFactory, UserFactory
 
 
+@ddt.ddt
 @mark.django_db
 class TestEnterpriseEnrollmentsViewSet(APITestCase):
     """
@@ -157,6 +160,50 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         for enrollment, passed_date in zip(result['results'], in_past_week_passed_dates):
             assert enrollment['has_passed'] is True
             assert datetime.strptime(enrollment['passed_timestamp'], "%Y-%m-%dT%H:%M:%SZ").date() == passed_date
+
+    @ddt.data(
+        (
+            'active_past_week',
+            [date.today(), date.today() - timedelta(days=2)]
+        ),
+        (
+            'inactive_past_week',
+            [date.today() - timedelta(weeks=2), subtract_one_month(date.today())]
+        ),
+        (
+            'inactive_past_month',
+            [subtract_one_month(date.today())]
+        )
+    )
+    @ddt.unpack
+    def test_get_queryset_returns_enrollments_with_learner_activity_filter(self, activity_filter, expected_dates):
+        enterprise_id = '413a0720-3efe-4cf5-98c8-3b4e42d3c509'
+        url = u"{url}?learner_activity={activity_filter}".format(
+            url=reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': enterprise_id}),
+            activity_filter=activity_filter
+        )
+
+        enterprise_user = EnterpriseUserFactory(enterprise_user_id=1234)
+
+        date_today = date.today()
+        in_past_week_dates = [date_today, date_today - timedelta(days=2)]
+        before_past_week_dates = [date_today - timedelta(weeks=2)]
+        before_past_month_dates = [subtract_one_month(date.today())]
+        activity_dates = in_past_week_dates + before_past_week_dates + before_past_month_dates
+        for activity_date in activity_dates:
+            EnterpriseEnrollmentFactory(
+                enterprise_user=enterprise_user,
+                enterprise_id=enterprise_id,
+                last_activity_date=activity_date,
+                consent_granted=True,
+            )
+
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+        result = response.json()
+        assert result['count'] == len(expected_dates)
+        for enrollment in result['results']:
+            assert datetime.strptime(enrollment['last_activity_date'], "%Y-%m-%d").date() in expected_dates
 
     def test_get_queryset_throws_error(self):
         enterprise_id = '0395b02f-6b29-42ed-9a41-45f3dff8349c'
