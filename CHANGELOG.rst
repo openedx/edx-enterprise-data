@@ -21,6 +21,7 @@ Unreleased
 [0.2.7] - 2018-09-12
 --------------------
 * Add query param to get learners passed in last week
+* Add support to get number of completed courses against each learner.
 
 [0.2.6] - 2018-08-29
 --------------------
@@ -46,8 +47,8 @@ Unreleased
 * Upgrade Django version to 1.11.15
 
 [0.2.1] - 2018-08-1
-* Add support to get last_updated_date of enterprise enrollments 
-* Allow api access to enrollments without pagination using `?no_page=true` query parameter 
+* Add support to get last_updated_date of enterprise enrollments
+* Allow api access to enrollments without pagination using `?no_page=true` query parameter
 * Add .json fixture files to manifest and published package
 
 [0.2.0] - 2018-07-31
