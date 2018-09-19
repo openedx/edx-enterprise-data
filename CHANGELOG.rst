@@ -14,6 +14,13 @@ Change Log
 Unreleased
 ----------
 
+[0.2.9] - 2018-09-19
+--------------------
+* Adding filters for Learner Activity cards. These include:
+    - Active learners in past week.
+    - Inactive learners in past week.
+    - Inactive learners in past month
+
 [0.2.8] - 2018-09-12
 --------------------
 * Adding query params on /users/ enpoint for active_courses and enrollment_count
