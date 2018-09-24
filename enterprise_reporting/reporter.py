@@ -15,7 +15,7 @@ from uuid import UUID
 from enterprise_reporting.clients.enterprise import EnterpriseAPIClient, EnterpriseDataApiClient
 from enterprise_reporting.clients.vertica import VerticaClient
 from enterprise_reporting.delivery_method import SFTPDeliveryMethod, SMTPDeliveryMethod
-from enterprise_reporting.utils import decrypt_string, flatten_dict
+from enterprise_reporting.utils import decrypt_string, generate_data
 
 LOGGER = logging.getLogger(__name__)
 NOW = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -180,10 +180,13 @@ class EnterpriseReportSender(object):
         for content_type, grouped_items in grouped_content_metadata.items():
             with open(self.data_report_file_name_with.format(content_type), 'w') as data_report_file:
                 writer = csv.writer(data_report_file)
+                if grouped_items:
+                    # Write single row of headers in csv.
+                    writer.writerow(generate_data(grouped_items[0], target='key'))
+
                 for item in grouped_items:
-                    writer.writerow(flatten_dict(item, target='key'))
-                    writer.writerow(flatten_dict(item, target='value'))
-                    writer.writerow([])
+                    writer.writerow(generate_data(item, target='value'))
+
                 files.append(data_report_file)
         return files
 
