@@ -14,8 +14,9 @@ Change Log
 Unreleased
 ----------
 
-[0.2.9] - 2018-09-19
+[0.2.9] - 2018-09-24
 --------------------
+* Update the course catalog CSV flat file to have only one single header and a line of rows in JSON form.
 * Adding filters for Learner Activity cards. These include:
     - Active learners in past week.
     - Inactive learners in past week.
