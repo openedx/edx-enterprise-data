@@ -280,27 +280,57 @@ class TestEnterpriseUsersViewSet(APITestCase):
         EnterpriseUserFactory(
             enterprise_user_id=2,
         )
-        EnterpriseUserFactory(
+        self.ent_user3 = EnterpriseUserFactory(
             enterprise_user_id=3,
         )
-        # Users to be assigned enrollments
+        # User with True & None for enrollment consent
         self.ent_user4 = EnterpriseUserFactory(
             enterprise_user_id=4,
-        )
-        self.ent_user5 = EnterpriseUserFactory(
-            enterprise_user_id=5,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user4,
             course_end=date_in_past,
+            consent_granted=True,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user4,
             course_end=date_in_future,
         )
+        # User with only True enrollment consent
+        self.ent_user5 = EnterpriseUserFactory(
+            enterprise_user_id=5,
+        )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user5,
             course_end=date_in_future,
+            consent_granted=True,
+        )
+        # User with only False enrollment consent
+        self.ent_user6 = EnterpriseUserFactory(
+            enterprise_user_id=6,
+        )
+        EnterpriseEnrollmentFactory(
+            enterprise_user=self.ent_user6,
+            consent_granted=False,
+            course_end=date_in_past,
+        )
+        # User with True and False enrollment consent
+        self.ent_user7 = EnterpriseUserFactory(
+            enterprise_user_id=7,
+        )
+        EnterpriseEnrollmentFactory(
+            enterprise_user=self.ent_user7,
+            consent_granted=True,
+        )
+        EnterpriseEnrollmentFactory(
+            enterprise_user=self.ent_user7,
+            consent_granted=False,
+            course_end=date_in_future,
+        )
+        EnterpriseEnrollmentFactory(
+            enterprise_user=self.ent_user7,
+            consent_granted=False,
+            course_end=date_in_past,
         )
 
     def test_viewset_no_query_params(self):
@@ -311,7 +341,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         url = reverse('v0:enterprise-users-list',
                       kwargs={'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'})
         response = self.client.get(url)
-        assert response.json()['count'] == 5
+        assert response.json()['count'] == 6
 
     @mock.patch('enterprise_data.api.v0.views.EnterpriseUsersViewSet.paginate_queryset')
     def test_viewset_no_query_params_no_pagination(self, mock_paginate):
@@ -324,7 +354,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
                       kwargs={'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'})
         response = self.client.get(url)
         assert 'count' not in response.json()
-        assert len(response.json()) == 5
+        assert len(response.json()) == 6
 
     def test_viewset_filter_has_enrollments_true(self):
         """
@@ -338,7 +368,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
             kwargs=kwargs,
         )
         response = self.client.get(url, params)
-        assert response.json()['count'] == 2
+        assert response.json()['count'] == 3
 
     def test_viewset_filter_has_enrollments_false(self):
         """
@@ -366,7 +396,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
             kwargs=kwargs,
         )
         response = self.client.get(url, params)
-        assert response.json()['count'] == 5
+        assert response.json()['count'] == 6
 
     def test_viewset_filter_active_courses_true(self):
         """
@@ -477,7 +507,7 @@ class TestEnterpriseLearnerCompletedCourses(APITestCase):
             'num_pages': 1,
             'current_page': 1,
             'results': [{
-                'completed_courses': 2,
+                'completed_courses': 1,
                 'user_email': 'test@example.com'
             }],
             'next': None,
@@ -496,7 +526,7 @@ class TestEnterpriseLearnerCompletedCourses(APITestCase):
         url = reverse('v0:enterprise-learner-completed-courses-list',
                       kwargs={'enterprise_id': self.enterprise_id})
         url += '?no_page=true'
-        expected_result = [{'completed_courses': 2, 'user_email': 'test@example.com'}]
+        expected_result = [{'completed_courses': 1, 'user_email': 'test@example.com'}]
         response = self.client.get(url)
         assert response.status_code == status.HTTP_200_OK
         result = response.json()

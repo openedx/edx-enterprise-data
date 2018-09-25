@@ -14,6 +14,10 @@ Change Log
 Unreleased
 ----------
 
+[0.2.10] - 2018-09-28
+---------------------
+* Update EnterpriseUser and EnterpriseLearnerCompletedCourses viewset/serializers to ignore enrollments without content for calculations
+
 [0.2.9] - 2018-09-24
 --------------------
 * Update the course catalog CSV flat file to have only one single header and a line of rows in JSON form.
