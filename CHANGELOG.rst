@@ -13,6 +13,12 @@ Change Log
 
 Unreleased
 ----------
+
+[0.2.12] - 2018-10-08
+---------------------
+* Add filter `all_enrollments_passed` to filter out enterprise learners on the basis of all enrollments passed
+* Add extra field `course_completion_count` in response when "extra_fields" query param has value `course_completion_count`
+
 [0.2.11] - 2018-09-28
 ---------------------
 * Running make upgrade and installing new packages

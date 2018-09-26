@@ -235,6 +235,12 @@ class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         elif active_courses == 'false':
             users = users.filter(CONSENT_TRUE_OR_NONE_Q, enrollments__course_end__lte=timezone.now())
 
+        all_enrollments_passed = request.query_params.get('all_enrollments_passed')
+        if all_enrollments_passed == 'true':
+            users = users.exclude(enrollments__has_passed=False)
+        elif all_enrollments_passed == 'false':
+            users = users.filter(enrollments__has_passed=False)
+
         # Bit to account for pagination
         page = self.paginate_queryset(users)
         if page is not None:
