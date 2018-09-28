@@ -5,6 +5,11 @@ from __future__ import absolute_import, unicode_literals
 
 from rest_framework import filters
 
+from django.db.models import Q
+
+# Q filters
+CONSENT_TRUE_OR_NONE_Q = Q(enrollments__consent_granted=True) | Q(enrollments__consent_granted=None)
+
 
 class ConsentGrantedFilterBackend(filters.BaseFilterBackend):
     """

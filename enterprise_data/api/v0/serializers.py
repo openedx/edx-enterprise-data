@@ -41,7 +41,8 @@ class EnterpriseUserSerializer(serializers.ModelSerializer):
         extra_fields = request.query_params.get('extra_fields')
         if extra_fields is not None:
             if 'enrollment_count' in extra_fields:
-                representation['enrollment_count'] = instance.enrollments.count()
+                enrollments = instance.enrollments.exclude(consent_granted=False)
+                representation['enrollment_count'] = enrollments.count()
         return representation
 
 

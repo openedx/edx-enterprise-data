@@ -18,7 +18,7 @@ from django.db.models import Count, Max
 from django.utils import timezone
 
 from enterprise_data.api.v0 import serializers
-from enterprise_data.filters import ConsentGrantedFilterBackend
+from enterprise_data.filters import CONSENT_TRUE_OR_NONE_Q, ConsentGrantedFilterBackend
 from enterprise_data.models import EnterpriseEnrollment, EnterpriseUser
 from enterprise_data.permissions import HasDataAPIDjangoGroupAccess
 
@@ -220,18 +220,20 @@ class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         """
         enterprise_id = kwargs['enterprise_id']
         users = self.queryset.filter(enterprise_id=enterprise_id)
+        # Ignore users that only have declined consent on all enrollments
+        users = users.filter(CONSENT_TRUE_OR_NONE_Q).distinct()
 
         has_enrollments = request.query_params.get('has_enrollments')
         if has_enrollments == 'true':
-            users = users.filter(enrollments__isnull=False).distinct()
+            users = users.filter(CONSENT_TRUE_OR_NONE_Q, enrollments__isnull=False).distinct()
         elif has_enrollments == 'false':
-            users = users.filter(enrollments__isnull=True)
+            users = users.filter(CONSENT_TRUE_OR_NONE_Q, enrollments__isnull=True)
 
         active_courses = request.query_params.get('active_courses')
         if active_courses == 'true':
-            users = users.filter(enrollments__course_end__gte=timezone.now())
+            users = users.filter(CONSENT_TRUE_OR_NONE_Q, enrollments__course_end__gte=timezone.now())
         elif active_courses == 'false':
-            users = users.filter(enrollments__course_end__lte=timezone.now())
+            users = users.filter(CONSENT_TRUE_OR_NONE_Q, enrollments__course_end__lte=timezone.now())
 
         # Bit to account for pagination
         page = self.paginate_queryset(users)
@@ -256,6 +258,7 @@ class EnterpriseLearnerCompletedCoursesViewSet(EnterpriseViewSet, viewsets.Model
         # Get the number of completed courses against a learner.
         enrollments = EnterpriseEnrollment.objects.filter(
             enterprise_id=enterprise_id,
-            has_passed=True
+            has_passed=True,
+            consent_granted=True,
         ).values('user_email').annotate(completed_courses=Count('course_id')).order_by('user_email')
         return enrollments
