@@ -13,6 +13,9 @@ Change Log
 
 Unreleased
 ----------
+[0.2.11] - 2018-09-28
+---------------------
+* Running make upgrade and installing new packages
 
 [0.2.10] - 2018-09-28
 ---------------------

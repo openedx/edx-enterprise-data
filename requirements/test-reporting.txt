@@ -4,8 +4,8 @@
 #
 #    pip-compile --output-file requirements/test-reporting.txt requirements/test-reporting.in
 #
-atomicwrites==1.2.0       # via pytest
-attrs==18.1.0             # via pytest
+atomicwrites==1.2.1       # via pytest
+attrs==18.2.0             # via pytest
 coverage==4.5.1           # via pytest-cov
 ddt==1.1.2
 funcsigs==1.0.2           # via mock, pytest
