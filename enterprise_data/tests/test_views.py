@@ -291,6 +291,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
             enterprise_user=self.ent_user4,
             course_end=date_in_past,
             consent_granted=True,
+            has_passed=True,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user4,
@@ -333,6 +334,22 @@ class TestEnterpriseUsersViewSet(APITestCase):
             course_end=date_in_past,
         )
 
+        # User with True & None for enrollment consent and course has ended
+        self.ent_user8 = EnterpriseUserFactory(
+            enterprise_user_id=8,
+        )
+        EnterpriseEnrollmentFactory(
+            enterprise_user=self.ent_user8,
+            course_end=date_in_past,
+            has_passed=True,
+        )
+        EnterpriseEnrollmentFactory(
+            enterprise_user=self.ent_user8,
+            consent_granted=True,
+            course_end=date_in_past,
+            has_passed=True,
+        )
+
     def test_viewset_no_query_params(self):
         """
         EnterpriseUserViewset should return all users if no filtering query
@@ -341,7 +358,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         url = reverse('v0:enterprise-users-list',
                       kwargs={'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'})
         response = self.client.get(url)
-        assert response.json()['count'] == 6
+        assert response.json()['count'] == 7
 
     @mock.patch('enterprise_data.api.v0.views.EnterpriseUsersViewSet.paginate_queryset')
     def test_viewset_no_query_params_no_pagination(self, mock_paginate):
@@ -354,7 +371,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
                       kwargs={'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'})
         response = self.client.get(url)
         assert 'count' not in response.json()
-        assert len(response.json()) == 6
+        assert len(response.json()) == 7
 
     def test_viewset_filter_has_enrollments_true(self):
         """
@@ -368,7 +385,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
             kwargs=kwargs,
         )
         response = self.client.get(url, params)
-        assert response.json()['count'] == 3
+        assert response.json()['count'] == 4
 
     def test_viewset_filter_has_enrollments_false(self):
         """
@@ -396,7 +413,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
             kwargs=kwargs,
         )
         response = self.client.get(url, params)
-        assert response.json()['count'] == 6
+        assert response.json()['count'] == 7
 
     def test_viewset_filter_active_courses_true(self):
         """
@@ -426,6 +443,40 @@ class TestEnterpriseUsersViewSet(APITestCase):
             kwargs=kwargs,
         )
         response = self.client.get(url, params)
+        assert response.json()['count'] == 2
+
+    def test_viewset_filter_all_enrollments_passed_true(self):
+        """
+        EnterpriseUserViewset should return all those users that have all
+        enrollments with passed status and also those enrollments are only for
+        those courses which have `course_end` date in the past, if
+        `has_enrollments` query param is true, `active_courses` query param is
+        false and `all_enrollments_passed` query param is true.
+        """
+        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        params = {'has_enrollments': 'true', 'active_courses': 'false', 'all_enrollments_passed': 'true', }
+        url = reverse(
+            'v0:enterprise-users-list',
+            kwargs=kwargs,
+        )
+        response = self.client.get(url, params)
+        assert response.json()['count'] == 1
+
+    def test_viewset_filter_all_enrollments_passed_false(self):
+        """
+        EnterpriseUserViewset should return all those users that have all
+        enrollments with failed status and also those enrollments are only for
+        those courses which have `course_end` date in the past, if
+        `has_enrollments` query param is true, `active_courses` query param is
+        false and `all_enrollments_passed` query param is false.
+        """
+        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        params = {'has_enrollments': 'true', 'active_courses': 'false', 'all_enrollments_passed': 'false', }
+        url = reverse(
+            'v0:enterprise-users-list',
+            kwargs=kwargs,
+        )
+        response = self.client.get(url, params)
         assert response.json()['count'] == 1
 
     def test_viewset_enrollment_count_present(self):
@@ -438,7 +489,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
             'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
             'pk': self.ent_user4.id,
         }
-        params = {'extra_fields': 'enrollment_count', }
+        params = {'extra_fields': ['enrollment_count'], }
         url = reverse(
             'v0:enterprise-users-detail',
             kwargs=kwargs,
@@ -462,6 +513,44 @@ class TestEnterpriseUsersViewSet(APITestCase):
         )
         response = self.client.get(url,)
         assert 'enrollment_count' not in response.json()
+
+    def test_viewset_enrollment_count_and_course_completion_count_present(self):
+        """
+        EnterpriseUserViewset should ultimately return a response that includes
+        both the `enrollment_count` field and `course_completion_count` field
+        if value ["enrollment_count", "course_completion_count"] is specified in
+        the `extra_fields` query parameter value.
+        """
+        kwargs = {
+            'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
+            'pk': self.ent_user4.id,
+        }
+        params = {'extra_fields': ['enrollment_count', 'course_completion_count'], }
+        url = reverse(
+            'v0:enterprise-users-detail',
+            kwargs=kwargs,
+        )
+        response = self.client.get(url, params)
+        assert response.json()['enrollment_count'] == 2
+        assert response.json()['course_completion_count'] == 1
+
+    def test_viewset_course_completion_count_not_present(self):
+        """
+        EnterpriseUserViewset should ultimately return a response that
+        does not include the `course_completion_count` field if
+        "course_completion_count" is not specified in the "extra_fields" query
+        parameter value.
+        """
+        kwargs = {
+            'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
+            'pk': self.ent_user4.id,
+        }
+        url = reverse(
+            'v0:enterprise-users-detail',
+            kwargs=kwargs,
+        )
+        response = self.client.get(url,)
+        assert 'course_completion_count' not in response.json()
 
     def test_no_page_querystring_skips_pagination(self):
         """

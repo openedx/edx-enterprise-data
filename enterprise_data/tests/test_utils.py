@@ -35,6 +35,7 @@ class EnterpriseEnrollmentFactory(factory.django.DjangoModelFactory):
     course_id = factory.lazy_attribute(lambda x: FAKER.slug())
     enrollment_created_timestamp = factory.lazy_attribute(lambda x: '2018-01-01')
     user_current_enrollment_mode = factory.lazy_attribute(lambda x: 'verified')
+    has_passed = False
 
 
 class UserFactory(factory.django.DjangoModelFactory):
