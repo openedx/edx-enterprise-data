@@ -213,6 +213,9 @@ class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
     """
     queryset = EnterpriseUser.objects.all()
     serializer_class = serializers.EnterpriseUserSerializer
+    filter_backends = (filters.OrderingFilter,)
+    ordering_fields = '__all__'
+    ordering = ('user_email',)
 
     def list(self, request, **kwargs):
         """
@@ -240,6 +243,9 @@ class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
             users = users.exclude(enrollments__has_passed=False)
         elif all_enrollments_passed == 'false':
             users = users.filter(enrollments__has_passed=False)
+
+        # do the sorting
+        users = self.filter_queryset(users)
 
         # Bit to account for pagination
         page = self.paginate_queryset(users)
