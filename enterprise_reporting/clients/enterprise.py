@@ -22,7 +22,7 @@ class EnterpriseAPIClient(EdxOAuth2APIClient):
     ENTERPRISE_REPORTING_ENDPOINT = 'enterprise_customer_reporting'
     ENTERPRISE_CUSTOMER_CATALOGS_ENDPOINT = 'enterprise_catalogs'
 
-    PAGE_SIZE = os.environ.get('PAGE_SIZE', default=1000)
+    PAGE_SIZE = os.getenv('PAGE_SIZE', default=1000)
 
     @EdxOAuth2APIClient.refresh_token
     def get_all_enterprise_reporting_configs(self, **kwargs):
@@ -81,10 +81,10 @@ class EnterpriseDataApiClient(EdxOAuth2APIClient):
     Client for connecting to the Enterprise Data API.
     """
 
-    API_BASE_URL = os.environ.get('ANALYTICS_API_URL') + '/enterprise/api/v0'
+    API_BASE_URL = os.getenv('ANALYTICS_API_URL', default='') + '/enterprise/api/v0'
     APPEND_SLASH = True
 
-    PAGE_SIZE = os.environ.get('PAGE_SIZE', default=1000)
+    PAGE_SIZE = os.getenv('PAGE_SIZE', default=1000)
 
     @EdxOAuth2APIClient.refresh_token
     def get_enterprise_enrollments(self, enterprise_customer_uuid):
