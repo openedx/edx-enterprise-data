@@ -80,3 +80,24 @@ class EnterpriseUserFactory(factory.django.DjangoModelFactory):
     user_email = factory.Sequence(u'robot+test+{0}@edx.org'.format)
     user_country_code = factory.lazy_attribute(lambda x: FAKER.country_code())
     last_activity_date = datetime(2012, 1, 1).date()
+
+
+def get_dummy_enterprise_api_data(**kwargs):
+    """
+    DRY method to get enterprise dummy data.
+
+    Get dummy data for an enterprise from `enterprise-customer` API.
+    """
+    enterprise_api_dummy_data = {
+        'uuid': kwargs.get('enterprise_id', 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'),
+        'name': 'Enterprise ABC',
+        'slug': 'enterprise_abc',
+        'active': True,
+        'enable_data_sharing_consent': kwargs.get('enable_data_sharing_consent', True),
+        'enforce_data_sharing_consent': kwargs.get('enforce_data_sharing_consent', 'at_enrollment'),
+        'branding_configuration': {},
+        'identity_provider': 'saml-ubc',
+        'enable_audit_enrollment': kwargs.get('enable_audit_enrollment', False),
+        'replace_sensitive_sso_username': False
+    }
+    return enterprise_api_dummy_data

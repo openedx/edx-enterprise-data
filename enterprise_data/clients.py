@@ -5,12 +5,16 @@ from __future__ import absolute_import, unicode_literals
 
 import logging
 
+from edx_django_utils.cache import TieredCache
 from edx_rest_api_client.client import EdxRestApiClient
 from edx_rest_api_client.exceptions import HttpClientError, HttpServerError
 from rest_framework.exceptions import NotFound, ParseError
 
 from django.conf import settings
 
+from enterprise_data.utils import get_cache_key
+
+DEFAULT_REPORTING_CACHE_TIMEOUT = 60 * 60 * 6  # 6 hours (Value is in seconds)
 LOGGER = logging.getLogger('enterprise_data')
 
 
@@ -62,6 +66,15 @@ class EnterpriseApiClient(EdxRestApiClient):
         """
         Get the enterprises that this user has access to for the data api permission django group.
         """
+        cache_key = get_cache_key(
+            resource='enterprise-customer',
+            user=user.username,
+            enterprise_customer=enterprise_id,
+        )
+        cached_response = TieredCache.get_cached_response(cache_key)
+        if cached_response.is_found:
+            return cached_response.value
+
         try:
             querystring = {
                 'permissions': [self.ENTERPRISE_DATA_API_GROUP],
@@ -87,4 +100,5 @@ class EnterpriseApiClient(EdxRestApiClient):
         if response['count'] == 0:
             return None
 
+        TieredCache.set_all_tiers(cache_key, response['results'][0], DEFAULT_REPORTING_CACHE_TIMEOUT)
         return response['results'][0]

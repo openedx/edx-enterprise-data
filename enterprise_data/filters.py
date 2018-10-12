@@ -27,3 +27,26 @@ class ConsentGrantedFilterBackend(filters.BaseFilterBackend):
         """
         filter_kwargs = {view.CONSENT_GRANTED_FILTER: True}
         return queryset.filter(**filter_kwargs)
+
+
+class AuditEnrollmentsFilterBackend(filters.BaseFilterBackend):
+    """
+    Filter backend to exclude enrollments where enrollment mode is `audit`.
+
+    This requires that `ENROLLMENT_MODE_FILTER` be set in the view as a class
+    variable, to identify the object's relationship to the
+    `user_current_enrollment_mode` field.
+    """
+
+    def filter_queryset(self, request, queryset, view):
+        """
+        Filter out queryset for results where enrollment mode is `audit`.
+        """
+        enterprise_id = view.kwargs['enterprise_id']
+        enable_audit_enrollment = request.session['enable_audit_enrollment'].get(enterprise_id, False)
+
+        if not enable_audit_enrollment:
+            filter_kwargs = {view.ENROLLMENT_MODE_FILTER: 'audit'}
+            queryset = queryset.exclude(**filter_kwargs)
+
+        return queryset
