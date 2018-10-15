@@ -14,6 +14,10 @@ Change Log
 Unreleased
 ----------
 
+[0.2.13] - 2018-10-15
+---------------------
+* Add `progress_v2` report generation in `JSON` format
+
 [0.2.12] - 2018-10-08
 ---------------------
 * Add filter `all_enrollments_passed` to filter out enterprise learners on the basis of all enrollments passed

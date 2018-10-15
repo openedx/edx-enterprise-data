@@ -158,6 +158,18 @@ class EnterpriseReportSender(object):
                 writer.writerow(list(OrderedDict(sorted(enrollment.items())).values()))
         return [data_report_file]
 
+    def _generate_enterprise_report_progress_v2_json(self):
+        """
+        Query the Enterprise Data API to get progress data to be turned into json.
+        """
+        enrollments = EnterpriseDataApiClient().get_enterprise_enrollments(self.enterprise_customer_uuid)['results']
+        report_data = enrollments if enrollments else []
+
+        with open(self.data_report_file_name, 'w') as data_report_file:
+            json.dump(report_data, data_report_file, indent=4)
+
+        return [data_report_file]
+
     def _generate_enterprise_report_catalog_csv(self):
         """
         Query the Enterprise Customer Catalog API and turn results into multiple CSV files.
