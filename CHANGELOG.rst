@@ -14,6 +14,10 @@ Change Log
 Unreleased
 ----------
 
+[0.2.15] - 2018-10-15
+---------------------
+* Add sorting for /learner_completed_courses endpoint.
+
 [0.2.14] - 2018-10-15
 ---------------------
 * Add sorting for /users endpoint
