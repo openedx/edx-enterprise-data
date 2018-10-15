@@ -255,6 +255,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         assert len(result) == 2
 
 
+@ddt.ddt
 @mark.django_db
 class TestEnterpriseUsersViewSet(APITestCase):
     """
@@ -565,6 +566,33 @@ class TestEnterpriseUsersViewSet(APITestCase):
         params = {'no_page': 'true', }
 
         response = self.client.get(url, params)
+
+    @ddt.data(
+        (
+            'id',
+            [4, 8]
+        ),
+        (
+            '-id',
+            [8, 4]
+        )
+    )
+    @ddt.unpack
+    def test_viewset_ordering(self, ordering, users):
+        """
+        EnterpriseUserViewset should order users returned if the value
+        for ordering query param is set
+        """
+        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        params = {'ordering': ordering, 'has_enrollments': 'true', }
+        url = reverse(
+            'v0:enterprise-users-list',
+            kwargs=kwargs,
+        )
+        response = self.client.get(url, params)
+        assert response.json()['count'] == 4
+        assert response.json()['results'][0]['id'] == users[0]
+        assert response.json()['results'][3]['id'] == users[1]
 
 
 class TestEnterpriseLearnerCompletedCourses(APITestCase):
