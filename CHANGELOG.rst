@@ -14,6 +14,11 @@ Change Log
 Unreleased
 ----------
 
+[1.0.0] - 2018-10-16
+--------------------
+* Updated edx-drf-extensions imports. edx-enterprise-data will no longer work
+  with outdated versions of edx-drf-extensions.
+
 [0.2.15] - 2018-10-15
 ---------------------
 * Add sorting for /learner_completed_courses endpoint.
