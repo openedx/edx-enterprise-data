@@ -595,6 +595,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         assert response.json()['results'][3]['id'] == users[1]
 
 
+@ddt.ddt
 class TestEnterpriseLearnerCompletedCourses(APITestCase):
     """
     Tests for EnterpriseLearnerCompletedCoursesViewSet.
@@ -652,3 +653,111 @@ class TestEnterpriseLearnerCompletedCourses(APITestCase):
         assert isinstance(result, list)
         assert len(result) == 1
         assert result == expected_result
+
+    @ddt.data(
+        (
+            'completed_courses',
+            [
+                {
+                    'user_email': 'test2@example.com',
+                    'user_enrollments': 2,
+                },
+                {
+                    'user_email': 'test3@example.com',
+                    'user_enrollments': 3,
+                },
+            ],
+            3,
+            [1, 2, 3]
+        ),
+        (
+            'completed_courses',
+            [
+                {
+                    'user_email': 'test2@example.com',
+                    'user_enrollments': 2,
+                },
+                {
+                    'user_email': 'test3@example.com',
+                    'user_enrollments': 3,
+                },
+                {
+                    'user_email': 'test4@example.com',
+                    'user_enrollments': 1,
+                },
+            ],
+            4,
+            [1, 1, 2, 3]
+        ),
+        (
+            '-completed_courses',
+            [
+                {
+                    'user_email': 'test2@example.com',
+                    'user_enrollments': 2,
+                },
+                {
+                    'user_email': 'test3@example.com',
+                    'user_enrollments': 3,
+                },
+            ],
+            3,
+            [3, 2, 1]
+        ),
+        (
+            '-completed_courses',
+            [
+                {
+                    'user_email': 'test2@example.com',
+                    'user_enrollments': 2,
+                },
+                {
+                    'user_email': 'test3@example.com',
+                    'user_enrollments': 3,
+                },
+                {
+                    'user_email': 'test4@example.com',
+                    'user_enrollments': 2,
+                },
+            ],
+            4,
+            [3, 2, 2, 1]
+        ),
+    )
+    @ddt.unpack
+    def test_viewset_ordering(
+        self,
+        ordering,
+        enrollments_data,
+        expected_results_count,
+        expected_completed_courses
+    ):
+        """
+        EnterpriseLearnerCompletedCoursesViewSet should order enrollments returned if the value
+        for ordering query param is set.
+        """
+        # Add enrollments
+        one_day = timedelta(days=1)
+        date_in_past = timezone.now() - one_day
+        ent_user = EnterpriseUserFactory(
+            enterprise_user_id=1,
+        )
+        for enrollment in enrollments_data:
+            for _idx in range(enrollment['user_enrollments']):
+                EnterpriseEnrollmentFactory(
+                    user_email=enrollment['user_email'],
+                    enterprise_user=ent_user,
+                    course_end=date_in_past,
+                    has_passed=True,
+                    consent_granted=True,
+                )
+        url = reverse(
+            'v0:enterprise-learner-completed-courses-list',
+            kwargs={'enterprise_id': self.enterprise_id}
+        )
+        params = {'ordering': ordering}
+        response = self.client.get(url, params)
+        assert response.json()['count'] == expected_results_count
+
+        for idx, expected_course_completed_count in enumerate(expected_completed_courses):
+            assert response.json()['results'][idx]['completed_courses'] == expected_course_completed_count

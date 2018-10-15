@@ -261,6 +261,9 @@ class EnterpriseLearnerCompletedCoursesViewSet(EnterpriseViewSet, viewsets.Model
     View to manage enterprise learner completed course enrollments.
     """
     serializer_class = serializers.LearnerCompletedCoursesSerializer
+    filter_backends = (filters.OrderingFilter,)
+    ordering_fields = '__all__'
+    ordering = ('user_email',)
 
     def get_queryset(self):
         """
