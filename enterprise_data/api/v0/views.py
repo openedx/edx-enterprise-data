@@ -7,7 +7,7 @@ from __future__ import absolute_import, unicode_literals
 from datetime import date, timedelta
 from logging import getLogger
 
-from edx_rest_framework_extensions.authentication import JwtAuthentication
+from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
 from edx_rest_framework_extensions.paginators import DefaultPagination
 from rest_framework import filters, viewsets
 from rest_framework.decorators import list_route
