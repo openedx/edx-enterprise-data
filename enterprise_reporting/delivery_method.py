@@ -27,11 +27,12 @@ class DeliveryMethod(object):
         self.data_type = reporting_config['data_type']
         self.report_type = reporting_config['report_type']
         self.password = password
+        self.pgp_encryption_key = reporting_config['pgp_encryption_key']
 
     def send(self, files):
         """Base method for sending files, to perform common sending logic."""
         LOGGER.info('Encrypting data report for {}'.format(self.enterprise_customer_name))
-        return compress_and_encrypt(files, self.password)
+        return compress_and_encrypt(files, self.password, self.pgp_encryption_key)
 
 
 class SMTPDeliveryMethod(DeliveryMethod):

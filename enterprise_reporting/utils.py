@@ -15,6 +15,7 @@ from email.mime.text import MIMEText
 from io import open  # pylint: disable=redefined-builtin
 
 import boto3
+import pgpy
 import pyminizip
 import pytz
 from cryptography.fernet import Fernet
@@ -33,9 +34,35 @@ FREQUENCY_TYPE_WEEKLY = 'weekly'
 AWS_REGION = 'us-east-1'
 
 
-def compress_and_encrypt(files, password):
+def compress_and_encrypt(files, password=None, pgp_key=None):
     """
-    Given a file and a password, create an encrypted zip file. Return the new filename.
+    Given file(s) and a password or a PGP key,
+    create a password protected or encrypted compressed file.
+    Return the new filename.
+    """
+    if pgp_key is not None:
+        zipfile = _get_compressed_file(files)
+        return _get_encrypted_file(zipfile, pgp_key)
+    else:
+        return _get_compressed_file(files, password)
+
+
+def _get_encrypted_file(zipfile, pgp_key):
+    """
+    Given a file and a pgp public key, create an encrypted file. Return the new filename.
+    """
+    rsa_pub, _ = pgpy.PGPKey.from_blob(pgp_key)
+    message = pgpy.PGPMessage.new(zipfile, file=True)
+    pgpfile = re.sub(r'(_(\w+))?\.(\w+)$', '.pgp', zipfile)
+    encrypted_message = rsa_pub.encrypt(message)
+    with open(pgpfile, 'wb') as encrypted_file:
+        encrypted_file.write(encrypted_message.__bytes__())
+    return pgpfile
+
+
+def _get_compressed_file(files, password=None):
+    """
+    Given file(s) and a password, create a zip file. Return the new filename.
     """
     multiple_files = len(files) > 1
     # Replace the data and report type with just `.zip`.
