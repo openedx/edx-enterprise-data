@@ -37,16 +37,11 @@ class EnterpriseUserSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super(EnterpriseUserSerializer, self).to_representation(instance)
-        request = self.context.get('request')
-        extra_fields = request.query_params.getlist('extra_fields')
-        if extra_fields is not None:
-            if 'enrollment_count' in extra_fields:
-                enrollments = instance.enrollments.exclude(consent_granted=False)
-                representation['enrollment_count'] = enrollments.count()
-            if 'course_completion_count' in extra_fields:
-                representation['course_completion_count'] = instance.enrollments.exclude(
-                    consent_granted=False
-                ).filter(has_passed=True).count()
+
+        if hasattr(instance, 'enrollment_count'):
+            representation['enrollment_count'] = instance.enrollment_count
+        if hasattr(instance, 'course_completion_count'):
+            representation['course_completion_count'] = instance.course_completion_count
 
         return representation
 

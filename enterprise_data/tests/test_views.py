@@ -323,16 +323,19 @@ class TestEnterpriseUsersViewSet(APITestCase):
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user7,
             consent_granted=True,
+            has_passed=True,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user7,
             consent_granted=False,
             course_end=date_in_future,
+            has_passed=False,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user7,
             consent_granted=False,
             course_end=date_in_past,
+            has_passed=True,
         )
 
         # User with True & None for enrollment consent and course has ended
@@ -535,6 +538,23 @@ class TestEnterpriseUsersViewSet(APITestCase):
         assert response.json()['enrollment_count'] == 2
         assert response.json()['course_completion_count'] == 1
 
+    def test_viewset_enrollment_count_consent(self):
+        """
+        EnterpriseUserViewset should respect consent_granted on enrollments
+        when determining the enrollment_count for a user
+        """
+        kwargs = {
+            'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
+            'pk': self.ent_user7.id,
+        }
+        params = {'extra_fields': ['enrollment_count'], }
+        url = reverse(
+            'v0:enterprise-users-detail',
+            kwargs=kwargs,
+        )
+        response = self.client.get(url, params)
+        assert response.json()['enrollment_count'] == 1
+
     def test_viewset_course_completion_count_not_present(self):
         """
         EnterpriseUserViewset should ultimately return a response that
@@ -552,6 +572,103 @@ class TestEnterpriseUsersViewSet(APITestCase):
         )
         response = self.client.get(url,)
         assert 'course_completion_count' not in response.json()
+
+    def test_viewset_course_completion_consent(self):
+        """
+        EnterpriseUserViewset should respect consent_granted on enrollments
+        when determining the course_completion_count for a user
+        """
+        kwargs = {
+            'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
+            'pk': self.ent_user7.id,
+        }
+        params = {'extra_fields': ['course_completion_count'], }
+        url = reverse(
+            'v0:enterprise-users-detail',
+            kwargs=kwargs,
+        )
+        response = self.client.get(url, params)
+        assert response.json()['course_completion_count'] == 1
+
+    def test_users_are_sortable_by_enrollment_count(self):
+        """
+        EnterpriseUserViewset list view should be able to return a list
+        of users sorted by their respective enrollment counts
+        """
+        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        url = reverse(
+            'v0:enterprise-users-list',
+            kwargs=kwargs,
+        )
+        params = {
+            'extra_fields': 'enrollment_count',
+            'ordering': 'enrollment_count'
+        }
+        response = self.client.get(url, params)
+        current_enrollment_count = 0
+        for user in response.json()['results']:
+            assert user['enrollment_count'] >= current_enrollment_count
+            current_enrollment_count = user['enrollment_count']
+
+    def test_users_are_sortable_by_enrollment_count_reverse(self):
+        """
+        EnterpriseUserViewset list view should be able to return a list
+        of users reverse sorted by their respective enrollment counts
+        """
+        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        url = reverse(
+            'v0:enterprise-users-list',
+            kwargs=kwargs,
+        )
+        params = {
+            'extra_fields': 'enrollment_count',
+            'ordering': '-enrollment_count'
+        }
+        response = self.client.get(url, params)
+        current_enrollment_count = 99
+        for user in response.json()['results']:
+            assert user['enrollment_count'] <= current_enrollment_count
+            current_enrollment_count = user['enrollment_count']
+
+    def test_users_are_sortable_by_course_completion_count(self):
+        """
+        EnterpriseUserViewset list view should be able to return a list
+        of users sorted by their respective course_completion_count
+        """
+        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        url = reverse(
+            'v0:enterprise-users-list',
+            kwargs=kwargs,
+        )
+        params = {
+            'extra_fields': 'course_completion_count',
+            'ordering': 'course_completion_count'
+        }
+        response = self.client.get(url, params)
+        current_course_completion_count = 0
+        for user in response.json()['results']:
+            assert user['course_completion_count'] >= current_course_completion_count
+            current_course_completion_count = user['course_completion_count']
+
+    def test_users_are_sortable_by_course_completion_count_reverse(self):
+        """
+        EnterpriseUserViewset list view should be able to return a list
+        of users sorted by their respective course_completion_count
+        """
+        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        url = reverse(
+            'v0:enterprise-users-list',
+            kwargs=kwargs,
+        )
+        params = {
+            'extra_fields': 'course_completion_count',
+            'ordering': '-course_completion_count'
+        }
+        response = self.client.get(url, params)
+        current_course_completion_count = 99
+        for user in response.json()['results']:
+            assert user['course_completion_count'] <= current_course_completion_count
+            current_course_completion_count = user['course_completion_count']
 
     def test_no_page_querystring_skips_pagination(self):
         """
