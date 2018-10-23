@@ -2,11 +2,15 @@
 """
 Test utilities.
 """
+from __future__ import absolute_import, unicode_literals
 
+import os
 import unittest
+import tempfile
 
 import ddt
 
+from zipfile import ZipFile
 from enterprise_reporting import utils
 
 
@@ -147,3 +151,77 @@ class TestUtilities(unittest.TestCase):
         """The dictionary, when weird, raises an error."""
         with self.assertRaises(NotImplementedError):
             utils.flatten_dict(dictionary)
+
+
+@ddt.ddt
+class TestCompressEncrypt(unittest.TestCase):
+    """
+    Tests `compress_and_encrypt` works correctly.
+    """
+    def create_files(self, files_data):
+        """
+        Creates files based on provided file data.
+        """
+        files = []
+        total_size = 0
+        for file_data in files_data:
+            tf = tempfile.NamedTemporaryFile(suffix='.txt')
+            tf.write(file_data['size'] * b'i')
+            tf.flush()
+            tf.seek(0)
+
+            files.append({
+                'file': tf,
+                'size': file_data['size'],
+            })
+            total_size += file_data['size']
+
+        return files, total_size
+
+    @ddt.data(
+        [
+            {
+                'name': 'lord-of-the-rings.txt',
+                'size': 1000
+            },
+        ],
+        [
+            {
+                'name': 'lord-of-the-rings.txt',
+                'size': 1000
+            },
+            {
+                'name': 'harry-potter-and-deathly-hollowsc.txt',
+                'size': 500
+            },
+        ],
+    )
+    def test_compress_and_encrypt(self, files_data):
+        """
+        Test that files are correctly compressed.
+        """
+        files, total_original_size = self.create_files(files_data)
+
+        password = b'frodo-baggins'
+        compressed_file = utils.compress_and_encrypt(
+            [file['file'] for file in files],
+            password
+        )
+
+        # Verify file is compressed.
+        compressed_file_size = os.path.getsize(compressed_file)
+        self.assertTrue(compressed_file_size < total_original_size)
+
+        zipfile = ZipFile(compressed_file, 'r')
+
+        for file in files:
+            # Verify text file is present in zip file.
+            self.assertIn(file['file'].name.split('/')[-1], zipfile.namelist())
+
+            # Verify file content is readable is correct password.
+            content = zipfile.read(file['file'].name.split('/')[-1], password)
+            self.assertEqual(len(content), file['size'])
+
+            # Also verify file is only accessible with correct password.
+            with self.assertRaises(RuntimeError):
+                zipfile.read(file['file'].name.split('/')[-1], b'gollum')
