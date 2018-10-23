@@ -14,7 +14,7 @@ from rest_framework.decorators import list_route
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
-from django.db.models import Count, Max
+from django.db.models import Count, Max, OuterRef, Subquery
 from django.utils import timezone
 
 from enterprise_data.api.v0 import serializers
@@ -217,32 +217,53 @@ class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
     ordering_fields = '__all__'
     ordering = ('user_email',)
 
-    def list(self, request, **kwargs):
+    def get_queryset(self):
+        queryset = super(EnterpriseUsersViewSet, self).get_queryset()
+
+        # Ignore users that only have declined consent on all enrollments
+        queryset = queryset.filter(CONSENT_TRUE_OR_NONE_Q).distinct()
+
+        has_enrollments = self.request.query_params.get('has_enrollments')
+        if has_enrollments == 'true':
+            queryset = queryset.filter(CONSENT_TRUE_OR_NONE_Q, enrollments__isnull=False).distinct()
+        elif has_enrollments == 'false':
+            queryset = queryset.filter(CONSENT_TRUE_OR_NONE_Q, enrollments__isnull=True)
+
+        active_courses = self.request.query_params.get('active_courses')
+        if active_courses == 'true':
+            queryset = queryset.filter(CONSENT_TRUE_OR_NONE_Q, enrollments__course_end__gte=timezone.now())
+        elif active_courses == 'false':
+            queryset = queryset.filter(CONSENT_TRUE_OR_NONE_Q, enrollments__course_end__lte=timezone.now())
+
+        all_enrollments_passed = self.request.query_params.get('all_enrollments_passed')
+        if all_enrollments_passed == 'true':
+            queryset = queryset.exclude(enrollments__has_passed=False)
+        elif all_enrollments_passed == 'false':
+            queryset = queryset.filter(enrollments__has_passed=False)
+
+        extra_fields = self.request.query_params.getlist('extra_fields')
+        if 'enrollment_count' in extra_fields:
+            queryset = queryset.annotate(
+                enrollment_count=Count('enrollments', distinct=True)
+            )
+
+        if 'course_completion_count' in extra_fields:
+            enrollment_subquery = EnterpriseEnrollment.objects.filter(
+                enterprise_user=OuterRef("pk"),
+                has_passed=True,
+            ).exclude(consent_granted=False)
+            queryset = queryset.annotate(
+                course_completion_count=Count(Subquery(enrollment_subquery.values("pk")), distinct=True)
+            )
+
+        return queryset
+
+    def list(self, request, **kwargs):  # pylint: disable=unused-argument
         """
         List view for learner records for a given enterprise.
         """
         enterprise_id = kwargs['enterprise_id']
-        users = self.queryset.filter(enterprise_id=enterprise_id)
-        # Ignore users that only have declined consent on all enrollments
-        users = users.filter(CONSENT_TRUE_OR_NONE_Q).distinct()
-
-        has_enrollments = request.query_params.get('has_enrollments')
-        if has_enrollments == 'true':
-            users = users.filter(CONSENT_TRUE_OR_NONE_Q, enrollments__isnull=False).distinct()
-        elif has_enrollments == 'false':
-            users = users.filter(CONSENT_TRUE_OR_NONE_Q, enrollments__isnull=True)
-
-        active_courses = request.query_params.get('active_courses')
-        if active_courses == 'true':
-            users = users.filter(CONSENT_TRUE_OR_NONE_Q, enrollments__course_end__gte=timezone.now())
-        elif active_courses == 'false':
-            users = users.filter(CONSENT_TRUE_OR_NONE_Q, enrollments__course_end__lte=timezone.now())
-
-        all_enrollments_passed = request.query_params.get('all_enrollments_passed')
-        if all_enrollments_passed == 'true':
-            users = users.exclude(enrollments__has_passed=False)
-        elif all_enrollments_passed == 'false':
-            users = users.filter(enrollments__has_passed=False)
+        users = self.get_queryset().filter(enterprise_id=enterprise_id)
 
         # do the sorting
         users = self.filter_queryset(users)
