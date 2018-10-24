@@ -253,7 +253,7 @@ class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         if 'course_completion_count' in extra_fields:
             enrollment_subquery = (
                 EnterpriseEnrollment.objects.filter(
-                    enterprise_user=OuterRef("pk"),
+                    enterprise_user=OuterRef("enterprise_user_id"),
                     has_passed=True,
                 )
                 .exclude(consent_granted=False)
