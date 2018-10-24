@@ -1,4 +1,4 @@
-pip-tools==2.0.2                 		# Requirements file management
+pip-tools                 		# Requirements file management
 tox==3.0.0                       		# virtualenv management for tests
 vertica-python==0.7.3                   # Required for Enterprise Reporting
 pyminizip==0.2.1                        # Required for Enterprise Reporting
