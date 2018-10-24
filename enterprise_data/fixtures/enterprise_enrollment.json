@@ -34,7 +34,8 @@
       "current_grade": 0.80,
       "course_price": 200.00,
       "discount_price": 120.00,
-      "created": "2018-08-01 23:14:35Z"
+      "created": "2018-08-01 23:14:35Z",
+      "unenrollment_timestamp": null
     }
   },
   {
@@ -72,7 +73,8 @@
       "current_grade": 0.80,
       "course_price": 200.00,
       "discount_price": 120.00,
-      "created": "2018-07-31 23:14:35Z"
+      "created": "2018-07-31 23:14:35Z",
+      "unenrollment_timestamp": "2014-06-29 16:02:38Z"
     }
   },
   {
@@ -110,7 +112,8 @@
       "current_grade": 0.80,
       "course_price": 200.00,
       "discount_price": 120.00,
-      "created": "2018-07-30 23:14:35Z"
+      "created": "2018-07-30 23:14:35Z",
+      "unenrollment_timestamp": "2014-06-29 16:02:38Z"
     }
   },
   {
@@ -148,7 +151,8 @@
       "current_grade": 0.80,
       "course_price": 200.00,
       "discount_price": 120.00,
-      "created": "2018-07-29 23:14:35Z"
+      "created": "2018-07-29 23:14:35Z",
+      "unenrollment_timestamp": "2016-09-05 16:02:38Z"
     }
   }
 ]

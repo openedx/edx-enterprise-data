@@ -68,6 +68,7 @@ class EnterpriseEnrollment(models.Model):
     course_price = models.DecimalField(decimal_places=2, max_digits=12, null=True)
     discount_price = models.DecimalField(decimal_places=2, max_digits=12, null=True)
     created = models.DateTimeField(null=True)
+    unenrollment_timestamp = models.DateTimeField(null=True)
 
     def __str__(self):
         """

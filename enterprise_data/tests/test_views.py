@@ -55,6 +55,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
             'current_page': 1,
             'results': [{
                 'enrollment_created_timestamp': '2014-06-27T16:02:38Z',
+                'unenrollment_timestamp': '2014-06-29T16:02:38Z',
                 'user_current_enrollment_mode': 'verified',
                 'last_activity_date': '2017-06-23',
                 'has_passed': True,
@@ -89,8 +90,10 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
                 'discount_price': '120.00',
                 'course_api_url': ('/enterprise/v1/enterprise-catalogs/ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
                                    '/courses/edX/Open_DemoX/edx_demo_course'),
+                'unenrollment_end_within_date': True,
             }, {
                 'enrollment_created_timestamp': '2014-06-27T16:02:38Z',
+                'unenrollment_timestamp': '2016-09-05T16:02:38Z',
                 'user_current_enrollment_mode': 'verified',
                 'last_activity_date': '2017-06-23',
                 'has_passed': False,
@@ -125,6 +128,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
                 'discount_price': '120.00',
                 'course_api_url': ('/enterprise/v1/enterprise-catalogs/ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
                                    '/courses/edX/Open_DemoX/edx_demo_course'),
+                'unenrollment_end_within_date': True,
             }],
             'next': None,
             'start': 0,
