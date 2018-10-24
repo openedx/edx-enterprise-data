@@ -13,6 +13,10 @@ Change Log
 
 Unreleased
 ----------
+[1.0.4] - 2018-10-24
+--------------------
+* Updating packages
+
 [1.0.3] - 2018-10-24
 --------------------
 * Tweaking a outeref call for course_completion_count computation
