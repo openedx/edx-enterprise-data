@@ -14,12 +14,26 @@ class EnterpriseEnrollmentSerializer(serializers.ModelSerializer):
     Serializer for EnterpriseEnrollment model.
     """
     course_api_url = serializers.SerializerMethodField()
+    unenrollment_end_within_date = serializers.SerializerMethodField()
 
     def get_course_api_url(self, obj):
         """Constructs course api url"""
         return '/enterprise/v1/enterprise-catalogs/{enterprise_id}/courses/{course_id}'.format(
             enterprise_id=obj.enterprise_id, course_id=obj.course_id
         )
+
+    def get_unenrollment_end_within_date(self, obj):
+        """
+        Return "True" when un-enrolled date is within 14 days of course start or enrollment date
+        (whichever is later), when un-enrolled date is after 14 days of
+        course start or enrollment date (whichever is later) return "False".
+        """
+        unenrollment_within_date = False
+        if obj.unenrollment_timestamp:
+            unenrollment_within_date = (0 < (obj.unenrollment_timestamp - obj.course_start).days <= 14) or \
+                                       (0 < (obj.unenrollment_timestamp - obj.enrollment_created_timestamp).days <= 14)
+
+        return unenrollment_within_date
 
     class Meta:
         model = EnterpriseEnrollment

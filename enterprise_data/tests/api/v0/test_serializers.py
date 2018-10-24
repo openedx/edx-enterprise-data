@@ -30,6 +30,7 @@ class TestEnterpriseEnrollmentSerializer(APITestCase):
             "enterprise_user": 1,
             "course_id": "edX/Open_DemoX/edx_demo_course",
             "enrollment_created_timestamp": "2014-06-27T16:02:38Z",
+            "unenrollment_timestamp": None,
             "user_current_enrollment_mode": "verified",
             "consent_granted": 1,
             "letter_grade": "Pass",
@@ -56,6 +57,7 @@ class TestEnterpriseEnrollmentSerializer(APITestCase):
             "course_price": "200.00",
             "coupon_name": "Enterprise Entitlement Coupon",
             "offer": "Percentage, 100 (#1234)",
+            "unenrollment_end_within_date": False,
         }
 
         self.course_api_url = '/enterprise/v1/enterprise-catalogs/{enterprise_id}/courses/{course_id}'.format(
