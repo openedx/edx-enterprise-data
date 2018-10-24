@@ -354,6 +354,36 @@ class TestEnterpriseUsersViewSet(APITestCase):
             has_passed=True,
         )
 
+        # User with a large number of enrollments of different kinds
+        self.ent_user9 = EnterpriseUserFactory(
+            enterprise_user_id=9,
+        )
+        EnterpriseEnrollmentFactory(
+            enterprise_user=self.ent_user9,
+            has_passed=True,
+        )
+        for i in range(2):
+            EnterpriseEnrollmentFactory(
+                enterprise_user=self.ent_user9,
+                has_passed=False,
+            )
+        for i in range(3):
+            EnterpriseEnrollmentFactory(
+                enterprise_user=self.ent_user9,
+                consent_granted=True,
+                has_passed=True,
+            )
+        EnterpriseEnrollmentFactory(
+            enterprise_user=self.ent_user9,
+            consent_granted=False,
+            has_passed=True,
+        )
+        EnterpriseEnrollmentFactory(
+            enterprise_user=self.ent_user9,
+            consent_granted=True,
+            has_passed=False,
+        )
+
     def test_viewset_no_query_params(self):
         """
         EnterpriseUserViewset should return all users if no filtering query
@@ -362,7 +392,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         url = reverse('v0:enterprise-users-list',
                       kwargs={'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'})
         response = self.client.get(url)
-        assert response.json()['count'] == 7
+        assert response.json()['count'] == 8
 
     @mock.patch('enterprise_data.api.v0.views.EnterpriseUsersViewSet.paginate_queryset')
     def test_viewset_no_query_params_no_pagination(self, mock_paginate):
@@ -375,7 +405,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
                       kwargs={'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'})
         response = self.client.get(url)
         assert 'count' not in response.json()
-        assert len(response.json()) == 7
+        assert len(response.json()) == 8
 
     def test_viewset_filter_has_enrollments_true(self):
         """
@@ -389,7 +419,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
             kwargs=kwargs,
         )
         response = self.client.get(url, params)
-        assert response.json()['count'] == 4
+        assert response.json()['count'] == 5
 
     def test_viewset_filter_has_enrollments_false(self):
         """
@@ -417,7 +447,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
             kwargs=kwargs,
         )
         response = self.client.get(url, params)
-        assert response.json()['count'] == 7
+        assert response.json()['count'] == 8
 
     def test_viewset_filter_active_courses_true(self):
         """
@@ -670,6 +700,28 @@ class TestEnterpriseUsersViewSet(APITestCase):
             assert user['course_completion_count'] <= current_course_completion_count
             current_course_completion_count = user['course_completion_count']
 
+    def test_viewset_course_completion_count_value_regression(self):
+        """
+        EnterpriseUserViewset should return the correct value for course_completion_count
+        instead of returning "1" when 1 or more completed (and consented) enrollments
+        exist for a user.
+        """
+        kwargs = {
+            'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
+            'pk': self.ent_user9.id,
+        }
+        params = {
+            'extra_fields': ['enrollment_count', 'course_completion_count'],
+            'ordering': 'course_completion_count',
+        }
+        url = reverse(
+            'v0:enterprise-users-detail',
+            kwargs=kwargs,
+        )
+        response = self.client.get(url, params)
+        assert response.json()['enrollment_count'] == 7
+        assert response.json()['course_completion_count'] == 4
+
     def test_no_page_querystring_skips_pagination(self):
         """
         EnterpriseUserViewset list view should honor the no_page query param,
@@ -687,11 +739,11 @@ class TestEnterpriseUsersViewSet(APITestCase):
     @ddt.data(
         (
             'id',
-            [4, 8]
+            [4, 9]
         ),
         (
             '-id',
-            [8, 4]
+            [9, 4]
         )
     )
     @ddt.unpack
@@ -707,9 +759,9 @@ class TestEnterpriseUsersViewSet(APITestCase):
             kwargs=kwargs,
         )
         response = self.client.get(url, params)
-        assert response.json()['count'] == 4
+        assert response.json()['count'] == 5
         assert response.json()['results'][0]['id'] == users[0]
-        assert response.json()['results'][3]['id'] == users[1]
+        assert response.json()['results'][4]['id'] == users[1]
 
 
 @ddt.ddt

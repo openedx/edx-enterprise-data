@@ -14,7 +14,9 @@ from rest_framework.decorators import list_route
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
-from django.db.models import Count, Max, OuterRef, Subquery
+from django.db.models import Count, Max, OuterRef, Subquery, Value
+from django.db.models.fields import IntegerField
+from django.db.models.functions import Coalesce
 from django.utils import timezone
 
 from enterprise_data.api.v0 import serializers
@@ -247,15 +249,26 @@ class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
                 enrollment_count=Count('enrollments', distinct=True)
             )
 
+        # based on https://stackoverflow.com/questions/43770118/simple-subquery-with-outerref
         if 'course_completion_count' in extra_fields:
-            enrollment_subquery = EnterpriseEnrollment.objects.filter(
-                enterprise_user=OuterRef("pk"),
-                has_passed=True,
-            ).exclude(consent_granted=False)
-            queryset = queryset.annotate(
-                course_completion_count=Count(Subquery(enrollment_subquery.values("pk")), distinct=True)
+            enrollment_subquery = (
+                EnterpriseEnrollment.objects.filter(
+                    enterprise_user=OuterRef("pk"),
+                    has_passed=True,
+                )
+                .exclude(consent_granted=False)
+                .values('enterprise_user')
+                .annotate(course_completion_count=Count('pk', distinct=True))
+                .values('course_completion_count')
             )
-
+            # Coalesce and Value used here so we don't return "null" to the
+            # frontend if the count is 0
+            queryset = queryset.annotate(
+                course_completion_count=Coalesce(
+                    Subquery(enrollment_subquery, output_field=IntegerField()),
+                    Value(0),
+                )
+            )
         return queryset
 
     def list(self, request, **kwargs):  # pylint: disable=unused-argument

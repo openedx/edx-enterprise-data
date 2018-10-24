@@ -13,6 +13,10 @@ Change Log
 
 Unreleased
 ----------
+[1.0.2] - 2018-10-24
+--------------------
+* Fixing bug with course_completion_count computation
+
 [1.0.1] - 2018-10-23
 --------------------
 * Making enterprise_user endpoint sortable on enrollment_count and course_completion_count
