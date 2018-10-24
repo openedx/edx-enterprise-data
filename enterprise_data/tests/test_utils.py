@@ -29,7 +29,7 @@ class EnterpriseEnrollmentFactory(factory.django.DjangoModelFactory):
 
         model = EnterpriseEnrollment
 
-    id = factory.lazy_attribute(lambda x: FAKER.random_int(min=1))
+    id = factory.lazy_attribute(lambda x: FAKER.random_int(min=1, max=999999))
     enterprise_id = factory.lazy_attribute(lambda x: 'ee5e6b3a069a4947bb8dd2dbc323396c')
     lms_user_id = factory.lazy_attribute(lambda x: FAKER.random_int(min=1))
     course_id = factory.lazy_attribute(lambda x: FAKER.slug())
