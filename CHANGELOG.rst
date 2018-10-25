@@ -13,6 +13,11 @@ Change Log
 
 Unreleased
 ----------
+
+[1.0.5] - 2018-10-25
+--------------------
+* Ability to PGP encrypt report files sent via email and SFTP
+
 [1.0.4] - 2018-10-24
 --------------------
 * Updating packages

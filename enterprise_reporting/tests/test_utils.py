@@ -9,6 +9,9 @@ import unittest
 import tempfile
 
 import ddt
+import pgpy
+from pgpy.constants import CompressionAlgorithm, HashAlgorithm, KeyFlags, PubKeyAlgorithm, SymmetricKeyAlgorithm
+from pgpy.errors import PGPError
 
 from zipfile import ZipFile
 from enterprise_reporting import utils
@@ -178,6 +181,16 @@ class TestCompressEncrypt(unittest.TestCase):
 
         return files, total_size
 
+    def pgpy_create_key(self, username):
+        key = pgpy.PGPKey.new(PubKeyAlgorithm.RSAEncryptOrSign, 4096)
+        uid = pgpy.PGPUID.new(username, comment='Unknown Person', email=username+'@unknown.com')
+        key.add_uid(uid, usage={KeyFlags.Sign, KeyFlags.EncryptCommunications, KeyFlags.EncryptStorage},
+                    hashes=[HashAlgorithm.SHA256, HashAlgorithm.SHA384, HashAlgorithm.SHA512, HashAlgorithm.SHA224],
+                    ciphers=[SymmetricKeyAlgorithm.AES256, SymmetricKeyAlgorithm.AES192, SymmetricKeyAlgorithm.AES128],
+                    compression=[CompressionAlgorithm.ZLIB, CompressionAlgorithm.BZ2, CompressionAlgorithm.ZIP,
+                                 CompressionAlgorithm.Uncompressed])
+        return key
+
     @ddt.data(
         [
             {
@@ -225,3 +238,43 @@ class TestCompressEncrypt(unittest.TestCase):
             # Also verify file is only accessible with correct password.
             with self.assertRaises(RuntimeError):
                 zipfile.read(file['file'].name.split('/')[-1], b'gollum')
+
+    @ddt.data(
+        [
+            {
+                'name': 'lord-of-the-rings.txt',
+                'size': 1000
+            },
+        ],
+        [
+            {
+                'name': 'lord-of-the-rings.txt',
+                'size': 1000
+            },
+            {
+                'name': 'harry-potter-and-deathly-hollows.txt',
+                'size': 500
+            },
+        ],
+    )
+    def test_encryption(self, files_data):
+        """
+        Test the successful decryption with a valid key
+        and an unsuccessful decryption when an incorrect key.
+        """
+        files, size = self.create_files(files_data)
+        password = 'low-complexity'
+        correct_key = self.pgpy_create_key('JohnDoe')
+        wrong_key = self.pgpy_create_key('JohnDoe2')
+
+        encrypted_file_name = utils.compress_and_encrypt(
+            [file['file'] for file in files],
+            password,
+            str(correct_key.pubkey)
+        )
+        message = pgpy.PGPMessage.from_file(encrypted_file_name)
+        decrypted_message = correct_key.decrypt(message)
+        self.assertIsInstance(decrypted_message, pgpy.PGPMessage)
+
+        with self.assertRaises(PGPError):
+            wrong_key.decrypt(message)
