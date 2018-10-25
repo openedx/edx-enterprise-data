@@ -205,6 +205,52 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         for enrollment in result['results']:
             assert datetime.strptime(enrollment['last_activity_date'], "%Y-%m-%d").date() in expected_dates
 
+    @ddt.data(
+        (
+            'active_past_week',
+            [date.today(), date.today() - timedelta(days=2)]
+        ),
+        (
+            'inactive_past_week',
+            [date.today() - timedelta(weeks=2), subtract_one_month(date.today())]
+        ),
+        (
+            'inactive_past_month',
+            [subtract_one_month(date.today())]
+        )
+    )
+    @ddt.unpack
+    def test_get_queryset_returns_learner_activity_filter_no_consent(self, activity_filter, expected_dates):
+        """
+        learner activity filter should not return learner if their enrollments
+        have no consent granted
+        """
+        enterprise_id = '413a0720-3efe-4cf5-98c8-3b4e42d3c509'
+        url = u"{url}?learner_activity={activity_filter}".format(
+            url=reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': enterprise_id}),
+            activity_filter=activity_filter
+        )
+
+        enterprise_user = EnterpriseUserFactory(enterprise_user_id=1234)
+
+        date_today = date.today()
+        in_past_week_dates = [date_today, date_today - timedelta(days=2)]
+        before_past_week_dates = [date_today - timedelta(weeks=2)]
+        before_past_month_dates = [subtract_one_month(date.today())]
+        activity_dates = in_past_week_dates + before_past_week_dates + before_past_month_dates
+        for activity_date in activity_dates:
+            EnterpriseEnrollmentFactory(
+                enterprise_user=enterprise_user,
+                enterprise_id=enterprise_id,
+                last_activity_date=activity_date,
+                consent_granted=False,
+            )
+
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+        result = response.json()
+        assert result['count'] == 0
+
     def test_get_queryset_throws_error(self):
         enterprise_id = '0395b02f-6b29-42ed-9a41-45f3dff8349c'
         self.enterprise_api_client.return_value.get_with_access_to.return_value = {
@@ -297,6 +343,17 @@ class TestEnterpriseUsersViewSet(APITestCase):
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user4,
             course_end=date_in_future,
+        )
+        EnterpriseEnrollmentFactory(
+            enterprise_user=self.ent_user4,
+            course_end=date_in_future,
+            consent_granted=True,
+        )
+        EnterpriseEnrollmentFactory(
+            enterprise_user=self.ent_user4,
+            course_end=date_in_past,
+            consent_granted=True,
+            has_passed=False,
         )
         # User with only True enrollment consent
         self.ent_user5 = EnterpriseUserFactory(
@@ -529,7 +586,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
             kwargs=kwargs,
         )
         response = self.client.get(url, params)
-        assert response.json()['enrollment_count'] == 2
+        assert response.json()['enrollment_count'] == 3
 
     def test_viewset_enrollment_count_not_present(self):
         """
@@ -565,7 +622,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
             kwargs=kwargs,
         )
         response = self.client.get(url, params)
-        assert response.json()['enrollment_count'] == 2
+        assert response.json()['enrollment_count'] == 3
         assert response.json()['course_completion_count'] == 1
 
     def test_viewset_enrollment_count_consent(self):
@@ -719,8 +776,8 @@ class TestEnterpriseUsersViewSet(APITestCase):
             kwargs=kwargs,
         )
         response = self.client.get(url, params)
-        assert response.json()['enrollment_count'] == 7
-        assert response.json()['course_completion_count'] == 4
+        assert response.json()['enrollment_count'] == 4
+        assert response.json()['course_completion_count'] == 3
 
     def test_no_page_querystring_skips_pagination(self):
         """

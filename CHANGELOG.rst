@@ -14,6 +14,10 @@ Change Log
 Unreleased
 ----------
 
+[1.0.6] - 2018-10-25
+--------------------
+* Updating enrollment_count and course_completion_count computations to restrict to consent_granted=True enrollments
+
 [1.0.5] - 2018-10-25
 --------------------
 * Ability to PGP encrypt report files sent via email and SFTP

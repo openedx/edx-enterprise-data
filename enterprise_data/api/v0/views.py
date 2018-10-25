@@ -14,13 +14,13 @@ from rest_framework.decorators import list_route
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
-from django.db.models import Count, Max, OuterRef, Subquery, Value
+from django.db.models import Count, Max, OuterRef, Q, Subquery, Value
 from django.db.models.fields import IntegerField
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 
 from enterprise_data.api.v0 import serializers
-from enterprise_data.filters import CONSENT_TRUE_OR_NONE_Q, ConsentGrantedFilterBackend
+from enterprise_data.filters import CONSENT_TRUE_OR_NOENROLL_Q, ConsentGrantedFilterBackend
 from enterprise_data.models import EnterpriseEnrollment, EnterpriseUser
 from enterprise_data.permissions import HasDataAPIDjangoGroupAccess
 
@@ -222,20 +222,25 @@ class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super(EnterpriseUsersViewSet, self).get_queryset()
 
-        # Ignore users that only have declined consent on all enrollments
-        queryset = queryset.filter(CONSENT_TRUE_OR_NONE_Q).distinct()
+        queryset = queryset.filter(CONSENT_TRUE_OR_NOENROLL_Q).distinct()
 
         has_enrollments = self.request.query_params.get('has_enrollments')
         if has_enrollments == 'true':
-            queryset = queryset.filter(CONSENT_TRUE_OR_NONE_Q, enrollments__isnull=False).distinct()
+            queryset = queryset.filter(enrollments__isnull=False).distinct()
         elif has_enrollments == 'false':
-            queryset = queryset.filter(CONSENT_TRUE_OR_NONE_Q, enrollments__isnull=True)
+            queryset = queryset.filter(enrollments__isnull=True)
 
         active_courses = self.request.query_params.get('active_courses')
         if active_courses == 'true':
-            queryset = queryset.filter(CONSENT_TRUE_OR_NONE_Q, enrollments__course_end__gte=timezone.now())
+            queryset = queryset.filter(
+                Q(enrollments__consent_granted=True),
+                enrollments__course_end__gte=timezone.now()
+            )
         elif active_courses == 'false':
-            queryset = queryset.filter(CONSENT_TRUE_OR_NONE_Q, enrollments__course_end__lte=timezone.now())
+            queryset = queryset.filter(
+                Q(enrollments__consent_granted=True),
+                enrollments__course_end__lte=timezone.now()
+            )
 
         all_enrollments_passed = self.request.query_params.get('all_enrollments_passed')
         if all_enrollments_passed == 'true':
@@ -245,8 +250,20 @@ class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
 
         extra_fields = self.request.query_params.getlist('extra_fields')
         if 'enrollment_count' in extra_fields:
+            enrollment_subquery = (
+                EnterpriseEnrollment.objects.filter(
+                    enterprise_user=OuterRef("enterprise_user_id"),
+                    consent_granted=True,
+                )
+                .values('enterprise_user')
+                .annotate(enrollment_count=Count('pk', distinct=True))
+                .values('enrollment_count')
+            )
             queryset = queryset.annotate(
-                enrollment_count=Count('enrollments', distinct=True)
+                enrollment_count=Coalesce(
+                    Subquery(enrollment_subquery, output_field=IntegerField()),
+                    Value(0),
+                )
             )
 
         # based on https://stackoverflow.com/questions/43770118/simple-subquery-with-outerref
@@ -255,8 +272,8 @@ class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
                 EnterpriseEnrollment.objects.filter(
                     enterprise_user=OuterRef("enterprise_user_id"),
                     has_passed=True,
+                    consent_granted=True,
                 )
-                .exclude(consent_granted=False)
                 .values('enterprise_user')
                 .annotate(course_completion_count=Count('pk', distinct=True))
                 .values('course_completion_count')
