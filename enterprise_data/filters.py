@@ -7,8 +7,10 @@ from rest_framework import filters
 
 from django.db.models import Q
 
-# Q filters
-CONSENT_TRUE_OR_NONE_Q = Q(enrollments__consent_granted=True) | Q(enrollments__consent_granted=None)
+# Admittedly this is sort of hacky because the use of "|" with 2 Q objects
+# forces the ORM to use a LEFT OUTER JOIN, which is needed to return a user
+# that has multiple enrollments where at least one has consent_granted=True
+CONSENT_TRUE_OR_NOENROLL_Q = Q(enrollments__consent_granted=True) | Q(enrollments__isnull=True)
 
 
 class ConsentGrantedFilterBackend(filters.BaseFilterBackend):
