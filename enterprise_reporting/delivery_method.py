@@ -27,7 +27,7 @@ class DeliveryMethod(object):
         self.data_type = reporting_config['data_type']
         self.report_type = reporting_config['report_type']
         self.password = password
-        self.pgp_encryption_key = reporting_config['pgp_encryption_key']
+        self.pgp_encryption_key = reporting_config.get('pgp_encryption_key')
 
     def send(self, files):
         """Base method for sending files, to perform common sending logic."""

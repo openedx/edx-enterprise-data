@@ -13,6 +13,9 @@ Change Log
 
 Unreleased
 ----------
+[1.0.7] - 2018-10-25
+--------------------
+* Fixed KeyError issue when PGP Encryption key is not found
 
 [1.0.6] - 2018-10-25
 --------------------
