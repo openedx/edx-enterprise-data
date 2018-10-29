@@ -16,8 +16,7 @@ from rest_framework.test import APITestCase
 from django.utils import timezone
 
 from enterprise_data.api.v0.views import subtract_one_month
-from enterprise_data.permissions import HasDataAPIDjangoGroupAccess
-from test_utils import EnterpriseEnrollmentFactory, EnterpriseUserFactory, UserFactory
+from test_utils import EnterpriseEnrollmentFactory, EnterpriseUserFactory, UserFactory, get_dummy_enterprise_api_data
 
 
 @ddt.ddt
@@ -32,7 +31,14 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         super(TestEnterpriseEnrollmentsViewSet, self).setUp()
         self.user = UserFactory(is_staff=True)
         self.client.force_authenticate(user=self.user)
-        enterprise_api_client = mock.patch('enterprise_data.permissions.EnterpriseApiClient')
+        enterprise_api_client = mock.patch(
+            'enterprise_data.permissions.EnterpriseApiClient',
+            mock.Mock(
+                return_value=mock.Mock(
+                    get_with_access_to=mock.Mock(return_value=get_dummy_enterprise_api_data())
+                )
+            )
+        )
         self.enterprise_api_client = enterprise_api_client.start()
         self.addCleanup(enterprise_api_client.stop)
 
@@ -160,6 +166,57 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         for enrollment, passed_date in zip(result['results'], in_past_week_passed_dates):
             assert enrollment['has_passed'] is True
             assert datetime.strptime(enrollment['passed_timestamp'], "%Y-%m-%dT%H:%M:%SZ").date() == passed_date
+
+    @ddt.data(
+        (
+            True, 2, 'verified', 2
+        ),
+        (
+            True, 2, 'audit', 2
+        ),
+        (
+            False, 2, 'verified', 2
+        ),
+        (
+            False, 2, 'audit', 0
+        ),
+    )
+    @ddt.unpack
+    def test_get_queryset_returns_enrollments_with_audit_enrollment_filter(
+            self, enable_audit_enrollment, total_enrollments, user_current_enrollment_mode, enrollments_count
+    ):
+        enterprise_id = '413a0720-3efe-4cf5-98c8-3b4e42d3c501'
+        url = reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': enterprise_id})
+
+        dummy_enterprise_api_data = get_dummy_enterprise_api_data(
+            enterprise_id=enterprise_id,
+            enable_audit_enrollment=enable_audit_enrollment,
+        )
+        enterprise_api_client = mock.patch(
+            'enterprise_data.permissions.EnterpriseApiClient',
+            mock.Mock(
+                return_value=mock.Mock(
+                    get_with_access_to=mock.Mock(return_value=dummy_enterprise_api_data)
+                )
+            )
+        )
+        self.enterprise_api_client = enterprise_api_client.start()
+        enterprise_user = EnterpriseUserFactory(enterprise_user_id=1234)
+        for index in range(total_enrollments):
+            EnterpriseEnrollmentFactory(
+                enterprise_user=enterprise_user,
+                enterprise_id=enterprise_id,
+                user_email='user{}@example.com'.format(index),
+                user_current_enrollment_mode=user_current_enrollment_mode,
+                course_title='course101',
+                has_passed=True,
+                consent_granted=True,
+            )
+
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+        result = response.json()
+        assert result['count'] == enrollments_count
 
     @ddt.data(
         (
@@ -312,7 +369,14 @@ class TestEnterpriseUsersViewSet(APITestCase):
         super(TestEnterpriseUsersViewSet, self).setUp()
         self.user = UserFactory(is_staff=True)
         self.client.force_authenticate(user=self.user)
-        enterprise_api_client = mock.patch('enterprise_data.permissions.EnterpriseApiClient')
+        enterprise_api_client = mock.patch(
+            'enterprise_data.permissions.EnterpriseApiClient',
+            mock.Mock(
+                return_value=mock.Mock(
+                    get_with_access_to=mock.Mock(return_value=get_dummy_enterprise_api_data())
+                )
+            )
+        )
         self.enterprise_api_client = enterprise_api_client.start()
         self.addCleanup(enterprise_api_client.stop)
 
@@ -832,7 +896,14 @@ class TestEnterpriseLearnerCompletedCourses(APITestCase):
         super(TestEnterpriseLearnerCompletedCourses, self).setUp()
         self.user = UserFactory(is_staff=True)
         self.client.force_authenticate(user=self.user)
-        enterprise_api_client = mock.patch('enterprise_data.permissions.EnterpriseApiClient')
+        enterprise_api_client = mock.patch(
+            'enterprise_data.permissions.EnterpriseApiClient',
+            mock.Mock(
+                return_value=mock.Mock(
+                    get_with_access_to=mock.Mock(return_value=get_dummy_enterprise_api_data())
+                )
+            )
+        )
         self.enterprise_api_client = enterprise_api_client.start()
         self.addCleanup(enterprise_api_client.stop)
 

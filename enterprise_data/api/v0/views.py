@@ -20,7 +20,11 @@ from django.db.models.functions import Coalesce
 from django.utils import timezone
 
 from enterprise_data.api.v0 import serializers
-from enterprise_data.filters import CONSENT_TRUE_OR_NOENROLL_Q, ConsentGrantedFilterBackend
+from enterprise_data.filters import (
+    CONSENT_TRUE_OR_NOENROLL_Q,
+    AuditEnrollmentsFilterBackend,
+    ConsentGrantedFilterBackend,
+)
 from enterprise_data.models import EnterpriseEnrollment, EnterpriseUser
 from enterprise_data.permissions import HasDataAPIDjangoGroupAccess
 
@@ -71,10 +75,11 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
     Viewset for routes related to Enterprise course enrollments.
     """
     serializer_class = serializers.EnterpriseEnrollmentSerializer
-    filter_backends = (ConsentGrantedFilterBackend, filters.OrderingFilter,)
+    filter_backends = (AuditEnrollmentsFilterBackend, ConsentGrantedFilterBackend, filters.OrderingFilter,)
     ordering_fields = '__all__'
     ordering = ('user_email',)
     CONSENT_GRANTED_FILTER = 'consent_granted'
+    ENROLLMENT_MODE_FILTER = 'user_current_enrollment_mode'
 
     def get_queryset(self):
         """

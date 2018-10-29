@@ -13,6 +13,11 @@ Change Log
 
 Unreleased
 ----------
+
+[1.0.8] - 2018-10-29
+--------------------
+* Enable audit enrollments filtering on field `user_current_enrollment_mode` for model `EnterpriseEnrollment`
+
 [1.0.7] - 2018-10-25
 --------------------
 * Fixed KeyError issue when PGP Encryption key is not found
