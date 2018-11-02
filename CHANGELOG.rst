@@ -14,6 +14,10 @@ Change Log
 Unreleased
 ----------
 
+[1.0.10] - 2018-11-02
+---------------------
+Upgrade dependencies
+
 [1.0.9] - 2018-11-02
 --------------------
 * Add "enrollment_created_date" to progress report

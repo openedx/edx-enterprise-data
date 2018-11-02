@@ -43,7 +43,7 @@ class EnterpriseApiClient(EdxRestApiClient):
         """
         try:
             querystring = {'username': user.username}
-            endpoint = getattr(self, 'enterprise-learner')
+            endpoint = getattr(self, 'enterprise-learner')  # pylint: disable=literal-used-as-attribute
             response = endpoint.get(**querystring)
         except (HttpClientError, HttpServerError) as exc:
             LOGGER.warning("Unable to retrieve Enterprise Customer Learner details for user {}: {}"
@@ -80,8 +80,8 @@ class EnterpriseApiClient(EdxRestApiClient):
                 'permissions': [self.ENTERPRISE_DATA_API_GROUP],
                 'enterprise_id': enterprise_id,
             }
-            endpoint = getattr(self, 'enterprise-customer')
-            endpoint = getattr(endpoint, 'with_access_to')
+            endpoint = getattr(self, 'enterprise-customer')  # pylint: disable=literal-used-as-attribute
+            endpoint = endpoint.with_access_to
             response = endpoint.get(**querystring)
         except (HttpClientError, HttpServerError) as exc:
             LOGGER.warning("Unable to retrieve Enterprise Customer with_access_to details for user {}: {}"
