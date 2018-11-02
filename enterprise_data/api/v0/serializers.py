@@ -23,7 +23,7 @@ class EnterpriseEnrollmentSerializer(serializers.ModelSerializer):
         )
 
     def get_enrollment_created_date(self, obj):
-        """Construct a date from the enrollment datetime"""
+        """ Construct a serializer field to represent the enrollment_created_date model property. """
         return obj.enrollment_created_date.strftime('%Y-%m-%d')
 
     class Meta:
