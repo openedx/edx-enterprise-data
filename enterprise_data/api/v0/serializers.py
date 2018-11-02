@@ -14,12 +14,17 @@ class EnterpriseEnrollmentSerializer(serializers.ModelSerializer):
     Serializer for EnterpriseEnrollment model.
     """
     course_api_url = serializers.SerializerMethodField()
+    enrollment_created_date = serializers.SerializerMethodField()
 
     def get_course_api_url(self, obj):
         """Constructs course api url"""
         return '/enterprise/v1/enterprise-catalogs/{enterprise_id}/courses/{course_id}'.format(
             enterprise_id=obj.enterprise_id, course_id=obj.course_id
         )
+
+    def get_enrollment_created_date(self, obj):
+        """ Construct a serializer field to represent the enrollment_created_date model property. """
+        return obj.enrollment_created_date.strftime('%Y-%m-%d')
 
     class Meta:
         model = EnterpriseEnrollment
