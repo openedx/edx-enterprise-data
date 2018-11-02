@@ -34,13 +34,13 @@ FREQUENCY_TYPE_WEEKLY = 'weekly'
 AWS_REGION = 'us-east-1'
 
 
-def compress_and_encrypt(files, password=None, pgp_key=None):
+def compress_and_encrypt(files, password=None, pgp_key=''):
     """
     Given file(s) and a password or a PGP key,
     create a password protected or encrypted compressed file.
     Return the new filename.
     """
-    if pgp_key is not None:
+    if pgp_key:
         zipfile = _get_compressed_file(files)
         return _get_encrypted_file(zipfile, pgp_key)
     else:
