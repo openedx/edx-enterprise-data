@@ -14,6 +14,10 @@ Change Log
 Unreleased
 ----------
 
+[1.0.9] - 2018-11-02
+--------------------
+* Add "enrollment_created_date" to progress report
+
 [1.0.8] - 2018-10-29
 --------------------
 * Enable audit enrollments filtering on field `user_current_enrollment_mode` for model `EnterpriseEnrollment`
