@@ -63,11 +63,7 @@ class TestEnterpriseEnrollmentSerializer(APITestCase):
         )
 
     def test_enrollment_serialization(self):
-        expected_serialized_data = dict(
-            self.enrollment_data,
-            course_api_url=self.course_api_url,
-            enrollment_created_date='2014-06-27'
-        )
+        expected_serialized_data = dict(self.enrollment_data, course_api_url=self.course_api_url)
 
         serializer = EnterpriseEnrollmentSerializer(data=self.enrollment_data)
         serializer.is_valid()

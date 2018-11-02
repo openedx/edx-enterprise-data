@@ -89,7 +89,6 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
                 'discount_price': '120.00',
                 'course_api_url': ('/enterprise/v1/enterprise-catalogs/ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
                                    '/courses/edX/Open_DemoX/edx_demo_course'),
-                'enrollment_created_date': '2014-06-27'
             }, {
                 'enrollment_created_timestamp': '2014-06-27T16:02:38Z',
                 'user_current_enrollment_mode': 'verified',
@@ -126,7 +125,6 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
                 'discount_price': '120.00',
                 'course_api_url': ('/enterprise/v1/enterprise-catalogs/ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
                                    '/courses/edX/Open_DemoX/edx_demo_course'),
-                'enrollment_created_date': '2014-06-27'
             }],
             'next': None,
             'start': 0,
