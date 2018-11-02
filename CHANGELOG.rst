@@ -13,6 +13,9 @@ Change Log
 
 Unreleased
 ----------
+[1.0.11] - 2018-11-02
+---------------------
+Revert 1.0.9 changes - enrollment_created_date as this value is redundent with the enrollment_created_timestamp
 
 [1.0.10] - 2018-11-02
 ---------------------
