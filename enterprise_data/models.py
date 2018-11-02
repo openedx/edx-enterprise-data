@@ -87,7 +87,7 @@ class EnterpriseEnrollment(models.Model):
     @property
     def enrollment_created_date(self):
         """
-        Returns the date component of the enrollment created timestamp model field
+        Return the date component of the enrollment created timestamp model field.
         """
         return self.enrollment_created_timestamp.date()
 
