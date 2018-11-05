@@ -13,6 +13,11 @@ Change Log
 
 Unreleased
 ----------
+
+[1.0.12] - 2018-11-05
+--------------------
+* Only include current active enrollments which are not complete yet in active learners table.
+
 [1.0.11] - 2018-11-02
 ---------------------
 Revert 1.0.9 changes - enrollment_created_date as this value is redundent with the enrollment_created_timestamp
@@ -161,4 +166,4 @@ Upgrade dependencies
 [0.1.0] - 2018-03-07
 --------------------
 
-* Add new app `enterprise_api`. This django app is used to expose a REST endpoint in th eex-analytics-data-api project.
+* Add new app `enterprise_api`. This django app is used to expose a REST endpoint in the edx-analytics-data-api project.
