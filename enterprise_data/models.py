@@ -84,13 +84,6 @@ class EnterpriseEnrollment(models.Model):
         """
         return self.__str__()
 
-    @property
-    def enrollment_created_date(self):
-        """
-        Return the date component of the enrollment created timestamp model field.
-        """
-        return self.enrollment_created_timestamp.date()
-
 
 @python_2_unicode_compatible
 class EnterpriseUser(models.Model):
