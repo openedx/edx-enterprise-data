@@ -53,7 +53,7 @@ def _get_encrypted_file(zipfile, pgp_key):
     """
     rsa_pub, _ = pgpy.PGPKey.from_blob(pgp_key)
     message = pgpy.PGPMessage.new(zipfile, file=True)
-    pgpfile = re.sub(r'(_(\w+))?\.(\w+)$', '.pgp', zipfile)
+    pgpfile = '{}.pgp'.format(zipfile)
     encrypted_message = rsa_pub.encrypt(message)
     with open(pgpfile, 'wb') as encrypted_file:
         encrypted_file.write(encrypted_message.__bytes__())
