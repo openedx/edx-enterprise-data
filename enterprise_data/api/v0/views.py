@@ -117,6 +117,8 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
             queryset = self.filter_past_week_completions(queryset)
 
         learner_activity_param = query_filters.get('learner_activity')
+        if learner_activity_param:
+            queryset = self.filter_active_enrollments(queryset)
         if learner_activity_param == 'active_past_week':
             queryset = self.filter_active_learners(queryset, past_week_date)
         elif learner_activity_param == 'inactive_past_week':
@@ -125,6 +127,16 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
             queryset = self.filter_inactive_learners(queryset, past_month_date)
 
         return queryset
+
+    def filter_active_enrollments(self, queryset):
+        """
+        Filters queryset to include enrollments with course date in future
+        and learners have not passed the course yet.
+        """
+        return queryset.filter(
+            has_passed=False,
+            course_end__gte=date.today(),
+        )
 
     def filter_distinct_learners(self, queryset):
         """

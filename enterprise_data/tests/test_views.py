@@ -252,6 +252,8 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
                 enterprise_user=enterprise_user,
                 enterprise_id=enterprise_id,
                 last_activity_date=activity_date,
+                course_end=timezone.now() + timedelta(days=1),
+                has_passed=False,
                 consent_granted=True,
             )
 
@@ -279,8 +281,95 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
     @ddt.unpack
     def test_get_queryset_returns_learner_activity_filter_no_consent(self, activity_filter, expected_dates):
         """
-        learner activity filter should not return learner if their enrollments
+        Learner activity filter should not return learner if their enrollments
         have no consent granted
+        """
+        enterprise_id = '413a0720-3efe-4cf5-98c8-3b4e42d3c509'
+        url = u"{url}?learner_activity={activity_filter}".format(
+            url=reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': enterprise_id}),
+            activity_filter=activity_filter
+        )
+
+        enterprise_user = EnterpriseUserFactory(enterprise_user_id=1234)
+        course_end_date = timezone.now() + timedelta(days=1)
+
+        date_today = date.today()
+        in_past_week_dates = [date_today, date_today - timedelta(days=2)]
+        before_past_week_dates = [date_today - timedelta(weeks=2)]
+        before_past_month_dates = [subtract_one_month(date.today())]
+        activity_dates = in_past_week_dates + before_past_week_dates + before_past_month_dates
+        for activity_date in activity_dates:
+            EnterpriseEnrollmentFactory(
+                enterprise_user=enterprise_user,
+                enterprise_id=enterprise_id,
+                last_activity_date=activity_date,
+                course_end=course_end_date,
+                has_passed=False,
+                consent_granted=False,
+            )
+
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+        result = response.json()
+        assert result['count'] == 0
+
+    @ddt.data(
+        # passed, course date in past
+        (
+            'active_past_week',
+            True,
+            timezone.now() + timedelta(days=-1),
+        ),
+        (
+            'inactive_past_week',
+            True,
+            timezone.now() + timedelta(days=-1),
+        ),
+        (
+            'inactive_past_month',
+            True,
+            timezone.now() + timedelta(days=-1),
+        ),
+        # passed, course date in future
+        (
+            'active_past_week',
+            True,
+            timezone.now() + timedelta(days=1),
+        ),
+        (
+            'inactive_past_week',
+            True,
+            timezone.now() + timedelta(days=1),
+        ),
+        (
+            'inactive_past_month',
+            True,
+            timezone.now() + timedelta(days=1),
+        ),
+        # not passed, course date in past
+        (
+            'active_past_week',
+            False,
+            timezone.now() + timedelta(days=-1),
+        ),
+        (
+            'inactive_past_week',
+            False,
+            timezone.now() + timedelta(days=-1),
+        ),
+        (
+            'inactive_past_month',
+            False,
+            timezone.now() + timedelta(days=-1),
+        ),
+    )
+    @ddt.unpack
+    def test_get_queryset_returns_learner_activity_filter_no_active_enrollments(
+        self, activity_filter, has_passed, course_end_date
+    ):
+        """
+        Learner activity filter should not return enrollments if their course date is in past
+        or learners have not passed the course yet.
         """
         enterprise_id = '413a0720-3efe-4cf5-98c8-3b4e42d3c509'
         url = u"{url}?learner_activity={activity_filter}".format(
@@ -300,13 +389,13 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
                 enterprise_user=enterprise_user,
                 enterprise_id=enterprise_id,
                 last_activity_date=activity_date,
-                consent_granted=False,
+                course_end=course_end_date,
+                has_passed=has_passed,
+                consent_granted=True,
             )
 
         response = self.client.get(url)
-        assert response.status_code == status.HTTP_200_OK
-        result = response.json()
-        assert result['count'] == 0
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_get_queryset_throws_error(self):
         enterprise_id = '0395b02f-6b29-42ed-9a41-45f3dff8349c'
