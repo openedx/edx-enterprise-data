@@ -72,11 +72,18 @@ def _get_compressed_file(files, password=None):
     return zipfile
 
 
-def send_email_with_attachment(subject, body, from_email, to_email, filename):
+def send_email_with_attachment(subject, body, from_email, to_email, filename, attachment_data=None):
     """
     Send an email with a file attachment.
 
     Adapted from https://gist.github.com/yosemitebandit/2883593
+
+    attachment_data should be string data if value is passed in.
+    If filename refers to a file that lives on the filesystem instead
+    of just the name you want the attachment to have, no need to
+    set attachment_data to anything. This gives us the option of
+    handing this function string data that lives in memory instead
+    of needing to first write to a file.
     """
     # connect to SES
     client = boto3.client('ses', region_name=AWS_REGION)
@@ -85,7 +92,10 @@ def send_email_with_attachment(subject, body, from_email, to_email, filename):
     msg_body = MIMEText(body)
     
     # the attachment
-    msg_attachment = MIMEApplication(open(filename, 'rb').read())
+    if attachment_data:
+        msg_attachment = MIMEApplication(attachment_data)
+    else:
+        msg_attachment = MIMEApplication(open(filename, 'rb').read())
     msg_attachment.add_header('Content-Disposition', 'attachment', filename=os.path.basename(filename))
     msg_attachment.set_type('application/zip')
 
