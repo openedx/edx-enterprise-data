@@ -7,18 +7,24 @@ from __future__ import absolute_import, unicode_literals
 from datetime import date, timedelta
 from logging import getLogger
 
-from edx_rest_framework_extensions.authentication import JwtAuthentication
+from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
 from edx_rest_framework_extensions.paginators import DefaultPagination
 from rest_framework import filters, viewsets
 from rest_framework.decorators import list_route
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
-from django.db.models import Count, Max
+from django.db.models import Count, Max, OuterRef, Q, Subquery, Value
+from django.db.models.fields import IntegerField
+from django.db.models.functions import Coalesce
 from django.utils import timezone
 
 from enterprise_data.api.v0 import serializers
-from enterprise_data.filters import CONSENT_TRUE_OR_NONE_Q, ConsentGrantedFilterBackend
+from enterprise_data.filters import (
+    CONSENT_TRUE_OR_NOENROLL_Q,
+    AuditEnrollmentsFilterBackend,
+    ConsentGrantedFilterBackend,
+)
 from enterprise_data.models import EnterpriseEnrollment, EnterpriseUser
 from enterprise_data.permissions import HasDataAPIDjangoGroupAccess
 
@@ -69,10 +75,11 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
     Viewset for routes related to Enterprise course enrollments.
     """
     serializer_class = serializers.EnterpriseEnrollmentSerializer
-    filter_backends = (ConsentGrantedFilterBackend, filters.OrderingFilter,)
+    filter_backends = (AuditEnrollmentsFilterBackend, ConsentGrantedFilterBackend, filters.OrderingFilter,)
     ordering_fields = '__all__'
     ordering = ('user_email',)
     CONSENT_GRANTED_FILTER = 'consent_granted'
+    ENROLLMENT_MODE_FILTER = 'user_current_enrollment_mode'
 
     def get_queryset(self):
         """
@@ -110,6 +117,8 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
             queryset = self.filter_past_week_completions(queryset)
 
         learner_activity_param = query_filters.get('learner_activity')
+        if learner_activity_param:
+            queryset = self.filter_active_enrollments(queryset)
         if learner_activity_param == 'active_past_week':
             queryset = self.filter_active_learners(queryset, past_week_date)
         elif learner_activity_param == 'inactive_past_week':
@@ -118,6 +127,16 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
             queryset = self.filter_inactive_learners(queryset, past_month_date)
 
         return queryset
+
+    def filter_active_enrollments(self, queryset):
+        """
+        Filters queryset to include enrollments with course date in future
+        and learners have not passed the course yet.
+        """
+        return queryset.filter(
+            has_passed=False,
+            course_end__gte=date.today(),
+        )
 
     def filter_distinct_learners(self, queryset):
         """
@@ -213,33 +232,88 @@ class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
     """
     queryset = EnterpriseUser.objects.all()
     serializer_class = serializers.EnterpriseUserSerializer
+    filter_backends = (filters.OrderingFilter,)
+    ordering_fields = '__all__'
+    ordering = ('user_email',)
 
-    def list(self, request, **kwargs):
+    def get_queryset(self):
+        queryset = super(EnterpriseUsersViewSet, self).get_queryset()
+
+        queryset = queryset.filter(CONSENT_TRUE_OR_NOENROLL_Q).distinct()
+
+        has_enrollments = self.request.query_params.get('has_enrollments')
+        if has_enrollments == 'true':
+            queryset = queryset.filter(enrollments__isnull=False).distinct()
+        elif has_enrollments == 'false':
+            queryset = queryset.filter(enrollments__isnull=True)
+
+        active_courses = self.request.query_params.get('active_courses')
+        if active_courses == 'true':
+            queryset = queryset.filter(
+                Q(enrollments__consent_granted=True),
+                enrollments__course_end__gte=timezone.now()
+            )
+        elif active_courses == 'false':
+            queryset = queryset.filter(
+                Q(enrollments__consent_granted=True),
+                enrollments__course_end__lte=timezone.now()
+            )
+
+        all_enrollments_passed = self.request.query_params.get('all_enrollments_passed')
+        if all_enrollments_passed == 'true':
+            queryset = queryset.exclude(enrollments__has_passed=False)
+        elif all_enrollments_passed == 'false':
+            queryset = queryset.filter(enrollments__has_passed=False)
+
+        extra_fields = self.request.query_params.getlist('extra_fields')
+        if 'enrollment_count' in extra_fields:
+            enrollment_subquery = (
+                EnterpriseEnrollment.objects.filter(
+                    enterprise_user=OuterRef("enterprise_user_id"),
+                    consent_granted=True,
+                )
+                .values('enterprise_user')
+                .annotate(enrollment_count=Count('pk', distinct=True))
+                .values('enrollment_count')
+            )
+            queryset = queryset.annotate(
+                enrollment_count=Coalesce(
+                    Subquery(enrollment_subquery, output_field=IntegerField()),
+                    Value(0),
+                )
+            )
+
+        # based on https://stackoverflow.com/questions/43770118/simple-subquery-with-outerref
+        if 'course_completion_count' in extra_fields:
+            enrollment_subquery = (
+                EnterpriseEnrollment.objects.filter(
+                    enterprise_user=OuterRef("enterprise_user_id"),
+                    has_passed=True,
+                    consent_granted=True,
+                )
+                .values('enterprise_user')
+                .annotate(course_completion_count=Count('pk', distinct=True))
+                .values('course_completion_count')
+            )
+            # Coalesce and Value used here so we don't return "null" to the
+            # frontend if the count is 0
+            queryset = queryset.annotate(
+                course_completion_count=Coalesce(
+                    Subquery(enrollment_subquery, output_field=IntegerField()),
+                    Value(0),
+                )
+            )
+        return queryset
+
+    def list(self, request, **kwargs):  # pylint: disable=unused-argument
         """
         List view for learner records for a given enterprise.
         """
         enterprise_id = kwargs['enterprise_id']
-        users = self.queryset.filter(enterprise_id=enterprise_id)
-        # Ignore users that only have declined consent on all enrollments
-        users = users.filter(CONSENT_TRUE_OR_NONE_Q).distinct()
+        users = self.get_queryset().filter(enterprise_id=enterprise_id)
 
-        has_enrollments = request.query_params.get('has_enrollments')
-        if has_enrollments == 'true':
-            users = users.filter(CONSENT_TRUE_OR_NONE_Q, enrollments__isnull=False).distinct()
-        elif has_enrollments == 'false':
-            users = users.filter(CONSENT_TRUE_OR_NONE_Q, enrollments__isnull=True)
-
-        active_courses = request.query_params.get('active_courses')
-        if active_courses == 'true':
-            users = users.filter(CONSENT_TRUE_OR_NONE_Q, enrollments__course_end__gte=timezone.now())
-        elif active_courses == 'false':
-            users = users.filter(CONSENT_TRUE_OR_NONE_Q, enrollments__course_end__lte=timezone.now())
-
-        all_enrollments_passed = request.query_params.get('all_enrollments_passed')
-        if all_enrollments_passed == 'true':
-            users = users.exclude(enrollments__has_passed=False)
-        elif all_enrollments_passed == 'false':
-            users = users.filter(enrollments__has_passed=False)
+        # do the sorting
+        users = self.filter_queryset(users)
 
         # Bit to account for pagination
         page = self.paginate_queryset(users)
@@ -255,6 +329,9 @@ class EnterpriseLearnerCompletedCoursesViewSet(EnterpriseViewSet, viewsets.Model
     View to manage enterprise learner completed course enrollments.
     """
     serializer_class = serializers.LearnerCompletedCoursesSerializer
+    filter_backends = (filters.OrderingFilter,)
+    ordering_fields = '__all__'
+    ordering = ('user_email',)
 
     def get_queryset(self):
         """

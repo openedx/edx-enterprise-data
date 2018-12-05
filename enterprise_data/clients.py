@@ -5,12 +5,16 @@ from __future__ import absolute_import, unicode_literals
 
 import logging
 
+from edx_django_utils.cache import TieredCache
 from edx_rest_api_client.client import EdxRestApiClient
 from edx_rest_api_client.exceptions import HttpClientError, HttpServerError
 from rest_framework.exceptions import NotFound, ParseError
 
 from django.conf import settings
 
+from enterprise_data.utils import get_cache_key
+
+DEFAULT_REPORTING_CACHE_TIMEOUT = 60 * 60 * 6  # 6 hours (Value is in seconds)
 LOGGER = logging.getLogger('enterprise_data')
 
 
@@ -39,7 +43,7 @@ class EnterpriseApiClient(EdxRestApiClient):
         """
         try:
             querystring = {'username': user.username}
-            endpoint = getattr(self, 'enterprise-learner')
+            endpoint = getattr(self, 'enterprise-learner')  # pylint: disable=literal-used-as-attribute
             response = endpoint.get(**querystring)
         except (HttpClientError, HttpServerError) as exc:
             LOGGER.warning("Unable to retrieve Enterprise Customer Learner details for user {}: {}"
@@ -62,13 +66,22 @@ class EnterpriseApiClient(EdxRestApiClient):
         """
         Get the enterprises that this user has access to for the data api permission django group.
         """
+        cache_key = get_cache_key(
+            resource='enterprise-customer',
+            user=user.username,
+            enterprise_customer=enterprise_id,
+        )
+        cached_response = TieredCache.get_cached_response(cache_key)
+        if cached_response.is_found:
+            return cached_response.value
+
         try:
             querystring = {
                 'permissions': [self.ENTERPRISE_DATA_API_GROUP],
                 'enterprise_id': enterprise_id,
             }
-            endpoint = getattr(self, 'enterprise-customer')
-            endpoint = getattr(endpoint, 'with_access_to')
+            endpoint = getattr(self, 'enterprise-customer')  # pylint: disable=literal-used-as-attribute
+            endpoint = endpoint.with_access_to
             response = endpoint.get(**querystring)
         except (HttpClientError, HttpServerError) as exc:
             LOGGER.warning("Unable to retrieve Enterprise Customer with_access_to details for user {}: {}"
@@ -87,4 +100,5 @@ class EnterpriseApiClient(EdxRestApiClient):
         if response['count'] == 0:
             return None
 
+        TieredCache.set_all_tiers(cache_key, response['results'][0], DEFAULT_REPORTING_CACHE_TIMEOUT)
         return response['results'][0]

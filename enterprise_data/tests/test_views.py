@@ -16,8 +16,7 @@ from rest_framework.test import APITestCase
 from django.utils import timezone
 
 from enterprise_data.api.v0.views import subtract_one_month
-from enterprise_data.permissions import HasDataAPIDjangoGroupAccess
-from test_utils import EnterpriseEnrollmentFactory, EnterpriseUserFactory, UserFactory
+from test_utils import EnterpriseEnrollmentFactory, EnterpriseUserFactory, UserFactory, get_dummy_enterprise_api_data
 
 
 @ddt.ddt
@@ -32,7 +31,14 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         super(TestEnterpriseEnrollmentsViewSet, self).setUp()
         self.user = UserFactory(is_staff=True)
         self.client.force_authenticate(user=self.user)
-        enterprise_api_client = mock.patch('enterprise_data.permissions.EnterpriseApiClient')
+        enterprise_api_client = mock.patch(
+            'enterprise_data.permissions.EnterpriseApiClient',
+            mock.Mock(
+                return_value=mock.Mock(
+                    get_with_access_to=mock.Mock(return_value=get_dummy_enterprise_api_data())
+                )
+            )
+        )
         self.enterprise_api_client = enterprise_api_client.start()
         self.addCleanup(enterprise_api_client.stop)
 
@@ -163,6 +169,57 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
 
     @ddt.data(
         (
+            True, 2, 'verified', 2
+        ),
+        (
+            True, 2, 'audit', 2
+        ),
+        (
+            False, 2, 'verified', 2
+        ),
+        (
+            False, 2, 'audit', 0
+        ),
+    )
+    @ddt.unpack
+    def test_get_queryset_returns_enrollments_with_audit_enrollment_filter(
+            self, enable_audit_enrollment, total_enrollments, user_current_enrollment_mode, enrollments_count
+    ):
+        enterprise_id = '413a0720-3efe-4cf5-98c8-3b4e42d3c501'
+        url = reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': enterprise_id})
+
+        dummy_enterprise_api_data = get_dummy_enterprise_api_data(
+            enterprise_id=enterprise_id,
+            enable_audit_enrollment=enable_audit_enrollment,
+        )
+        enterprise_api_client = mock.patch(
+            'enterprise_data.permissions.EnterpriseApiClient',
+            mock.Mock(
+                return_value=mock.Mock(
+                    get_with_access_to=mock.Mock(return_value=dummy_enterprise_api_data)
+                )
+            )
+        )
+        self.enterprise_api_client = enterprise_api_client.start()
+        enterprise_user = EnterpriseUserFactory(enterprise_user_id=1234)
+        for index in range(total_enrollments):
+            EnterpriseEnrollmentFactory(
+                enterprise_user=enterprise_user,
+                enterprise_id=enterprise_id,
+                user_email='user{}@example.com'.format(index),
+                user_current_enrollment_mode=user_current_enrollment_mode,
+                course_title='course101',
+                has_passed=True,
+                consent_granted=True,
+            )
+
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+        result = response.json()
+        assert result['count'] == enrollments_count
+
+    @ddt.data(
+        (
             'active_past_week',
             [date.today(), date.today() - timedelta(days=2)]
         ),
@@ -195,6 +252,8 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
                 enterprise_user=enterprise_user,
                 enterprise_id=enterprise_id,
                 last_activity_date=activity_date,
+                course_end=timezone.now() + timedelta(days=1),
+                has_passed=False,
                 consent_granted=True,
             )
 
@@ -204,6 +263,139 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         assert result['count'] == len(expected_dates)
         for enrollment in result['results']:
             assert datetime.strptime(enrollment['last_activity_date'], "%Y-%m-%d").date() in expected_dates
+
+    @ddt.data(
+        (
+            'active_past_week',
+            [date.today(), date.today() - timedelta(days=2)]
+        ),
+        (
+            'inactive_past_week',
+            [date.today() - timedelta(weeks=2), subtract_one_month(date.today())]
+        ),
+        (
+            'inactive_past_month',
+            [subtract_one_month(date.today())]
+        )
+    )
+    @ddt.unpack
+    def test_get_queryset_returns_learner_activity_filter_no_consent(self, activity_filter, expected_dates):
+        """
+        Learner activity filter should not return learner if their enrollments
+        have no consent granted
+        """
+        enterprise_id = '413a0720-3efe-4cf5-98c8-3b4e42d3c509'
+        url = u"{url}?learner_activity={activity_filter}".format(
+            url=reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': enterprise_id}),
+            activity_filter=activity_filter
+        )
+
+        enterprise_user = EnterpriseUserFactory(enterprise_user_id=1234)
+        course_end_date = timezone.now() + timedelta(days=1)
+
+        date_today = date.today()
+        in_past_week_dates = [date_today, date_today - timedelta(days=2)]
+        before_past_week_dates = [date_today - timedelta(weeks=2)]
+        before_past_month_dates = [subtract_one_month(date.today())]
+        activity_dates = in_past_week_dates + before_past_week_dates + before_past_month_dates
+        for activity_date in activity_dates:
+            EnterpriseEnrollmentFactory(
+                enterprise_user=enterprise_user,
+                enterprise_id=enterprise_id,
+                last_activity_date=activity_date,
+                course_end=course_end_date,
+                has_passed=False,
+                consent_granted=False,
+            )
+
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+        result = response.json()
+        assert result['count'] == 0
+
+    @ddt.data(
+        # passed, course date in past
+        (
+            'active_past_week',
+            True,
+            timezone.now() + timedelta(days=-1),
+        ),
+        (
+            'inactive_past_week',
+            True,
+            timezone.now() + timedelta(days=-1),
+        ),
+        (
+            'inactive_past_month',
+            True,
+            timezone.now() + timedelta(days=-1),
+        ),
+        # passed, course date in future
+        (
+            'active_past_week',
+            True,
+            timezone.now() + timedelta(days=1),
+        ),
+        (
+            'inactive_past_week',
+            True,
+            timezone.now() + timedelta(days=1),
+        ),
+        (
+            'inactive_past_month',
+            True,
+            timezone.now() + timedelta(days=1),
+        ),
+        # not passed, course date in past
+        (
+            'active_past_week',
+            False,
+            timezone.now() + timedelta(days=-1),
+        ),
+        (
+            'inactive_past_week',
+            False,
+            timezone.now() + timedelta(days=-1),
+        ),
+        (
+            'inactive_past_month',
+            False,
+            timezone.now() + timedelta(days=-1),
+        ),
+    )
+    @ddt.unpack
+    def test_get_queryset_returns_learner_activity_filter_no_active_enrollments(
+        self, activity_filter, has_passed, course_end_date
+    ):
+        """
+        Learner activity filter should not return enrollments if their course date is in past
+        or learners have not passed the course yet.
+        """
+        enterprise_id = '413a0720-3efe-4cf5-98c8-3b4e42d3c509'
+        url = u"{url}?learner_activity={activity_filter}".format(
+            url=reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': enterprise_id}),
+            activity_filter=activity_filter
+        )
+
+        enterprise_user = EnterpriseUserFactory(enterprise_user_id=1234)
+
+        date_today = date.today()
+        in_past_week_dates = [date_today, date_today - timedelta(days=2)]
+        before_past_week_dates = [date_today - timedelta(weeks=2)]
+        before_past_month_dates = [subtract_one_month(date.today())]
+        activity_dates = in_past_week_dates + before_past_week_dates + before_past_month_dates
+        for activity_date in activity_dates:
+            EnterpriseEnrollmentFactory(
+                enterprise_user=enterprise_user,
+                enterprise_id=enterprise_id,
+                last_activity_date=activity_date,
+                course_end=course_end_date,
+                has_passed=has_passed,
+                consent_granted=True,
+            )
+
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_get_queryset_throws_error(self):
         enterprise_id = '0395b02f-6b29-42ed-9a41-45f3dff8349c'
@@ -255,6 +447,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         assert len(result) == 2
 
 
+@ddt.ddt
 @mark.django_db
 class TestEnterpriseUsersViewSet(APITestCase):
     """
@@ -265,7 +458,14 @@ class TestEnterpriseUsersViewSet(APITestCase):
         super(TestEnterpriseUsersViewSet, self).setUp()
         self.user = UserFactory(is_staff=True)
         self.client.force_authenticate(user=self.user)
-        enterprise_api_client = mock.patch('enterprise_data.permissions.EnterpriseApiClient')
+        enterprise_api_client = mock.patch(
+            'enterprise_data.permissions.EnterpriseApiClient',
+            mock.Mock(
+                return_value=mock.Mock(
+                    get_with_access_to=mock.Mock(return_value=get_dummy_enterprise_api_data())
+                )
+            )
+        )
         self.enterprise_api_client = enterprise_api_client.start()
         self.addCleanup(enterprise_api_client.stop)
 
@@ -297,6 +497,17 @@ class TestEnterpriseUsersViewSet(APITestCase):
             enterprise_user=self.ent_user4,
             course_end=date_in_future,
         )
+        EnterpriseEnrollmentFactory(
+            enterprise_user=self.ent_user4,
+            course_end=date_in_future,
+            consent_granted=True,
+        )
+        EnterpriseEnrollmentFactory(
+            enterprise_user=self.ent_user4,
+            course_end=date_in_past,
+            consent_granted=True,
+            has_passed=False,
+        )
         # User with only True enrollment consent
         self.ent_user5 = EnterpriseUserFactory(
             enterprise_user_id=5,
@@ -322,16 +533,19 @@ class TestEnterpriseUsersViewSet(APITestCase):
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user7,
             consent_granted=True,
+            has_passed=True,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user7,
             consent_granted=False,
             course_end=date_in_future,
+            has_passed=False,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user7,
             consent_granted=False,
             course_end=date_in_past,
+            has_passed=True,
         )
 
         # User with True & None for enrollment consent and course has ended
@@ -350,6 +564,36 @@ class TestEnterpriseUsersViewSet(APITestCase):
             has_passed=True,
         )
 
+        # User with a large number of enrollments of different kinds
+        self.ent_user9 = EnterpriseUserFactory(
+            enterprise_user_id=9,
+        )
+        EnterpriseEnrollmentFactory(
+            enterprise_user=self.ent_user9,
+            has_passed=True,
+        )
+        for i in range(2):
+            EnterpriseEnrollmentFactory(
+                enterprise_user=self.ent_user9,
+                has_passed=False,
+            )
+        for i in range(3):
+            EnterpriseEnrollmentFactory(
+                enterprise_user=self.ent_user9,
+                consent_granted=True,
+                has_passed=True,
+            )
+        EnterpriseEnrollmentFactory(
+            enterprise_user=self.ent_user9,
+            consent_granted=False,
+            has_passed=True,
+        )
+        EnterpriseEnrollmentFactory(
+            enterprise_user=self.ent_user9,
+            consent_granted=True,
+            has_passed=False,
+        )
+
     def test_viewset_no_query_params(self):
         """
         EnterpriseUserViewset should return all users if no filtering query
@@ -358,7 +602,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         url = reverse('v0:enterprise-users-list',
                       kwargs={'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'})
         response = self.client.get(url)
-        assert response.json()['count'] == 7
+        assert response.json()['count'] == 8
 
     @mock.patch('enterprise_data.api.v0.views.EnterpriseUsersViewSet.paginate_queryset')
     def test_viewset_no_query_params_no_pagination(self, mock_paginate):
@@ -371,7 +615,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
                       kwargs={'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'})
         response = self.client.get(url)
         assert 'count' not in response.json()
-        assert len(response.json()) == 7
+        assert len(response.json()) == 8
 
     def test_viewset_filter_has_enrollments_true(self):
         """
@@ -385,7 +629,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
             kwargs=kwargs,
         )
         response = self.client.get(url, params)
-        assert response.json()['count'] == 4
+        assert response.json()['count'] == 5
 
     def test_viewset_filter_has_enrollments_false(self):
         """
@@ -413,7 +657,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
             kwargs=kwargs,
         )
         response = self.client.get(url, params)
-        assert response.json()['count'] == 7
+        assert response.json()['count'] == 8
 
     def test_viewset_filter_active_courses_true(self):
         """
@@ -495,7 +739,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
             kwargs=kwargs,
         )
         response = self.client.get(url, params)
-        assert response.json()['enrollment_count'] == 2
+        assert response.json()['enrollment_count'] == 3
 
     def test_viewset_enrollment_count_not_present(self):
         """
@@ -531,8 +775,25 @@ class TestEnterpriseUsersViewSet(APITestCase):
             kwargs=kwargs,
         )
         response = self.client.get(url, params)
-        assert response.json()['enrollment_count'] == 2
+        assert response.json()['enrollment_count'] == 3
         assert response.json()['course_completion_count'] == 1
+
+    def test_viewset_enrollment_count_consent(self):
+        """
+        EnterpriseUserViewset should respect consent_granted on enrollments
+        when determining the enrollment_count for a user
+        """
+        kwargs = {
+            'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
+            'pk': self.ent_user7.id,
+        }
+        params = {'extra_fields': ['enrollment_count'], }
+        url = reverse(
+            'v0:enterprise-users-detail',
+            kwargs=kwargs,
+        )
+        response = self.client.get(url, params)
+        assert response.json()['enrollment_count'] == 1
 
     def test_viewset_course_completion_count_not_present(self):
         """
@@ -552,6 +813,125 @@ class TestEnterpriseUsersViewSet(APITestCase):
         response = self.client.get(url,)
         assert 'course_completion_count' not in response.json()
 
+    def test_viewset_course_completion_consent(self):
+        """
+        EnterpriseUserViewset should respect consent_granted on enrollments
+        when determining the course_completion_count for a user
+        """
+        kwargs = {
+            'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
+            'pk': self.ent_user7.id,
+        }
+        params = {'extra_fields': ['course_completion_count'], }
+        url = reverse(
+            'v0:enterprise-users-detail',
+            kwargs=kwargs,
+        )
+        response = self.client.get(url, params)
+        assert response.json()['course_completion_count'] == 1
+
+    def test_users_are_sortable_by_enrollment_count(self):
+        """
+        EnterpriseUserViewset list view should be able to return a list
+        of users sorted by their respective enrollment counts
+        """
+        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        url = reverse(
+            'v0:enterprise-users-list',
+            kwargs=kwargs,
+        )
+        params = {
+            'extra_fields': 'enrollment_count',
+            'ordering': 'enrollment_count'
+        }
+        response = self.client.get(url, params)
+        current_enrollment_count = 0
+        for user in response.json()['results']:
+            assert user['enrollment_count'] >= current_enrollment_count
+            current_enrollment_count = user['enrollment_count']
+
+    def test_users_are_sortable_by_enrollment_count_reverse(self):
+        """
+        EnterpriseUserViewset list view should be able to return a list
+        of users reverse sorted by their respective enrollment counts
+        """
+        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        url = reverse(
+            'v0:enterprise-users-list',
+            kwargs=kwargs,
+        )
+        params = {
+            'extra_fields': 'enrollment_count',
+            'ordering': '-enrollment_count'
+        }
+        response = self.client.get(url, params)
+        current_enrollment_count = 99
+        for user in response.json()['results']:
+            assert user['enrollment_count'] <= current_enrollment_count
+            current_enrollment_count = user['enrollment_count']
+
+    def test_users_are_sortable_by_course_completion_count(self):
+        """
+        EnterpriseUserViewset list view should be able to return a list
+        of users sorted by their respective course_completion_count
+        """
+        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        url = reverse(
+            'v0:enterprise-users-list',
+            kwargs=kwargs,
+        )
+        params = {
+            'extra_fields': 'course_completion_count',
+            'ordering': 'course_completion_count'
+        }
+        response = self.client.get(url, params)
+        current_course_completion_count = 0
+        for user in response.json()['results']:
+            assert user['course_completion_count'] >= current_course_completion_count
+            current_course_completion_count = user['course_completion_count']
+
+    def test_users_are_sortable_by_course_completion_count_reverse(self):
+        """
+        EnterpriseUserViewset list view should be able to return a list
+        of users sorted by their respective course_completion_count
+        """
+        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        url = reverse(
+            'v0:enterprise-users-list',
+            kwargs=kwargs,
+        )
+        params = {
+            'extra_fields': 'course_completion_count',
+            'ordering': '-course_completion_count'
+        }
+        response = self.client.get(url, params)
+        current_course_completion_count = 99
+        for user in response.json()['results']:
+            assert user['course_completion_count'] <= current_course_completion_count
+            current_course_completion_count = user['course_completion_count']
+
+    def test_viewset_course_completion_count_value_regression(self):
+        """
+        EnterpriseUserViewset should return the correct value for course_completion_count
+        instead of returning "1" when 1 or more completed (and consented) enrollments
+        exist for a user.
+        """
+        kwargs = {
+            'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
+            'pk': self.ent_user9.id,
+        }
+        params = {
+            'extra_fields': ['enrollment_count', 'course_completion_count'],
+            'ordering': 'course_completion_count',
+        }
+        url = reverse(
+            'v0:enterprise-users-detail',
+            kwargs=kwargs,
+        )
+        response = self.client.get(url, params)
+        assert response.json()['enrollment_count'] == 4
+        assert response.json()['course_completion_count'] == 3
+
     def test_no_page_querystring_skips_pagination(self):
         """
         EnterpriseUserViewset list view should honor the no_page query param,
@@ -566,7 +946,35 @@ class TestEnterpriseUsersViewSet(APITestCase):
 
         response = self.client.get(url, params)
 
+    @ddt.data(
+        (
+            'id',
+            [4, 9]
+        ),
+        (
+            '-id',
+            [9, 4]
+        )
+    )
+    @ddt.unpack
+    def test_viewset_ordering(self, ordering, users):
+        """
+        EnterpriseUserViewset should order users returned if the value
+        for ordering query param is set
+        """
+        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        params = {'ordering': ordering, 'has_enrollments': 'true', }
+        url = reverse(
+            'v0:enterprise-users-list',
+            kwargs=kwargs,
+        )
+        response = self.client.get(url, params)
+        assert response.json()['count'] == 5
+        assert response.json()['results'][0]['id'] == users[0]
+        assert response.json()['results'][4]['id'] == users[1]
 
+
+@ddt.ddt
 class TestEnterpriseLearnerCompletedCourses(APITestCase):
     """
     Tests for EnterpriseLearnerCompletedCoursesViewSet.
@@ -577,7 +985,14 @@ class TestEnterpriseLearnerCompletedCourses(APITestCase):
         super(TestEnterpriseLearnerCompletedCourses, self).setUp()
         self.user = UserFactory(is_staff=True)
         self.client.force_authenticate(user=self.user)
-        enterprise_api_client = mock.patch('enterprise_data.permissions.EnterpriseApiClient')
+        enterprise_api_client = mock.patch(
+            'enterprise_data.permissions.EnterpriseApiClient',
+            mock.Mock(
+                return_value=mock.Mock(
+                    get_with_access_to=mock.Mock(return_value=get_dummy_enterprise_api_data())
+                )
+            )
+        )
         self.enterprise_api_client = enterprise_api_client.start()
         self.addCleanup(enterprise_api_client.stop)
 
@@ -624,3 +1039,111 @@ class TestEnterpriseLearnerCompletedCourses(APITestCase):
         assert isinstance(result, list)
         assert len(result) == 1
         assert result == expected_result
+
+    @ddt.data(
+        (
+            'completed_courses',
+            [
+                {
+                    'user_email': 'test2@example.com',
+                    'user_enrollments': 2,
+                },
+                {
+                    'user_email': 'test3@example.com',
+                    'user_enrollments': 3,
+                },
+            ],
+            3,
+            [1, 2, 3]
+        ),
+        (
+            'completed_courses',
+            [
+                {
+                    'user_email': 'test2@example.com',
+                    'user_enrollments': 2,
+                },
+                {
+                    'user_email': 'test3@example.com',
+                    'user_enrollments': 3,
+                },
+                {
+                    'user_email': 'test4@example.com',
+                    'user_enrollments': 1,
+                },
+            ],
+            4,
+            [1, 1, 2, 3]
+        ),
+        (
+            '-completed_courses',
+            [
+                {
+                    'user_email': 'test2@example.com',
+                    'user_enrollments': 2,
+                },
+                {
+                    'user_email': 'test3@example.com',
+                    'user_enrollments': 3,
+                },
+            ],
+            3,
+            [3, 2, 1]
+        ),
+        (
+            '-completed_courses',
+            [
+                {
+                    'user_email': 'test2@example.com',
+                    'user_enrollments': 2,
+                },
+                {
+                    'user_email': 'test3@example.com',
+                    'user_enrollments': 3,
+                },
+                {
+                    'user_email': 'test4@example.com',
+                    'user_enrollments': 2,
+                },
+            ],
+            4,
+            [3, 2, 2, 1]
+        ),
+    )
+    @ddt.unpack
+    def test_viewset_ordering(
+        self,
+        ordering,
+        enrollments_data,
+        expected_results_count,
+        expected_completed_courses
+    ):
+        """
+        EnterpriseLearnerCompletedCoursesViewSet should order enrollments returned if the value
+        for ordering query param is set.
+        """
+        # Add enrollments
+        one_day = timedelta(days=1)
+        date_in_past = timezone.now() - one_day
+        ent_user = EnterpriseUserFactory(
+            enterprise_user_id=1,
+        )
+        for enrollment in enrollments_data:
+            for _idx in range(enrollment['user_enrollments']):
+                EnterpriseEnrollmentFactory(
+                    user_email=enrollment['user_email'],
+                    enterprise_user=ent_user,
+                    course_end=date_in_past,
+                    has_passed=True,
+                    consent_granted=True,
+                )
+        url = reverse(
+            'v0:enterprise-learner-completed-courses-list',
+            kwargs={'enterprise_id': self.enterprise_id}
+        )
+        params = {'ordering': ordering}
+        response = self.client.get(url, params)
+        assert response.json()['count'] == expected_results_count
+
+        for idx, expected_course_completed_count in enumerate(expected_completed_courses):
+            assert response.json()['results'][idx]['completed_courses'] == expected_course_completed_count

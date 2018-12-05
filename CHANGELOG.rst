@@ -14,6 +14,71 @@ Change Log
 Unreleased
 ----------
 
+[1.0.12] - 2018-11-05
+--------------------
+* Only include current active enrollments which are not complete yet in active learners table.
+
+[1.0.11] - 2018-11-02
+---------------------
+Revert 1.0.9 changes - enrollment_created_date as this value is redundent with the enrollment_created_timestamp
+
+[1.0.10] - 2018-11-02
+---------------------
+Upgrade dependencies
+
+[1.0.9] - 2018-11-02
+--------------------
+* Add "enrollment_created_date" to progress report
+
+[1.0.8] - 2018-10-29
+--------------------
+* Enable audit enrollments filtering on field `user_current_enrollment_mode` for model `EnterpriseEnrollment`
+
+[1.0.7] - 2018-10-25
+--------------------
+* Fixed KeyError issue when PGP Encryption key is not found
+
+[1.0.6] - 2018-10-25
+--------------------
+* Updating enrollment_count and course_completion_count computations to restrict to consent_granted=True enrollments
+
+[1.0.5] - 2018-10-25
+--------------------
+* Ability to PGP encrypt report files sent via email and SFTP
+
+[1.0.4] - 2018-10-24
+--------------------
+* Updating packages
+
+[1.0.3] - 2018-10-24
+--------------------
+* Tweaking a outeref call for course_completion_count computation
+
+[1.0.2] - 2018-10-24
+--------------------
+* Fixing bug with course_completion_count computation
+
+[1.0.1] - 2018-10-23
+--------------------
+* Making enterprise_user endpoint sortable on enrollment_count and course_completion_count
+
+[1.0.0] - 2018-10-16
+--------------------
+* Updated edx-drf-extensions imports. edx-enterprise-data will no longer work
+  with outdated versions of edx-drf-extensions.
+
+[0.2.15] - 2018-10-15
+---------------------
+* Add sorting for /learner_completed_courses endpoint.
+
+[0.2.14] - 2018-10-15
+---------------------
+* Add sorting for /users endpoint
+
+[0.2.13] - 2018-10-15
+---------------------
+* Add `progress_v2` report generation in `JSON` format
+
 [0.2.12] - 2018-10-08
 ---------------------
 * Add filter `all_enrollments_passed` to filter out enterprise learners on the basis of all enrollments passed
@@ -101,4 +166,4 @@ Unreleased
 [0.1.0] - 2018-03-07
 --------------------
 
-* Add new app `enterprise_api`. This django app is used to expose a REST endpoint in th eex-analytics-data-api project.
+* Add new app `enterprise_api`. This django app is used to expose a REST endpoint in the edx-analytics-data-api project.

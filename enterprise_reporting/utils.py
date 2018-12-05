@@ -15,6 +15,7 @@ from email.mime.text import MIMEText
 from io import open  # pylint: disable=redefined-builtin
 
 import boto3
+import pgpy
 import pyminizip
 import pytz
 from cryptography.fernet import Fernet
@@ -33,9 +34,35 @@ FREQUENCY_TYPE_WEEKLY = 'weekly'
 AWS_REGION = 'us-east-1'
 
 
-def compress_and_encrypt(files, password):
+def compress_and_encrypt(files, password=None, pgp_key=''):
     """
-    Given a file and a password, create an encrypted zip file. Return the new filename.
+    Given file(s) and a password or a PGP key,
+    create a password protected or encrypted compressed file.
+    Return the new filename.
+    """
+    if pgp_key:
+        zipfile = _get_compressed_file(files)
+        return _get_encrypted_file(zipfile, pgp_key)
+    else:
+        return _get_compressed_file(files, password)
+
+
+def _get_encrypted_file(zipfile, pgp_key):
+    """
+    Given a file and a pgp public key, create an encrypted file. Return the new filename.
+    """
+    rsa_pub, _ = pgpy.PGPKey.from_blob(pgp_key)
+    message = pgpy.PGPMessage.new(zipfile, file=True)
+    pgpfile = '{}.pgp'.format(zipfile)
+    encrypted_message = rsa_pub.encrypt(message)
+    with open(pgpfile, 'wb') as encrypted_file:
+        encrypted_file.write(encrypted_message.__bytes__())
+    return pgpfile
+
+
+def _get_compressed_file(files, password=None):
+    """
+    Given file(s) and a password, create a zip file. Return the new filename.
     """
     multiple_files = len(files) > 1
     # Replace the data and report type with just `.zip`.
@@ -45,11 +72,18 @@ def compress_and_encrypt(files, password):
     return zipfile
 
 
-def send_email_with_attachment(subject, body, from_email, to_email, filename):
+def send_email_with_attachment(subject, body, from_email, to_email, filename, attachment_data=None):
     """
     Send an email with a file attachment.
 
     Adapted from https://gist.github.com/yosemitebandit/2883593
+
+    attachment_data should be string data if value is passed in.
+    If filename refers to a file that lives on the filesystem instead
+    of just the name you want the attachment to have, no need to
+    set attachment_data to anything. This gives us the option of
+    handing this function string data that lives in memory instead
+    of needing to first write to a file.
     """
     # connect to SES
     client = boto3.client('ses', region_name=AWS_REGION)
@@ -58,7 +92,10 @@ def send_email_with_attachment(subject, body, from_email, to_email, filename):
     msg_body = MIMEText(body)
     
     # the attachment
-    msg_attachment = MIMEApplication(open(filename, 'rb').read())
+    if attachment_data:
+        msg_attachment = MIMEApplication(attachment_data)
+    else:
+        msg_attachment = MIMEApplication(open(filename, 'rb').read())
     msg_attachment.add_header('Content-Disposition', 'attachment', filename=os.path.basename(filename))
     msg_attachment.set_type('application/zip')
 

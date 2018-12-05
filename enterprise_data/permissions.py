@@ -8,6 +8,7 @@ from logging import getLogger
 from rest_framework import permissions
 
 from enterprise_data.clients import EnterpriseApiClient
+from enterprise_data.utils import update_session_with_enterprise_data
 
 LOGGER = getLogger(__name__)
 
@@ -94,12 +95,19 @@ class HasDataAPIDjangoGroupAccess(permissions.BasePermission):
 
         if ('enterprises_with_access' not in request.session or
                 enterprise_in_url not in request.session['enterprises_with_access']):
-            request.session['enterprises_with_access'] = {}
             enterprise_data = self.get_enterprise_with_access_to(request.auth, request.user, enterprise_in_url)
             if not enterprise_data:
-                request.session['enterprises_with_access'][enterprise_in_url] = False
+                update_session_with_enterprise_data(
+                    request, enterprise_in_url, enterprises_with_access=False, enable_audit_enrollment=False
+                )
             else:
-                request.session['enterprises_with_access'][enterprise_in_url] = True
+                enable_audit_enrollment = enterprise_data.get('enable_audit_enrollment', False)
+                update_session_with_enterprise_data(
+                    request,
+                    enterprise_in_url,
+                    enterprises_with_access=True,
+                    enable_audit_enrollment=enable_audit_enrollment
+                )
 
         permitted = request.session['enterprises_with_access'][enterprise_in_url]
         if not permitted:
