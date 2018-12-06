@@ -8,5 +8,5 @@ import unittest
 from enterprise_reporting import export_edxapp_data
 
 
-class TestUtilities(unittest.TestCase):
+class TestExportEdxappData(unittest.TestCase):
 	pass

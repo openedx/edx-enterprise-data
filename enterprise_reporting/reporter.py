@@ -213,6 +213,9 @@ class EnterpriseReportSender(object):
         """Get content metadata from the Enterprise Customer Catalog API."""
         enterprise_api_client = EnterpriseAPIClient()
         LOGGER.info('Gathering all catalog content metadata...')
-        content_metadata = enterprise_api_client.get_content_metadata(self.enterprise_customer_uuid)
+        content_metadata = enterprise_api_client.get_content_metadata(
+            self.enterprise_customer_uuid,
+            self.reporting_config,
+        )
         LOGGER.debug('Gathered this content metadata: {}'.format(content_metadata))
         return content_metadata

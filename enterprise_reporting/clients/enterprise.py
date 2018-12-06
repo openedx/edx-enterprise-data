@@ -48,17 +48,20 @@ class EnterpriseAPIClient(EdxOAuth2APIClient):
         )
 
     @EdxOAuth2APIClient.refresh_token
-    def get_content_metadata(self, enterprise_customer_uuid):
+    def get_content_metadata(self, enterprise_customer_uuid, reporting_config):
         """Return all content metadata contained in the catalogs associated with an Enterprise Customer."""
         content_metadata = OrderedDict()
-        enterprise_customer_catalogs = self._load_data(
-            self.ENTERPRISE_CUSTOMER_CATALOGS_ENDPOINT,
-            should_traverse_pagination=True,
-            querystring={
-                'enterprise_customer': enterprise_customer_uuid,
-                'page_size': self.PAGE_SIZE,
-            },
-        )
+
+        enterprise_customer_catalogs = self._extract_catalog_uuids_from_reporting_config(reporting_config)
+        if not enterprise_customer_catalogs.get('results'):
+            enterprise_customer_catalogs = self._load_data(
+                self.ENTERPRISE_CUSTOMER_CATALOGS_ENDPOINT,
+                should_traverse_pagination=True,
+                querystring={
+                    'enterprise_customer': enterprise_customer_uuid,
+                    'page_size': self.PAGE_SIZE,
+                },
+            )
         for catalog in enterprise_customer_catalogs.get('results', []):
             catalog_content = self._load_data(
                 self.ENTERPRISE_CUSTOMER_CATALOGS_ENDPOINT,
@@ -74,6 +77,21 @@ class EnterpriseAPIClient(EdxOAuth2APIClient):
 
         # We only made this a dictionary to help filter out duplicates by a common key. We just want values now.
         return content_metadata.values()
+
+
+def extract_catalog_uuids_from_reporting_config(reporting_config):
+    """
+    Helper method to extract uuids from reporting config
+
+    Returns a dict with 1 key, 'results', whose value is a list of
+    dicts containing a key-value pair of 'uuid' and some uuid
+    """
+    enterprise_customer_catalogs = {'results': [
+        {'uuid': catalog['uuid']}
+        for catalog in reporting_config.get('enterprise_customer_catalogs', [])
+        ]
+    }
+    return enterprise_customer_catalogs
 
 
 class EnterpriseDataApiClient(EdxOAuth2APIClient):

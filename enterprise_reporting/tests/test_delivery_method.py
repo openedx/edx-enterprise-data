@@ -8,5 +8,5 @@ import unittest
 from enterprise_reporting import delivery_method
 
 
-class TestUtilities(unittest.TestCase):
+class TestDeliveryMethod(unittest.TestCase):
 	pass

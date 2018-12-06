@@ -8,5 +8,5 @@ import unittest
 from enterprise_reporting import reporter
 
 
-class TestUtilities(unittest.TestCase):
+class TestReporter(unittest.TestCase):
 	pass

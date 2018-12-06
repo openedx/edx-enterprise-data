@@ -4,11 +4,11 @@ External Resource Link Report Generation Code.
 """
 from __future__ import absolute_import, unicode_literals
 
-from datetime import date
 import logging
 import os
 import re
 import sys
+from datetime import date
 
 from py2neo import Graph
 
