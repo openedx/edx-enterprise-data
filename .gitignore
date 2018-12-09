@@ -24,6 +24,7 @@ node_modules/
 pip-log.txt
 
 # Unit test / coverage reports
+.pytest_cache
 .cache/
 .coverage
 .coverage.*
@@ -72,3 +73,5 @@ default.db
 # Geckodriver for Jasmine
 geckodriver/
 
+# Script output
+.output/

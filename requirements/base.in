@@ -1,11 +1,17 @@
-pip-tools                 		# Requirements file management
-tox                       		# virtualenv management for tests
+pip-tools==2.0.2                 		# Requirements file management
+tox==3.0.0                       		# virtualenv management for tests
 vertica-python==0.7.3                   # Required for Enterprise Reporting
 pyminizip==0.2.1                        # Required for Enterprise Reporting
 celery==3.1.18                          # Run task workers in other locations
 unicodecsv==0.14.1                      # Allows exporting CSV with unicode support (a drop-in replacement for built-in csv module)
 requests==2.9.1                         # Required for SAPSuccessFactorsAPIClient
-edx-rest-api-client==1.7.1              # For accessing the Enrollment API (and possibly other edX APIs)
-boto3
-pycrypto
-
+edx-rest-api-client                     # For accessing the Enrollment API (and possibly other edX APIs)
+edx-drf-extensions
+awscli==1.11.178                        # for assuming aws roles for sending email via SES
+boto3==1.4.7
+cryptography==1.9
+paramiko==2.4
+Django==1.11.15
+django-fernet-fields==0.5
+futures==3.2.0; python_version == "2.7"
+six==1.11.0

@@ -1,0 +1,63 @@
+[
+    {
+      "model": "enterprise_data.EnterpriseUser",
+      "pk": 1,
+      "fields": {
+        "enterprise_id": "ee5e6b3a069a4947bb8dd2dbc323396c",
+        "lms_user_id": 11,
+        "enterprise_user_id": 111,
+        "enterprise_sso_uid": "harry",
+        "user_account_creation_timestamp": "2015-02-12 23:14:35",
+        "user_email": "test@example.com",
+        "user_username": "test_user",
+        "user_country_code": "US",
+        "last_activity_date": "2017-06-23"
+      }
+    },
+    {
+      "model": "enterprise_data.EnterpriseUser",
+      "pk": 2,
+      "fields": {
+        "enterprise_id": "ee5e6b3a069a4947bb8dd2dbc323396c",
+        "lms_user_id": 11,
+        "enterprise_user_id": 222,
+        "enterprise_sso_uid": "harry",
+        "user_account_creation_timestamp": "2015-02-12 23:14:35",
+        "user_email": "test@example.com",
+        "user_username": "test_user",
+        "user_country_code": "US",
+        "last_activity_date": "2017-06-23"
+      }
+    },
+    {
+      "model": "enterprise_data.EnterpriseUser",
+      "pk": 3,
+      "fields": {
+        "enterprise_id": "9339ad5d5363564d7b3d4efbb257384b",
+        "lms_user_id": 11,
+        "enterprise_user_id": 333,
+        "enterprise_sso_uid": "harry",
+        "user_account_creation_timestamp": "2015-02-12 23:14:35",
+        "user_email": "test2@example.com",
+        "user_username": "test_user2",
+        "user_country_code": "US",
+        "last_activity_date": "2017-06-23"
+      }
+    },
+    {
+      "model": "enterprise_data.EnterpriseUser",
+      "pk": 4,
+      "fields": {
+        "enterprise_id": "ee5e6b3a069a4947bb8dd2dbc323396c",
+        "lms_user_id": 11,
+        "enterprise_user_id": 444,
+        "enterprise_sso_uid": "harry",
+        "user_account_creation_timestamp": "2015-02-12 23:14:35",
+        "user_email": "test@example.com",
+        "user_username": "test_user",
+        "user_country_code": "US",
+        "last_activity_date": "2017-06-23"
+      }
+    }
+  ]
+  

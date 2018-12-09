@@ -4,22 +4,23 @@ Utility functions for Enterprise Reporting.
 """
 from __future__ import absolute_import, unicode_literals
 
-import base64
 import datetime
 import logging
-import pytz
-import re
 import os
-
-import pyminizip
-
-from email.mime.text import MIMEText
+import re
+from collections import OrderedDict
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
-
-from Crypto.Cipher import AES
+from email.mime.text import MIMEText
+from io import open  # pylint: disable=redefined-builtin
 
 import boto3
+import pyminizip
+import pytz
+from cryptography.fernet import Fernet
+from fernet_fields.hkdf import derive_fernet_key
+
+from django.utils.encoding import force_text
 
 LOGGER = logging.getLogger(__name__)
 
@@ -29,19 +30,19 @@ FREQUENCY_TYPE_DAILY = 'daily'
 FREQUENCY_TYPE_MONTHLY = 'monthly'
 FREQUENCY_TYPE_WEEKLY = 'weekly'
 
+AWS_REGION = 'us-east-1'
 
-def compress_and_encrypt(filename, password):
+
+def compress_and_encrypt(files, password):
     """
     Given a file and a password, create an encrypted zip file. Return the new filename.
     """
-    zip_filename = re.sub(r'\.(\w+)$', '.zip', filename)
-    if filename == zip_filename:
-        LOGGER.warn('Unable to determine filename for compressing {}, '
-                    'file must have a valid extension that is not .zip'.format(filename))
-        return None
-
-    pyminizip.compress(filename, zip_filename, password, COMPRESSION_LEVEL)
-    return zip_filename
+    multiple_files = len(files) > 1
+    # Replace the data and report type with just `.zip`.
+    zipfile = re.sub(r'(_(\w+))?\.(\w+)$', '.zip', files[0].name)
+    compression = pyminizip.compress_multiple if multiple_files else pyminizip.compress
+    compression([f.name for f in files] if multiple_files else files[0].name, zipfile, password, COMPRESSION_LEVEL)
+    return zipfile
 
 
 def send_email_with_attachment(subject, body, from_email, to_email, filename):
@@ -50,30 +51,34 @@ def send_email_with_attachment(subject, body, from_email, to_email, filename):
 
     Adapted from https://gist.github.com/yosemitebandit/2883593
     """
-    msg = MIMEMultipart()
-    msg['Subject'] = subject
-    msg['From'] = from_email
-    msg['To'] = to_email
-
-    # what a recipient sees if they don't use an email reader
-    msg.preamble = 'Multipart message.\n'
+    # connect to SES
+    client = boto3.client('ses', region_name=AWS_REGION)
 
     # the message body
-    part = MIMEText(body)
-    msg.attach(part)
-
+    msg_body = MIMEText(body)
+    
     # the attachment
-    part = MIMEApplication(open(filename, 'rb').read())
-    part.add_header('Content-Disposition', 'attachment', filename=os.path.basename(filename))
-    part.set_type('application/zip')
-    msg.attach(part)
+    msg_attachment = MIMEApplication(open(filename, 'rb').read())
+    msg_attachment.add_header('Content-Disposition', 'attachment', filename=os.path.basename(filename))
+    msg_attachment.set_type('application/zip')
 
-    # connect to SES
-    client = boto3.client('ses')
+    # iterate over each email in the list to send emails independently
+    for email in to_email:
+        msg = MIMEMultipart()
+        msg['Subject'] = subject
+        msg['From'] = from_email
+        msg['To'] = email
 
-    # and send the message
-    result = client.send_raw_email(msg.as_string(), source=msg['From'], destinations=[msg['To']])
-    LOGGER.debug(result)
+        # what a recipient sees if they don't use an email reader
+        msg.preamble = 'Multipart message.\n'
+
+        # attach the message body and attachment
+        msg.attach(msg_body)
+        msg.attach(msg_attachment)
+
+        # and send the message
+        result = client.send_raw_email(RawMessage={'Data': msg.as_string()}, Source=msg['From'], Destinations=[email])
+        LOGGER.debug(result)
 
 
 def is_current_time_in_schedule(frequency, hour_of_day, day_of_month=None, day_of_week=None):
@@ -101,13 +106,111 @@ def is_current_time_in_schedule(frequency, hour_of_day, day_of_month=None, day_o
     return False
 
 
-def decrypt_string(string, iv, base64_decode=True):
+def decrypt_string(string):
     """
-    Decrypts a string using a shared secret and a given initialization vector (iv).
+    Decrypts a string that was encrypted using Fernet symmetric encryption.
     """
-    if base64_decode:
-        string = base64.b64decode(string)
-        iv = base64.b64decode(iv)
-    secret = os.environ.get('ENTERPRISE_REPORTING_SECRET')
-    aes = AES.new(secret, AES.MODE_CFB, iv)
-    return aes.decrypt(string).decode('utf8')
+    fernet = Fernet(
+        derive_fernet_key(
+            os.environ.get('LMS_FERNET_KEY')
+        )
+    )
+
+    return force_text(fernet.decrypt(bytes(string, 'utf-8')))
+
+
+def flatten_dict(d, target='key' or 'value'):
+    """
+    Flattens a dict object into a list.
+
+    The behavior is as such for targeting keys:
+        * Each key is concatenated into the list.
+        * Each key with a list value has the list's indices formatted (see [1]) and concatenated into the list.
+        * Each key with a dict value has the dict's sub-keys formatted (see [1]) and concatenated into the list.
+        * Sub-objects are recursively flattened.
+
+    The behavior is as such for targeting values:
+        * Each non-list value is concatenated into the list.
+        * Each list value has its entries concatenated into the list.
+        * Sub-objects are recursively flattened.
+
+    WARNING: Appropriately flattening lists with a mixture of dict and non-dict objects within them is unsupported.
+
+    [1]: The nested-value formatting function can be found nested within this function. (No pun intended).
+
+    # TODO: This beastly mess of a house of cards *needs* a refactor at some point. Make do with comments for now.
+    # TODO: This can probably be separated into a dedicated Python library somewhere sometime in the future.
+    """
+    def format_nested(nested, _key=None):
+        if _key is None:
+            _key = key
+        return '{}_{}'.format(_key, nested)
+
+    flattened = []
+    target_is_key = target == 'key'
+    for key, value in OrderedDict(sorted(d.items())).items():
+
+        # Simple case: recursively flatten the dictionary.
+        if isinstance(value, dict):
+            flattened += map(
+                format_nested if target_is_key else lambda x: x,
+                flatten_dict(value, target=target)
+            )
+
+        # We are suddenly in muddy waters, because lists can have multiple types within them in JSON.
+        elif isinstance(value, list):
+            items_are_dict = [isinstance(item, dict) for item in value]
+            items_are_list = [isinstance(item, list) for item in value]
+
+            # To help reduce the complexity here, let's not support this case.
+            # Besides, most sensible APIs won't bump into this case.
+            if any(items_are_dict) and not all(items_are_dict):
+                raise NotImplementedError("Ability to flatten dict with list of mixed dict and non-dict types "
+                                          "is not currently supported")
+
+            # Same here, this is just weird.
+            if any(items_are_list):
+                raise NotImplementedError("Ability to flatten a dict with lists within lists "
+                                          "is not currently supported. And we'd like to ask you to take it easy.")
+
+            # This case is common, but a little complex.
+            elif all(items_are_dict):
+                for index, item in enumerate(value):
+                    _flattened_dict = flatten_dict(item, target=target)
+
+                    # In this case we actually want to prepend the dict's index in the list to each flattened dict.
+                    if target_is_key:
+                        _flattened_dict = [format_nested(flattened_item, _key=index)
+                                           for flattened_item in _flattened_dict]
+
+                    flattened += map(format_nested if target_is_key else lambda x: x, _flattened_dict)
+
+            # All items are non-dict, so just directly add either the index or the value.
+            else:
+                flattened += map(format_nested, range(len(value))) if target_is_key else value
+
+        # Kindergarten -- just add to the list.
+        else:
+            flattened.append(key if target_is_key else value)
+    return flattened
+
+
+def generate_data(item, target='key' or 'value'):
+    """
+    Either return a list of JSON data objects or
+    List of headers depends upon the target.
+    """
+    data = []
+    target_is_key = target == 'key'
+    for key, value in OrderedDict(sorted(item.items())).items():
+        if target_is_key:
+            data.append(key)
+            continue
+
+        # For empty list we are just writing an empty string ''.
+        if isinstance(value, list) and not len(value):
+            value = ''
+
+        data.append(value)
+
+    return data

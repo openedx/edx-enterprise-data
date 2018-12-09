@@ -1,0 +1,6 @@
+# Requirements for dev specific to the enterprise_reporting module.
+#
+# This is split from the enterprise_data module so we can avoid installing these dependencies on travis, due to
+# mysql-connector requiring protobufs. Should we start testing enterprise_reporting we will need to solve for this.
+
+mysql-connector==2.1.6

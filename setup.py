@@ -7,7 +7,7 @@ import os
 import re
 import sys
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
 
 def get_version(*file_paths):
@@ -22,7 +22,7 @@ def get_version(*file_paths):
         return version_match.group(1)
     raise RuntimeError("Unable to find version string.")
 
-VERSION = get_version("enterprise_reporting", "__init__.py")
+VERSION = get_version("enterprise_data", "__init__.py")
 
 if sys.argv[-1] == "tag":
     print("Tagging the version on github:")
@@ -41,7 +41,10 @@ setup(
     author="edX",
     author_email="oscm@edx.org",
     url="https://github.com/edx/edx-enterprise-data",
-    packages=find_packages(),
+    packages=[
+        'enterprise_data',
+        'enterprise_reporting'
+    ],
     include_package_data=True,
     install_requires=REQUIREMENTS,
     license="AGPL 3.0",

@@ -1,0 +1,13 @@
+# Requirements for dev specific to the enterprise_data module.
+#
+# This is split from the enterprise_reporting module so we can avoid installing enterprise_reporting dependencies on
+# travis, due to mysql-connector requiring protobufs. Should we start testing enterprise_reporting we will need to solve
+# for this.
+diff-cover                # Changeset diff test coverage
+edx-lint                  # For updating pylintrc
+edx-i18n-tools            # For i18n_tool dummy
+pip-tools                 # Requirements file management
+tox                       # virtualenv management for tests
+tox-battery==0.5.1        # Makes tox aware of requirements file changes (it's experimental, so keep it pinned)
+twine                     # Utility for PyPI package uploads
+wheel                     # For generation of wheels for PyPI
