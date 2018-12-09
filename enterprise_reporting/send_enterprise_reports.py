@@ -73,6 +73,10 @@ def process_reports():
     parser = argparse.ArgumentParser()
     parser.add_argument('-e', '--enterprise-customer', required=False, type=str,
                         help="Enterprise Customer's UUID. If specified, data delivery is forced.")
+    parser.add_argument('-c', '--enterprise-catalog', required=False, type=str,
+                        help="Enterprise Customer Catalog UUID. If specified and the data type "
+                             "for any of the customer's reporting configs is for catalogs, "
+                             "only the content metadata from the catalog with this UUID will get sent.")
     parser.add_argument('-d', '--data-type', required=False, type=str, choices=DATA_TYPES,
                         help="Data type. If specified, only this type of data for the customer(s) will be sent, "
                              "whether forced or not.")
@@ -96,6 +100,9 @@ def process_reports():
             reporting_config['data_type'],
             reporting_config['report_type'],
         ))
+
+        # Add any special arguments to be taken into account into the config.
+        reporting_config['_enterprise_customer_catalog_uuid'] = args.enterprise_catalog
 
         if should_deliver_report(args, reporting_config):
             send_data(reporting_config)
