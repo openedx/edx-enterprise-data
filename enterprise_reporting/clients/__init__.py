@@ -18,8 +18,8 @@ class EdxOAuth2APIClient(object):
     Base API Client for accessing edX IDA API endpoints.
     """
 
-    LMS_ROOT_URL = os.environ.get('LMS_ROOT_URL')
-    LMS_OAUTH_HOST = os.environ.get('LMS_OAUTH_HOST')
+    LMS_ROOT_URL = os.getenv('LMS_ROOT_URL', default='')
+    LMS_OAUTH_HOST = os.getenv('LMS_OAUTH_HOST', default='')
     API_BASE_URL = LMS_ROOT_URL + '/api/'
     APPEND_SLASH = False
 

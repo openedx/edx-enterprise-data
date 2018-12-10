@@ -5,15 +5,15 @@ Test utilities.
 from __future__ import absolute_import, unicode_literals
 
 import os
-import unittest
 import tempfile
+import unittest
+from zipfile import ZipFile
 
 import ddt
 import pgpy
 from pgpy.constants import CompressionAlgorithm, HashAlgorithm, KeyFlags, PubKeyAlgorithm, SymmetricKeyAlgorithm
 from pgpy.errors import PGPError
 
-from zipfile import ZipFile
 from enterprise_reporting import utils
 
 

@@ -1,0 +1,105 @@
+{
+    "count": 2,
+    "current_page": 1,
+    "next": null,
+    "num_pages": 1,
+    "previous": null,
+    "results": [
+        {
+            "active": false,
+            "data_type": "progress",
+            "day_of_month": 1,
+            "day_of_week": null,
+            "delivery_method": "email",
+            "email": [
+                "cpappas@edx.org"
+            ],
+            "encrypted_password": "gAAAAABcCE9w0QQKy0Alai_6wXp6h2nAtmyvhh8-hsRAhE3JO8-ye9hg5Qra8CNHZSpDCDzghzcE2Ugn0PF_i0swRTnq-gjK2w==",
+            "encrypted_sftp_password": null,
+            "enterprise_customer": {
+                "active": true,
+                "branding_configuration": null,
+                "catalog": null,
+                "enable_audit_enrollment": false,
+                "enable_data_sharing_consent": false,
+                "enforce_data_sharing_consent": "at_enrollment",
+                "enterprise_customer_entitlements": [],
+                "identity_provider": null,
+                "name": "cpappas test customer",
+                "replace_sensitive_sso_username": false,
+                "site": {
+                    "domain": "example.com",
+                    "name": "example.com"
+                },
+                "slug": "cpappas-test-customer",
+                "uuid": "39e42f02-fe3b-4462-a3b2-d1d490666ff4"
+            },
+            "enterprise_customer_catalogs": [
+                {
+                    "enterprise_customer": "39e42f02-fe3b-4462-a3b2-d1d490666ff4",
+                    "title": "All Content",
+                    "uuid": "049bea56-b6a2-4a06-b6c2-42d1b5cbb28d"
+                },
+                {
+                    "enterprise_customer": "39e42f02-fe3b-4462-a3b2-d1d490666ff4",
+                    "title": "a 2nd catalog",
+                    "uuid": "495321e1-4726-40d6-bbe5-3e9276f5ad78"
+                }
+            ],
+            "frequency": "monthly",
+            "hour_of_day": 1,
+            "pgp_encryption_key": "",
+            "report_type": "csv",
+            "sftp_file_path": null,
+            "sftp_hostname": null,
+            "sftp_port": 22,
+            "sftp_username": null
+        },
+        {
+            "active": false,
+            "data_type": "progress",
+            "day_of_month": 1,
+            "day_of_week": null,
+            "delivery_method": "email",
+            "email": [
+                "cpappas3@edx.org"
+            ],
+            "encrypted_password": "gAAAAABcCE9wx3T0wgBiU3MYAH3_yTtcVRd-8gJ-6l9G8YfvxksS6C03b2rAmvQBxIlV20MFhu1n28lUz024i87dcHGi7zwdOQ==",
+            "encrypted_sftp_password": null,
+            "enterprise_customer": {
+                "active": true,
+                "branding_configuration": null,
+                "catalog": null,
+                "enable_audit_enrollment": false,
+                "enable_data_sharing_consent": false,
+                "enforce_data_sharing_consent": "at_enrollment",
+                "enterprise_customer_entitlements": [],
+                "identity_provider": null,
+                "name": "cpappas test customer",
+                "replace_sensitive_sso_username": false,
+                "site": {
+                    "domain": "example.com",
+                    "name": "example.com"
+                },
+                "slug": "cpappas-test-customer",
+                "uuid": "39e42f02-fe3b-4462-a3b2-d1d490666ff4"
+            },
+            "enterprise_customer_catalogs": [
+                {
+                    "enterprise_customer": "39e42f02-fe3b-4462-a3b2-d1d490666ff4",
+                    "title": "All Content",
+                    "uuid": "049bea56-b6a2-4a06-b6c2-42d1b5cbb28d"
+                }
+            ],
+            "frequency": "monthly",
+            "hour_of_day": 1,
+            "pgp_encryption_key": "",
+            "report_type": "csv",
+            "sftp_file_path": null,
+            "sftp_hostname": null,
+            "sftp_port": 22,
+            "sftp_username": null
+        }
+    ],
+    "start": 0
+}
