@@ -52,7 +52,7 @@ class EnterpriseAPIClient(EdxOAuth2APIClient):
         """Return all content metadata contained in the catalogs associated with an Enterprise Customer."""
         content_metadata = OrderedDict()
 
-        enterprise_customer_catalogs = self._extract_catalog_uuids_from_reporting_config(reporting_config)
+        enterprise_customer_catalogs = extract_catalog_uuids_from_reporting_config(reporting_config)
         if not enterprise_customer_catalogs.get('results'):
             enterprise_customer_catalogs = self._load_data(
                 self.ENTERPRISE_CUSTOMER_CATALOGS_ENDPOINT,
