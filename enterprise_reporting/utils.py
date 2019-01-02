@@ -72,32 +72,56 @@ def _get_compressed_file(files, password=None):
     return zipfile
 
 
-def send_email_with_attachment(subject, body, from_email, to_email, filename, attachment_data=None):
+def prepare_attachments(attachment_data):
+    """
+    Helper function to create a list contain file attachment objects
+    for use with MIMEMultipart
+
+    attachment_data should be a dictionary, with filenames as keys, and None
+        or a string as value. If the value is None, the key is assumed to be a
+        filename
+
+    attachment_data = {
+        'my_file_name.csv': '1,1,1,1,1,\n2,2,2,2,2\n3,3,3,3,3\n'
+        '/abs/path/to/myfile.csv': None
+    }
+
+    Returns a list of MIMEApplication objects
+    """
+
+    attachments = []
+    for filename, data in attachment_data.items():
+        if data is None:
+            msg_attachment = MIMEApplication(open(filename, 'rb').read())
+        else:
+            msg_attachment = MIMEApplication(data)
+        msg_attachment.add_header(
+            'Content-Disposition',
+            'attachment',
+            filename=os.path.basename(filename)
+        )
+        msg_attachment.set_type('application/zip')
+        attachments.append(msg_attachment)
+
+    return attachments
+
+
+def send_email_with_attachment(subject, body, from_email, to_email, attachment_data):
     """
     Send an email with a file attachment.
 
     Adapted from https://gist.github.com/yosemitebandit/2883593
 
-    attachment_data should be string data if value is passed in.
-    If filename refers to a file that lives on the filesystem instead
-    of just the name you want the attachment to have, no need to
-    set attachment_data to anything. This gives us the option of
-    handing this function string data that lives in memory instead
-    of needing to first write to a file.
+    attachment_data should be a dict of file name and data key-value pairs
     """
     # connect to SES
     client = boto3.client('ses', region_name=AWS_REGION)
 
     # the message body
     msg_body = MIMEText(body)
-    
+
     # the attachment
-    if attachment_data:
-        msg_attachment = MIMEApplication(attachment_data)
-    else:
-        msg_attachment = MIMEApplication(open(filename, 'rb').read())
-    msg_attachment.add_header('Content-Disposition', 'attachment', filename=os.path.basename(filename))
-    msg_attachment.set_type('application/zip')
+    attachments = prepare_attachments(attachment_data)
 
     # iterate over each email in the list to send emails independently
     for email in to_email:
@@ -111,7 +135,8 @@ def send_email_with_attachment(subject, body, from_email, to_email, filename, at
 
         # attach the message body and attachment
         msg.attach(msg_body)
-        msg.attach(msg_attachment)
+        for msg_attachment in attachments:
+            msg.attach(msg_attachment)
 
         # and send the message
         result = client.send_raw_email(RawMessage={'Data': msg.as_string()}, Source=msg['From'], Destinations=[email])

@@ -65,7 +65,7 @@ class SMTPDeliveryMethod(DeliveryMethod):
 
     def send(self, files):
         """Send the given files in zip format through SMTP."""
-        data_report_zipped = super().send(files)
+        attachment_data = {super().send(files): None}
         LOGGER.info('Emailing encrypted data as a ZIP to {}'.format(self.enterprise_customer_name))
         try:
             send_email_with_attachment(
@@ -73,7 +73,7 @@ class SMTPDeliveryMethod(DeliveryMethod):
                 self.REPORT_EMAIL_BODY.format(type=self.data_type),
                 self.REPORT_EMAIL_FROM_EMAIL,
                 self.email,
-                data_report_zipped
+                attachment_data
             )
         except SMTPException:
             LOGGER.exception('Failed to send email report to {} for {}'.format(
