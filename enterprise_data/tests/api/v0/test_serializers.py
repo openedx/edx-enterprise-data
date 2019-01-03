@@ -71,3 +71,12 @@ class TestEnterpriseEnrollmentSerializer(APITestCase):
         serializer.is_valid()
         serializer.save()
         assert serializer.data == expected_serialized_data
+
+    def test_enrollment_unenroll_with_no_start_date(self):
+        self.enrollment_data['course_start'] = None
+        self.enrollment_data['unenrollment_timestamp'] = '2016-12-01T00:00:00Z'
+
+        serializer = EnterpriseEnrollmentSerializer(data=self.enrollment_data)
+        serializer.is_valid()
+        serializer.save()
+        self.assertTrue(serializer.data['unenrollment_end_within_date'])
