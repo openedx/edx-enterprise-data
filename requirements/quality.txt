@@ -103,11 +103,11 @@ pynacl==1.3.0             # via paramiko
 pyopenssl==17.4.0
 pyparsing==2.3.0          # via packaging
 pytest-catchlog==1.2.2
-pytest-cov==2.6.0
+pytest-cov==2.6.1
 pytest-django==3.4.4
-pytest==4.0.2             # via py2neo, pytest-catchlog, pytest-cov, pytest-django
+pytest==4.1.0             # via py2neo, pytest-catchlog, pytest-cov, pytest-django
 python-dateutil==2.7.5    # via botocore, edx-drf-extensions, faker, freezegun, vertica-python
-pytz==2018.7              # via celery, django, neotime, vertica-python
+pytz==2018.9              # via celery, django, neotime, vertica-python
 pyyaml==3.12              # via awscli, edx-i18n-tools
 readme-renderer==24.0     # via twine
 requests-toolbelt==0.8.0  # via twine
@@ -127,7 +127,7 @@ testfixtures==6.4.1
 text-unidecode==1.2       # via faker
 tox-battery==0.5.1
 tox==3.0.0
-tqdm==4.28.1              # via twine
+tqdm==4.29.0              # via twine
 twine==1.12.1
 unicodecsv==0.14.1
 urllib3[secure]==1.22     # via py2neo
