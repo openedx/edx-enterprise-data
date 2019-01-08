@@ -1,6 +1,7 @@
 """
 Tests for permissions
 """
+from __future__ import absolute_import, unicode_literals
 
 from logging import getLogger
 
@@ -10,7 +11,7 @@ from pytest import mark
 from django.test import TestCase
 
 from enterprise_data.permissions import HasDataAPIDjangoGroupAccess, IsStaffOrEnterpriseUser
-from test_utils import UserFactory
+from enterprise_data.tests.test_utils import UserFactory
 
 LOGGER = getLogger(__name__)
 
