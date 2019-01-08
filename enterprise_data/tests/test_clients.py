@@ -2,14 +2,16 @@
 """
 Tests for clients in enterprise_data.
 """
+from __future__ import absolute_import, unicode_literals
+
 from edx_rest_api_client.exceptions import HttpClientError
 from mock import ANY, Mock, mock
 from rest_framework.exceptions import NotFound, ParseError
 
-from django.test import TestCase, override_settings
+from django.test import TestCase
 
 from enterprise_data.clients import EnterpriseApiClient
-from test_utils import UserFactory
+from enterprise_data.tests.test_utils import UserFactory
 
 
 class TestEnterpriseApiClient(TestCase):
@@ -28,6 +30,7 @@ class TestEnterpriseApiClient(TestCase):
             }]
         }
         self.mocked_get_endpoint = Mock(return_value=self.api_response)
+        self.mock_client()
         super(TestEnterpriseApiClient, self).setUp()
 
     def mock_client(self):
@@ -45,14 +48,14 @@ class TestEnterpriseApiClient(TestCase):
 
     @mock.patch('enterprise_data.clients.EdxRestApiClient.__init__')
     def test_inits_client_with_jwt(self, mock_init):
-        self.mock_client()
+        EnterpriseApiClient('test-token')
         mock_init.assert_called_with(ANY, jwt='test-token')
 
     def test_get_enterprise_learner_returns_results_for_user(self):
         self.mock_client()
         results = self.client.get_enterprise_learner(self.user)
         self.mocked_get_endpoint.assert_called_with(username=self.user.username)
-        assert(results == self.api_response['results'][0])
+        assert results == self.api_response['results'][0]
 
     def test_get_enterprise_learner_raises_exception_on_error(self):
         self.mocked_get_endpoint = Mock(side_effect=HttpClientError)
@@ -91,7 +94,7 @@ class TestEnterpriseApiClient(TestCase):
             permissions=[EnterpriseApiClient.ENTERPRISE_DATA_API_GROUP],
             enterprise_id=self.enterprise_id
         )
-        assert(results == self.api_response['results'][0])
+        assert results == self.api_response['results'][0]
 
     def test_get_with_access_to_raises_exception_on_error(self):
         self.mocked_get_endpoint = Mock(side_effect=HttpClientError)

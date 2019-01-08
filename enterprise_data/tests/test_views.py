@@ -16,7 +16,12 @@ from rest_framework.test import APITestCase
 from django.utils import timezone
 
 from enterprise_data.api.v0.views import subtract_one_month
-from test_utils import EnterpriseEnrollmentFactory, EnterpriseUserFactory, UserFactory, get_dummy_enterprise_api_data
+from enterprise_data.tests.test_utils import (
+    EnterpriseEnrollmentFactory,
+    EnterpriseUserFactory,
+    UserFactory,
+    get_dummy_enterprise_api_data,
+)
 
 
 @ddt.ddt
@@ -30,7 +35,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
     def setUp(self):
         super(TestEnterpriseEnrollmentsViewSet, self).setUp()
         self.user = UserFactory(is_staff=True)
-        self.client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user)  # pylint: disable=no-member
         enterprise_api_client = mock.patch(
             'enterprise_data.permissions.EnterpriseApiClient',
             mock.Mock(
@@ -271,19 +276,16 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
     @ddt.data(
         (
             'active_past_week',
-            [date.today(), date.today() - timedelta(days=2)]
         ),
         (
             'inactive_past_week',
-            [date.today() - timedelta(weeks=2), subtract_one_month(date.today())]
         ),
         (
             'inactive_past_month',
-            [subtract_one_month(date.today())]
         )
     )
     @ddt.unpack
-    def test_get_queryset_returns_learner_activity_filter_no_consent(self, activity_filter, expected_dates):
+    def test_get_queryset_returns_learner_activity_filter_no_consent(self, activity_filter):
         """
         Learner activity filter should not return learner if their enrollments
         have no consent granted
@@ -369,7 +371,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
     )
     @ddt.unpack
     def test_get_queryset_returns_learner_activity_filter_no_active_enrollments(
-        self, activity_filter, has_passed, course_end_date
+            self, activity_filter, has_passed, course_end_date
     ):
         """
         Learner activity filter should not return enrollments if their course date is in past
@@ -461,7 +463,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
     def setUp(self):
         super(TestEnterpriseUsersViewSet, self).setUp()
         self.user = UserFactory(is_staff=True)
-        self.client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user)  # pylint: disable=no-member
         enterprise_api_client = mock.patch(
             'enterprise_data.permissions.EnterpriseApiClient',
             mock.Mock(
@@ -576,12 +578,12 @@ class TestEnterpriseUsersViewSet(APITestCase):
             enterprise_user=self.ent_user9,
             has_passed=True,
         )
-        for i in range(2):
+        for _ in range(2):
             EnterpriseEnrollmentFactory(
                 enterprise_user=self.ent_user9,
                 has_passed=False,
             )
-        for i in range(3):
+        for _ in range(3):
             EnterpriseEnrollmentFactory(
                 enterprise_user=self.ent_user9,
                 consent_granted=True,
@@ -949,6 +951,8 @@ class TestEnterpriseUsersViewSet(APITestCase):
         params = {'no_page': 'true', }
 
         response = self.client.get(url, params)
+        assert isinstance(response.json(), list)
+        assert len(response.json()) == 8
 
     @ddt.data(
         (
@@ -988,7 +992,7 @@ class TestEnterpriseLearnerCompletedCourses(APITestCase):
     def setUp(self):
         super(TestEnterpriseLearnerCompletedCourses, self).setUp()
         self.user = UserFactory(is_staff=True)
-        self.client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user)  # pylint: disable=no-member
         enterprise_api_client = mock.patch(
             'enterprise_data.permissions.EnterpriseApiClient',
             mock.Mock(
@@ -1116,11 +1120,11 @@ class TestEnterpriseLearnerCompletedCourses(APITestCase):
     )
     @ddt.unpack
     def test_viewset_ordering(
-        self,
-        ordering,
-        enrollments_data,
-        expected_results_count,
-        expected_completed_courses
+            self,
+            ordering,
+            enrollments_data,
+            expected_results_count,
+            expected_completed_courses
     ):
         """
         EnterpriseLearnerCompletedCoursesViewSet should order enrollments returned if the value

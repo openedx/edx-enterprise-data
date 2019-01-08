@@ -2,12 +2,14 @@
 """
 Tests for the `enterprise-data` models module.
 """
+from __future__ import absolute_import, unicode_literals
+
 import unittest
 
 import ddt
 from pytest import mark
 
-from test_utils import EnterpriseEnrollmentFactory, EnterpriseUserFactory
+from enterprise_data.tests.test_utils import EnterpriseEnrollmentFactory, EnterpriseUserFactory
 
 
 @mark.django_db

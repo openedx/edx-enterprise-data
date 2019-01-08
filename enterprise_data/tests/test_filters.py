@@ -10,7 +10,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from enterprise_data.models import EnterpriseEnrollment
-from test_utils import UserFactory
+from enterprise_data.tests.test_utils import UserFactory
 
 
 class TestConsentGrantedFilterBackend(APITestCase):
@@ -22,7 +22,7 @@ class TestConsentGrantedFilterBackend(APITestCase):
     def setUp(self):
         super(TestConsentGrantedFilterBackend, self).setUp()
         self.user = UserFactory(is_staff=True)
-        self.client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user)  # pylint: disable=no-member
         self.url = reverse('v0:enterprise-enrollments-list',
                            kwargs={'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'})
 
