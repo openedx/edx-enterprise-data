@@ -4,6 +4,7 @@ Test utilities.
 """
 from __future__ import absolute_import, unicode_literals
 
+from collections import OrderedDict
 import os
 import tempfile
 import unittest
@@ -278,3 +279,25 @@ class TestCompressEncrypt(unittest.TestCase):
 
         with self.assertRaises(PGPError):
             wrong_key.decrypt(message)
+
+class TestPrepareAttachments(unittest.TestCase):
+
+    def test_prepare_attachments(self):
+        """
+        prepare_attachments should properly create MIMEApplication
+        depending on whether or not attachment data is provided
+        """
+        file_on_filesystem = tempfile.NamedTemporaryFile()
+        file_on_filesystem_name = file_on_filesystem.name
+
+        attachment_data = OrderedDict([
+            (file_on_filesystem_name, None),
+            ('my_test.csv', 'some,csv,data\n'),
+        ])
+        attachments = utils.prepare_attachments(attachment_data)
+
+        for index, filename in enumerate([file_on_filesystem_name, 'my_test.csv']):
+            expected_header = 'attachment; filename="{}"'.format(
+                os.path.basename(filename)
+            )
+            assert attachments[index].get('Content-Disposition') == expected_header
