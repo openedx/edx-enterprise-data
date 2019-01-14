@@ -30,14 +30,18 @@ def send_data(config):
     enterprise_customer_name = config['enterprise_customer']['name']
     LOGGER.info('Kicking off job to send report for {}'.format(enterprise_customer_name))
 
+    error_raised = False
     try:
         reporter = EnterpriseReportSender.create(config)
         reporter.send_enterprise_report()
     except Exception:  # pylint: disable=broad-except
+        error_raised = True
         LOGGER.exception('Data report failed to send for {}'.format(enterprise_customer_name,))
 
     cleanup_files(config['enterprise_customer']['uuid'])
     LOGGER.info('Finished job to send report for {}'.format(enterprise_customer_name))
+
+    return error_raised
 
 
 def cleanup_files(enterprise_id):
@@ -90,6 +94,7 @@ def process_reports():
         LOGGER.error('The enterprise {} does not have a reporting configuration.'.format(args.enterprise_customer))
         sys.exit(1)
 
+    error_raised = False
     for reporting_config in reporting_configs['results']:
         LOGGER.info('Checking if {}\'s reporting config for {} data in {} format is ready for processing'.format(
             reporting_config['enterprise_customer']['name'],
@@ -98,10 +103,17 @@ def process_reports():
         ))
 
         if should_deliver_report(args, reporting_config):
-            send_data(reporting_config)
+            if send_data(reporting_config):
+                error_raised = True
         else:
             LOGGER.info('Not ready -- skipping this report.')
 
+    if error_raised:
+        LOGGER.error(
+            'One or more reports in this job were not successfully sent to customers. '
+            'Please check these jenkins logs for more information.'
+        )
+        sys.exit(1)
 
 if __name__ == "__main__":
     process_reports()
