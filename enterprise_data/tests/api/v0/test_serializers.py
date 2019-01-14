@@ -9,7 +9,7 @@ from pytest import mark, raises
 from rest_framework.test import APITestCase
 
 from enterprise_data.api.v0.serializers import EnterpriseEnrollmentSerializer
-from test_utils import EnterpriseUserFactory
+from enterprise_data.tests.test_utils import EnterpriseUserFactory
 
 
 @mark.django_db

@@ -2,6 +2,7 @@
 """
 Test factories.
 """
+from __future__ import absolute_import, unicode_literals
 
 from datetime import datetime
 
@@ -29,10 +30,10 @@ class EnterpriseEnrollmentFactory(factory.django.DjangoModelFactory):
 
         model = EnterpriseEnrollment
 
-    id = factory.lazy_attribute(lambda x: FAKER.random_int(min=1, max=999999))
+    id = factory.lazy_attribute(lambda x: FAKER.random_int(min=1, max=999999))  # pylint: disable=no-member,invalid-name
     enterprise_id = factory.lazy_attribute(lambda x: 'ee5e6b3a069a4947bb8dd2dbc323396c')
-    lms_user_id = factory.lazy_attribute(lambda x: FAKER.random_int(min=1))
-    course_id = factory.lazy_attribute(lambda x: FAKER.slug())
+    lms_user_id = factory.lazy_attribute(lambda x: FAKER.random_int(min=1))  # pylint: disable=no-member
+    course_id = factory.lazy_attribute(lambda x: FAKER.slug())  # pylint: disable=no-member
     enrollment_created_timestamp = factory.lazy_attribute(lambda x: '2018-01-01')
     user_current_enrollment_mode = factory.lazy_attribute(lambda x: 'verified')
     has_passed = False
@@ -72,13 +73,13 @@ class EnterpriseUserFactory(factory.django.DjangoModelFactory):
         model = EnterpriseUser
 
     enterprise_id = factory.lazy_attribute(lambda x: 'ee5e6b3a069a4947bb8dd2dbc323396c')
-    lms_user_id = factory.lazy_attribute(lambda x: FAKER.random_int(min=1))
-    enterprise_user_id = factory.lazy_attribute(lambda x: FAKER.random_int(min=1))
-    enterprise_sso_uid = factory.lazy_attribute(lambda x: FAKER.text(max_nb_chars=255))
+    lms_user_id = factory.lazy_attribute(lambda x: FAKER.random_int(min=1))  # pylint: disable=no-member
+    enterprise_user_id = factory.lazy_attribute(lambda x: FAKER.random_int(min=1))  # pylint: disable=no-member
+    enterprise_sso_uid = factory.lazy_attribute(lambda x: FAKER.text(max_nb_chars=255))  # pylint: disable=no-member
     user_account_creation_timestamp = datetime(2011, 1, 1)
     user_username = factory.Sequence(u'robot{0}'.format)
     user_email = factory.Sequence(u'robot+test+{0}@edx.org'.format)
-    user_country_code = factory.lazy_attribute(lambda x: FAKER.country_code())
+    user_country_code = factory.lazy_attribute(lambda x: FAKER.country_code())  # pylint: disable=no-member
     last_activity_date = datetime(2012, 1, 1).date()
 
 
