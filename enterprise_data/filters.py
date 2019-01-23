@@ -19,14 +19,23 @@ class ConsentGrantedFilterBackend(filters.BaseFilterBackend):
 
     This requires that `CONSENT_GRANTED_FILTER` be set in the view as a class variable, to identify
     the object's relationship to the consent_granted field.
+
+    If the enterprise is configured for externally managed data sharing consent, all enrollments will be
+    returned
     """
 
     def filter_queryset(self, request, queryset, view):
         """
         Filter a queryset for results where consent has been granted.
         """
-        filter_kwargs = {view.CONSENT_GRANTED_FILTER: True}
-        return queryset.filter(**filter_kwargs)
+        current_enterprise = view.kwargs.get('enterprise_id', None)
+        data_sharing_enforce = request.session.get('enforce_data_sharing_consent', {})
+        # if the enterprise is configured for "externally managed" data sharing consent,
+        # ignore the consent_granted column.
+        if data_sharing_enforce.get(current_enterprise, '') != 'externally_managed':
+            filter_kwargs = {view.CONSENT_GRANTED_FILTER: True}
+            queryset = queryset.filter(**filter_kwargs)
+        return queryset
 
 
 class AuditEnrollmentsFilterBackend(filters.BaseFilterBackend):

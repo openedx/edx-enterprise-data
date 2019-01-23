@@ -102,11 +102,13 @@ class HasDataAPIDjangoGroupAccess(permissions.BasePermission):
                 )
             else:
                 enable_audit_enrollment = enterprise_data.get('enable_audit_enrollment', False)
+                enforce_data_sharing_consent = enterprise_data.get('enforce_data_sharing_consent', '')
                 update_session_with_enterprise_data(
                     request,
                     enterprise_in_url,
                     enterprises_with_access=True,
-                    enable_audit_enrollment=enable_audit_enrollment
+                    enable_audit_enrollment=enable_audit_enrollment,
+                    enforce_data_sharing_consent=enforce_data_sharing_consent,
                 )
 
         permitted = request.session['enterprises_with_access'][enterprise_in_url]
