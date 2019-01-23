@@ -8,12 +8,14 @@ from datetime import datetime
 
 import factory
 from faker import Factory as FakerFactory
+from faker.providers import misc
 
 from django.contrib.auth.models import User
 
 from enterprise_data.models import EnterpriseEnrollment, EnterpriseUser
 
 FAKER = FakerFactory.create()
+FAKER.add_provider(misc)
 
 
 class EnterpriseEnrollmentFactory(factory.django.DjangoModelFactory):
@@ -31,7 +33,7 @@ class EnterpriseEnrollmentFactory(factory.django.DjangoModelFactory):
         model = EnterpriseEnrollment
 
     id = factory.lazy_attribute(lambda x: FAKER.random_int(min=1, max=999999))  # pylint: disable=no-member,invalid-name
-    enterprise_id = factory.lazy_attribute(lambda x: 'ee5e6b3a069a4947bb8dd2dbc323396c')
+    enterprise_id = str(FAKER.uuid4())  # pylint: disable=no-member
     lms_user_id = factory.lazy_attribute(lambda x: FAKER.random_int(min=1))  # pylint: disable=no-member
     course_id = factory.lazy_attribute(lambda x: FAKER.slug())  # pylint: disable=no-member
     enrollment_created_timestamp = factory.lazy_attribute(lambda x: '2018-01-01')
@@ -67,12 +69,12 @@ class EnterpriseUserFactory(factory.django.DjangoModelFactory):
     """
     Enterprise User Factory.
 
-    Creates an instance of Enteprise User with minimal boilerplate
+    Creates an instance of Enterprise User with minimal boilerplate
     """
     class Meta(object):
         model = EnterpriseUser
 
-    enterprise_id = factory.lazy_attribute(lambda x: 'ee5e6b3a069a4947bb8dd2dbc323396c')
+    enterprise_id = str(FAKER.uuid4())  # pylint: disable=no-member
     lms_user_id = factory.lazy_attribute(lambda x: FAKER.random_int(min=1))  # pylint: disable=no-member
     enterprise_user_id = factory.lazy_attribute(lambda x: FAKER.random_int(min=1))  # pylint: disable=no-member
     enterprise_sso_uid = factory.lazy_attribute(lambda x: FAKER.text(max_nb_chars=255))  # pylint: disable=no-member

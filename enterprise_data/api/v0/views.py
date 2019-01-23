@@ -86,21 +86,22 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         Returns all learner enrollment records for a given enterprise.
         """
         enterprise_id = self.kwargs['enterprise_id']
-        enrollments = EnterpriseEnrollment.objects.filter(enterprise_id=enterprise_id)
 
-        enrollments = self.apply_filters(enrollments)
-
+        enterprise = EnterpriseUser.objects.filter(enterprise_id=enterprise_id)
         self.ensure_data_exists(
             self.request,
-            enrollments,
+            enterprise,
             error_message=(
-                "No course enrollments are associated with Enterprise {enterprise_id} from endpoint '{path}'."
-                .format(
+                "No enterprise found with id {enterprise_id} from endpoint '{path}'.".format(
                     enterprise_id=enterprise_id,
                     path=self.request.get_full_path()
                 )
             )
         )
+
+        enrollments = EnterpriseEnrollment.objects.filter(enterprise_id=enterprise_id)
+
+        enrollments = self.apply_filters(enrollments)
         return enrollments
 
     def apply_filters(self, queryset):
