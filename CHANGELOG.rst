@@ -14,6 +14,11 @@ Change Log
 Unreleased
 ----------
 
+[1.0.15] - 2019-01-24
+---------------------
+* Bumping version so others can install newer version of this app that includes convenient management commands for devs
+* Includes create_enterprise_user, create_enterprise_enrollment management commands for creating demo test data for local development
+
 [1.0.12] - 2018-11-05
 --------------------
 * Only include current active enrollments which are not complete yet in active learners table.
