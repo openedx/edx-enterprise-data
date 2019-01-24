@@ -46,9 +46,10 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         )
         self.enterprise_api_client = enterprise_api_client.start()
         self.addCleanup(enterprise_api_client.stop)
+        self.enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
 
     def test_get_queryset_returns_enrollments(self):
-        enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
+        enterprise_id = self.enterprise_id
         self.enterprise_api_client.return_value.get_with_access_to.return_value = {
             'uuid': enterprise_id
         }
@@ -76,7 +77,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
                 'user_username': 'test_user',
                 'enterprise_sso_uid': 'harry',
                 'enterprise_site_id': None,
-                'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
+                'enterprise_id': self.enterprise_id,
                 'course_end': '2016-12-01T00:00:00Z',
                 'lms_user_id': 11,
                 'enterprise_name': 'Enterprise 1',
@@ -114,7 +115,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
                 'user_username': 'test_user',
                 'enterprise_sso_uid': 'harry',
                 'enterprise_site_id': None,
-                'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
+                'enterprise_id': self.enterprise_id,
                 'course_end': '2016-12-01T00:00:00Z',
                 'lms_user_id': 11,
                 'enterprise_name': 'Enterprise 1',
@@ -145,13 +146,33 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         result = response.json()
         assert result == expected_result
 
+    def test_get_queryset_returns_no_enrollments(self):
+        """ Test that enterprise with no enrollments returns empty list """
+        enterprise = EnterpriseUserFactory()
+        enterprise_id = enterprise.enterprise_id
+        url = reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': enterprise_id})
+
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+        result = response.json()
+        assert result['count'] == 0
+        assert result['results'] == []
+
+    def test_get_queryset_returns_404_no_enterprise_for_uuid(self):
+        """ Test that a 404 is thrown when there is no enterprise for the requested UUID """
+        EnterpriseUserFactory()
+        fake_enterprise_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+        url = reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': fake_enterprise_id})
+
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
     def test_get_queryset_returns_enrollments_with_passed_date_filter(self):
-        enterprise_id = '413a0720-3efe-4cf5-98c8-3b4e42d3c501'
+        enterprise = EnterpriseUserFactory()
+        enterprise_id = enterprise.enterprise_id
         url = u"{url}?passed_date=last_week".format(
             url=reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': enterprise_id})
         )
-
-        enterprise_user = EnterpriseUserFactory(enterprise_user_id=1234)
 
         date_today = date.today()
         in_past_week_passed_dates = [date_today, date_today - timedelta(days=2)]
@@ -159,7 +180,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         passed_dates = in_past_week_passed_dates + before_past_week_passed_dates
         for index, passed_date in enumerate(passed_dates):
             EnterpriseEnrollmentFactory(
-                enterprise_user=enterprise_user,
+                enterprise_user=enterprise,
                 enterprise_id=enterprise_id,
                 user_email='user{}@example.com'.format(index),
                 passed_timestamp=passed_date,
@@ -194,7 +215,8 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
     def test_get_queryset_returns_enrollments_with_audit_enrollment_filter(
             self, enable_audit_enrollment, total_enrollments, user_current_enrollment_mode, enrollments_count
     ):
-        enterprise_id = '413a0720-3efe-4cf5-98c8-3b4e42d3c501'
+        enterprise_user = EnterpriseUserFactory()
+        enterprise_id = enterprise_user.enterprise_id
         url = reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': enterprise_id})
 
         dummy_enterprise_api_data = get_dummy_enterprise_api_data(
@@ -210,7 +232,6 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
             )
         )
         self.enterprise_api_client = enterprise_api_client.start()
-        enterprise_user = EnterpriseUserFactory(enterprise_user_id=1234)
         for index in range(total_enrollments):
             EnterpriseEnrollmentFactory(
                 enterprise_user=enterprise_user,
@@ -243,13 +264,12 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
     )
     @ddt.unpack
     def test_get_queryset_returns_enrollments_with_learner_activity_filter(self, activity_filter, expected_dates):
-        enterprise_id = '413a0720-3efe-4cf5-98c8-3b4e42d3c509'
+        enterprise = EnterpriseUserFactory()
+        enterprise_id = enterprise.enterprise_id
         url = u"{url}?learner_activity={activity_filter}".format(
             url=reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': enterprise_id}),
             activity_filter=activity_filter
         )
-
-        enterprise_user = EnterpriseUserFactory(enterprise_user_id=1234)
 
         date_today = date.today()
         in_past_week_dates = [date_today, date_today - timedelta(days=2)]
@@ -258,7 +278,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         activity_dates = in_past_week_dates + before_past_week_dates + before_past_month_dates
         for activity_date in activity_dates:
             EnterpriseEnrollmentFactory(
-                enterprise_user=enterprise_user,
+                enterprise_user=enterprise,
                 enterprise_id=enterprise_id,
                 last_activity_date=activity_date,
                 course_end=timezone.now() + timedelta(days=1),
@@ -290,13 +310,13 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         Learner activity filter should not return learner if their enrollments
         have no consent granted
         """
-        enterprise_id = '413a0720-3efe-4cf5-98c8-3b4e42d3c509'
+        enterprise = EnterpriseUserFactory()
+        enterprise_id = enterprise.enterprise_id
         url = u"{url}?learner_activity={activity_filter}".format(
             url=reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': enterprise_id}),
             activity_filter=activity_filter
         )
 
-        enterprise_user = EnterpriseUserFactory(enterprise_user_id=1234)
         course_end_date = timezone.now() + timedelta(days=1)
 
         date_today = date.today()
@@ -306,7 +326,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         activity_dates = in_past_week_dates + before_past_week_dates + before_past_month_dates
         for activity_date in activity_dates:
             EnterpriseEnrollmentFactory(
-                enterprise_user=enterprise_user,
+                enterprise_user=enterprise,
                 enterprise_id=enterprise_id,
                 last_activity_date=activity_date,
                 course_end=course_end_date,
@@ -318,6 +338,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         assert response.status_code == status.HTTP_200_OK
         result = response.json()
         assert result['count'] == 0
+        assert result['results'] == []
 
     @ddt.data(
         # passed, course date in past
@@ -377,13 +398,12 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         Learner activity filter should not return enrollments if their course date is in past
         or learners have not passed the course yet.
         """
-        enterprise_id = '413a0720-3efe-4cf5-98c8-3b4e42d3c509'
+        enterprise = EnterpriseUserFactory()
+        enterprise_id = enterprise.enterprise_id
         url = u"{url}?learner_activity={activity_filter}".format(
             url=reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': enterprise_id}),
             activity_filter=activity_filter
         )
-
-        enterprise_user = EnterpriseUserFactory(enterprise_user_id=1234)
 
         date_today = date.today()
         in_past_week_dates = [date_today, date_today - timedelta(days=2)]
@@ -392,7 +412,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         activity_dates = in_past_week_dates + before_past_week_dates + before_past_month_dates
         for activity_date in activity_dates:
             EnterpriseEnrollmentFactory(
-                enterprise_user=enterprise_user,
+                enterprise_user=enterprise,
                 enterprise_id=enterprise_id,
                 last_activity_date=activity_date,
                 course_end=course_end_date,
@@ -401,7 +421,10 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
             )
 
         response = self.client.get(url)
-        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.status_code == status.HTTP_200_OK
+        result = response.json()
+        assert result['count'] == 0
+        assert result['results'] == []
 
     def test_get_queryset_throws_error(self):
         enterprise_id = '0395b02f-6b29-42ed-9a41-45f3dff8349c'
@@ -414,7 +437,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_get_overview_returns_overview(self):
-        enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
+        enterprise_id = self.enterprise_id
         self.enterprise_api_client.return_value.get_with_access_to.return_value = {
             'uuid': enterprise_id
         }
@@ -437,7 +460,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         assert result == expected_result
 
     def test_no_page_querystring_skips_pagination(self):
-        enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
+        enterprise_id = self.enterprise_id
         self.enterprise_api_client.return_value.get_with_access_to.return_value = {
             'uuid': enterprise_id
         }
@@ -474,6 +497,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         )
         self.enterprise_api_client = enterprise_api_client.start()
         self.addCleanup(enterprise_api_client.stop)
+        self.enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
 
         one_day = timedelta(days=1)
         date_in_past = timezone.now() - one_day
@@ -482,122 +506,147 @@ class TestEnterpriseUsersViewSet(APITestCase):
         # Users without enrollments
         EnterpriseUserFactory(
             enterprise_user_id=1,
+            enterprise_id=self.enterprise_id,
         )
         EnterpriseUserFactory(
             enterprise_user_id=2,
+            enterprise_id=self.enterprise_id,
         )
         self.ent_user3 = EnterpriseUserFactory(
             enterprise_user_id=3,
+            enterprise_id=self.enterprise_id,
         )
         # User with True & None for enrollment consent
         self.ent_user4 = EnterpriseUserFactory(
             enterprise_user_id=4,
+            enterprise_id=self.enterprise_id,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user4,
             course_end=date_in_past,
             consent_granted=True,
             has_passed=True,
+            enterprise_id=self.enterprise_id,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user4,
             course_end=date_in_future,
+            enterprise_id=self.enterprise_id,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user4,
             course_end=date_in_future,
             consent_granted=True,
+            enterprise_id=self.enterprise_id,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user4,
             course_end=date_in_past,
             consent_granted=True,
             has_passed=False,
+            enterprise_id=self.enterprise_id,
         )
         # User with only True enrollment consent
         self.ent_user5 = EnterpriseUserFactory(
             enterprise_user_id=5,
+            enterprise_id=self.enterprise_id,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user5,
             course_end=date_in_future,
             consent_granted=True,
+            enterprise_id=self.enterprise_id,
         )
         # User with only False enrollment consent
         self.ent_user6 = EnterpriseUserFactory(
             enterprise_user_id=6,
+            enterprise_id=self.enterprise_id,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user6,
             consent_granted=False,
             course_end=date_in_past,
+            enterprise_id=self.enterprise_id,
         )
         # User with True and False enrollment consent
         self.ent_user7 = EnterpriseUserFactory(
             enterprise_user_id=7,
+            enterprise_id=self.enterprise_id,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user7,
             consent_granted=True,
             has_passed=True,
+            enterprise_id=self.enterprise_id,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user7,
             consent_granted=False,
             course_end=date_in_future,
             has_passed=False,
+            enterprise_id=self.enterprise_id,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user7,
             consent_granted=False,
             course_end=date_in_past,
             has_passed=True,
+            enterprise_id=self.enterprise_id,
         )
 
         # User with True & None for enrollment consent and course has ended
         self.ent_user8 = EnterpriseUserFactory(
             enterprise_user_id=8,
+            enterprise_id=self.enterprise_id,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user8,
             course_end=date_in_past,
             has_passed=True,
+            enterprise_id=self.enterprise_id,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user8,
             consent_granted=True,
             course_end=date_in_past,
             has_passed=True,
+            enterprise_id=self.enterprise_id,
         )
 
         # User with a large number of enrollments of different kinds
         self.ent_user9 = EnterpriseUserFactory(
             enterprise_user_id=9,
+            enterprise_id=self.enterprise_id,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user9,
             has_passed=True,
+            enterprise_id=self.enterprise_id,
         )
         for _ in range(2):
             EnterpriseEnrollmentFactory(
                 enterprise_user=self.ent_user9,
                 has_passed=False,
+                enterprise_id=self.enterprise_id,
             )
         for _ in range(3):
             EnterpriseEnrollmentFactory(
                 enterprise_user=self.ent_user9,
                 consent_granted=True,
                 has_passed=True,
+                enterprise_id=self.enterprise_id,
             )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user9,
             consent_granted=False,
             has_passed=True,
+            enterprise_id=self.enterprise_id,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user9,
             consent_granted=True,
             has_passed=False,
+            enterprise_id=self.enterprise_id,
         )
 
     def test_viewset_no_query_params(self):
@@ -606,7 +655,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         params are present
         """
         url = reverse('v0:enterprise-users-list',
-                      kwargs={'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'})
+                      kwargs={'enterprise_id': self.enterprise_id})
         response = self.client.get(url)
         assert response.json()['count'] == 8
 
@@ -618,7 +667,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         """
         mock_paginate.return_value = None
         url = reverse('v0:enterprise-users-list',
-                      kwargs={'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'})
+                      kwargs={'enterprise_id': self.enterprise_id})
         response = self.client.get(url)
         assert 'count' not in response.json()
         assert len(response.json()) == 8
@@ -628,7 +677,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         EnterpriseUserViewset should return all users that have enrollments
         if query param value is 'true'
         """
-        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        kwargs = {'enterprise_id': self.enterprise_id, }
         params = {'has_enrollments': 'true', }
         url = reverse(
             'v0:enterprise-users-list',
@@ -642,7 +691,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         EnterpriseUserViewset should return all users that do not have
         enrollments if query param value is 'false'
         """
-        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        kwargs = {'enterprise_id': self.enterprise_id, }
         params = {'has_enrollments': 'false', }
         url = reverse(
             'v0:enterprise-users-list',
@@ -656,7 +705,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         EnterpriseUserViewset should not filter users returned if the value
         for has_enrollments query param is not a 'true' or 'false'
         """
-        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        kwargs = {'enterprise_id': self.enterprise_id, }
         params = {'has_enrollments': 'asdiqwjodijacvasd', }
         url = reverse(
             'v0:enterprise-users-list',
@@ -671,7 +720,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         have a course_end date in the past if active_courses query param
         value is true
         """
-        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        kwargs = {'enterprise_id': self.enterprise_id, }
         params = {'active_courses': 'true', }
         url = reverse(
             'v0:enterprise-users-list',
@@ -686,7 +735,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         have a course_end date in the future if active_courses query param
         value is true
         """
-        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        kwargs = {'enterprise_id': self.enterprise_id, }
         params = {'active_courses': 'false', }
         url = reverse(
             'v0:enterprise-users-list',
@@ -703,7 +752,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         `has_enrollments` query param is true, `active_courses` query param is
         false and `all_enrollments_passed` query param is true.
         """
-        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        kwargs = {'enterprise_id': self.enterprise_id, }
         params = {'has_enrollments': 'true', 'active_courses': 'false', 'all_enrollments_passed': 'true', }
         url = reverse(
             'v0:enterprise-users-list',
@@ -720,7 +769,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         `has_enrollments` query param is true, `active_courses` query param is
         false and `all_enrollments_passed` query param is false.
         """
-        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        kwargs = {'enterprise_id': self.enterprise_id, }
         params = {'has_enrollments': 'true', 'active_courses': 'false', 'all_enrollments_passed': 'false', }
         url = reverse(
             'v0:enterprise-users-list',
@@ -736,7 +785,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         in the "extra_fields" query parameter value
         """
         kwargs = {
-            'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
+            'enterprise_id': self.enterprise_id,
             'pk': self.ent_user4.id,
         }
         params = {'extra_fields': ['enrollment_count'], }
@@ -754,7 +803,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         is not specified in the "extra_fields" query parameter value
         """
         kwargs = {
-            'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
+            'enterprise_id': self.enterprise_id,
             'pk': self.ent_user4.id,
         }
         url = reverse(
@@ -772,7 +821,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         the `extra_fields` query parameter value.
         """
         kwargs = {
-            'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
+            'enterprise_id': self.enterprise_id,
             'pk': self.ent_user4.id,
         }
         params = {'extra_fields': ['enrollment_count', 'course_completion_count'], }
@@ -790,7 +839,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         when determining the enrollment_count for a user
         """
         kwargs = {
-            'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
+            'enterprise_id': self.enterprise_id,
             'pk': self.ent_user7.id,
         }
         params = {'extra_fields': ['enrollment_count'], }
@@ -809,7 +858,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         parameter value.
         """
         kwargs = {
-            'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
+            'enterprise_id': self.enterprise_id,
             'pk': self.ent_user4.id,
         }
         url = reverse(
@@ -825,7 +874,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         when determining the course_completion_count for a user
         """
         kwargs = {
-            'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
+            'enterprise_id': self.enterprise_id,
             'pk': self.ent_user7.id,
         }
         params = {'extra_fields': ['course_completion_count'], }
@@ -841,7 +890,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         EnterpriseUserViewset list view should be able to return a list
         of users sorted by their respective enrollment counts
         """
-        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        kwargs = {'enterprise_id': self.enterprise_id, }
         url = reverse(
             'v0:enterprise-users-list',
             kwargs=kwargs,
@@ -861,7 +910,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         EnterpriseUserViewset list view should be able to return a list
         of users reverse sorted by their respective enrollment counts
         """
-        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        kwargs = {'enterprise_id': self.enterprise_id, }
         url = reverse(
             'v0:enterprise-users-list',
             kwargs=kwargs,
@@ -881,7 +930,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         EnterpriseUserViewset list view should be able to return a list
         of users sorted by their respective course_completion_count
         """
-        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        kwargs = {'enterprise_id': self.enterprise_id, }
         url = reverse(
             'v0:enterprise-users-list',
             kwargs=kwargs,
@@ -901,7 +950,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         EnterpriseUserViewset list view should be able to return a list
         of users sorted by their respective course_completion_count
         """
-        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        kwargs = {'enterprise_id': self.enterprise_id, }
         url = reverse(
             'v0:enterprise-users-list',
             kwargs=kwargs,
@@ -923,7 +972,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         exist for a user.
         """
         kwargs = {
-            'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
+            'enterprise_id': self.enterprise_id,
             'pk': self.ent_user9.id,
         }
         params = {
@@ -943,7 +992,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         EnterpriseUserViewset list view should honor the no_page query param,
         returning results for in list, which is necessary for csv generation
         """
-        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        kwargs = {'enterprise_id': self.enterprise_id, }
         url = reverse(
             'v0:enterprise-users-list',
             kwargs=kwargs,
@@ -970,7 +1019,7 @@ class TestEnterpriseUsersViewSet(APITestCase):
         EnterpriseUserViewset should order users returned if the value
         for ordering query param is set
         """
-        kwargs = {'enterprise_id': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c', }
+        kwargs = {'enterprise_id': self.enterprise_id, }
         params = {'ordering': ordering, 'has_enrollments': 'true', }
         url = reverse(
             'v0:enterprise-users-list',
@@ -1133,14 +1182,13 @@ class TestEnterpriseLearnerCompletedCourses(APITestCase):
         # Add enrollments
         one_day = timedelta(days=1)
         date_in_past = timezone.now() - one_day
-        ent_user = EnterpriseUserFactory(
-            enterprise_user_id=1,
-        )
+        ent_user = EnterpriseUserFactory(enterprise_id=self.enterprise_id)
         for enrollment in enrollments_data:
             for _idx in range(enrollment['user_enrollments']):
                 EnterpriseEnrollmentFactory(
                     user_email=enrollment['user_email'],
                     enterprise_user=ent_user,
+                    enterprise_id=self.enterprise_id,
                     course_end=date_in_past,
                     has_passed=True,
                     consent_granted=True,
