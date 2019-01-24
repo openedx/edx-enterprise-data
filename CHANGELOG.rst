@@ -14,6 +14,11 @@ Change Log
 Unreleased
 ----------
 
+=======
+[1.0.16] - 2019-01-24
+--------------------
+* Respect the "externally managed" data consent policy in the enrollment view.
+
 [1.0.15] - 2019-01-24
 ---------------------
 * Bumping version so others can install newer version of this app that includes convenient management commands for devs
@@ -24,11 +29,11 @@ Unreleased
 * Only include current active enrollments which are not complete yet in active learners table.
 
 [1.0.11] - 2018-11-02
----------------------
+--------------------
 Revert 1.0.9 changes - enrollment_created_date as this value is redundent with the enrollment_created_timestamp
 
 [1.0.10] - 2018-11-02
----------------------
+--------------------
 Upgrade dependencies
 
 [1.0.9] - 2018-11-02

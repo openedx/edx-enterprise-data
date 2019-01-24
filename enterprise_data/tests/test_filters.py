@@ -38,6 +38,23 @@ class TestConsentGrantedFilterBackend(APITestCase):
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
 
-        # Fixture data for enterprise 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c' contains 3 objects but only 3 with consent
+        # Fixture data for enterprise 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c' contains 3 objects but only 2 with consent
         assert EnterpriseEnrollment.objects.filter(enterprise_id='ee5e6b3a-069a-4947-bb8d-d2dbc323396c').count() == 3
         assert len(data['results']) == 2
+
+    @mock.patch('enterprise_data.permissions.EnterpriseApiClient')
+    def test_filter_with_external_consent(self, mock_enterprise_api_client):
+        """
+        If the enterprise is configured for externally managed data consent, all enrollments will be returned.
+        """
+        mock_enterprise_api_client.return_value.get_with_access_to.return_value = {
+            'uuid': 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
+            'enforce_data_sharing_consent': 'externally_managed',
+        }
+        response = self.client.get(self.url)
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+
+        # Fixture data for enterprise 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c' contains 3 objects but only 2 with consent
+        assert EnterpriseEnrollment.objects.filter(enterprise_id='ee5e6b3a-069a-4947-bb8d-d2dbc323396c').count() == 3
+        assert len(data['results']) == 3
