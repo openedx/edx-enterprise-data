@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =======
+[1.0.17] - 2019-03-05
+---------------------
+* In audit enrollments filtering, only filter out audit rows that do not have any offer or code applied.
+
 [1.0.16] - 2019-01-24
 --------------------
 * Respect the "externally managed" data consent policy in the enrollment view.

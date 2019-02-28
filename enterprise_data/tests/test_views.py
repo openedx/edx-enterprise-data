@@ -199,21 +199,58 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
 
     @ddt.data(
         (
-            True, 2, 'verified', 2
+            True, None, None, 2, 'verified', 2
         ),
         (
-            True, 2, 'audit', 2
+            True, None, None, 2, 'audit', 2
         ),
         (
-            False, 2, 'verified', 2
+            False, None, None, 2, 'verified', 2
         ),
         (
-            False, 2, 'audit', 0
+            False, None, None, 2, 'audit', 0
+        ),
+        (
+            True, 'Test Coupon Code', None, 2, 'verified', 2
+        ),
+        (
+            True, 'Test Coupon Code', None, 2, 'audit', 2
+        ),
+        (
+            False, 'Test Coupon Code', None, 2, 'verified', 2
+        ),
+        (
+            False, 'Test Coupon Code', None, 2, 'audit', 2
+        ),
+        (
+            True, None, 'Test Offer', 2, 'verified', 2
+        ),
+        (
+            True, None, 'Test Offer', 2, 'audit', 2
+        ),
+        (
+            False, None, 'Test Offer', 2, 'verified', 2
+        ),
+        (
+            False, None, 'Test Offer', 2, 'audit', 2
+        ),
+        (
+            True, 'Test Coupon Code', 'Test Offer', 2, 'verified', 2
+        ),
+        (
+            True, 'Test Coupon Code', 'Test Offer', 2, 'audit', 2
+        ),
+        (
+            False, 'Test Coupon Code', 'Test Offer', 2, 'verified', 2
+        ),
+        (
+            False, 'Test Coupon Code', 'Test Offer', 2, 'audit', 2
         ),
     )
     @ddt.unpack
     def test_get_queryset_returns_enrollments_with_audit_enrollment_filter(
-            self, enable_audit_enrollment, total_enrollments, user_current_enrollment_mode, enrollments_count
+            self, enable_audit_enrollment, coupon_code, offer, total_enrollments,
+            user_current_enrollment_mode, enrollments_count
     ):
         enterprise_user = EnterpriseUserFactory()
         enterprise_id = enterprise_user.enterprise_id
@@ -241,6 +278,9 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
                 course_title='course101',
                 has_passed=True,
                 consent_granted=True,
+                coupon_name='Test Coupon {}'.format(index),
+                coupon_code=coupon_code,
+                offer=offer,
             )
 
         response = self.client.get(url)
