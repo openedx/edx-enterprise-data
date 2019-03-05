@@ -80,6 +80,8 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
     ordering = ('user_email',)
     CONSENT_GRANTED_FILTER = 'consent_granted'
     ENROLLMENT_MODE_FILTER = 'user_current_enrollment_mode'
+    COUPON_CODE_FILTER = 'coupon_code'
+    OFFER_FILTER = 'offer'
 
     def get_queryset(self):
         """

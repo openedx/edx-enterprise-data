@@ -55,7 +55,12 @@ class AuditEnrollmentsFilterBackend(filters.BaseFilterBackend):
         enable_audit_enrollment = request.session['enable_audit_enrollment'].get(enterprise_id, False)
 
         if not enable_audit_enrollment:
-            filter_kwargs = {view.ENROLLMENT_MODE_FILTER: 'audit'}
-            queryset = queryset.exclude(**filter_kwargs)
+            # Filter out enrollments that have audit mode and do not have a coupon code or an offer.
+            filter_query = {
+                view.ENROLLMENT_MODE_FILTER: 'audit',
+                view.COUPON_CODE_FILTER: None,
+                view.OFFER_FILTER: None
+            }
+            queryset = queryset.exclude(**filter_query)
 
         return queryset
