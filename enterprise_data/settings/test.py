@@ -44,7 +44,8 @@ INSTALLED_APPS = (
     "django.contrib.staticfiles",
 
     "enterprise_data",
-    "enterprise_reporting"
+    "enterprise_reporting",
+    "rules.apps.AutodiscoverRulesConfig",
 )
 
 MIDDLEWARE_CLASSES = [
@@ -55,7 +56,10 @@ MIDDLEWARE_CLASSES = [
 
 MIDDLEWARE = MIDDLEWARE_CLASSES  # Django 1.10 compatibility - the setting was renamed
 
-AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.ModelBackend"]
+AUTHENTICATION_BACKENDS = [
+    "rules.permissions.ObjectPermissionBackend",
+    "django.contrib.auth.backends.ModelBackend"
+]
 
 SESSION_ENGINE = "django.contrib.sessions.backends.file"
 
