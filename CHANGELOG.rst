@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =======
+[1.0.18] - 2019-03-19
+---------------------
+* Add feature role models for permission based checks
+
 [1.0.17] - 2019-03-05
 ---------------------
 * In audit enrollments filtering, only filter out audit rows that do not have any offer or code applied.
