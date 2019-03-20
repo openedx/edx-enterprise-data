@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =======
+[1.1.0] - 2019-03-26
+--------------------
+* Initial implementation of RBAC logic in viewsets and filters, behind a waffle switch.
+
 [1.0.18] - 2019-03-19
 ---------------------
 * Add feature role models for permission based checks

@@ -6,14 +6,14 @@ Tests for the `edx-enterprise` serializer module.
 from __future__ import absolute_import, unicode_literals
 
 from pytest import mark, raises
-from rest_framework.test import APITestCase
+from rest_framework.test import APITransactionTestCase
 
-from enterprise_data.api.v0.serializers import EnterpriseEnrollmentSerializer
+from enterprise_data.api.v0.serializers import EnterpriseEnrollment, EnterpriseEnrollmentSerializer
 from enterprise_data.tests.test_utils import EnterpriseUserFactory
 
 
 @mark.django_db
-class TestEnterpriseEnrollmentSerializer(APITestCase):
+class TestEnterpriseEnrollmentSerializer(APITransactionTestCase):
     """
     Tests for `enterprise_enrollment` API serializer.
     """
@@ -70,6 +70,9 @@ class TestEnterpriseEnrollmentSerializer(APITestCase):
         serializer = EnterpriseEnrollmentSerializer(data=self.enrollment_data)
         serializer.is_valid()
         serializer.save()
+
+        enterprise_enrollment_id = EnterpriseEnrollment.objects.first().id
+        expected_serialized_data['id'] = enterprise_enrollment_id
         assert serializer.data == expected_serialized_data
 
     def test_enrollment_unenroll_with_no_start_date(self):

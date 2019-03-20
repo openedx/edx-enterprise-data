@@ -3,9 +3,13 @@ Filters for enterprise data views.
 """
 from __future__ import absolute_import, unicode_literals
 
+import waffle
 from rest_framework import filters
 
 from django.db.models import Q
+
+from enterprise_data.clients import EnterpriseApiClient
+from enterprise_data.constants import ROLE_BASED_ACCESS_CONTROL_SWITCH
 
 # Admittedly this is sort of hacky because the use of "|" with 2 Q objects
 # forces the ORM to use a LEFT OUTER JOIN, which is needed to return a user
@@ -29,6 +33,13 @@ class ConsentGrantedFilterBackend(filters.BaseFilterBackend):
         Filter a queryset for results where consent has been granted.
         """
         current_enterprise = view.kwargs.get('enterprise_id', None)
+
+        if waffle.switch_is_active(ROLE_BASED_ACCESS_CONTROL_SWITCH):
+            # Make cached call to lms about enterprise and add returned info into request session
+            # If the waffle switch is off, then the session data would be added in has_permission
+            enterprise_client = EnterpriseApiClient(request.auth)
+            __ = enterprise_client.get_enterprise_and_update_session(request)
+
         data_sharing_enforce = request.session.get('enforce_data_sharing_consent', {})
         # if the enterprise is configured for "externally managed" data sharing consent,
         # ignore the consent_granted column.
@@ -52,6 +63,13 @@ class AuditEnrollmentsFilterBackend(filters.BaseFilterBackend):
         Filter out queryset for results where enrollment mode is `audit`.
         """
         enterprise_id = view.kwargs['enterprise_id']
+
+        if waffle.switch_is_active(ROLE_BASED_ACCESS_CONTROL_SWITCH):
+            # Make cached call to lms about enterprise and add returned info into request session
+            # If the waffle switch is off, then the session data would be added in has_permission
+            enterprise_client = EnterpriseApiClient(request.auth)
+            __ = enterprise_client.get_enterprise_and_update_session(request)
+
         enable_audit_enrollment = request.session['enable_audit_enrollment'].get(enterprise_id, False)
 
         if not enable_audit_enrollment:

@@ -81,7 +81,7 @@ class HasDataAPIDjangoGroupAccess(permissions.BasePermission):
         Returns: enterprise or None if unable to get or user is not associated with an enterprise
         """
         enterprise_client = EnterpriseApiClient(auth_token)
-        enterprise_data = enterprise_client.get_with_access_to(user, enterprise_id)
+        enterprise_data = enterprise_client.get_enterprise_customer(user, enterprise_id)
         if not enterprise_data:
             return None
 
