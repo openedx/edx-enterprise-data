@@ -44,7 +44,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         super(TestEnterpriseEnrollmentsViewSet, self).setUp()
         self.user = UserFactory(is_staff=True)
         role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
-        EnterpriseDataRoleAssignment.objects.create(
+        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
             role=role,
             user=self.user
         )
@@ -61,6 +61,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         self.addCleanup(enterprise_api_client.stop)
         self.enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
         self.set_jwt_cookie()
+        toggle_switch(ROLE_BASED_ACCESS_CONTROL_SWITCH, False)
 
     def test_get_queryset_returns_enrollments(self):
         enterprise_id = self.enterprise_id
@@ -530,26 +531,86 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         assert len(result) == 2
 
     @ddt.data(
-        {'implicit_perm': False, 'explicit_perm': False, 'status': status.HTTP_403_FORBIDDEN},
-        {'implicit_perm': False, 'explicit_perm': True, 'status': status.HTTP_200_OK},
-        {'implicit_perm': True, 'explicit_perm': False, 'status': status.HTTP_200_OK},
+        {
+            'implicit': False,
+            'explicit': False,
+            'jwt_enterprise_id': None,
+            'context_enterprise_id': None,
+            'status': status.HTTP_403_FORBIDDEN
+        },
+        {
+            'implicit': False,
+            'explicit': True,
+            'jwt_enterprise_id': None,
+            'context_enterprise_id': True,
+            'status': status.HTTP_200_OK
+        },
+        {
+            'implicit': True,
+            'explicit': False,
+            'jwt_enterprise_id': True,
+            'context_enterprise_id': None,
+            'status': status.HTTP_200_OK
+        },
+        {
+            'implicit': True,
+            'explicit': True,
+            'jwt_enterprise_id': True,
+            'context_enterprise_id': True,
+            'status': status.HTTP_200_OK
+        },
+        {
+            'implicit': False,
+            'explicit': True,
+            'jwt_enterprise_id': True,
+            'context_enterprise_id': False,
+            'status': status.HTTP_200_OK
+        },
+        {
+            'implicit': True,
+            'explicit': False,
+            'jwt_enterprise_id': False,
+            'context_enterprise_id': True,
+            'status': status.HTTP_403_FORBIDDEN
+        },
+        {
+            'implicit': True,
+            'explicit': True,
+            'jwt_enterprise_id': False,
+            'context_enterprise_id': False,
+            'status': status.HTTP_200_OK
+        }
     )
     @ddt.unpack
-    def test_permissions(self, implicit_perm, explicit_perm, status):  # pylint: disable=redefined-outer-name
+    def test_permissions(
+            self,
+            implicit,
+            explicit,
+            jwt_enterprise_id,
+            context_enterprise_id,
+            status  # pylint: disable=redefined-outer-name
+    ):
         """
         Test that role base permissions works as expected.
         """
         toggle_switch(ROLE_BASED_ACCESS_CONTROL_SWITCH, True)
 
-        system_wide_role = SYSTEM_ENTERPRISE_ADMIN_ROLE
+        if context_enterprise_id:
+            self.role_assignment.enterprise_id = self.enterprise_id
+            self.role_assignment.save()
 
-        if implicit_perm is False:
+        role_context = 'some_context'
+        if jwt_enterprise_id:
+            role_context = self.enterprise_id
+
+        system_wide_role = SYSTEM_ENTERPRISE_ADMIN_ROLE
+        if implicit is False:
             system_wide_role = 'role_with_no_mapped_permissions'
 
-        if explicit_perm is False:
-            EnterpriseDataRoleAssignment.objects.all().delete()
+        self.set_jwt_cookie(system_wide_role=system_wide_role, context=role_context)
 
-        self.set_jwt_cookie(system_wide_role=system_wide_role)
+        if explicit is False:
+            EnterpriseDataRoleAssignment.objects.all().delete()
 
         url = reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': self.enterprise_id})
 
@@ -576,7 +637,7 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
         super(TestEnterpriseUsersViewSet, self).setUp()
         self.user = UserFactory(is_staff=True)
         role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
-        EnterpriseDataRoleAssignment.objects.create(
+        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
             role=role,
             user=self.user
         )
@@ -744,6 +805,7 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
         )
 
         self.set_jwt_cookie()
+        toggle_switch(ROLE_BASED_ACCESS_CONTROL_SWITCH, False)
 
     def test_viewset_no_query_params(self):
         """
@@ -1125,26 +1187,86 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
         assert result_ids == sorted(result_ids, reverse=order[ordering])
 
     @ddt.data(
-        {'implicit_perm': False, 'explicit_perm': False, 'status': status.HTTP_403_FORBIDDEN},
-        {'implicit_perm': False, 'explicit_perm': True, 'status': status.HTTP_200_OK},
-        {'implicit_perm': True, 'explicit_perm': False, 'status': status.HTTP_200_OK},
+        {
+            'implicit': False,
+            'explicit': False,
+            'jwt_enterprise_id': None,
+            'context_enterprise_id': None,
+            'status': status.HTTP_403_FORBIDDEN
+        },
+        {
+            'implicit': False,
+            'explicit': True,
+            'jwt_enterprise_id': None,
+            'context_enterprise_id': True,
+            'status': status.HTTP_200_OK
+        },
+        {
+            'implicit': True,
+            'explicit': False,
+            'jwt_enterprise_id': True,
+            'context_enterprise_id': None,
+            'status': status.HTTP_200_OK
+        },
+        {
+            'implicit': True,
+            'explicit': True,
+            'jwt_enterprise_id': True,
+            'context_enterprise_id': True,
+            'status': status.HTTP_200_OK
+        },
+        {
+            'implicit': False,
+            'explicit': True,
+            'jwt_enterprise_id': True,
+            'context_enterprise_id': False,
+            'status': status.HTTP_200_OK
+        },
+        {
+            'implicit': True,
+            'explicit': False,
+            'jwt_enterprise_id': False,
+            'context_enterprise_id': True,
+            'status': status.HTTP_403_FORBIDDEN
+        },
+        {
+            'implicit': True,
+            'explicit': True,
+            'jwt_enterprise_id': False,
+            'context_enterprise_id': False,
+            'status': status.HTTP_200_OK
+        }
     )
     @ddt.unpack
-    def test_permissions(self, implicit_perm, explicit_perm, status):  # pylint: disable=redefined-outer-name
+    def test_permissions(
+            self,
+            implicit,
+            explicit,
+            jwt_enterprise_id,
+            context_enterprise_id,
+            status  # pylint: disable=redefined-outer-name
+    ):
         """
         Test that role base permissions works as expected.
         """
         toggle_switch(ROLE_BASED_ACCESS_CONTROL_SWITCH, True)
 
-        system_wide_role = SYSTEM_ENTERPRISE_ADMIN_ROLE
+        if context_enterprise_id:
+            self.role_assignment.enterprise_id = self.enterprise_id
+            self.role_assignment.save()
 
-        if implicit_perm is False:
+        role_context = 'some_context'
+        if jwt_enterprise_id:
+            role_context = self.enterprise_id
+
+        system_wide_role = SYSTEM_ENTERPRISE_ADMIN_ROLE
+        if implicit is False:
             system_wide_role = 'role_with_no_mapped_permissions'
 
-        if explicit_perm is False:
-            EnterpriseDataRoleAssignment.objects.all().delete()
+        self.set_jwt_cookie(system_wide_role=system_wide_role, context=role_context)
 
-        self.set_jwt_cookie(system_wide_role=system_wide_role)
+        if explicit is False:
+            EnterpriseDataRoleAssignment.objects.all().delete()
 
         url = reverse('v0:enterprise-users-list', kwargs={'enterprise_id': self.enterprise_id})
         response = self.client.get(url, {'has_enrollments': 'true'})
@@ -1163,7 +1285,7 @@ class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, APITransactionTestCase
         super(TestEnterpriseLearnerCompletedCourses, self).setUp()
         self.user = UserFactory(is_staff=True)
         role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
-        EnterpriseDataRoleAssignment.objects.create(
+        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
             role=role,
             user=self.user
         )
@@ -1185,6 +1307,7 @@ class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, APITransactionTestCase
         }
 
         self.set_jwt_cookie()
+        toggle_switch(ROLE_BASED_ACCESS_CONTROL_SWITCH, False)
 
     def test_get_learner_completed_courses(self):
         """
@@ -1333,26 +1456,86 @@ class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, APITransactionTestCase
             assert response.json()['results'][idx]['completed_courses'] == expected_course_completed_count
 
     @ddt.data(
-        {'implicit_perm': False, 'explicit_perm': False, 'status': status.HTTP_403_FORBIDDEN},
-        {'implicit_perm': False, 'explicit_perm': True, 'status': status.HTTP_200_OK},
-        {'implicit_perm': True, 'explicit_perm': False, 'status': status.HTTP_200_OK},
+        {
+            'implicit': False,
+            'explicit': False,
+            'jwt_enterprise_id': None,
+            'context_enterprise_id': None,
+            'status': status.HTTP_403_FORBIDDEN
+        },
+        {
+            'implicit': False,
+            'explicit': True,
+            'jwt_enterprise_id': None,
+            'context_enterprise_id': True,
+            'status': status.HTTP_200_OK
+        },
+        {
+            'implicit': True,
+            'explicit': False,
+            'jwt_enterprise_id': True,
+            'context_enterprise_id': None,
+            'status': status.HTTP_200_OK
+        },
+        {
+            'implicit': True,
+            'explicit': True,
+            'jwt_enterprise_id': True,
+            'context_enterprise_id': True,
+            'status': status.HTTP_200_OK
+        },
+        {
+            'implicit': False,
+            'explicit': True,
+            'jwt_enterprise_id': True,
+            'context_enterprise_id': False,
+            'status': status.HTTP_200_OK
+        },
+        {
+            'implicit': True,
+            'explicit': False,
+            'jwt_enterprise_id': False,
+            'context_enterprise_id': True,
+            'status': status.HTTP_403_FORBIDDEN
+        },
+        {
+            'implicit': True,
+            'explicit': True,
+            'jwt_enterprise_id': False,
+            'context_enterprise_id': False,
+            'status': status.HTTP_200_OK
+        }
     )
     @ddt.unpack
-    def test_permissions(self, implicit_perm, explicit_perm, status):  # pylint: disable=redefined-outer-name
+    def test_permissions(
+            self,
+            implicit,
+            explicit,
+            jwt_enterprise_id,
+            context_enterprise_id,
+            status  # pylint: disable=redefined-outer-name
+    ):
         """
         Test that role base permissions works as expected.
         """
         toggle_switch(ROLE_BASED_ACCESS_CONTROL_SWITCH, True)
 
-        system_wide_role = SYSTEM_ENTERPRISE_ADMIN_ROLE
+        if context_enterprise_id:
+            self.role_assignment.enterprise_id = self.enterprise_id
+            self.role_assignment.save()
 
-        if implicit_perm is False:
+        role_context = 'some_context'
+        if jwt_enterprise_id:
+            role_context = self.enterprise_id
+
+        system_wide_role = SYSTEM_ENTERPRISE_ADMIN_ROLE
+        if implicit is False:
             system_wide_role = 'role_with_no_mapped_permissions'
 
-        if explicit_perm is False:
-            EnterpriseDataRoleAssignment.objects.all().delete()
+        self.set_jwt_cookie(system_wide_role=system_wide_role, context=role_context)
 
-        self.set_jwt_cookie(system_wide_role=system_wide_role)
+        if explicit is False:
+            EnterpriseDataRoleAssignment.objects.all().delete()
 
         url = reverse('v0:enterprise-learner-completed-courses-list', kwargs={'enterprise_id': self.enterprise_id})
         response = self.client.get(url)
