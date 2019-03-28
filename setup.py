@@ -43,7 +43,8 @@ setup(
     url="https://github.com/edx/edx-enterprise-data",
     packages=[
         'enterprise_data',
-        'enterprise_reporting'
+        'enterprise_reporting',
+        'enterprise_data_roles',
     ],
     include_package_data=True,
     install_requires=REQUIREMENTS,

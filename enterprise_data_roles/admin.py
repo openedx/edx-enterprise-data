@@ -2,24 +2,26 @@
 """
 Django admin integration for enterprise-data.
 """
+
 from __future__ import absolute_import, unicode_literals
 
 from edx_rbac.admin import UserRoleAssignmentAdmin, UserRoleAssignmentAdminForm
 
 from django.contrib import admin
 
-from enterprise_data.models import EnterpriseDataRoleAssignment
+from enterprise_data_roles.models import EnterpriseDataRoleAssignment
 
 
 class EnterpriseDataRoleAssignmentAdminForm(UserRoleAssignmentAdminForm):
     """
-    Djaong admin form for EnterpriseDataRoleAssignmentAdmin.
+    Django admin form for EnterpriseDataRoleAssignmentAdmin.
     """
 
     class Meta:
         """
         Meta class for EnterpriseDataRoleAssignmentAdminForm.
         """
+
         model = EnterpriseDataRoleAssignment
         fields = ('user', 'role')
 
@@ -34,6 +36,7 @@ class EnterpriseDataRoleAssignmentAdmin(UserRoleAssignmentAdmin):
         """
         Meta class for EnterpriseDataRoleAssignmentAdmin.
         """
+
         model = EnterpriseDataRoleAssignment
 
     form = EnterpriseDataRoleAssignmentAdminForm

@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations
 
-from enterprise_data.constants import ROLE_BASED_ACCESS_CONTROL_SWITCH
+from enterprise_data_roles.constants import ROLE_BASED_ACCESS_CONTROL_SWITCH
 
 
 def create_switch(apps, schema_editor):
