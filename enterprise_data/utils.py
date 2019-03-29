@@ -28,9 +28,10 @@ def update_session_with_enterprise_data(request, enterprise_id, **kwargs):
 
     """
     for item, value in six.iteritems(kwargs):
-        request.session[item] = {}
+        session_key_data = request.session.get(item, {})
+        session_key_data.update({str(enterprise_id): value})
         request.session.update({
-            item: {str(enterprise_id): value}
+            item: session_key_data
         })
 
 
