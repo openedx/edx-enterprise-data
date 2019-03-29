@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =======
+[1.2.0] - 2019-03-29
+--------------------
+* Moved feature role models to a separate django app.
+
 [1.1.0] - 2019-03-26
 --------------------
 * Initial implementation of RBAC logic in viewsets and filters, behind a waffle switch.

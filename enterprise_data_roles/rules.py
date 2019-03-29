@@ -11,8 +11,8 @@ from edx_rbac.utils import (
     user_has_access_via_database,
 )
 
-from enterprise_data.constants import ENTERPRISE_DATA_ADMIN_ROLE
-from enterprise_data.models import EnterpriseDataRoleAssignment
+from enterprise_data_roles.constants import ENTERPRISE_DATA_ADMIN_ROLE
+from enterprise_data_roles.models import EnterpriseDataRoleAssignment
 
 
 @rules.predicate

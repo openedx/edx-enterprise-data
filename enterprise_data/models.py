@@ -6,9 +6,6 @@ from __future__ import absolute_import, unicode_literals
 
 from logging import getLogger
 
-from edx_rbac.models import UserRole, UserRoleAssignment
-
-from django.conf import settings
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
@@ -121,54 +118,6 @@ class EnterpriseUser(models.Model):
         return "<Enterprise User {user} in {enterprise}>".format(
             user=self.lms_user_id,
             enterprise=self.enterprise_id
-        )
-
-    def __repr__(self):
-        """
-        Return uniquely identifying string representation.
-        """
-        return self.__str__()
-
-
-@python_2_unicode_compatible
-class EnterpriseDataFeatureRole(UserRole):
-    """
-    User role definitions specific to EnterpriseData.
-
-     .. no_pii:
-    """
-
-    def __str__(self):
-        """
-        Return human-readable string representation.
-        """
-        return "EnterpriseDataFeatureRole(name={name})".format(name=self.name)
-
-    def __repr__(self):
-        """
-        Return uniquely identifying string representation.
-        """
-        return self.__str__()
-
-
-@python_2_unicode_compatible
-class EnterpriseDataRoleAssignment(UserRoleAssignment):
-    """
-    Model to map users to a EnterpriseDataFeatureRole.
-
-     .. no_pii:
-    """
-
-    role_class = EnterpriseDataFeatureRole
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, db_index=True, on_delete=models.CASCADE)
-
-    def __str__(self):
-        """
-        Return human-readable string representation.
-        """
-        return "EnterpriseDataRoleAssignment(name={name}, user={user})".format(
-            name=self.role.name,
-            user=self.user.id,
         )
 
     def __repr__(self):

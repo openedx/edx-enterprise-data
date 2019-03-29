@@ -8,7 +8,7 @@ from __future__ import absolute_import, unicode_literals
 
 from os.path import abspath, dirname, join
 
-from enterprise_data.constants import ENTERPRISE_DATA_ADMIN_ROLE
+from enterprise_data_roles.constants import ENTERPRISE_DATA_ADMIN_ROLE
 
 
 def here(*args):
@@ -49,6 +49,7 @@ INSTALLED_APPS = (
 
     "enterprise_data",
     "enterprise_reporting",
+    "enterprise_data_roles",
     "rules.apps.AutodiscoverRulesConfig",
 )
 

@@ -9,7 +9,7 @@ from rest_framework import filters
 from django.db.models import Q
 
 from enterprise_data.clients import EnterpriseApiClient
-from enterprise_data.constants import ROLE_BASED_ACCESS_CONTROL_SWITCH
+from enterprise_data_roles.constants import ROLE_BASED_ACCESS_CONTROL_SWITCH
 
 # Admittedly this is sort of hacky because the use of "|" with 2 Q objects
 # forces the ORM to use a LEFT OUTER JOIN, which is needed to return a user

@@ -31,3 +31,5 @@ This folder contains a set of scripts used to push enterprise data reports.
 It supports multiple delivery methods (email, sftp) and is triggered through jenkins scheduled jobs.
 
 
+## enterprise_data_roles app
+This app contains user roles and role assignments to manage user permissions on resources.

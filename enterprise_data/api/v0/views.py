@@ -22,7 +22,6 @@ from django.db.models.functions import Coalesce
 from django.utils import timezone
 
 from enterprise_data.api.v0 import serializers
-from enterprise_data.constants import ROLE_BASED_ACCESS_CONTROL_SWITCH
 from enterprise_data.filters import (
     CONSENT_TRUE_OR_NOENROLL_Q,
     AuditEnrollmentsFilterBackend,
@@ -30,6 +29,7 @@ from enterprise_data.filters import (
 )
 from enterprise_data.models import EnterpriseEnrollment, EnterpriseUser
 from enterprise_data.permissions import HasDataAPIDjangoGroupAccess
+from enterprise_data_roles.constants import ROLE_BASED_ACCESS_CONTROL_SWITCH
 
 LOGGER = getLogger(__name__)
 

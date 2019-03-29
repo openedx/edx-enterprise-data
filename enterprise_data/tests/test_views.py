@@ -16,12 +16,6 @@ from rest_framework.test import APITransactionTestCase
 from django.utils import timezone
 
 from enterprise_data.api.v0.views import subtract_one_month
-from enterprise_data.constants import (
-    ENTERPRISE_DATA_ADMIN_ROLE,
-    ROLE_BASED_ACCESS_CONTROL_SWITCH,
-    SYSTEM_ENTERPRISE_ADMIN_ROLE,
-)
-from enterprise_data.models import EnterpriseDataFeatureRole, EnterpriseDataRoleAssignment
 from enterprise_data.tests import toggle_switch
 from enterprise_data.tests.mixins import JWTTestMixin
 from enterprise_data.tests.test_utils import (
@@ -30,6 +24,12 @@ from enterprise_data.tests.test_utils import (
     UserFactory,
     get_dummy_enterprise_api_data,
 )
+from enterprise_data_roles.constants import (
+    ENTERPRISE_DATA_ADMIN_ROLE,
+    ROLE_BASED_ACCESS_CONTROL_SWITCH,
+    SYSTEM_ENTERPRISE_ADMIN_ROLE,
+)
+from enterprise_data_roles.models import EnterpriseDataFeatureRole, EnterpriseDataRoleAssignment
 
 
 @ddt.ddt
