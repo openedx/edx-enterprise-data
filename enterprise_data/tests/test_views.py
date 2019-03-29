@@ -11,11 +11,19 @@ import mock
 from pytest import mark
 from rest_framework import status
 from rest_framework.reverse import reverse
-from rest_framework.test import APITestCase
+from rest_framework.test import APITransactionTestCase
 
 from django.utils import timezone
 
 from enterprise_data.api.v0.views import subtract_one_month
+from enterprise_data.constants import (
+    ENTERPRISE_DATA_ADMIN_ROLE,
+    ROLE_BASED_ACCESS_CONTROL_SWITCH,
+    SYSTEM_ENTERPRISE_ADMIN_ROLE,
+)
+from enterprise_data.models import EnterpriseDataFeatureRole, EnterpriseDataRoleAssignment
+from enterprise_data.tests import toggle_switch
+from enterprise_data.tests.mixins import JWTTestMixin
 from enterprise_data.tests.test_utils import (
     EnterpriseEnrollmentFactory,
     EnterpriseUserFactory,
@@ -26,7 +34,7 @@ from enterprise_data.tests.test_utils import (
 
 @ddt.ddt
 @mark.django_db
-class TestEnterpriseEnrollmentsViewSet(APITestCase):
+class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
     """
     Tests for EnterpriseEnrollmentsViewSet
     """
@@ -35,22 +43,28 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
     def setUp(self):
         super(TestEnterpriseEnrollmentsViewSet, self).setUp()
         self.user = UserFactory(is_staff=True)
+        role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
+        EnterpriseDataRoleAssignment.objects.create(
+            role=role,
+            user=self.user
+        )
         self.client.force_authenticate(user=self.user)  # pylint: disable=no-member
         enterprise_api_client = mock.patch(
             'enterprise_data.permissions.EnterpriseApiClient',
             mock.Mock(
                 return_value=mock.Mock(
-                    get_with_access_to=mock.Mock(return_value=get_dummy_enterprise_api_data())
+                    get_enterprise_customer=mock.Mock(return_value=get_dummy_enterprise_api_data())
                 )
             )
         )
         self.enterprise_api_client = enterprise_api_client.start()
         self.addCleanup(enterprise_api_client.stop)
         self.enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
+        self.set_jwt_cookie()
 
     def test_get_queryset_returns_enrollments(self):
         enterprise_id = self.enterprise_id
-        self.enterprise_api_client.return_value.get_with_access_to.return_value = {
+        self.enterprise_api_client.return_value.get_enterprise_customer.return_value = {
             'uuid': enterprise_id
         }
         url = reverse('v0:enterprise-enrollments-list',
@@ -264,7 +278,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
             'enterprise_data.permissions.EnterpriseApiClient',
             mock.Mock(
                 return_value=mock.Mock(
-                    get_with_access_to=mock.Mock(return_value=dummy_enterprise_api_data)
+                    get_enterprise_customer=mock.Mock(return_value=dummy_enterprise_api_data)
                 )
             )
         )
@@ -468,7 +482,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
 
     def test_get_queryset_throws_error(self):
         enterprise_id = '0395b02f-6b29-42ed-9a41-45f3dff8349c'
-        self.enterprise_api_client.return_value.get_with_access_to.return_value = {
+        self.enterprise_api_client.return_value.get_enterprise_customer.return_value = {
             'uuid': enterprise_id
         }
         url = reverse('v0:enterprise-enrollments-list',
@@ -478,7 +492,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
 
     def test_get_overview_returns_overview(self):
         enterprise_id = self.enterprise_id
-        self.enterprise_api_client.return_value.get_with_access_to.return_value = {
+        self.enterprise_api_client.return_value.get_enterprise_customer.return_value = {
             'uuid': enterprise_id
         }
         url = reverse('v0:enterprise-enrollments-overview',
@@ -501,7 +515,7 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
 
     def test_no_page_querystring_skips_pagination(self):
         enterprise_id = self.enterprise_id
-        self.enterprise_api_client.return_value.get_with_access_to.return_value = {
+        self.enterprise_api_client.return_value.get_enterprise_customer.return_value = {
             'uuid': enterprise_id
         }
         url = reverse('v0:enterprise-enrollments-list',
@@ -515,10 +529,45 @@ class TestEnterpriseEnrollmentsViewSet(APITestCase):
         assert isinstance(result, list)
         assert len(result) == 2
 
+    @ddt.data(
+        {'implicit_perm': False, 'explicit_perm': False, 'status': status.HTTP_403_FORBIDDEN},
+        {'implicit_perm': False, 'explicit_perm': True, 'status': status.HTTP_200_OK},
+        {'implicit_perm': True, 'explicit_perm': False, 'status': status.HTTP_200_OK},
+    )
+    @ddt.unpack
+    def test_permissions(self, implicit_perm, explicit_perm, status):  # pylint: disable=redefined-outer-name
+        """
+        Test that role base permissions works as expected.
+        """
+        toggle_switch(ROLE_BASED_ACCESS_CONTROL_SWITCH, True)
+
+        system_wide_role = SYSTEM_ENTERPRISE_ADMIN_ROLE
+
+        if implicit_perm is False:
+            system_wide_role = 'role_with_no_mapped_permissions'
+
+        if explicit_perm is False:
+            EnterpriseDataRoleAssignment.objects.all().delete()
+
+        self.set_jwt_cookie(system_wide_role=system_wide_role)
+
+        url = reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': self.enterprise_id})
+
+        path = 'enterprise_data.filters.EnterpriseApiClient.get_enterprise_customer'
+        with mock.patch(path) as mock_enterprise_api_client:
+            mock_enterprise_api_client.return_value = {
+                'uuid': self.enterprise_id,
+                'enable_audit_enrollment': True,
+                'enforce_data_sharing_consent': True,
+            }
+            response = self.client.get(url)
+
+        assert response.status_code == status
+
 
 @ddt.ddt
 @mark.django_db
-class TestEnterpriseUsersViewSet(APITestCase):
+class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
     """
     Tests for EnterpriseUsersViewSet
     """
@@ -526,12 +575,17 @@ class TestEnterpriseUsersViewSet(APITestCase):
     def setUp(self):
         super(TestEnterpriseUsersViewSet, self).setUp()
         self.user = UserFactory(is_staff=True)
+        role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
+        EnterpriseDataRoleAssignment.objects.create(
+            role=role,
+            user=self.user
+        )
         self.client.force_authenticate(user=self.user)  # pylint: disable=no-member
         enterprise_api_client = mock.patch(
             'enterprise_data.permissions.EnterpriseApiClient',
             mock.Mock(
                 return_value=mock.Mock(
-                    get_with_access_to=mock.Mock(return_value=get_dummy_enterprise_api_data())
+                    get_enterprise_customer=mock.Mock(return_value=get_dummy_enterprise_api_data())
                 )
             )
         )
@@ -688,6 +742,8 @@ class TestEnterpriseUsersViewSet(APITestCase):
             has_passed=False,
             enterprise_id=self.enterprise_id,
         )
+
+        self.set_jwt_cookie()
 
     def test_viewset_no_query_params(self):
         """
@@ -1043,36 +1099,61 @@ class TestEnterpriseUsersViewSet(APITestCase):
         assert isinstance(response.json(), list)
         assert len(response.json()) == 8
 
-    @ddt.data(
-        (
-            'id',
-            [4, 9]
-        ),
-        (
-            '-id',
-            [9, 4]
-        )
-    )
-    @ddt.unpack
-    def test_viewset_ordering(self, ordering, users):
+    @ddt.data('id', '-id')
+    def test_viewset_ordering(self, ordering):
         """
         EnterpriseUserViewset should order users returned if the value
         for ordering query param is set
         """
+        order = {
+            'id': False,
+            '-id': True,
+        }
+
         kwargs = {'enterprise_id': self.enterprise_id, }
         params = {'ordering': ordering, 'has_enrollments': 'true', }
         url = reverse(
             'v0:enterprise-users-list',
             kwargs=kwargs,
         )
+
         response = self.client.get(url, params)
         assert response.json()['count'] == 5
-        assert response.json()['results'][0]['id'] == users[0]
-        assert response.json()['results'][4]['id'] == users[1]
+        response = response.json()
+        result_ids = [result['id'] for result in response['results']]
+
+        assert result_ids == sorted(result_ids, reverse=order[ordering])
+
+    @ddt.data(
+        {'implicit_perm': False, 'explicit_perm': False, 'status': status.HTTP_403_FORBIDDEN},
+        {'implicit_perm': False, 'explicit_perm': True, 'status': status.HTTP_200_OK},
+        {'implicit_perm': True, 'explicit_perm': False, 'status': status.HTTP_200_OK},
+    )
+    @ddt.unpack
+    def test_permissions(self, implicit_perm, explicit_perm, status):  # pylint: disable=redefined-outer-name
+        """
+        Test that role base permissions works as expected.
+        """
+        toggle_switch(ROLE_BASED_ACCESS_CONTROL_SWITCH, True)
+
+        system_wide_role = SYSTEM_ENTERPRISE_ADMIN_ROLE
+
+        if implicit_perm is False:
+            system_wide_role = 'role_with_no_mapped_permissions'
+
+        if explicit_perm is False:
+            EnterpriseDataRoleAssignment.objects.all().delete()
+
+        self.set_jwt_cookie(system_wide_role=system_wide_role)
+
+        url = reverse('v0:enterprise-users-list', kwargs={'enterprise_id': self.enterprise_id})
+        response = self.client.get(url, {'has_enrollments': 'true'})
+
+        assert response.status_code == status
 
 
 @ddt.ddt
-class TestEnterpriseLearnerCompletedCourses(APITestCase):
+class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, APITransactionTestCase):
     """
     Tests for EnterpriseLearnerCompletedCoursesViewSet.
     """
@@ -1081,12 +1162,17 @@ class TestEnterpriseLearnerCompletedCourses(APITestCase):
     def setUp(self):
         super(TestEnterpriseLearnerCompletedCourses, self).setUp()
         self.user = UserFactory(is_staff=True)
+        role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
+        EnterpriseDataRoleAssignment.objects.create(
+            role=role,
+            user=self.user
+        )
         self.client.force_authenticate(user=self.user)  # pylint: disable=no-member
         enterprise_api_client = mock.patch(
             'enterprise_data.permissions.EnterpriseApiClient',
             mock.Mock(
                 return_value=mock.Mock(
-                    get_with_access_to=mock.Mock(return_value=get_dummy_enterprise_api_data())
+                    get_enterprise_customer=mock.Mock(return_value=get_dummy_enterprise_api_data())
                 )
             )
         )
@@ -1094,9 +1180,11 @@ class TestEnterpriseLearnerCompletedCourses(APITestCase):
         self.addCleanup(enterprise_api_client.stop)
 
         self.enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
-        self.enterprise_api_client.return_value.get_with_access_to.return_value = {
+        self.enterprise_api_client.return_value.get_enterprise_customer.return_value = {
             'uuid': self.enterprise_id
         }
+
+        self.set_jwt_cookie()
 
     def test_get_learner_completed_courses(self):
         """
@@ -1243,3 +1331,30 @@ class TestEnterpriseLearnerCompletedCourses(APITestCase):
 
         for idx, expected_course_completed_count in enumerate(expected_completed_courses):
             assert response.json()['results'][idx]['completed_courses'] == expected_course_completed_count
+
+    @ddt.data(
+        {'implicit_perm': False, 'explicit_perm': False, 'status': status.HTTP_403_FORBIDDEN},
+        {'implicit_perm': False, 'explicit_perm': True, 'status': status.HTTP_200_OK},
+        {'implicit_perm': True, 'explicit_perm': False, 'status': status.HTTP_200_OK},
+    )
+    @ddt.unpack
+    def test_permissions(self, implicit_perm, explicit_perm, status):  # pylint: disable=redefined-outer-name
+        """
+        Test that role base permissions works as expected.
+        """
+        toggle_switch(ROLE_BASED_ACCESS_CONTROL_SWITCH, True)
+
+        system_wide_role = SYSTEM_ENTERPRISE_ADMIN_ROLE
+
+        if implicit_perm is False:
+            system_wide_role = 'role_with_no_mapped_permissions'
+
+        if explicit_perm is False:
+            EnterpriseDataRoleAssignment.objects.all().delete()
+
+        self.set_jwt_cookie(system_wide_role=system_wide_role)
+
+        url = reverse('v0:enterprise-learner-completed-courses-list', kwargs={'enterprise_id': self.enterprise_id})
+        response = self.client.get(url)
+
+        assert response.status_code == status

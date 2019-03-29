@@ -89,7 +89,7 @@ class TestEnterpriseApiClient(TestCase):
 
     def test_get_with_access_to_returns_results_for_user(self):
         self.mock_client()
-        results = self.client.get_with_access_to(self.user, self.enterprise_id)
+        results = self.client.get_enterprise_customer(self.user, self.enterprise_id)
         self.mocked_get_endpoint.assert_called_with(
             permissions=[EnterpriseApiClient.ENTERPRISE_DATA_API_GROUP],
             enterprise_id=self.enterprise_id
@@ -100,7 +100,7 @@ class TestEnterpriseApiClient(TestCase):
         self.mocked_get_endpoint = Mock(side_effect=HttpClientError)
         self.mock_client()
         with self.assertRaises(HttpClientError):
-            _ = self.client.get_with_access_to(self.user, self.enterprise_id)
+            _ = self.client.get_enterprise_customer(self.user, self.enterprise_id)
 
     def test_get_with_access_to_returns_none_on_empty_results(self):
         self.mocked_get_endpoint = Mock(return_value={
@@ -108,14 +108,14 @@ class TestEnterpriseApiClient(TestCase):
             'results': []
         })
         self.mock_client()
-        results = self.client.get_with_access_to(self.user, self.enterprise_id)
+        results = self.client.get_enterprise_customer(self.user, self.enterprise_id)
         self.assertIsNone(results)
 
     def test_get_with_access_to_raises_not_found_on_no_results(self):
         self.mocked_get_endpoint = Mock(return_value={})
         self.mock_client()
         with self.assertRaises(NotFound):
-            _ = self.client.get_with_access_to(self.user, self.enterprise_id)
+            _ = self.client.get_enterprise_customer(self.user, self.enterprise_id)
 
     def test_get_with_access_to_raises_parse_error_on_multiple_results(self):
         self.mocked_get_endpoint = Mock(return_value={
@@ -124,4 +124,4 @@ class TestEnterpriseApiClient(TestCase):
         })
         self.mock_client()
         with self.assertRaises(ParseError):
-            _ = self.client.get_with_access_to(self.user, self.enterprise_id)
+            _ = self.client.get_enterprise_customer(self.user, self.enterprise_id)

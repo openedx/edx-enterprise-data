@@ -98,22 +98,22 @@ class TestHasDataAPIDjangoGroupAccess(PermissionsTestCase):
 
     def test_staff_access_without_group_permission(self):
         self.user.is_staff = True
-        self.enterprise_api_client.return_value.get_with_access_to.return_value = {}
+        self.enterprise_api_client.return_value.get_enterprise_customer.return_value = {}
         self.assertFalse(self.permission.has_permission(self.request, None))
 
     def test_staff_access_with_group_permission(self):
         self.user.is_staff = True
-        self.enterprise_api_client.return_value.get_with_access_to.return_value = {
+        self.enterprise_api_client.return_value.get_enterprise_customer.return_value = {
             'uuid': self.enterprise_id
         }
         self.assertTrue(self.permission.has_permission(self.request, None))
 
     def test_enterprise_user_has_access_with_group_permission(self):
-        self.enterprise_api_client.return_value.get_with_access_to.return_value = {
+        self.enterprise_api_client.return_value.get_enterprise_customer.return_value = {
             'uuid': self.enterprise_id
         }
         self.assertTrue(self.permission.has_permission(self.request, None))
 
     def test_enterprise_user_without_group_permission(self):
-        self.enterprise_api_client.return_value.get_with_access_to.return_value = {}
+        self.enterprise_api_client.return_value.get_enterprise_customer.return_value = {}
         self.assertFalse(self.permission.has_permission(self.request, None))

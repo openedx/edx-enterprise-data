@@ -8,6 +8,8 @@ from __future__ import absolute_import, unicode_literals
 
 from os.path import abspath, dirname, join
 
+from enterprise_data.constants import ENTERPRISE_DATA_ADMIN_ROLE
+
 
 def here(*args):
     """
@@ -43,6 +45,8 @@ INSTALLED_APPS = (
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
+    "waffle",
+
     "enterprise_data",
     "enterprise_reporting",
     "rules.apps.AutodiscoverRulesConfig",
@@ -52,6 +56,8 @@ MIDDLEWARE_CLASSES = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "crum.CurrentRequestUserMiddleware",
+    "waffle.middleware.WaffleMiddleware",
 ]
 
 MIDDLEWARE = MIDDLEWARE_CLASSES  # Django 1.10 compatibility - the setting was renamed
@@ -84,3 +90,39 @@ SECRET_KEY = "insecure-secret-key"
 
 USE_TZ = True
 TIME_ZONE = 'UTC'
+
+SITE_NAME = 'analytics-data-api'
+
+# Required for use with edx-drf-extensions JWT functionality:
+# USER_SETTINGS overrides for djangorestframework-jwt APISettings class
+# See https://github.com/GetBlimp/django-rest-framework-jwt/blob/master/rest_framework_jwt/settings.py
+JWT_AUTH = {
+    'JWT_AUDIENCE': 'test-aud',
+    'JWT_DECODE_HANDLER': 'edx_rest_framework_extensions.auth.jwt.decoder.jwt_decode_handler',
+    'JWT_ISSUER': 'test-iss',
+    'JWT_LEEWAY': 1,
+    'JWT_SECRET_KEY': 'test-key',
+    'JWT_SUPPORTED_VERSION': '1.0.0',
+    'JWT_VERIFY_AUDIENCE': False,
+    'JWT_VERIFY_EXPIRATION': True,
+
+    # JWT_ISSUERS enables token decoding for multiple issuers (Note: This is not a native DRF-JWT field)
+    # We use it to allow different values for the 'ISSUER' field, but keep the same SECRET_KEY and
+    # AUDIENCE values across all issuers.
+    'JWT_ISSUERS': [
+        {
+            'ISSUER': 'test-issuer-1',
+            'SECRET_KEY': 'test-secret-key',
+            'AUDIENCE': 'test-audience',
+        },
+        {
+            'ISSUER': 'test-issuer-2',
+            'SECRET_KEY': 'test-secret-key',
+            'AUDIENCE': 'test-audience',
+        }
+    ],
+}
+
+SYSTEM_TO_FEATURE_ROLE_MAPPING = {
+    'enterprise_admin': [ENTERPRISE_DATA_ADMIN_ROLE],
+}
