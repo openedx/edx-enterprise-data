@@ -11,6 +11,8 @@ from edx_rbac.utils import (
     user_has_access_via_database,
 )
 
+from django.urls import resolve
+
 from enterprise_data_roles.constants import ENTERPRISE_DATA_ADMIN_ROLE, SYSTEM_ENTERPRISE_ADMIN_ROLE
 from enterprise_data_roles.models import EnterpriseDataRoleAssignment
 

@@ -6,6 +6,7 @@ from __future__ import absolute_import, unicode_literals
 
 from edx_rbac.models import UserRole, UserRoleAssignment
 
+from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 
 
@@ -39,6 +40,18 @@ class EnterpriseDataRoleAssignment(UserRoleAssignment):
     """
 
     role_class = EnterpriseDataFeatureRole
+    enterprise_id = models.UUIDField(blank=True, null=True, verbose_name='Enterprise Customer UUID')
+
+    def get_context(self):
+        """
+        Return the enterprise customer id or None.
+        """
+        enterprise_id = self.enterprise_id
+        if enterprise_id:
+            # converting the UUID('ee5e6b3a-069a-4947-bb8d-d2dbc323396c') to 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
+            enterprise_id = str(enterprise_id)
+
+        return enterprise_id
 
     def __str__(self):
         """
