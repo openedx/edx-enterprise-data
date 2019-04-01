@@ -25,9 +25,11 @@ from enterprise_data.tests.test_utils import (
     get_dummy_enterprise_api_data,
 )
 from enterprise_data_roles.constants import (
+    ALL_ACCESS_CONTEXT,
     ENTERPRISE_DATA_ADMIN_ROLE,
     ROLE_BASED_ACCESS_CONTROL_SWITCH,
     SYSTEM_ENTERPRISE_ADMIN_ROLE,
+    SYSTEM_ENTERPRISE_OPERATOR_ROLE,
 )
 from enterprise_data_roles.models import EnterpriseDataFeatureRole, EnterpriseDataRoleAssignment
 
@@ -624,6 +626,26 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
             response = self.client.get(url)
 
         assert response.status_code == status
+
+    def test_permissions_with_enterprise_openedx_operator(self):
+        """
+        Test that role base permissions works as expected with `enterprise_openedx_operator` role.
+        """
+        toggle_switch(ROLE_BASED_ACCESS_CONTROL_SWITCH, True)
+
+        self.set_jwt_cookie(system_wide_role=SYSTEM_ENTERPRISE_OPERATOR_ROLE, context=ALL_ACCESS_CONTEXT)
+
+        url = reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': self.enterprise_id})
+        path = 'enterprise_data.filters.EnterpriseApiClient.get_enterprise_customer'
+        with mock.patch(path) as mock_enterprise_api_client:
+            mock_enterprise_api_client.return_value = {
+                'uuid': self.enterprise_id,
+                'enable_audit_enrollment': True,
+                'enforce_data_sharing_consent': True,
+            }
+            response = self.client.get(url)
+
+        assert response.status_code == status.HTTP_200_OK
 
 
 @ddt.ddt
@@ -1273,6 +1295,19 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
 
         assert response.status_code == status
 
+    def test_permissions_with_enterprise_openedx_operator(self):
+        """
+        Test that role base permissions works as expected with `enterprise_openedx_operator` role.
+        """
+        toggle_switch(ROLE_BASED_ACCESS_CONTROL_SWITCH, True)
+
+        self.set_jwt_cookie(system_wide_role=SYSTEM_ENTERPRISE_OPERATOR_ROLE, context=ALL_ACCESS_CONTEXT)
+
+        url = reverse('v0:enterprise-users-list', kwargs={'enterprise_id': self.enterprise_id})
+        response = self.client.get(url)
+
+        assert response.status_code == status.HTTP_200_OK
+
 
 @ddt.ddt
 class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, APITransactionTestCase):
@@ -1541,3 +1576,16 @@ class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, APITransactionTestCase
         response = self.client.get(url)
 
         assert response.status_code == status
+
+    def test_permissions_with_enterprise_openedx_operator(self):
+        """
+        Test that role base permissions works as expected with `enterprise_openedx_operator` role.
+        """
+        toggle_switch(ROLE_BASED_ACCESS_CONTROL_SWITCH, True)
+
+        self.set_jwt_cookie(system_wide_role=SYSTEM_ENTERPRISE_OPERATOR_ROLE, context=ALL_ACCESS_CONTEXT)
+
+        url = reverse('v0:enterprise-learner-completed-courses-list', kwargs={'enterprise_id': self.enterprise_id})
+        response = self.client.get(url)
+
+        assert response.status_code == status.HTTP_200_OK

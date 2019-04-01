@@ -44,12 +44,12 @@ class EnterpriseDataRoleAssignment(UserRoleAssignment):
 
     def get_context(self):
         """
-        Return the enterprise customer id or None.
+        Return the enterprise customer id or `*` if the user has access to all resources.
         """
-        enterprise_id = self.enterprise_id
-        if enterprise_id:
+        enterprise_id = '*'
+        if self.enterprise_id:
             # converting the UUID('ee5e6b3a-069a-4947-bb8d-d2dbc323396c') to 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
-            enterprise_id = str(enterprise_id)
+            enterprise_id = str(self.enterprise_id)
 
         return enterprise_id
 

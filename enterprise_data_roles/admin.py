@@ -23,7 +23,7 @@ class EnterpriseDataRoleAssignmentAdminForm(UserRoleAssignmentAdminForm):
         """
 
         model = EnterpriseDataRoleAssignment
-        fields = ('user', 'role')
+        fields = "__all__"
 
 
 @admin.register(EnterpriseDataRoleAssignment)
@@ -39,4 +39,5 @@ class EnterpriseDataRoleAssignmentAdmin(UserRoleAssignmentAdmin):
 
         model = EnterpriseDataRoleAssignment
 
+    fields = ('user', 'role', 'enterprise_id')
     form = EnterpriseDataRoleAssignmentAdminForm

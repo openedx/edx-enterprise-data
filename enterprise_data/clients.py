@@ -9,7 +9,6 @@ from edx_django_utils.cache import TieredCache
 from edx_rest_api_client.client import EdxRestApiClient
 from edx_rest_api_client.exceptions import HttpClientError, HttpServerError
 from rest_framework.exceptions import NotFound, ParseError
-from six.moves import urllib
 
 from django.conf import settings
 
@@ -77,6 +76,7 @@ class EnterpriseApiClient(EdxRestApiClient):
             resource='enterprise-customer',
             user=user.username,
             enterprise_customer=enterprise_id,
+            with_access_to=with_access_to,
         )
         cached_response = TieredCache.get_cached_response(cache_key)
         if cached_response.is_found:
@@ -92,27 +92,37 @@ class EnterpriseApiClient(EdxRestApiClient):
                 endpoint = endpoint.with_access_to
                 response = endpoint.get(**querystring)
             else:
-                endpoint = urllib.parse.urljoin(endpoint.url(), enterprise_id)
+                endpoint = endpoint(enterprise_id)
                 response = endpoint.get()
         except (HttpClientError, HttpServerError) as exc:
             LOGGER.warning("Unable to retrieve Enterprise Customer details for user {}: {}"
                            .format(user.username, exc))
             raise exc
 
-        if response.get('results', None) is None:
-            raise NotFound('Unable to process Enterprise Customer details for user {}, enterprise {}:'
-                           ' No Results Found'
-                           .format(user.username, enterprise_id))
+        # response returned by lms will be different when we hit the endpoint with ant without the `with_access_to`
+        if with_access_to is True:
+            if response.get('results', None) is None:
+                raise NotFound(
+                    'Unable to process Enterprise Customer details for user {}, enterprise {}:'
+                    ' No Results Found'.format(user.username, enterprise_id)
+                )
 
-        if response['count'] > 1:
-            raise ParseError('Multiple Enterprise Customers found for user {}, enterprise id {}'
-                             .format(user.username, enterprise_id))
+            if response['count'] > 1:
+                raise ParseError(
+                    'Multiple Enterprise Customers found for user {}, enterprise id {}'.format(
+                        user.username,
+                        enterprise_id
+                    )
+                )
 
-        if response['count'] == 0:
-            return None
+            if response['count'] == 0:
+                return None
 
-        TieredCache.set_all_tiers(cache_key, response['results'][0], DEFAULT_REPORTING_CACHE_TIMEOUT)
-        return response['results'][0]
+            response = response['results'][0]
+
+        TieredCache.set_all_tiers(cache_key, response, DEFAULT_REPORTING_CACHE_TIMEOUT)
+
+        return response
 
     def get_enterprise_and_update_session(self, request):
         """
