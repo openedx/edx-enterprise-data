@@ -75,3 +75,6 @@ geckodriver/
 
 # Script output
 .output/
+
+# Visual Studio Code
+.vscode
