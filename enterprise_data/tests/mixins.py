@@ -13,14 +13,14 @@ class JWTTestMixin(object):
     Mixin for JWT test related utils.
     """
 
-    def set_jwt_cookie(self, system_wide_role='enterprise_admin'):
+    def set_jwt_cookie(self, system_wide_role='enterprise_admin', context='some_context'):
         """
         Set jwt token in cookies
         """
         payload = generate_unversioned_payload(self.user)
         payload.update({
             'roles': [
-                '{system_wide_role}:some_context'.format(system_wide_role=system_wide_role)
+                '{system_wide_role}:{context}'.format(system_wide_role=system_wide_role, context=context)
             ]
         })
         jwt_token = generate_jwt_token(payload)

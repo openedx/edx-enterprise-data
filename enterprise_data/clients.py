@@ -125,7 +125,10 @@ class EnterpriseApiClient(EdxRestApiClient):
         session = request.session
         enterprise_data = None
 
-        if 'enable_audit_enrollment' not in session or 'enforce_data_sharing_consent' not in session:
+        audit_enrollment_check = enterprise_id not in session.get('enable_audit_enrollment', {})
+        data_sharing_consent_check = enterprise_id not in session.get('enforce_data_sharing_consent', {})
+
+        if audit_enrollment_check or data_sharing_consent_check:
             enterprise_data = self.get_enterprise_customer(request.user, enterprise_id, with_access_to=False)
             enable_audit_enrollment = False
             enforce_data_sharing_consent = False
