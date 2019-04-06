@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =======
+[1.2.1] - 2019-04-07
+--------------------
+* Update role base permission checks
+
 [1.2.0] - 2019-03-29
 --------------------
 * Moved feature role models to a separate django app.
