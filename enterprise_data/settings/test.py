@@ -8,7 +8,11 @@ from __future__ import absolute_import, unicode_literals
 
 from os.path import abspath, dirname, join
 
-from enterprise_data_roles.constants import ENTERPRISE_DATA_ADMIN_ROLE, SYSTEM_ENTERPRISE_ADMIN_ROLE
+from enterprise_data_roles.constants import (
+    ENTERPRISE_DATA_ADMIN_ROLE,
+    SYSTEM_ENTERPRISE_ADMIN_ROLE,
+    SYSTEM_ENTERPRISE_OPERATOR_ROLE,
+)
 
 
 def here(*args):
@@ -126,4 +130,5 @@ JWT_AUTH = {
 
 SYSTEM_TO_FEATURE_ROLE_MAPPING = {
     SYSTEM_ENTERPRISE_ADMIN_ROLE: [ENTERPRISE_DATA_ADMIN_ROLE],
+    SYSTEM_ENTERPRISE_OPERATOR_ROLE: [ENTERPRISE_DATA_ADMIN_ROLE],
 }
