@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =======
+[1.2.2] - 2019-04-16
+--------------------
+* Turn on role base access control switch.
+
 [1.2.1] - 2019-04-07
 --------------------
 * Update role base permission checks
