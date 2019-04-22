@@ -6,9 +6,12 @@ Client for connecting to the LMS Enterprise endpoints.
 from __future__ import absolute_import, unicode_literals
 
 import os
+import logging
 from collections import OrderedDict
 
 from enterprise_reporting.clients import EdxOAuth2APIClient
+
+LOGGER = logging.getLogger(__name__)
 
 
 class EnterpriseAPIClient(EdxOAuth2APIClient):
