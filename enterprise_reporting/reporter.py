@@ -149,7 +149,7 @@ class EnterpriseReportSender(object):
     def _generate_enterprise_report_progress_v2_csv(self):
         """Query the Enterprise Data API to get progress data to be turned into a CSV."""
         client = EnterpriseDataApiClient()
-        LOGGER.info("dir() for the enterprise data client: ".format(client))
+        LOGGER.info("dir() for the enterprise data client: ".format(dir(client)))
         LOGGER.info("client for the enterprise data client:".format(client.client))
         LOGGER.info("client_id for the enterprise data client".format(client.client_id))
         enrollments = client.get_enterprise_enrollments(self.enterprise_customer_uuid)['results']
@@ -167,7 +167,7 @@ class EnterpriseReportSender(object):
         Query the Enterprise Data API to get progress data to be turned into json.
         """
         client = EnterpriseDataApiClient()
-        LOGGER.info("dir() for the enterprise data client: ".format(client))
+        LOGGER.info("dir() for the enterprise data client: ".format(dir(client)))
         LOGGER.info("client for the enterprise data client:".format(client.client))
         LOGGER.info("client_id for the enterprise data client".format(client.client_id))
         enrollments = client.get_enterprise_enrollments(self.enterprise_customer_uuid)['results']
