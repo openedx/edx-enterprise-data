@@ -46,7 +46,7 @@ edx-drf-extensions==2.2.0
 edx-i18n-tools==0.4.8
 edx-lint==1.1.1
 edx-opaque-keys==0.4.4    # via edx-drf-extensions
-edx-rbac==0.1.10
+edx-rbac==0.1.11
 edx-rest-api-client==1.9.2
 enum34==1.1.6             # via astroid, cryptography, pgpy
 factory-boy==2.11.1

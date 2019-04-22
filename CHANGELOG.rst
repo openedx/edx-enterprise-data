@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =======
+[1.2.3] - 2019-04-22
+--------------------
+* Version upgrade of edx-rbac.
+
 [1.2.2] - 2019-04-16
 --------------------
 * Turn on role base access control switch.
