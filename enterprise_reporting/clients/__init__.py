@@ -50,7 +50,7 @@ class EdxOAuth2APIClient(object):
         self.client = EdxRestApiClient(
             self.API_BASE_URL, append_slash=self.APPEND_SLASH, jwt=access_token,
         )
-        LOGGER.info("dir() for client at time of connect".format(dir(client)))
+        LOGGER.info("dir() for client at time of connect: {}".format(dir(client)))
         # Next we'll want to know what auth headers and cookies we have
         self.expires_at = expires_at
 
@@ -104,7 +104,7 @@ class EdxOAuth2APIClient(object):
         endpoint = getattr(self.client, resource)
         endpoint = getattr(self.client, resource)(resource_id) if resource_id else endpoint
         endpoint = getattr(endpoint, detail_resource) if detail_resource else endpoint
-        LOGGER.info("dir() of endpoint".format(dir(endpoint)))
+        LOGGER.info("dir() of endpoint: {}".format(dir(endpoint)))
         response = endpoint.get(**querystring)
         if should_traverse_pagination:
             results = traverse_pagination(response, endpoint)
