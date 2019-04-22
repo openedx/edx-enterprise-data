@@ -50,7 +50,7 @@ class EdxOAuth2APIClient(object):
         self.client = EdxRestApiClient(
             self.API_BASE_URL, append_slash=self.APPEND_SLASH, jwt=access_token,
         )
-        LOGGER.info("dir() for client at time of connect: {}".format(dir(client)))
+        LOGGER.info("dir() for client at time of connect: {}".format(dir(self.client)))
         # Next we'll want to know what auth headers and cookies we have
         self.expires_at = expires_at
 
