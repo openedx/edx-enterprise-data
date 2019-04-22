@@ -4,8 +4,12 @@ Rules needed to restrict access to the enterprise data api.
 from __future__ import absolute_import, unicode_literals
 
 import rules
-from edx_rbac.utils import get_request_or_stub, request_user_has_implicit_access_via_jwt, user_has_access_via_database
-from edx_rest_framework_extensions.auth.jwt.cookies import get_decoded_jwt as get_decoded_jwt_from_jwt_cookie
+from edx_rbac.utils import (
+    get_decoded_jwt_from_request,
+    get_request_or_stub,
+    request_user_has_implicit_access_via_jwt,
+    user_has_access_via_database,
+)
 
 from django.urls import resolve
 
@@ -25,7 +29,7 @@ def request_user_has_implicit_access(*args, **kwargs):  # pylint: disable=unused
     __, __, request_kwargs = resolve(request.path)
     enterprise_id_in_request = request_kwargs.get('enterprise_id')
 
-    decoded_jwt = get_decoded_jwt_from_jwt_cookie(request)
+    decoded_jwt = get_decoded_jwt_from_request(request)
     return request_user_has_implicit_access_via_jwt(
         decoded_jwt,
         ENTERPRISE_DATA_ADMIN_ROLE,
