@@ -1,7 +1,7 @@
 pip-tools                 		# Requirements file management
 tox==3.0.0                       		# virtualenv management for tests
 vertica-python==0.7.3                   # Required for Enterprise Reporting
-pyminizip==0.2.1                        # Required for Enterprise Reporting
+pyminizip                               # Required for Enterprise Reporting
 celery==3.1.18                          # Run task workers in other locations
 unicodecsv==0.14.1                      # Allows exporting CSV with unicode support (a drop-in replacement for built-in csv module)
 requests==2.9.1                         # Required for SAPSuccessFactorsAPIClient
