@@ -56,7 +56,7 @@ pycryptodomex==3.8.1      # via pyjwkest
 pygments==2.3.1           # via py2neo
 pyjwkest==1.3.2           # via edx-drf-extensions
 pyjwt==1.7.1              # via djangorestframework-jwt, edx-rest-api-client
-pyminizip==0.2.4
+pyminizip==0.2.2
 pymongo==3.8.0            # via edx-opaque-keys
 pynacl==1.3.0             # via paramiko
 pyopenssl==17.4.0
