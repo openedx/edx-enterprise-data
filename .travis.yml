@@ -16,7 +16,7 @@ cache:
 install:
   - pip install -r requirements/travis.txt
 script:
-  - tox
+  - tox -vv
 after_success:
   - codecov
 deploy:
