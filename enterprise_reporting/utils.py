@@ -68,7 +68,14 @@ def _get_compressed_file(files, password=None):
     # Replace the data and report type with just `.zip`.
     zipfile = re.sub(r'(_(\w+))?\.(\w+)$', '.zip', files[0].name)
     compression = pyminizip.compress_multiple if multiple_files else pyminizip.compress
-    compression([f.name for f in files] if multiple_files else files[0].name, zipfile, password, COMPRESSION_LEVEL)
+    src_file_path_prefix = [] if multiple_files else None
+    compression(
+        [f.name for f in files] if multiple_files else files[0].name,
+        src_file_path_prefix,
+        zipfile,
+        password,
+        COMPRESSION_LEVEL
+    )
     return zipfile
 
 
