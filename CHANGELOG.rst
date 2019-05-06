@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =======
+[1.2.5] - 2019-05-06
+--------------------
+* Version upgrade for edx-rbac.
+
 [1.2.4] - 2019-04-22
 --------------------
 * Use `get_decoded_jwt_from_request` from edx-rbac.
