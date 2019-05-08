@@ -7,7 +7,6 @@ from __future__ import absolute_import, unicode_literals
 from datetime import date, timedelta
 from logging import getLogger
 
-import waffle
 from edx_rbac.mixins import PermissionRequiredMixin
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
 from edx_rest_framework_extensions.paginators import DefaultPagination
@@ -28,32 +27,8 @@ from enterprise_data.filters import (
     ConsentGrantedFilterBackend,
 )
 from enterprise_data.models import EnterpriseEnrollment, EnterpriseUser
-from enterprise_data.permissions import HasDataAPIDjangoGroupAccess
-from enterprise_data_roles.constants import ROLE_BASED_ACCESS_CONTROL_SWITCH
 
 LOGGER = getLogger(__name__)
-
-
-class EnterprisePermissionRequiredMixin(PermissionRequiredMixin):
-    """
-    Customized mixin for doing permission checks permissions.py and Django Rules.
-    """
-
-    def check_permissions(self, request):
-        """
-        Check permissions via permissions.py and Django Rules
-        """
-        # edx_rbac PermissionRequiredMixin overrides the following method in DRF:
-        #
-        #   https://github.com/encode/django-rest-framework/blob/master/rest_framework/views.py#L337
-        #
-        # We need to keep this DRF method logic intact for now so we can run
-        # the code in permissions.py. Specifically: HasDataAPIDjangoGroupAccess
-        if waffle.switch_is_active(ROLE_BASED_ACCESS_CONTROL_SWITCH):
-            # role based permission
-            super(EnterprisePermissionRequiredMixin, self).check_permissions(request)
-        else:
-            super(PermissionRequiredMixin, self).check_permissions(request)  # pylint: disable=bad-super-call
 
 
 def subtract_one_month(original_date):
@@ -67,13 +42,12 @@ def subtract_one_month(original_date):
     return one_month_earlier
 
 
-class EnterpriseViewSet(EnterprisePermissionRequiredMixin, viewsets.ViewSet):
+class EnterpriseViewSet(PermissionRequiredMixin, viewsets.ViewSet):
     """
     Base class for all Enterprise view sets.
     """
     authentication_classes = (JwtAuthentication,)
     pagination_class = DefaultPagination
-    permission_classes = (HasDataAPIDjangoGroupAccess,)
     permission_required = 'can_access_enterprise'
 
     def ensure_data_exists(self, request, data, error_message=None):

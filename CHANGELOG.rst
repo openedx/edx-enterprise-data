@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =======
+[1.2.6] - 2019-05-13
+--------------------
+* Clean up rbac authorization related waffle switche OFF logic.
+
 [1.2.5] - 2019-05-06
 --------------------
 * Version upgrade for edx-rbac.

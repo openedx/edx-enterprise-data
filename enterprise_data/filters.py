@@ -3,13 +3,11 @@ Filters for enterprise data views.
 """
 from __future__ import absolute_import, unicode_literals
 
-import waffle
 from rest_framework import filters
 
 from django.db.models import Q
 
 from enterprise_data.clients import EnterpriseApiClient
-from enterprise_data_roles.constants import ROLE_BASED_ACCESS_CONTROL_SWITCH
 
 # Admittedly this is sort of hacky because the use of "|" with 2 Q objects
 # forces the ORM to use a LEFT OUTER JOIN, which is needed to return a user
@@ -17,7 +15,20 @@ from enterprise_data_roles.constants import ROLE_BASED_ACCESS_CONTROL_SWITCH
 CONSENT_TRUE_OR_NOENROLL_Q = Q(enrollments__consent_granted=True) | Q(enrollments__isnull=True)
 
 
-class ConsentGrantedFilterBackend(filters.BaseFilterBackend):
+class FiltersMixin(object):
+    """
+    Util mixin for enterprise_data filters.
+    """
+
+    def update_session_with_enterprise_data(self, request):
+        """
+        Make cached call to lms to get an enterprise data and update request session.
+        """
+        enterprise_client = EnterpriseApiClient(request.auth)
+        __ = enterprise_client.get_enterprise_and_update_session(request)
+
+
+class ConsentGrantedFilterBackend(filters.BaseFilterBackend, FiltersMixin):
     """
     Filter backend for any view that needs to filter results where consent has not been granted.
 
@@ -34,11 +45,7 @@ class ConsentGrantedFilterBackend(filters.BaseFilterBackend):
         """
         current_enterprise = view.kwargs.get('enterprise_id', None)
 
-        if waffle.switch_is_active(ROLE_BASED_ACCESS_CONTROL_SWITCH):
-            # Make cached call to lms about enterprise and add returned info into request session
-            # If the waffle switch is off, then the session data would be added in has_permission
-            enterprise_client = EnterpriseApiClient(request.auth)
-            __ = enterprise_client.get_enterprise_and_update_session(request)
+        self.update_session_with_enterprise_data(request)
 
         data_sharing_enforce = request.session.get('enforce_data_sharing_consent', {})
         # if the enterprise is configured for "externally managed" data sharing consent,
@@ -49,7 +56,7 @@ class ConsentGrantedFilterBackend(filters.BaseFilterBackend):
         return queryset
 
 
-class AuditEnrollmentsFilterBackend(filters.BaseFilterBackend):
+class AuditEnrollmentsFilterBackend(filters.BaseFilterBackend, FiltersMixin):
     """
     Filter backend to exclude enrollments where enrollment mode is `audit`.
 
@@ -64,11 +71,7 @@ class AuditEnrollmentsFilterBackend(filters.BaseFilterBackend):
         """
         enterprise_id = view.kwargs['enterprise_id']
 
-        if waffle.switch_is_active(ROLE_BASED_ACCESS_CONTROL_SWITCH):
-            # Make cached call to lms about enterprise and add returned info into request session
-            # If the waffle switch is off, then the session data would be added in has_permission
-            enterprise_client = EnterpriseApiClient(request.auth)
-            __ = enterprise_client.get_enterprise_and_update_session(request)
+        self.update_session_with_enterprise_data(request)
 
         enable_audit_enrollment = request.session['enable_audit_enrollment'].get(enterprise_id, False)
 

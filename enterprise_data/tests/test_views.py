@@ -16,7 +16,6 @@ from rest_framework.test import APITransactionTestCase
 from django.utils import timezone
 
 from enterprise_data.api.v0.views import subtract_one_month
-from enterprise_data.tests import toggle_switch
 from enterprise_data.tests.mixins import JWTTestMixin
 from enterprise_data.tests.test_utils import (
     EnterpriseEnrollmentFactory,
@@ -27,7 +26,6 @@ from enterprise_data.tests.test_utils import (
 from enterprise_data_roles.constants import (
     ALL_ACCESS_CONTEXT,
     ENTERPRISE_DATA_ADMIN_ROLE,
-    ROLE_BASED_ACCESS_CONTROL_SWITCH,
     SYSTEM_ENTERPRISE_ADMIN_ROLE,
     SYSTEM_ENTERPRISE_OPERATOR_ROLE,
 )
@@ -51,23 +49,20 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
             user=self.user
         )
         self.client.force_authenticate(user=self.user)  # pylint: disable=no-member
-        enterprise_api_client = mock.patch(
-            'enterprise_data.permissions.EnterpriseApiClient',
-            mock.Mock(
-                return_value=mock.Mock(
-                    get_enterprise_customer=mock.Mock(return_value=get_dummy_enterprise_api_data())
-                )
-            )
+
+        mocked_get_enterprise_customer = mock.patch(
+            'enterprise_data.filters.EnterpriseApiClient.get_enterprise_customer',
+            return_value=get_dummy_enterprise_api_data()
         )
-        self.enterprise_api_client = enterprise_api_client.start()
-        self.addCleanup(enterprise_api_client.stop)
+
+        self.mocked_get_enterprise_customer = mocked_get_enterprise_customer.start()
+        self.addCleanup(mocked_get_enterprise_customer.stop)
         self.enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
         self.set_jwt_cookie()
-        toggle_switch(ROLE_BASED_ACCESS_CONTROL_SWITCH, False)
 
     def test_get_queryset_returns_enrollments(self):
         enterprise_id = self.enterprise_id
-        self.enterprise_api_client.return_value.get_enterprise_customer.return_value = {
+        self.mocked_get_enterprise_customer.return_value = {
             'uuid': enterprise_id
         }
         url = reverse('v0:enterprise-enrollments-list',
@@ -273,19 +268,11 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         enterprise_id = enterprise_user.enterprise_id
         url = reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': enterprise_id})
 
-        dummy_enterprise_api_data = get_dummy_enterprise_api_data(
+        self.mocked_get_enterprise_customer.return_value = get_dummy_enterprise_api_data(
             enterprise_id=enterprise_id,
             enable_audit_enrollment=enable_audit_enrollment,
         )
-        enterprise_api_client = mock.patch(
-            'enterprise_data.permissions.EnterpriseApiClient',
-            mock.Mock(
-                return_value=mock.Mock(
-                    get_enterprise_customer=mock.Mock(return_value=dummy_enterprise_api_data)
-                )
-            )
-        )
-        self.enterprise_api_client = enterprise_api_client.start()
+
         for index in range(total_enrollments):
             EnterpriseEnrollmentFactory(
                 enterprise_user=enterprise_user,
@@ -485,7 +472,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
 
     def test_get_queryset_throws_error(self):
         enterprise_id = '0395b02f-6b29-42ed-9a41-45f3dff8349c'
-        self.enterprise_api_client.return_value.get_enterprise_customer.return_value = {
+        self.mocked_get_enterprise_customer.return_value = {
             'uuid': enterprise_id
         }
         url = reverse('v0:enterprise-enrollments-list',
@@ -495,7 +482,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
 
     def test_get_overview_returns_overview(self):
         enterprise_id = self.enterprise_id
-        self.enterprise_api_client.return_value.get_enterprise_customer.return_value = {
+        self.mocked_get_enterprise_customer.return_value = {
             'uuid': enterprise_id
         }
         url = reverse('v0:enterprise-enrollments-overview',
@@ -517,12 +504,13 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         assert result == expected_result
 
     def test_no_page_querystring_skips_pagination(self):
-        enterprise_id = self.enterprise_id
-        self.enterprise_api_client.return_value.get_enterprise_customer.return_value = {
-            'uuid': enterprise_id
+        self.mocked_get_enterprise_customer.return_value = {
+            'uuid': self.enterprise_id,
+            'enable_audit_enrollment': True,
+            'enforce_data_sharing_consent': True,
         }
         url = reverse('v0:enterprise-enrollments-list',
-                      kwargs={'enterprise_id': enterprise_id})
+                      kwargs={'enterprise_id': self.enterprise_id})
         url += '?no_page=true'
         response = self.client.get(url)
         assert response.status_code == status.HTTP_200_OK
@@ -595,7 +583,11 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         """
         Test that role base permissions works as expected.
         """
-        toggle_switch(ROLE_BASED_ACCESS_CONTROL_SWITCH, True)
+        self.mocked_get_enterprise_customer.return_value = {
+            'uuid': self.enterprise_id,
+            'enable_audit_enrollment': True,
+            'enforce_data_sharing_consent': True,
+        }
 
         if context_enterprise_id:
             self.role_assignment.enterprise_id = self.enterprise_id
@@ -615,15 +607,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
             EnterpriseDataRoleAssignment.objects.all().delete()
 
         url = reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': self.enterprise_id})
-
-        path = 'enterprise_data.filters.EnterpriseApiClient.get_enterprise_customer'
-        with mock.patch(path) as mock_enterprise_api_client:
-            mock_enterprise_api_client.return_value = {
-                'uuid': self.enterprise_id,
-                'enable_audit_enrollment': True,
-                'enforce_data_sharing_consent': True,
-            }
-            response = self.client.get(url)
+        response = self.client.get(url)
 
         assert response.status_code == status
 
@@ -631,19 +615,16 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         """
         Test that role base permissions works as expected with `enterprise_openedx_operator` role.
         """
-        toggle_switch(ROLE_BASED_ACCESS_CONTROL_SWITCH, True)
+        self.mocked_get_enterprise_customer.return_value = {
+            'uuid': self.enterprise_id,
+            'enable_audit_enrollment': True,
+            'enforce_data_sharing_consent': True,
+        }
 
         self.set_jwt_cookie(system_wide_role=SYSTEM_ENTERPRISE_OPERATOR_ROLE, context=ALL_ACCESS_CONTEXT)
 
         url = reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': self.enterprise_id})
-        path = 'enterprise_data.filters.EnterpriseApiClient.get_enterprise_customer'
-        with mock.patch(path) as mock_enterprise_api_client:
-            mock_enterprise_api_client.return_value = {
-                'uuid': self.enterprise_id,
-                'enable_audit_enrollment': True,
-                'enforce_data_sharing_consent': True,
-            }
-            response = self.client.get(url)
+        response = self.client.get(url)
 
         assert response.status_code == status.HTTP_200_OK
 
@@ -665,7 +646,7 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
         )
         self.client.force_authenticate(user=self.user)  # pylint: disable=no-member
         enterprise_api_client = mock.patch(
-            'enterprise_data.permissions.EnterpriseApiClient',
+            'enterprise_data.filters.EnterpriseApiClient',
             mock.Mock(
                 return_value=mock.Mock(
                     get_enterprise_customer=mock.Mock(return_value=get_dummy_enterprise_api_data())
@@ -827,7 +808,6 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
         )
 
         self.set_jwt_cookie()
-        toggle_switch(ROLE_BASED_ACCESS_CONTROL_SWITCH, False)
 
     def test_viewset_no_query_params(self):
         """
@@ -1271,8 +1251,6 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
         """
         Test that role base permissions works as expected.
         """
-        toggle_switch(ROLE_BASED_ACCESS_CONTROL_SWITCH, True)
-
         if context_enterprise_id:
             self.role_assignment.enterprise_id = self.enterprise_id
             self.role_assignment.save()
@@ -1299,8 +1277,6 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
         """
         Test that role base permissions works as expected with `enterprise_openedx_operator` role.
         """
-        toggle_switch(ROLE_BASED_ACCESS_CONTROL_SWITCH, True)
-
         self.set_jwt_cookie(system_wide_role=SYSTEM_ENTERPRISE_OPERATOR_ROLE, context=ALL_ACCESS_CONTEXT)
 
         url = reverse('v0:enterprise-users-list', kwargs={'enterprise_id': self.enterprise_id})
@@ -1326,7 +1302,7 @@ class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, APITransactionTestCase
         )
         self.client.force_authenticate(user=self.user)  # pylint: disable=no-member
         enterprise_api_client = mock.patch(
-            'enterprise_data.permissions.EnterpriseApiClient',
+            'enterprise_data.filters.EnterpriseApiClient',
             mock.Mock(
                 return_value=mock.Mock(
                     get_enterprise_customer=mock.Mock(return_value=get_dummy_enterprise_api_data())
@@ -1342,7 +1318,6 @@ class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, APITransactionTestCase
         }
 
         self.set_jwt_cookie()
-        toggle_switch(ROLE_BASED_ACCESS_CONTROL_SWITCH, False)
 
     def test_get_learner_completed_courses(self):
         """
@@ -1553,8 +1528,6 @@ class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, APITransactionTestCase
         """
         Test that role base permissions works as expected.
         """
-        toggle_switch(ROLE_BASED_ACCESS_CONTROL_SWITCH, True)
-
         if context_enterprise_id:
             self.role_assignment.enterprise_id = self.enterprise_id
             self.role_assignment.save()
@@ -1581,8 +1554,6 @@ class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, APITransactionTestCase
         """
         Test that role base permissions works as expected with `enterprise_openedx_operator` role.
         """
-        toggle_switch(ROLE_BASED_ACCESS_CONTROL_SWITCH, True)
-
         self.set_jwt_cookie(system_wide_role=SYSTEM_ENTERPRISE_OPERATOR_ROLE, context=ALL_ACCESS_CONTEXT)
 
         url = reverse('v0:enterprise-learner-completed-courses-list', kwargs={'enterprise_id': self.enterprise_id})
