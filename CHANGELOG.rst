@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =======
+[1.2.8] - 2019-05-17
+--------------------
+* Remove RBAC switch from DB.
+
 [1.2.7] - 2019-05-13
 --------------------
 * Replace edx_rbac.utils.get_decoded_jwt_from_request with edx_rest_framework_extensions.auth.jwt.cookies.get_decoded_jwt.
