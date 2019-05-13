@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =======
+[1.2.7] - 2019-05-13
+--------------------
+* Replace edx_rbac.utils.get_decoded_jwt_from_request with edx_rest_framework_extensions.auth.jwt.cookies.get_decoded_jwt.
+
 [1.2.6] - 2019-05-13
 --------------------
 * Clean up rbac authorization related waffle switche OFF logic.
