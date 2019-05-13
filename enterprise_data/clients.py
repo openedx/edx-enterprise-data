@@ -27,7 +27,6 @@ class EnterpriseApiClient(EdxRestApiClient):
     """
 
     API_BASE_URL = settings.LMS_BASE_URL + 'enterprise/api/v1/'
-    ENTERPRISE_DATA_API_GROUP = 'enterprise_data_api_access'
 
     def __init__(self, jwt):
         """
@@ -62,21 +61,14 @@ class EnterpriseApiClient(EdxRestApiClient):
 
         return response['results'][0]
 
-    def get_enterprise_customer(self, user, enterprise_id, with_access_to=True):
+    def get_enterprise_customer(self, user, enterprise_id):
         """
         Get the enterprises that this user has access to.
-
-        with_access_to is True by default, which requires the data api permission django
-        group access.
-
-        If with_access_to is set to False, do not add the with_access_to check. The use
-        case of this would be if access to enterprise data was being controlled in the jwt.
         """
         cache_key = get_cache_key(
             resource='enterprise-customer',
             user=user.username,
             enterprise_customer=enterprise_id,
-            with_access_to=with_access_to,
         )
         cached_response = TieredCache.get_cached_response(cache_key)
         if cached_response.is_found:
@@ -84,41 +76,12 @@ class EnterpriseApiClient(EdxRestApiClient):
 
         try:
             endpoint = getattr(self, 'enterprise-customer')  # pylint: disable=literal-used-as-attribute
-            if with_access_to is True:
-                querystring = {
-                    'enterprise_id': enterprise_id,
-                    'permissions': [self.ENTERPRISE_DATA_API_GROUP]
-                }
-                endpoint = endpoint.with_access_to
-                response = endpoint.get(**querystring)
-            else:
-                endpoint = endpoint(enterprise_id)
-                response = endpoint.get()
+            endpoint = endpoint(enterprise_id)
+            response = endpoint.get()
         except (HttpClientError, HttpServerError) as exc:
             LOGGER.warning("Unable to retrieve Enterprise Customer details for user {}: {}"
                            .format(user.username, exc))
             raise exc
-
-        # response returned by lms will be different when we hit the endpoint with ant without the `with_access_to`
-        if with_access_to is True:
-            if response.get('results', None) is None:
-                raise NotFound(
-                    'Unable to process Enterprise Customer details for user {}, enterprise {}:'
-                    ' No Results Found'.format(user.username, enterprise_id)
-                )
-
-            if response['count'] > 1:
-                raise ParseError(
-                    'Multiple Enterprise Customers found for user {}, enterprise id {}'.format(
-                        user.username,
-                        enterprise_id
-                    )
-                )
-
-            if response['count'] == 0:
-                return None
-
-            response = response['results'][0]
 
         TieredCache.set_all_tiers(cache_key, response, DEFAULT_REPORTING_CACHE_TIMEOUT)
 
@@ -139,7 +102,7 @@ class EnterpriseApiClient(EdxRestApiClient):
         data_sharing_consent_check = enterprise_id not in session.get('enforce_data_sharing_consent', {})
 
         if audit_enrollment_check or data_sharing_consent_check:
-            enterprise_data = self.get_enterprise_customer(request.user, enterprise_id, with_access_to=False)
+            enterprise_data = self.get_enterprise_customer(request.user, enterprise_id)
             enable_audit_enrollment = False
             enforce_data_sharing_consent = False
 

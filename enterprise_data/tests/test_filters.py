@@ -5,7 +5,6 @@ Tests for filters in enterprise_data.
 from __future__ import absolute_import, unicode_literals
 
 import mock
-import waffle
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -13,7 +12,6 @@ from rest_framework.test import APITestCase
 from enterprise_data.models import EnterpriseEnrollment
 from enterprise_data.tests.mixins import JWTTestMixin
 from enterprise_data.tests.test_utils import UserFactory
-from enterprise_data_roles.constants import ROLE_BASED_ACCESS_CONTROL_SWITCH
 
 
 class TestConsentGrantedFilterBackend(JWTTestMixin, APITestCase):
@@ -35,10 +33,7 @@ class TestConsentGrantedFilterBackend(JWTTestMixin, APITestCase):
         """
         Mocks enterprise api client response.
         """
-        mock_path = 'enterprise_data.permissions.EnterpriseApiClient.get_enterprise_customer'
-        if waffle.switch_is_active(ROLE_BASED_ACCESS_CONTROL_SWITCH):
-            mock_path = 'enterprise_data.filters.EnterpriseApiClient.get_enterprise_customer'
-
+        mock_path = 'enterprise_data.filters.EnterpriseApiClient.get_enterprise_customer'
         with mock.patch(mock_path) as mock_enterprise_api_client:
             mock_enterprise_api_client.return_value = {
                 'uuid': self.enterprise_id,
