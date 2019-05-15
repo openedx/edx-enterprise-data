@@ -37,6 +37,12 @@ REQUIREMENTS = open(os.path.join(base_path, 'requirements', 'base.txt')).read().
 setup(
     name="edx-enterprise-data",
     version=VERSION,
+    classifiers=[
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
+    ],
     description="""Enterprise Reporting""",
     author="edX",
     author_email="oscm@edx.org",
