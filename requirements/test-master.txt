@@ -19,6 +19,8 @@ certifi==2019.3.9         # via py2neo
 cffi==1.12.3              # via bcrypt, cryptography, pynacl
 click==7.0                # via pip-tools, py2neo
 colorama==0.3.7           # via awscli, py2neo
+configparser==3.7.4       # via importlib-metadata
+contextlib2==0.5.5        # via importlib-metadata
 cookies==2.2.1            # via responses
 coverage==4.5.3           # via pytest-cov
 cryptography==1.9
@@ -32,33 +34,34 @@ djangorestframework-jwt==1.11.0  # via edx-drf-extensions
 djangorestframework==3.6.3
 docutils==0.14            # via awscli, botocore
 edx-django-utils==1.0.3
-edx-drf-extensions==2.2.1
-edx-opaque-keys==0.4.4    # via edx-drf-extensions
-edx-rbac==0.2.1
+edx-drf-extensions==2.3.0
+edx-opaque-keys==1.0.0    # via edx-drf-extensions
+edx-rbac==1.0.1
 edx-rest-api-client==1.9.2
 enum34==1.1.6             # via cryptography, pgpy
 factory-boy==2.12.0
-faker==1.0.6              # via factory-boy
+faker==1.0.7              # via factory-boy
 flaky==3.5.3
 freezegun==0.3.11
 funcsigs==1.0.2           # via mock, pytest
 future==0.17.1            # via pyjwkest, vertica-python
 futures==3.2.0 ; python_version == "2.7"
 idna==2.8                 # via cryptography
+importlib-metadata==0.15  # via pluggy
 ipaddress==1.0.22         # via cryptography, faker
 jmespath==0.9.4           # via boto3, botocore
 kombu==3.0.37             # via celery
 mock==3.0.5
 more-itertools==5.0.0     # via pytest
-neobolt==1.7.12           # via py2neo
+neobolt==1.7.13           # via py2neo
 neotime==1.7.4            # via py2neo
-newrelic==4.18.0.118      # via edx-django-utils
+newrelic==4.20.0.120      # via edx-django-utils
 paramiko==2.4
-pathlib2==2.3.3           # via pytest, pytest-django
+pathlib2==2.3.3           # via importlib-metadata, pytest, pytest-django
 pbr==5.2.0                # via stevedore
 pgpy==0.4.3
 pip-tools==3.7.0
-pluggy==0.11.0            # via pytest, tox
+pluggy==0.12.0            # via pytest, tox
 prompt-toolkit==2.0.9     # via py2neo
 psutil==1.2.1             # via edx-django-utils, edx-drf-extensions
 py2neo==4.3.0
@@ -98,5 +101,6 @@ tox==3.0.0
 unicodecsv==0.14.1
 urllib3==1.24.3           # via py2neo
 vertica-python==0.7.3
-virtualenv==16.5.0        # via tox
+virtualenv==16.6.0        # via tox
 wcwidth==0.1.7            # via prompt-toolkit, pytest
+zipp==0.5.1               # via importlib-metadata

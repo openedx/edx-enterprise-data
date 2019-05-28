@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =======
+[1.2.9] - 2019-05-28
+--------------------
+* Fallback to request.auth if JWT cookies are not found.
+
 [1.2.8] - 2019-05-17
 --------------------
 * Remove RBAC switch from DB.
