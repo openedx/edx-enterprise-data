@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =======
+[1.2.10] - 2019-06-04
+---------------------
+* Pin edx-opaque-keys to 0.4.4 to avoid dependency conflicts downstream.
+
 [1.2.9] - 2019-05-28
 --------------------
 * Fallback to request.auth if JWT cookies are not found.
