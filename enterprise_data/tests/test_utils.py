@@ -100,7 +100,7 @@ def get_dummy_enterprise_api_data(**kwargs):
         'enforce_data_sharing_consent': kwargs.get('enforce_data_sharing_consent', 'at_enrollment'),
         'branding_configuration': {},
         'identity_provider': 'saml-ubc',
-        'enable_audit_enrollment': kwargs.get('enable_audit_enrollment', False),
+        'enable_audit_data_reporting': kwargs.get('enable_audit_data_reporting', False),
         'replace_sensitive_sso_username': False
     }
     return enterprise_api_dummy_data

@@ -18,7 +18,7 @@ def update_session_with_enterprise_data(request, enterprise_id, **kwargs):
     The values will be set in session in the following format:
     {
         'enterprises_with_access': {'ee5e6b3a-069a-4947-bb8d-d2dbc323396c': True},
-        'enable_audit_enrollment': {'ee5e6b3a-069a-4947-bb8d-d2dbc323396c': False}
+        'enable_audit_data_reporting': {'ee5e6b3a-069a-4947-bb8d-d2dbc323396c': False}
     }
 
     Arguments:

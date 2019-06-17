@@ -37,7 +37,7 @@ class TestConsentGrantedFilterBackend(JWTTestMixin, APITestCase):
         with mock.patch(mock_path) as mock_enterprise_api_client:
             mock_enterprise_api_client.return_value = {
                 'uuid': self.enterprise_id,
-                'enable_audit_enrollment': True,
+                'enable_audit_data_reporting': True,
                 'enforce_data_sharing_consent': enforce_dsc or True,
             }
             return self.client.get(self.url)

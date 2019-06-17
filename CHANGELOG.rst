@@ -14,7 +14,12 @@ Change Log
 Unreleased
 ----------
 
-=======
+=========================
+
+[1.2.11] - 2019-06-17
+---------------------
+* filtering audit enrollment records based on Enterprise customer's enable_audit_data_reporting instead of enable_audit_enrollment
+
 [1.2.10] - 2019-06-04
 ---------------------
 * Pin edx-opaque-keys to 0.4.4 to avoid dependency conflicts downstream.

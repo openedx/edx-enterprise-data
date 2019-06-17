@@ -261,7 +261,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
     )
     @ddt.unpack
     def test_get_queryset_returns_enrollments_with_audit_enrollment_filter(
-            self, enable_audit_enrollment, coupon_code, offer, total_enrollments,
+            self, enable_audit_data_reporting, coupon_code, offer, total_enrollments,
             user_current_enrollment_mode, enrollments_count
     ):
         enterprise_user = EnterpriseUserFactory()
@@ -270,7 +270,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
 
         self.mocked_get_enterprise_customer.return_value = get_dummy_enterprise_api_data(
             enterprise_id=enterprise_id,
-            enable_audit_enrollment=enable_audit_enrollment,
+            enable_audit_data_reporting=enable_audit_data_reporting,
         )
 
         for index in range(total_enrollments):
@@ -506,7 +506,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
     def test_no_page_querystring_skips_pagination(self):
         self.mocked_get_enterprise_customer.return_value = {
             'uuid': self.enterprise_id,
-            'enable_audit_enrollment': True,
+            'enable_audit_data_reporting': True,
             'enforce_data_sharing_consent': True,
         }
         url = reverse('v0:enterprise-enrollments-list',
@@ -585,7 +585,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         """
         self.mocked_get_enterprise_customer.return_value = {
             'uuid': self.enterprise_id,
-            'enable_audit_enrollment': True,
+            'enable_audit_data_reporting': True,
             'enforce_data_sharing_consent': True,
         }
 
@@ -617,7 +617,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         """
         self.mocked_get_enterprise_customer.return_value = {
             'uuid': self.enterprise_id,
-            'enable_audit_enrollment': True,
+            'enable_audit_data_reporting': True,
             'enforce_data_sharing_consent': True,
         }
 

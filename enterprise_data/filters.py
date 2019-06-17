@@ -73,9 +73,9 @@ class AuditEnrollmentsFilterBackend(filters.BaseFilterBackend, FiltersMixin):
 
         self.update_session_with_enterprise_data(request)
 
-        enable_audit_enrollment = request.session['enable_audit_enrollment'].get(enterprise_id, False)
+        enable_audit_data_reporting = request.session['enable_audit_data_reporting'].get(enterprise_id, False)
 
-        if not enable_audit_enrollment:
+        if not enable_audit_data_reporting:
             # Filter out enrollments that have audit mode and do not have a coupon code or an offer.
             filter_query = {
                 view.ENROLLMENT_MODE_FILTER: 'audit',
