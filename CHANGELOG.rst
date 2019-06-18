@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[1.2.12] - 2019-06-18
+---------------------
+* Pin edx-rbac to 0.2.1 and other package upgrades.
+
 [1.2.11] - 2019-06-17
 ---------------------
 * filtering audit enrollment records based on Enterprise customer's enable_audit_data_reporting instead of enable_audit_enrollment
