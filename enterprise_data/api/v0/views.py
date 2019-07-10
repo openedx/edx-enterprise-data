@@ -55,8 +55,9 @@ class EnterpriseViewSet(PermissionRequiredMixin, viewsets.ViewSet):
         Ensure that the API response brings us valid data. If not, raise an error and log it.
         """
         if not data:
-            error_message = (
-                error_message or "Unable to fetch API response from endpoint '{}'.".format(request.get_full_path())
+            error_message = error_message or (
+                "[Data Overview Failure] Unable to fetch API response from endpoint '%s'. User: %s, Enterprise: %s",
+                request.get_full_path(), request.user.username, self.kwargs.get('enterprise_id')
             )
             LOGGER.error(error_message)
             raise NotFound(error_message)
@@ -94,10 +95,8 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
             self.request,
             enterprise,
             error_message=(
-                "No enterprise found with id {enterprise_id} from endpoint '{path}'.".format(
-                    enterprise_id=enterprise_id,
-                    path=self.request.get_full_path()
-                )
+                "[Data Overview Failure] No enterprise found with id %s from endpoint '%s'. User: %s, Enterprise: %s",
+                enterprise_id, self.request.get_full_path(), self.request.user.username, enterprise_id
             )
         )
 
