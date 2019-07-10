@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[1.2.13] - 2019-07-10
+---------------------
+* Add logging to monitor enterprise data api.
+
 [1.2.12] - 2019-06-18
 ---------------------
 * Pin edx-rbac to 0.2.1 and other package upgrades.
