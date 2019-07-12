@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[1.3.0] - 2019-07-15
+---------------------
+* Replce edx-rbac jwt utils with edx-drf-extensions jwt utils
+
 [1.2.13] - 2019-07-10
 ---------------------
 * Add logging to monitor enterprise data api.

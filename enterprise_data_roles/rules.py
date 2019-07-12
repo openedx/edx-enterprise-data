@@ -5,11 +5,9 @@ from __future__ import absolute_import, unicode_literals
 
 import crum
 import rules
-from edx_rbac.utils import (
-    get_decoded_jwt_from_request,
-    request_user_has_implicit_access_via_jwt,
-    user_has_access_via_database,
-)
+from edx_rbac.utils import request_user_has_implicit_access_via_jwt, user_has_access_via_database
+from edx_rest_framework_extensions.auth.jwt.authentication import get_decoded_jwt_from_auth
+from edx_rest_framework_extensions.auth.jwt.cookies import get_decoded_jwt
 
 from django.urls import resolve
 
@@ -29,7 +27,7 @@ def request_user_has_implicit_access(*args, **kwargs):  # pylint: disable=unused
     __, __, request_kwargs = resolve(request.path)
     enterprise_id_in_request = request_kwargs.get('enterprise_id')
 
-    decoded_jwt = get_decoded_jwt_from_request(request)
+    decoded_jwt = get_decoded_jwt(request) or get_decoded_jwt_from_auth(request)
     return request_user_has_implicit_access_via_jwt(
         decoded_jwt,
         ENTERPRISE_DATA_ADMIN_ROLE,
