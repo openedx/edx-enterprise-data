@@ -8,7 +8,7 @@ amqp==1.4.9               # via kombu
 anyjson==0.3.3            # via kombu
 asn1crypto==0.24.0        # via cryptography
 awscli==1.11.178
-bcrypt==3.1.6             # via paramiko
+bcrypt==3.1.7             # via paramiko
 billiard==3.3.0.23        # via celery
 boto3==1.4.7
 botocore==1.7.36          # via awscli, boto3, s3transfer
@@ -22,16 +22,16 @@ contextlib2==0.5.5        # via importlib-metadata
 cryptography==1.9
 django-crum==0.7.3        # via edx-rbac
 django-fernet-fields==0.5
-django-model-utils==3.1.2  # via edx-rbac
-django-waffle==0.16.0     # via edx-django-utils, edx-drf-extensions
+django-model-utils==3.2.0  # via edx-rbac
+django-waffle==0.17.0     # via edx-django-utils, edx-drf-extensions
 django==1.11.15
 djangorestframework-jwt==1.11.0  # via edx-drf-extensions
 djangorestframework==3.9.4  # via edx-drf-extensions, rest-condition
 docutils==0.14            # via awscli, botocore
-edx-django-utils==1.0.5
-edx-drf-extensions==2.3.1
+edx-django-utils==2.0.0
+edx-drf-extensions==2.3.3
 edx-opaque-keys==1.0.1
-edx-rbac==0.2.1
+edx-rbac==1.0.2
 edx-rest-api-client==1.9.2
 enum34==1.1.6             # via cryptography, pgpy
 future==0.17.1            # via pyjwkest, vertica-python
@@ -43,10 +43,10 @@ jmespath==0.9.4           # via boto3, botocore
 kombu==3.0.37             # via celery
 neobolt==1.7.13           # via py2neo
 neotime==1.7.4            # via py2neo
-newrelic==4.20.0.120      # via edx-django-utils
+newrelic==4.20.1.121      # via edx-django-utils
 paramiko==2.4
-pathlib2==2.3.3           # via importlib-metadata
-pbr==5.3.0                # via stevedore
+pathlib2==2.3.4           # via importlib-metadata
+pbr==5.4.0                # via stevedore
 pgpy==0.4.3
 pip-tools==3.8.0
 pluggy==0.12.0            # via tox
@@ -84,4 +84,4 @@ urllib3==1.24.3           # via py2neo
 vertica-python==0.7.3
 virtualenv==16.6.1        # via tox
 wcwidth==0.1.7            # via prompt-toolkit
-zipp==0.5.1               # via importlib-metadata
+zipp==0.5.2               # via importlib-metadata

@@ -20,5 +20,5 @@ six==1.10.0
 PGPy                                    # Required for Enterprise Reporting
 pyOpenSSL==17.4.0 # Any version beyond this requires cryptography 2.X.X
 py2neo
-edx-rbac==0.2.1                         # pinning until ENT-2002 is resolved
+edx-rbac
 rules

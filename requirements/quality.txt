@@ -13,7 +13,7 @@ atomicwrites==1.3.0       # via pytest
 attrs==19.1.0             # via pytest
 awscli==1.11.178
 backports.functools-lru-cache==1.5  # via astroid, caniusepython3, isort, pylint
-bcrypt==3.1.6             # via paramiko
+bcrypt==3.1.7             # via paramiko
 billiard==3.3.0.23        # via celery
 bleach==3.1.0             # via readme-renderer
 boto3==1.4.7
@@ -31,27 +31,27 @@ cookies==2.2.1            # via responses
 coverage==4.5.3           # via pytest-cov
 cryptography==1.9
 ddt==1.2.1
-diff-cover==2.2.0
+diff-cover==2.3.0
 distlib==0.2.9.post0      # via caniusepython3
 django-crum==0.7.3        # via edx-rbac
 django-fernet-fields==0.5
-django-model-utils==3.1.2
-django-waffle==0.16.0     # via edx-django-utils, edx-drf-extensions
+django-model-utils==3.2.0
+django-waffle==0.17.0     # via edx-django-utils, edx-drf-extensions
 django==1.11.15
 djangorestframework-jwt==1.11.0  # via edx-drf-extensions
 djangorestframework==3.9.4  # via edx-drf-extensions, rest-condition
 docutils==0.14            # via awscli, botocore, readme-renderer
-edx-django-utils==1.0.5
-edx-drf-extensions==2.3.1
+edx-django-utils==2.0.0
+edx-drf-extensions==2.3.3
 edx-i18n-tools==0.4.8
 edx-lint==1.3.0
 edx-opaque-keys==1.0.1
-edx-rbac==0.2.1
+edx-rbac==1.0.2
 edx-rest-api-client==1.9.2
 enum34==1.1.6             # via astroid, cryptography, pgpy
 factory-boy==2.12.0
 faker==1.0.7              # via factory-boy
-flaky==3.5.3
+flaky==3.6.0
 freezegun==0.3.12
 funcsigs==1.0.2           # via mock, pytest
 future==0.17.1            # via pyjwkest, vertica-python
@@ -60,7 +60,7 @@ idna==2.8                 # via cryptography
 importlib-metadata==0.18  # via path.py, pluggy, pytest
 inflect==2.1.0            # via jinja2-pluralize
 ipaddress==1.0.22         # via cryptography, faker
-isort==4.3.20
+isort==4.3.21
 jinja2-pluralize==0.3.0   # via diff-cover
 jinja2==2.10.1            # via diff-cover, jinja2-pluralize
 jmespath==0.9.4           # via boto3, botocore
@@ -72,12 +72,12 @@ mock==3.0.5
 more-itertools==5.0.0     # via pytest
 neobolt==1.7.13           # via py2neo
 neotime==1.7.4            # via py2neo
-newrelic==4.20.0.120      # via edx-django-utils
+newrelic==4.20.1.121      # via edx-django-utils
 packaging==19.0           # via caniusepython3, pytest
 paramiko==2.4
 path.py==11.5.2           # via edx-i18n-tools
-pathlib2==2.3.3           # via importlib-metadata, pytest, pytest-django
-pbr==5.3.0                # via stevedore
+pathlib2==2.3.4           # via importlib-metadata, pytest, pytest-django
+pbr==5.4.0                # via stevedore
 pgpy==0.4.3
 pip-tools==3.8.0
 pkginfo==1.5.0.1          # via twine
@@ -106,8 +106,8 @@ pyopenssl==17.4.0
 pyparsing==2.4.0          # via packaging
 pytest-catchlog==1.2.2
 pytest-cov==2.7.1
-pytest-django==3.5.0
-pytest==4.6.3             # via pytest-catchlog, pytest-cov, pytest-django
+pytest-django==3.5.1
+pytest==4.6.4             # via pytest-catchlog, pytest-cov, pytest-django
 python-dateutil==2.8.0    # via botocore, edx-drf-extensions, faker, freezegun, vertica-python
 pytz==2019.1              # via celery, django, neotime, py2neo, vertica-python
 pyyaml==3.12              # via awscli, edx-i18n-tools
@@ -124,13 +124,13 @@ semantic-version==2.6.0   # via edx-drf-extensions
 singledispatch==3.4.0.3   # via astroid, pgpy, pylint
 six==1.10.0
 slumber==0.7.1            # via edx-rest-api-client
-snowballstemmer==1.2.1    # via pydocstyle
+snowballstemmer==1.9.0    # via pydocstyle
 stevedore==1.30.1         # via edx-opaque-keys
-testfixtures==6.9.0
+testfixtures==6.10.0
 text-unidecode==1.2       # via faker
 tox-battery==0.5.1
 tox==3.0.0
-tqdm==4.32.1              # via twine
+tqdm==4.32.2              # via twine
 twine==1.13.0
 unicodecsv==0.14.1
 urllib3==1.24.3           # via py2neo
@@ -140,4 +140,7 @@ wcwidth==0.1.7            # via prompt-toolkit, pytest
 webencodings==0.5.1       # via bleach
 wheel==0.33.4
 wrapt==1.11.2             # via astroid
-zipp==0.5.1               # via importlib-metadata
+zipp==0.5.2               # via importlib-metadata
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools==41.0.1        # via caniusepython3, twine
