@@ -5,8 +5,56 @@ Test delivery methods.
 
 import unittest
 
-from enterprise_reporting import delivery_method
+import ddt
+
+from enterprise_reporting.delivery_method import DeliveryMethod, SFTPDeliveryMethod, SMTPDeliveryMethod
+
+from .utils import create_files, verify_compressed
 
 
+@ddt.ddt
 class TestDeliveryMethod(unittest.TestCase):
-	pass
+    """
+    Tests about delivery methods.
+    """
+    def setUp(self):
+        self.encrypted_password = b'alohomora'
+        self.password = b'magic_is_might'
+        self.reporting_config = {
+            'enterprise_customer': {
+                'uuid': "abc",
+                'name': 'bleh-bleh'
+            },
+            'data_type': 'progress',
+            'report_type': 'csv',
+            'encrypted_password': self.encrypted_password,
+            'email': 'harry@gryffindor.hogwarts',
+            'sftp_hostname': 'hogwarts_express',
+            'sftp_port': 4444,
+            'sftp_username': 'harry_potter',
+            'sftp_file_path': 'platform/3/4'
+        }
+
+    @ddt.data(SMTPDeliveryMethod, SFTPDeliveryMethod)
+    def test_delivery_method_zipfile_password(self, delivery_method_class):
+        """
+        Test that `encrypted_password` is applied to zipfile irrespective of the delivery method.
+        """
+        delivery_method = delivery_method_class(self.reporting_config, self.password)
+        file_data = [
+            {
+                'name': 'A History of Magic.txt',
+                'size': 1000
+            },
+            {
+                'name': 'Quidditch Through the Ages.txt',
+                'size': 500
+            },
+            {
+                'name': 'Quidditch Through the Ages.txt',
+                'size': 500
+            },
+        ]
+        files, total_original_size = create_files(file_data)
+        compressed_file = super(delivery_method_class, delivery_method).send([file['file'] for file in files])
+        verify_compressed(self, compressed_file, files, total_original_size, self.encrypted_password)
