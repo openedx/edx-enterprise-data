@@ -27,12 +27,13 @@ class DeliveryMethod(object):
         self.data_type = reporting_config['data_type']
         self.report_type = reporting_config['report_type']
         self.password = password
+        self.encrypted_password = reporting_config['encrypted_password']
         self.pgp_encryption_key = reporting_config.get('pgp_encryption_key')
 
     def send(self, files):
         """Base method for sending files, to perform common sending logic."""
         LOGGER.info('Encrypting data report for {}'.format(self.enterprise_customer_name))
-        return compress_and_encrypt(files, self.password, self.pgp_encryption_key)
+        return compress_and_encrypt(files, self.encrypted_password, self.pgp_encryption_key)
 
 
 class SMTPDeliveryMethod(DeliveryMethod):
@@ -51,7 +52,7 @@ class SMTPDeliveryMethod(DeliveryMethod):
 
     def __init__(self, reporting_config, password):
         """Initialize the SMTP Delivery Method."""
-        super().__init__(reporting_config, password)
+        super(SMTPDeliveryMethod, self).__init__(reporting_config, password)
         self._email = reporting_config['email']
 
     @property
@@ -94,7 +95,7 @@ class SFTPDeliveryMethod(DeliveryMethod):
 
     def __init__(self, reporting_config, password):
         """Initialize the SFTP Delivery Method."""
-        super().__init__(reporting_config, password)
+        super(SFTPDeliveryMethod, self).__init__(reporting_config, password)
         self.hostname = reporting_config['sftp_hostname']
         self.port = reporting_config['sftp_port']
         self.username = reporting_config['sftp_username']

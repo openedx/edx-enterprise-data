@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[1.3.1] - 2019-08-06
+---------------------
+* Make zipfile password protected with encrypted_password in enterprise reporting.
+
 [1.3.0] - 2019-07-15
 ---------------------
 * Replce edx-rbac jwt utils with edx-drf-extensions jwt utils

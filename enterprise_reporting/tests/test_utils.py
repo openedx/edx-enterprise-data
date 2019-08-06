@@ -4,10 +4,10 @@ Test utilities.
 """
 from __future__ import absolute_import, unicode_literals
 
-from collections import OrderedDict
 import os
 import tempfile
 import unittest
+from collections import OrderedDict
 from zipfile import ZipFile
 
 import ddt
@@ -16,6 +16,8 @@ from pgpy.constants import CompressionAlgorithm, HashAlgorithm, KeyFlags, PubKey
 from pgpy.errors import PGPError
 
 from enterprise_reporting import utils
+
+from .utils import create_files, verify_compressed
 
 
 @ddt.ddt
@@ -162,26 +164,6 @@ class TestCompressEncrypt(unittest.TestCase):
     """
     Tests `compress_and_encrypt` works correctly.
     """
-    def create_files(self, files_data):
-        """
-        Creates files based on provided file data.
-        """
-        files = []
-        total_size = 0
-        for file_data in files_data:
-            tf = tempfile.NamedTemporaryFile(suffix='.txt')
-            tf.write(file_data['size'] * b'i')
-            tf.flush()
-            tf.seek(0)
-
-            files.append({
-                'file': tf,
-                'size': file_data['size'],
-            })
-            total_size += file_data['size']
-
-        return files, total_size
-
     def pgpy_create_key(self, username):
         key = pgpy.PGPKey.new(PubKeyAlgorithm.RSAEncryptOrSign, 4096)
         uid = pgpy.PGPUID.new(username, comment='Unknown Person', email=username+'@unknown.com')
@@ -205,7 +187,7 @@ class TestCompressEncrypt(unittest.TestCase):
                 'size': 1000
             },
             {
-                'name': 'harry-potter-and-deathly-hollowsc.txt',
+                'name': 'harry-potter-and-deathly-hollows.txt',
                 'size': 500
             },
         ],
@@ -214,7 +196,7 @@ class TestCompressEncrypt(unittest.TestCase):
         """
         Test that files are correctly compressed.
         """
-        files, total_original_size = self.create_files(files_data)
+        files, total_original_size = create_files(files_data)
 
         password = b'frodo-baggins'
         compressed_file = utils.compress_and_encrypt(
@@ -222,23 +204,7 @@ class TestCompressEncrypt(unittest.TestCase):
             password
         )
 
-        # Verify file is compressed.
-        compressed_file_size = os.path.getsize(compressed_file)
-        self.assertTrue(compressed_file_size < total_original_size)
-
-        zipfile = ZipFile(compressed_file, 'r')
-
-        for file in files:
-            # Verify text file is present in zip file.
-            self.assertIn(file['file'].name.split('/')[-1], zipfile.namelist())
-
-            # Verify file content is readable is correct password.
-            content = zipfile.read(file['file'].name.split('/')[-1], password)
-            self.assertEqual(len(content), file['size'])
-
-            # Also verify file is only accessible with correct password.
-            with self.assertRaises(RuntimeError):
-                zipfile.read(file['file'].name.split('/')[-1], b'gollum')
+        verify_compressed(self, compressed_file, files, total_original_size, password)
 
     @ddt.data(
         [
@@ -263,7 +229,7 @@ class TestCompressEncrypt(unittest.TestCase):
         Test the successful decryption with a valid key
         and an unsuccessful decryption when an incorrect key.
         """
-        files, size = self.create_files(files_data)
+        files, size = create_files(files_data)
         password = 'low-complexity'
         correct_key = self.pgpy_create_key('JohnDoe')
         wrong_key = self.pgpy_create_key('JohnDoe2')
