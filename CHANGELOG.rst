@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[1.3.2] - 2019-08-09
+---------------------
+* Do not apply encrypted version of password on zipfile in enterprise reporting.
+
 [1.3.1] - 2019-08-06
 ---------------------
 * Make zipfile password protected with encrypted_password in enterprise reporting.

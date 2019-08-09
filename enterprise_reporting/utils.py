@@ -174,6 +174,17 @@ def is_current_time_in_schedule(frequency, hour_of_day, day_of_month=None, day_o
 
     return False
 
+def encrypt_string(string):
+    """
+    Encrypts a string using Fernet symmetric encryption.
+    """
+    fernet = Fernet(
+        derive_fernet_key(
+            os.environ.get('LMS_FERNET_KEY')
+        )
+    )
+
+    return force_text(fernet.encrypt(bytes(string, 'utf-8')))
 
 def decrypt_string(string):
     """

@@ -11,7 +11,7 @@ from smtplib import SMTPException
 
 import paramiko
 
-from enterprise_reporting.utils import compress_and_encrypt, send_email_with_attachment
+from enterprise_reporting.utils import compress_and_encrypt, decrypt_string, send_email_with_attachment
 
 LOGGER = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ class DeliveryMethod(object):
     def send(self, files):
         """Base method for sending files, to perform common sending logic."""
         LOGGER.info('Encrypting data report for {}'.format(self.enterprise_customer_name))
-        return compress_and_encrypt(files, self.encrypted_password, self.pgp_encryption_key)
+        return compress_and_encrypt(files, decrypt_string(self.encrypted_password), self.pgp_encryption_key)
 
 
 class SMTPDeliveryMethod(DeliveryMethod):
