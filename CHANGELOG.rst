@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[1.3.3] - 2019-08-22
+---------------------
+* Fixed issue where same day un-enrollment is shown as `FALSE` in `unenrollment_end_within_date` column of learner report.
+
 [1.3.2] - 2019-08-09
 ---------------------
 * Do not apply encrypted version of password on zipfile in enterprise reporting.

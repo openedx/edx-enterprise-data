@@ -31,8 +31,8 @@ class EnterpriseEnrollmentSerializer(serializers.ModelSerializer):
         if obj.unenrollment_timestamp:
             unenrollment_within_date = (
                 not obj.course_start or
-                0 < (obj.unenrollment_timestamp - obj.course_start).days <= 14 or
-                0 < (obj.unenrollment_timestamp - obj.enrollment_created_timestamp).days <= 14
+                (obj.unenrollment_timestamp - obj.course_start).days <= 14 or
+                (obj.unenrollment_timestamp - obj.enrollment_created_timestamp).days <= 14
             )
 
         return unenrollment_within_date
