@@ -5,6 +5,7 @@ Tests for the `edx-enterprise` serializer module.
 
 from __future__ import absolute_import, unicode_literals
 
+import ddt
 from pytest import mark, raises
 from rest_framework.test import APITransactionTestCase
 
@@ -13,6 +14,7 @@ from enterprise_data.tests.test_utils import EnterpriseUserFactory
 
 
 @mark.django_db
+@ddt.ddt
 class TestEnterpriseEnrollmentSerializer(APITransactionTestCase):
     """
     Tests for `enterprise_enrollment` API serializer.
@@ -75,11 +77,38 @@ class TestEnterpriseEnrollmentSerializer(APITransactionTestCase):
         expected_serialized_data['id'] = enterprise_enrollment_id
         assert serializer.data == expected_serialized_data
 
-    def test_enrollment_unenroll_with_no_start_date(self):
-        self.enrollment_data['course_start'] = None
-        self.enrollment_data['unenrollment_timestamp'] = '2016-12-01T00:00:00Z'
+    @ddt.data(
+        # No course start date
+        (None, '2016-12-01T00:00:00Z', '2016-12-01T00:00:00Z', True),
+        # Same day enroll/un-enroll
+        ('2016-12-14T00:00:00Z', '2016-12-01T00:00:00Z', '2016-12-01T01:00:00Z', True),
+        # Un-enroll on next day of enrollment
+        ('2016-12-14T00:00:00Z', '2016-12-01T00:00:00Z', '2016-12-02T01:00:00Z', True),
+        # Un-enroll on same day as course start
+        ('2016-12-14T00:00:00Z', '2016-12-01T00:00:00Z', '2016-12-14T01:00:00Z', True),
+        # Un-enroll on same day as course start and enrollment
+        ('2016-12-14T00:00:00Z', '2016-12-14T00:00:00Z', '2016-12-14T01:00:00Z', True),
+        # Un-enroll on 14th day of course start
+        ('2016-12-14T00:00:00Z', '2016-12-01T00:00:00Z', '2016-12-28T01:00:00Z', True),
+        # Un-enroll on 15th day of course start
+        ('2016-12-14T00:00:00Z', '2016-12-01T00:00:00Z', '2016-12-29T00:00:00Z', False),
+        # Un-enroll on 14th day of enrollment
+        ('2016-12-14T00:00:00Z', '2016-12-15T00:00:00Z', '2016-12-29T00:00:00Z', True),
+        # Un-enroll on 15th day of enrollment
+        ('2016-12-14T00:00:00Z', '2016-12-15T00:00:00Z', '2016-12-30T00:00:00Z', False),
+        # Un-enroll earlier than enrollment
+        ('2016-12-14T00:00:00Z', '2016-12-15T00:00:00Z', '2016-12-14T00:00:00Z', True),
+    )
+    @ddt.unpack
+    def test_unenrollment_end_within_date(
+            self, course_start, enrollment_created_timestamp, unenrollment_timestamp,
+            expected_unenrollment_end_within_date
+    ):
+        self.enrollment_data['course_start'] = course_start
+        self.enrollment_data['unenrollment_timestamp'] = unenrollment_timestamp
+        self.enrollment_data['enrollment_created_timestamp'] = enrollment_created_timestamp
 
         serializer = EnterpriseEnrollmentSerializer(data=self.enrollment_data)
         serializer.is_valid()
         serializer.save()
-        self.assertTrue(serializer.data['unenrollment_end_within_date'])
+        self.assertEqual(expected_unenrollment_end_within_date, serializer.data['unenrollment_end_within_date'])
