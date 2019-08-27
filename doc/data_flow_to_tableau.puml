@@ -1,0 +1,17 @@
+@startuml
+skinparam BoxPadding 10
+
+title Enterprise data flow from the analytics pipeline to tableau
+
+box "edx-analytics-pipeline"
+    database "Vertica\nData Warehouse" as vertica
+end box
+
+participant Salesforce
+participant Tableau
+
+note over Tableau: Tableau pulls data from\nVertica and Salesforce
+vertica -> Tableau
+Salesforce -> Tableau
+
+@enduml

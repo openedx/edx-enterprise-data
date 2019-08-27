@@ -1,0 +1,37 @@
+@startuml
+skinparam BoxPadding 10
+
+title Enterprise data flow to the analytics pipeline
+
+box "ecommerce"
+    database "E-commerce DB" as ecomm_db
+end box
+box "edx-platform"
+    database "LMS DB" as lms_db
+    participant "LMS event\ntracking logs\nand APIs" as lms_event
+end box
+
+box "edx-analytics-pipeline"
+    participant "edX Analytics Pipeline" as pipeline
+    database "MySQL\nResult Store" as mysql
+    database "Vertica\nData Warehouse" as vertica
+end box
+
+box "edx-analytics-pipeline-scripts"
+    participant "Vertica Scripts" as scripts
+end box
+
+note over pipeline: A daily scheduler invokes\nthe analytics pipeline
+ecomm_db -> pipeline
+lms_db -> pipeline
+lms_event -> pipeline
+
+note over pipeline: The pipeline massages the\ndata it receives and stores it\nin the dbs
+pipeline -> mysql
+pipeline -> vertica
+note over pipeline: The pipeline also sends data\nto elasticsearch and S3
+
+note over scripts: After the pipeline has run, extra\nscripts massage the data in vertica
+scripts -> vertica
+
+@enduml

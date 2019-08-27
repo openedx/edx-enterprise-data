@@ -2,7 +2,7 @@ Change Log
 ==========
 
 ..
-   All enhancements and patches to edx-enteprise-data will be documented
+   All enhancements and patches to edx-enterprise-data will be documented
    in this file.  It adheres to the structure of http://keepachangelog.com/ ,
    but in reStructuredText instead of Markdown (for ease of incorporation into
    Sphinx documentation and the PyPI description).
@@ -13,6 +13,7 @@ Change Log
 
 Unreleased
 ----------
+* Add documentation diagram
 * Remove AUTHORS file
 
 =========================
@@ -31,7 +32,7 @@ Unreleased
 
 [1.3.0] - 2019-07-15
 ---------------------
-* Replce edx-rbac jwt utils with edx-drf-extensions jwt utils
+* Replace edx-rbac jwt utils with edx-drf-extensions jwt utils
 
 [1.2.13] - 2019-07-10
 ---------------------
@@ -63,7 +64,7 @@ Unreleased
 
 [1.2.6] - 2019-05-13
 --------------------
-* Clean up rbac authorization related waffle switche OFF logic.
+* Clean up rbac authorization related waffle switch OFF logic.
 
 [1.2.5] - 2019-05-06
 --------------------
@@ -116,7 +117,7 @@ Unreleased
 
 [1.0.11] - 2018-11-02
 --------------------
-Revert 1.0.9 changes - enrollment_created_date as this value is redundent with the enrollment_created_timestamp
+Revert 1.0.9 changes - enrollment_created_date as this value is redundant with the enrollment_created_timestamp
 
 [1.0.10] - 2018-11-02
 --------------------
@@ -198,7 +199,7 @@ Upgrade dependencies
 
 [0.2.8] - 2018-09-12
 --------------------
-* Adding query params on /users/ enpoint for active_courses and enrollment_count
+* Adding query params on /users/ endpoint for active_courses and enrollment_count
 
 [0.2.7] - 2018-09-12
 --------------------

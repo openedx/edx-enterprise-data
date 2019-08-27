@@ -1,0 +1,35 @@
+@startuml
+skinparam BoxPadding 10
+
+title Enterprise data flow from the analytics pipeline to the Enterprise admin page
+
+box "edx-analytics-pipeline"
+    database "MySQL\nResult Store" as mysql
+end box
+
+box "edx-enterprise-data"
+    participant "Enterprise data app" as ent
+end box
+
+box "edx-analytics-data-api"
+    participant "Analytics API" as api
+end box
+
+box "edx-portal"
+    participant "Admin page UI" as admin
+end box
+
+actor "Admin page user" as user
+
+user -> admin
+note over admin: The admin page calls the\nanalytics API to retrieve data
+admin -> api
+note over ent: The enterprise data app is published\nto PyPI as a library and is installed into\nedx-analytics-data-api
+api -> ent
+ent -> mysql
+mysql -> ent
+ent -> api
+api -> admin
+admin->user
+
+@enduml
