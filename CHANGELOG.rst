@@ -13,6 +13,7 @@ Change Log
 
 Unreleased
 ----------
+* Remove AUTHORS file
 
 =========================
 
