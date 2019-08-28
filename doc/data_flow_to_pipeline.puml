@@ -26,12 +26,13 @@ ecomm_db -> pipeline
 lms_db -> pipeline
 lms_event -> pipeline
 
-note over pipeline: The pipeline massages the\ndata it receives and stores it\nin the dbs
+note over pipeline: The pipeline transforms the\ndata it receives and stores it\nin the dbs
 pipeline -> mysql
 pipeline -> vertica
 note over pipeline: The pipeline also sends data\nto elasticsearch and S3
+note over vertica: Work is currently underway\nto set up Snowflake as a new\ndata warehouse
 
-note over scripts: After the pipeline has run, extra\nscripts massage the data in vertica
+note over scripts: After the pipeline has run, extra\nscripts transform the data in vertica
 scripts -> vertica
 
 @enduml
