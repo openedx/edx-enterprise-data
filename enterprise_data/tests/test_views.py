@@ -76,7 +76,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
                 'unenrollment_timestamp': '2014-06-29T16:02:38Z',
                 'user_current_enrollment_mode': 'verified',
                 'last_activity_date': '2017-06-23',
-                'has_passed': True,
+                'progress_status': 'Passed',
                 'course_id': 'edX/Open_DemoX/edx_demo_course',
                 'id': 2,
                 'course_min_effort': 2,
@@ -114,7 +114,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
                 'unenrollment_timestamp': '2016-09-05T16:02:38Z',
                 'user_current_enrollment_mode': 'verified',
                 'last_activity_date': '2017-06-23',
-                'has_passed': False,
+                'progress_status': 'Failed',
                 'course_id': 'edX/Open_DemoX/edx_demo_course',
                 'id': 4,
                 'course_min_effort': 2,
@@ -206,7 +206,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         result = response.json()
         assert result['count'] == len(in_past_week_passed_dates)
         for enrollment, passed_date in zip(result['results'], in_past_week_passed_dates):
-            assert enrollment['has_passed'] is True
+            assert enrollment['progress_status'] == 'Passed'
             assert datetime.strptime(enrollment['passed_timestamp'], "%Y-%m-%dT%H:%M:%SZ").date() == passed_date
 
     @ddt.data(

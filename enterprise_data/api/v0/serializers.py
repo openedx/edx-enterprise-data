@@ -4,6 +4,8 @@ Serializers for enterprise api version 0 endpoint.
 """
 from __future__ import absolute_import, unicode_literals
 
+from datetime import date
+
 from rest_framework import serializers
 
 from enterprise_data.models import EnterpriseEnrollment, EnterpriseUser
@@ -15,6 +17,8 @@ class EnterpriseEnrollmentSerializer(serializers.ModelSerializer):
     """
     course_api_url = serializers.SerializerMethodField()
     unenrollment_end_within_date = serializers.SerializerMethodField()
+    progress_status = serializers.SerializerMethodField()
+    has_passed = serializers.BooleanField(default=False, write_only=True)
 
     def get_course_api_url(self, obj):
         """Constructs course api url"""
@@ -36,6 +40,19 @@ class EnterpriseEnrollmentSerializer(serializers.ModelSerializer):
             )
 
         return unenrollment_within_date
+
+    def get_progress_status(self, obj):
+        """
+        Return "Passed" if "has_passed" is True.
+        Return "In Progress" if "has_passed" is False and course end date has not passed.
+        Return "Failed" if "has_passed" is False and course end date has already passed.
+        """
+        progress_status = "In Progress"
+        if obj.has_passed:
+            progress_status = "Passed"
+        elif obj.course_end and obj.course_end.date() < date.today():
+            progress_status = "Failed"
+        return progress_status
 
     class Meta:
         model = EnterpriseEnrollment

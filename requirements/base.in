@@ -11,9 +11,9 @@ edx-drf-extensions
 edx-opaque-keys
 awscli==1.11.178                        # for assuming aws roles for sending email via SES
 boto3==1.4.7
-cryptography==1.9
+cryptography
 paramiko==2.4
-Django==1.11.15
+Django<1.12
 django-fernet-fields==0.5
 futures==3.2.0; python_version == "2.7"
 six==1.10.0

@@ -5,9 +5,13 @@ Tests for the `edx-enterprise` serializer module.
 
 from __future__ import absolute_import, unicode_literals
 
+from datetime import timedelta
+
 import ddt
 from pytest import mark, raises
 from rest_framework.test import APITransactionTestCase
+
+from django.utils import timezone
 
 from enterprise_data.api.v0.serializers import EnterpriseEnrollment, EnterpriseEnrollmentSerializer
 from enterprise_data.tests.test_utils import EnterpriseUserFactory
@@ -36,7 +40,7 @@ class TestEnterpriseEnrollmentSerializer(APITransactionTestCase):
             "user_current_enrollment_mode": "verified",
             "consent_granted": 1,
             "letter_grade": "Pass",
-            "has_passed": 1,
+            "progress_status": "Failed",
             "passed_timestamp": "2017-05-09T16:27:34.690065Z",
             "enterprise_sso_uid": "harry",
             "course_title": "All about acceptance testing!",
@@ -112,3 +116,29 @@ class TestEnterpriseEnrollmentSerializer(APITransactionTestCase):
         serializer.is_valid()
         serializer.save()
         self.assertEqual(expected_unenrollment_end_within_date, serializer.data['unenrollment_end_within_date'])
+
+    @ddt.data(
+        # No course end date and has_passed is False
+        (None, False, 'In Progress'),
+        # No course end date and has_passed is True
+        (None, True, 'Passed'),
+        # Course not ended and has_passed is False
+        (timezone.now() + timedelta(days=1), False, 'In Progress'),
+        # Course about to end today and has_passed is False
+        (timezone.now(), False, 'In Progress'),
+        # Course already ended and has_passed is False
+        (timezone.now() + timedelta(days=-1), False, 'Failed'),
+        # Course already ended and has_passed is True
+        (timezone.now() + timedelta(days=-1), True, 'Passed'),
+        # Course not ended and has_passed is True
+        (timezone.now() + timedelta(days=1), True, 'Passed'),
+    )
+    @ddt.unpack
+    def test_progress_status(self, course_end, has_passed, expected_progress_status):
+        self.enrollment_data['course_end'] = course_end
+        self.enrollment_data['has_passed'] = has_passed
+
+        serializer = EnterpriseEnrollmentSerializer(data=self.enrollment_data)
+        serializer.is_valid()
+        serializer.save()
+        self.assertEqual(expected_progress_status, serializer.data['progress_status'])

@@ -17,6 +17,10 @@ Unreleased
 
 =========================
 
+[1.3.4] - 2019-09-06
+---------------------
+* Replaced `has_passed` field in enrollments API with `progress_status`.
+
 [1.3.3] - 2019-08-22
 ---------------------
 * Fixed issue where same day un-enrollment is shown as `FALSE` in `unenrollment_end_within_date` column of learner report.
