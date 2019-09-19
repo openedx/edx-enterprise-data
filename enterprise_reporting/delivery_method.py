@@ -33,7 +33,8 @@ class DeliveryMethod(object):
     def send(self, files):
         """Base method for sending files, to perform common sending logic."""
         LOGGER.info('Encrypting data report for {}'.format(self.enterprise_customer_name))
-        return compress_and_encrypt(files, decrypt_string(self.encrypted_password), self.pgp_encryption_key)
+        zip_password = decrypt_string(self.encrypted_password) if self.encrypted_password else self.encrypted_password
+        return compress_and_encrypt(files, zip_password, self.pgp_encryption_key)
 
 
 class SMTPDeliveryMethod(DeliveryMethod):
