@@ -17,6 +17,14 @@ Unreleased
 
 =========================
 
+[1.3.6] - 2019-09-20
+---------------------
+* Update changelog.
+
+[1.3.5] - 2019-09-19
+---------------------
+* Fix zip password decryption for sftp delivery.
+
 [1.3.4] - 2019-09-06
 ---------------------
 * Replaced `has_passed` field in enrollments API with `progress_status`.
