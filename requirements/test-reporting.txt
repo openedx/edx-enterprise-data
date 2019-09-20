@@ -6,17 +6,17 @@
 #
 atomicwrites==1.3.0       # via pytest
 attrs==19.1.0             # via pytest
-configparser==3.8.1       # via importlib-metadata
+configparser==4.0.2       # via importlib-metadata
 contextlib2==0.5.5        # via importlib-metadata
 coverage==4.5.4           # via pytest-cov
 ddt==1.1.2
 funcsigs==1.0.2           # via mock, pytest
-importlib-metadata==0.20  # via pluggy
+importlib-metadata==0.23  # via pluggy
 mock==2.0.0
 more-itertools==5.0.0     # via pytest, zipp
 pathlib2==2.3.4           # via importlib-metadata, pytest
 pbr==5.4.3                # via mock
-pluggy==0.12.0            # via pytest, tox
+pluggy==0.13.0            # via pytest, tox
 py==1.8.0                 # via pytest, tox
 pytest-cov==2.5.1
 pytest==3.7.1
