@@ -15,6 +15,7 @@ from enterprise_reporting.clients.enterprise import EnterpriseAPIClient
 from enterprise_reporting.reporter import EnterpriseReportSender
 from enterprise_reporting.utils import is_current_time_in_schedule
 
+
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 DATA_TYPES = ['progress', 'progress_v2', 'catalog']
@@ -84,7 +85,8 @@ def process_reports():
                         help="The page size to use to retrieve data that comes in a paginated response.")
     args = parser.parse_args()
 
-    enterprise_api_client = EnterpriseAPIClient()
+    enterprise_api_client = EnterpriseAPIClient(client_id='e0908c8346ff1e479d26', client_secret='7dae6482efff4b9e120559cf785272765baf92df')
+
     if args.enterprise_customer:
         reporting_configs = enterprise_api_client.get_enterprise_reporting_configs(args.enterprise_customer)
     else:

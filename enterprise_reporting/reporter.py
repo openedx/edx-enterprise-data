@@ -96,14 +96,22 @@ class EnterpriseReportSender(object):
     @property
     def data_report_file_name(self):
         """Get the full path to the report file."""
-        return "{dir}/{enterprise_id}_{data}_{ext}_{date}.{ext}".format(
-            dir=self.FILE_WRITE_DIRECTORY,
-            enterprise_id=self.enterprise_customer_uuid,
-            data=self.data_type,
-            date=NOW,
-            ext=self.report_type,
-        )
-
+        import pdb;pdb.set_trace()
+        if self.reporting_config['include_date']:
+            return "{dir}/{enterprise_id}_{data}_{ext}_{date}.{ext}".format(
+                dir=self.FILE_WRITE_DIRECTORY,
+                enterprise_id=self.enterprise_customer_uuid,
+                data=self.data_type,
+                date=NOW,
+                ext=self.report_type,
+                )
+        else:
+            return "{dir}/{enterprise_id}_{data}_{ext}.{ext}".format(
+                dir=self.FILE_WRITE_DIRECTORY,
+                enterprise_id=self.enterprise_customer_uuid,
+                data=self.data_type,
+                ext=self.report_type,
+            )
     @property
     def data_report_file_name_with(self):
         """Get a full path to the report file that can be modified with arbitrary formatting."""
@@ -211,7 +219,7 @@ class EnterpriseReportSender(object):
 
     def __get_content_metadata(self):
         """Get content metadata from the Enterprise Customer Catalog API."""
-        enterprise_api_client = EnterpriseAPIClient()
+        enterprise_api_client = EnterpriseAPIClient(client_id='e0908c8346ff1e479d26', client_secret='7dae6482efff4b9e120559cf785272765baf92df')
         LOGGER.info('Gathering all catalog content metadata...')
         content_metadata = enterprise_api_client.get_content_metadata(
             self.enterprise_customer_uuid,
