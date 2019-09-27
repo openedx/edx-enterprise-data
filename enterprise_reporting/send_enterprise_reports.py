@@ -85,7 +85,7 @@ def process_reports():
                         help="The page size to use to retrieve data that comes in a paginated response.")
     args = parser.parse_args()
 
-    enterprise_api_client = EnterpriseAPIClient(client_id='e0908c8346ff1e479d26', client_secret='7dae6482efff4b9e120559cf785272765baf92df')
+    enterprise_api_client = EnterpriseAPIClient()
 
     if args.enterprise_customer:
         reporting_configs = enterprise_api_client.get_enterprise_reporting_configs(args.enterprise_customer)
