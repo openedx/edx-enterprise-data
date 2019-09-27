@@ -96,7 +96,6 @@ class EnterpriseReportSender(object):
     @property
     def data_report_file_name(self):
         """Get the full path to the report file."""
-        import pdb;pdb.set_trace()
         if self.reporting_config['include_date']:
             return "{dir}/{enterprise_id}_{data}_{ext}_{date}.{ext}".format(
                 dir=self.FILE_WRITE_DIRECTORY,
