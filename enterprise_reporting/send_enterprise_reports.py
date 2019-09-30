@@ -15,7 +15,6 @@ from enterprise_reporting.clients.enterprise import EnterpriseAPIClient
 from enterprise_reporting.reporter import EnterpriseReportSender
 from enterprise_reporting.utils import is_current_time_in_schedule
 
-
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 DATA_TYPES = ['progress', 'progress_v2', 'catalog']
@@ -86,7 +85,6 @@ def process_reports():
     args = parser.parse_args()
 
     enterprise_api_client = EnterpriseAPIClient()
-
     if args.enterprise_customer:
         reporting_configs = enterprise_api_client.get_enterprise_reporting_configs(args.enterprise_customer)
     else:

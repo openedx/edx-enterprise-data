@@ -10,7 +10,6 @@ import os
 from smtplib import SMTPException
 
 import paramiko
-import zipfile
 
 from enterprise_reporting.utils import compress_and_encrypt, decrypt_string, send_email_with_attachment
 
