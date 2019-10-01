@@ -24,6 +24,50 @@ def create_files(files_data):
 
     return files, total_size
 
+
+def create_files_with_date(files_data):
+    """
+    Creates files based on provided file data.
+    """
+    files = []
+    total_size = 0
+    for file_data in files_data:
+        tf = tempfile.NamedTemporaryFile(suffix='_catalog_json_2019-09-30.json')
+        tf.write(file_data['size'] * b'i')
+        tf.flush()
+        tf.seek(0)
+
+        files.append({
+            'file': tf,
+            'size': file_data['size'],
+        })
+        total_size += file_data['size']
+
+    return files, total_size
+
+
+def create_files_without_date(files_data):
+    """
+    Creates files based on provided file data.
+    """
+    files = []
+    total_size = 0
+    for file_data in files_data:
+        tf = tempfile.NamedTemporaryFile(suffix='_catalog_json.json')
+        tf.write(file_data['size'] * b'i')
+        tf.flush()
+        tf.seek(0)
+
+        files.append({
+            'file': tf,
+            'size': file_data['size'],
+        })
+        total_size += file_data['size']
+
+    return files, total_size
+
+
+
 def verify_compressed(self, zip_file, files, original_file_size, password):
     """
     Verify that file is compress correctly.
@@ -33,7 +77,6 @@ def verify_compressed(self, zip_file, files, original_file_size, password):
     assert zip_file_size < original_file_size
 
     zipfile = ZipFile(zip_file, 'r')
-
     for file in files:
         # Verify text file is present in zip file.
         assert file['file'].name.split('/')[-1] in zipfile.namelist()

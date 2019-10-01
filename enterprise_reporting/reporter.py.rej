@@ -1,0 +1,38 @@
+--- enterprise_reporting/reporter.py
++++ enterprise_reporting/reporter.py
+@@ -96,14 +96,21 @@ class EnterpriseReportSender(object):
+     @property
+     def data_report_file_name(self):
+         """Get the full path to the report file."""
+-        return "{dir}/{enterprise_id}_{data}_{ext}_{date}.{ext}".format(
+-            dir=self.FILE_WRITE_DIRECTORY,
+-            enterprise_id=self.enterprise_customer_uuid,
+-            data=self.data_type,
+-            date=NOW,
+-            ext=self.report_type,
+-        )
+-
++        if self.reporting_config['include_date']:
++            return "{dir}/{enterprise_id}_{data}_{ext}_{date}.{ext}".format(
++                dir=self.FILE_WRITE_DIRECTORY,
++                enterprise_id=self.enterprise_customer_uuid,
++                data=self.data_type,
++                date=NOW,
++                ext=self.report_type,
++                )
++        else:
++            return "{dir}/{enterprise_id}_{data}_{ext}.{ext}".format(
++                dir=self.FILE_WRITE_DIRECTORY,
++                enterprise_id=self.enterprise_customer_uuid,
++                data=self.data_type,
++                ext=self.report_type,
++            )
+     @property
+     def data_report_file_name_with(self):
+         """Get a full path to the report file that can be modified with arbitrary formatting."""
+@@ -218,4 +225,4 @@ class EnterpriseReportSender(object):
+             self.reporting_config,
+         )
+         LOGGER.debug('Gathered this content metadata: {}'.format(content_metadata))
+-        return content_metadata
++        return content_metadata
