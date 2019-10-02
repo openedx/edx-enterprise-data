@@ -250,12 +250,10 @@ class TestCompressEncrypt(unittest.TestCase):
         """
         Tests that files are correctly compressed with the correct file name.
         """
-        files = []
         tf = tempfile.NamedTemporaryFile(suffix='_catalog_json_2019-09-30.json')
         tf.write(b'randomtext')
-        files.append({'file': tf})
-        actual_file_name = utils._get_compressed_file([files[0]['file']])
-        file_name = files[0]['file'].name
+        actual_file_name = utils._get_compressed_file([tf])
+        file_name = tf.name
         expected_file_name = file_name.split('.json', 1)[0] + '.zip'
         assert actual_file_name == expected_file_name
 
@@ -263,12 +261,10 @@ class TestCompressEncrypt(unittest.TestCase):
         """
         Tests that files are correctly compressed with the correct file name; when date is not included.
         """
-        files = []
         tf = tempfile.NamedTemporaryFile(suffix='_catalog_json.json')
         tf.write(b'randomtext12345')
-        files.append({'file': tf})
-        actual_file_name = utils._get_compressed_file([files[0]['file']])
-        file_name = files[0]['file'].name
+        actual_file_name = utils._get_compressed_file([tf])
+        file_name = tf.name
         expected_file_name = file_name.split('.json', 1)[0] + '.zip'
         assert actual_file_name == expected_file_name
 
