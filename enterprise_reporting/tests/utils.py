@@ -33,6 +33,7 @@ def verify_compressed(self, zip_file, files, original_file_size, password):
     assert zip_file_size < original_file_size
 
     zipfile = ZipFile(zip_file, 'r')
+
     for file in files:
         # Verify text file is present in zip file.
         assert file['file'].name.split('/')[-1] in zipfile.namelist()
