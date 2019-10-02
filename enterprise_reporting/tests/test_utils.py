@@ -8,8 +8,6 @@ import os
 import tempfile
 import unittest
 from collections import OrderedDict
-from zipfile import ZipFile
-import re
 import ddt
 import pgpy
 from pgpy.constants import CompressionAlgorithm, HashAlgorithm, KeyFlags, PubKeyAlgorithm, SymmetricKeyAlgorithm
@@ -265,7 +263,6 @@ class TestCompressEncrypt(unittest.TestCase):
         actual_file_name = utils._get_compressed_file([tf])
         expected_file_name = tf.name.split('.json', 1)[0] + '.zip'
         assert actual_file_name == expected_file_name
-
 
 class TestPrepareAttachments(unittest.TestCase):
 

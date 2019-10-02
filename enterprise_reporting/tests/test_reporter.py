@@ -4,12 +4,15 @@ Test reporter.
 """
 import unittest
 import datetime
+import pytest
+import six
 
 from enterprise_reporting import reporter
 from enterprise_reporting.reporter import EnterpriseReportSender
 from enterprise_reporting.utils import encrypt_string
 
 
+@pytest.mark.skip(six.PY2, "Not compatible with Python 2")
 class TestReporter(unittest.TestCase):
 
 	def setUp(self):
@@ -23,9 +26,8 @@ class TestReporter(unittest.TestCase):
 			},
 			'delivery_method': 'sftp', 'data_type': 'catalog', 'uuid': '987654321', 'sftp_hostname': '127.0.0.1', 'active': True,
 			'report_type': 'json', 'encrypted_password': 'bleeH-bLah-blUe001', 'sftp_username': 'John1', 'sftp_port': 22,
-			'sftp_file_path': 'home/user/Documents', 'encrypted_sftp_password': 'abraAaaa-caDabraa-doOooo', 'include_date': True
+			'sftp_file_path': 'home/user/Documents', 'encrypted_sftp_password': 'abraAcaDabradOo', 'include_date': True
 		}
-
 		sftp_password = reporting_config['encrypted_sftp_password']
 		reporting_config['encrypted_sftp_password'] = encrypt_string(sftp_password)
 		enterprise_reporter = EnterpriseReportSender.create(reporting_config)
@@ -46,7 +48,7 @@ class TestReporter(unittest.TestCase):
 			},
 			'delivery_method': 'sftp', 'data_type': 'catalog', 'uuid': '42135342-12345', 'sftp_hostname': '127.0.0.1', 'active': True,
 			'report_type': 'csv', 'encrypted_password': 'bleeH-bLah-blUe001', 'sftp_username': 'Amy22', 'sftp_port': 80,
-			'sftp_file_path': 'home/user/Documents', 'encrypted_sftp_password': 'abraAaaa-caDabraa-doOooo',
+			'sftp_file_path': 'home/user/Documents', 'encrypted_sftp_password': 'abraAcaDabradOo',
 			'include_date': False
 		}
 		sftp_password = reporting_config['encrypted_sftp_password']

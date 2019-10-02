@@ -24,7 +24,6 @@ def create_files(files_data):
 
     return files, total_size
 
-
 def verify_compressed(self, zip_file, files, original_file_size, password):
     """
     Verify that file is compress correctly.
