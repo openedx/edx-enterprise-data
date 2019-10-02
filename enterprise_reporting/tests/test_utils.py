@@ -17,7 +17,7 @@ from pgpy.errors import PGPError
 
 from enterprise_reporting import utils
 
-from .utils import create_files, verify_compressed, create_files_with_date, create_files_without_date
+from .utils import create_files, verify_compressed
 
 
 @ddt.ddt
@@ -246,67 +246,31 @@ class TestCompressEncrypt(unittest.TestCase):
         with self.assertRaises(PGPError):
             wrong_key.decrypt(message)
 
-    @ddt.data(
-        [
-            {
-                'name': 'lord-of-the-rings.txt',
-                'size': 1000
-            },
-        ],
-        [
-            {
-                'name': 'lord-of-the-rings.txt',
-                'size': 1000
-            },
-            {
-                'name': 'harry-potter-and-deathly-hollows.txt',
-                'size': 500
-            },
-        ],
-    )
-    def test_compression_file_name_with_date(self, files_data):
+    def test_compression_file_name_with_date(self):
         """
         Tests that files are correctly compressed with the correct file name.
         """
-        files, size = create_files_with_date(files_data)
-        password = b'safe-password'
-        actual_file_name = utils._get_compressed_file([file['file'] for file in files], password)
+        files = []
+        tf = tempfile.NamedTemporaryFile(suffix='_catalog_json_2019-09-30.json')
+        tf.write(b'randomtext')
+        files.append({'file': tf})
+        actual_file_name = utils._get_compressed_file([files[0]['file']])
         file_name = files[0]['file'].name
         expected_file_name = file_name.split('.json', 1)[0] + '.zip'
-
         assert actual_file_name == expected_file_name
-        verify_compressed(self, actual_file_name, files, size, password)
 
-    @ddt.data(
-        [
-            {
-                'name': 'lord-of-the-rings.txt',
-                'size': 1000
-            },
-        ],
-        [
-            {
-                'name': 'lord-of-the-rings.txt',
-                'size': 1000
-            },
-            {
-                'name': 'harry-potter-and-deathly-hollows.txt',
-                'size': 500
-            },
-        ],
-    )
-    def test_compression_file_name_without_date(self, files_data):
+    def test_compression_file_name_without_date(self):
         """
-        Tests that files are correctly compressed with the correct file name; excluding the date.
+        Tests that files are correctly compressed with the correct file name; when date is not included.
         """
-        files, size = create_files_without_date(files_data)
-        password = b'safe-password'
-        actual_file_name = utils._get_compressed_file([file['file'] for file in files], password)
+        files = []
+        tf = tempfile.NamedTemporaryFile(suffix='_catalog_json.json')
+        tf.write(b'randomtext12345')
+        files.append({'file': tf})
+        actual_file_name = utils._get_compressed_file([files[0]['file']])
         file_name = files[0]['file'].name
         expected_file_name = file_name.split('.json', 1)[0] + '.zip'
-
         assert actual_file_name == expected_file_name
-        verify_compressed(self, actual_file_name, files, size, password)
 
 
 class TestPrepareAttachments(unittest.TestCase):
