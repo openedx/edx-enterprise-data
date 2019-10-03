@@ -12,7 +12,7 @@ from enterprise_reporting.reporter import EnterpriseReportSender
 from enterprise_reporting.utils import encrypt_string
 
 
-@pytest.mark.skip(six.PY2, "Not compatible with Python 2")
+@pytest.mark.skipif(six.PY2, "Not compatible with Python 2")
 class TestReporter(unittest.TestCase):
 	""""
 	Tests about reporter methods
