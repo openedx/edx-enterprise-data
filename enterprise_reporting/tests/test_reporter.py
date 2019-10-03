@@ -36,16 +36,16 @@ class TestReporter(unittest.TestCase):
 			'sftp_file_path': 'home/user/Documents',
 			'encrypted_sftp_password': 'abraAcaDabradOo',
 		}
+		sftp_password = self.reporting_config['encrypted_sftp_password']
+		self.reporting_config['encrypted_sftp_password'] = encrypt_string(sftp_password)
 
 	def test_data_report_file_name_with_date(self):
 		"""
 		Tests if the report config file name is generated correctly when date is included
 		"""
 		self.reporting_config['include_date'] = True
-		sftp_password = self.reporting_config['encrypted_sftp_password']
-		self.reporting_config['encrypted_sftp_password'] = encrypt_string(sftp_password)
-		enterprise_reporter = EnterpriseReportSender.create(self.reporting_config)
-		actual_file_name = enterprise_reporter.data_report_file_name
+		enterprise_report_sender = EnterpriseReportSender.create(self.reporting_config)
+		actual_file_name = enterprise_report_sender.data_report_file_name
 		expected_file_name = "{dir}/{enterprise_uuid}_{data_type}_{report_type}_{date}.{report_type}".format(
 			dir=self.FILE_WRITE_DIRECTORY,
 			enterprise_uuid=self.reporting_config['enterprise_customer']['uuid'],
@@ -59,12 +59,9 @@ class TestReporter(unittest.TestCase):
 		"""
 		Tests if the report config file name is generated correctly when date is not included
 		"""
-		import pdb; pdb.set_trace()
 		self.reporting_config['include_date'] = False
-		sftp_password = self.reporting_config['encrypted_sftp_password']
-		self.reporting_config['encrypted_sftp_password'] = encrypt_string(sftp_password)
-		enterprise_reporter = EnterpriseReportSender.create(self.reporting_config)
-		actual_file_name = enterprise_reporter.data_report_file_name
+		enterprise_report_sender = EnterpriseReportSender.create(self.reporting_config)
+		actual_file_name = enterprise_report_sender.data_report_file_name
 		expected_file_name = "{dir}/{enterprise_uuid}_{data_type}_{report_type}.{report_type}".format(
 			dir=self.FILE_WRITE_DIRECTORY,
 			enterprise_uuid=self.reporting_config['enterprise_customer']['uuid'],
