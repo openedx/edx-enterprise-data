@@ -244,25 +244,20 @@ class TestCompressEncrypt(unittest.TestCase):
         with self.assertRaises(PGPError):
             wrong_key.decrypt(message)
 
-    def test_compression_file_name_with_date(self):
+    @ddt.data(
+        '_catalog_json_2019-09-30.json',
+        '_catalog_json.json'
+    )
+    def test_compression_file_name(self, file_suffix):
         """
-        Tests that files are compressed with the correct file name; when date is included.
+        Tests that files are compressed with the correct file name, even when date is included or excluded
         """
-        tf = tempfile.NamedTemporaryFile(suffix='_catalog_json_2019-09-30.json')
+        tf = tempfile.NamedTemporaryFile(suffix=file_suffix)
         tf.write(b'randomtext54321')
         actual_file_name = utils._get_compressed_file([tf])
         expected_file_name = tf.name.split('.json', 1)[0] + '.zip'
         assert actual_file_name == expected_file_name
 
-    def test_compression_file_name_without_date(self):
-        """
-        Tests that files are compressed with the correct file name; when date is not included.
-        """
-        tf = tempfile.NamedTemporaryFile(suffix='_catalog_json.json')
-        tf.write(b'randomtext12345')
-        actual_file_name = utils._get_compressed_file([tf])
-        expected_file_name = tf.name.split('.json', 1)[0] + '.zip'
-        assert actual_file_name == expected_file_name
 
 class TestPrepareAttachments(unittest.TestCase):
 
