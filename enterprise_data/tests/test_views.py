@@ -60,6 +60,15 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         self.enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
         self.set_jwt_cookie()
 
+    def _assert_empty_result(self, response):
+        """
+        Checks the response has 200 status and empty list in results.
+        """
+        assert response.status_code == status.HTTP_200_OK
+        result = response.json()
+        assert result['count'] == 0
+        assert result['results'] == []
+
     def test_get_queryset_returns_enrollments(self):
         enterprise_id = self.enterprise_id
         self.mocked_get_enterprise_customer.return_value = {
@@ -165,19 +174,16 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         url = reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': enterprise_id})
 
         response = self.client.get(url)
-        assert response.status_code == status.HTTP_200_OK
-        result = response.json()
-        assert result['count'] == 0
-        assert result['results'] == []
+        self._assert_empty_result(response)
 
-    def test_get_queryset_returns_404_no_enterprise_for_uuid(self):
-        """ Test that a 404 is thrown when there is no enterprise for the requested UUID """
+    def test_empty_result_for_invalid_enterprise_uuid(self):
+        """ Test that a empty data is returned when there is no enterprise for the requested UUID """
         EnterpriseUserFactory()
         fake_enterprise_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
         url = reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': fake_enterprise_id})
 
         response = self.client.get(url)
-        assert response.status_code == status.HTTP_404_NOT_FOUND
+        self._assert_empty_result(response)
 
     def test_get_queryset_returns_enrollments_with_passed_date_filter(self):
         enterprise = EnterpriseUserFactory()
@@ -379,10 +385,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
             )
 
         response = self.client.get(url)
-        assert response.status_code == status.HTTP_200_OK
-        result = response.json()
-        assert result['count'] == 0
-        assert result['results'] == []
+        self._assert_empty_result(response)
 
     @ddt.data(
         # passed, course date in past
@@ -465,12 +468,9 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
             )
 
         response = self.client.get(url)
-        assert response.status_code == status.HTTP_200_OK
-        result = response.json()
-        assert result['count'] == 0
-        assert result['results'] == []
+        self._assert_empty_result(response)
 
-    def test_get_queryset_throws_error(self):
+    def test_empty_result_for_no_enterprise_user(self):
         enterprise_id = '0395b02f-6b29-42ed-9a41-45f3dff8349c'
         self.mocked_get_enterprise_customer.return_value = {
             'uuid': enterprise_id
@@ -478,7 +478,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         url = reverse('v0:enterprise-enrollments-list',
                       kwargs={'enterprise_id': enterprise_id})
         response = self.client.get(url)
-        assert response.status_code == status.HTTP_404_NOT_FOUND
+        self._assert_empty_result(response)
 
     def test_get_overview_returns_overview(self):
         enterprise_id = self.enterprise_id

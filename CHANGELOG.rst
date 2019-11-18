@@ -17,6 +17,10 @@ Unreleased
 
 =========================
 
+[1.3.8] - 2019-11-19
+---------------------
+* Removed the `NotFound` exception in enterprise-enrollments endpoint.
+
 [1.3.7] - 2019-09-20
 ---------------------
 * Upgrade python packages.

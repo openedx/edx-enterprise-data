@@ -12,7 +12,6 @@ from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthenticat
 from edx_rest_framework_extensions.paginators import DefaultPagination
 from rest_framework import filters, viewsets
 from rest_framework.decorators import list_route
-from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
 from django.db.models import Count, Max, OuterRef, Q, Subquery, Value
@@ -50,18 +49,6 @@ class EnterpriseViewSet(PermissionRequiredMixin, viewsets.ViewSet):
     pagination_class = DefaultPagination
     permission_required = 'can_access_enterprise'
 
-    def ensure_data_exists(self, request, data, error_message=None):
-        """
-        Ensure that the API response brings us valid data. If not, raise an error and log it.
-        """
-        if not data:
-            error_message = error_message or (
-                "[Data Overview Failure] Unable to fetch API response from endpoint '%s'. User: %s, Enterprise: %s",
-                request.get_full_path(), request.user.username, self.kwargs.get('enterprise_id')
-            )
-            LOGGER.error(error_message)
-            raise NotFound(error_message)
-
     def paginate_queryset(self, queryset):
         """
         Allows no_page query param to skip pagination
@@ -91,14 +78,11 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         enterprise_id = self.kwargs['enterprise_id']
 
         enterprise = EnterpriseUser.objects.filter(enterprise_id=enterprise_id)
-        self.ensure_data_exists(
-            self.request,
-            enterprise,
-            error_message=(
+        if enterprise:
+            LOGGER.warning(
                 "[Data Overview Failure] No enterprise found with id %s from endpoint '%s'. User: %s, Enterprise: %s",
                 enterprise_id, self.request.get_full_path(), self.request.user.username, enterprise_id
             )
-        )
 
         enrollments = EnterpriseEnrollment.objects.filter(enterprise_id=enterprise_id)
 
