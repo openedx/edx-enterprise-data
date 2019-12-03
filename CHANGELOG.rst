@@ -17,6 +17,10 @@ Unreleased
 
 =========================
 
+[1.3.9] - 2019-12-03
+---------------------
+* Requests package upgraded from 2.9.1 to 2.22.0.
+
 [1.3.8] - 2019-11-19
 ---------------------
 * Removed the `NotFound` exception in enterprise-enrollments endpoint.
