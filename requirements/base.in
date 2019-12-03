@@ -4,7 +4,7 @@ vertica-python==0.7.3                   # Required for Enterprise Reporting
 pyminizip                               # Required for Enterprise Reporting
 celery==3.1.18                          # Run task workers in other locations
 unicodecsv==0.14.1                      # Allows exporting CSV with unicode support (a drop-in replacement for built-in csv module)
-requests==2.9.1                         # Required for SAPSuccessFactorsAPIClient
+requests==2.22.0                         # Required for SAPSuccessFactorsAPIClient
 edx-rest-api-client                     # For accessing the Enrollment API (and possibly other edX APIs)
 edx-django-utils
 edx-drf-extensions
