@@ -291,7 +291,7 @@ class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
             )
         return queryset
 
-    def list(self, request, **kwargs):  # pylint: disable=unused-argument
+    def list(self, request, **kwargs):  # pylint: disable=unused-argument, arguments-differ
         """
         List view for learner records for a given enterprise.
         """
