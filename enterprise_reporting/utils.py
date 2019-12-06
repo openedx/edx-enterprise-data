@@ -65,8 +65,8 @@ def _get_compressed_file(files, password=None):
     Given file(s) and a password, create a zip file. Return the new filename.
     """
     multiple_files = len(files) > 1
-    # Replace the data and report type with just `.zip`.
-    zipfile = re.sub(r'(_(\w+))?\.(\w+)$', '.zip', files[0].name)
+    # Replace the file extension with `.zip`
+    zipfile = re.sub(r'\.(\w+)$', '.zip', files[0].name)
     compression = pyminizip.compress_multiple if multiple_files else pyminizip.compress
     src_file_path_prefix = [] if multiple_files else None
     compression(
