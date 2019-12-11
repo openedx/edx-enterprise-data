@@ -17,6 +17,10 @@ Unreleased
 
 =========================
 
+[1.3.10] - 2019-12-11
+---------------------
+* Added the correct condition for logging the warning in enterprise-enrollments endpoint.
+
 [1.3.9] - 2019-12-03
 ---------------------
 * Requests package upgraded from 2.9.1 to 2.22.0.
