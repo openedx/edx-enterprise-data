@@ -78,7 +78,7 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         enterprise_id = self.kwargs['enterprise_id']
 
         enterprise = EnterpriseUser.objects.filter(enterprise_id=enterprise_id)
-        if enterprise:
+        if not enterprise:
             LOGGER.warning(
                 "[Data Overview Failure] No enterprise found with id %s from endpoint '%s'. User: %s, Enterprise: %s",
                 enterprise_id, self.request.get_full_path(), self.request.user.username, enterprise_id
