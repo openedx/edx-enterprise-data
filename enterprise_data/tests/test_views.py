@@ -15,7 +15,9 @@ from rest_framework.test import APITransactionTestCase
 
 from django.utils import timezone
 
+from enterprise_data.api.v0.serializers import EnterpriseEnrollmentSerializer
 from enterprise_data.api.v0.views import subtract_one_month
+from enterprise_data.models import EnterpriseEnrollment
 from enterprise_data.tests.mixins import JWTTestMixin
 from enterprise_data.tests.test_utils import (
     EnterpriseEnrollmentFactory,
@@ -59,6 +61,22 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         self.addCleanup(mocked_get_enterprise_customer.stop)
         self.enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
         self.set_jwt_cookie()
+
+    @staticmethod
+    def _get_enrollments_expected_data(enrollments):
+        """
+        :param enrollments: List of enterprise Enrollments
+        :return: expected response
+        """
+        return {
+            'count': len(enrollments),
+            'num_pages': 1,
+            'current_page': 1,
+            'results': [EnterpriseEnrollmentSerializer(enrollment).data for enrollment in enrollments],
+            'next': None,
+            'start': 0,
+            'previous': None
+        }
 
     def _assert_empty_result(self, response):
         """
@@ -166,6 +184,34 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         assert response.status_code == status.HTTP_200_OK
         result = response.json()
         assert result == expected_result
+
+    @ddt.data(
+        ('test_1234@example.com', 1),
+        ('test_1234', 1),
+        ('test_5678@example.com', 0),
+    )
+    @ddt.unpack
+    def test_get_enterprise_enrollments_with_email_search(self, search_email, expected_count):
+        """Test that with email_search param we get correct results"""
+        enterprise_user = EnterpriseUserFactory(enterprise_id=self.enterprise_id, user_email=search_email)
+        EnterpriseEnrollmentFactory(
+            enterprise_user=enterprise_user,
+            enterprise_id=self.enterprise_id,
+            user_email='test_1234@example.com',
+            consent_granted=True,
+        )
+
+        enrollments = EnterpriseEnrollment.objects.filter(
+            enterprise_id=self.enterprise_id,
+            user_email__icontains=search_email
+        )
+        expected_response = self._get_enrollments_expected_data(enrollments)
+        response = self.client.get(
+            reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': self.enterprise_id}),
+            data={'search': search_email}
+        ).json()
+        assert response['count'] == expected_count
+        assert response == expected_response
 
     def test_get_queryset_returns_no_enrollments(self):
         """ Test that enterprise with no enrollments returns empty list """
