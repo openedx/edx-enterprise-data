@@ -24,7 +24,6 @@ logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
 AGGREGATE_REPORT_CSV_HEADER_ROW = u'Course Key,Course Title,Partner,External Domain,Count\n'
-EXHAUSTIVE_REPORT_CSV_HEADER_ROW = u'Course Key,Course Title,Partner,External Links\n'
 
 
 def create_csv_string(processed_results, header_row, additional_columns):
@@ -68,28 +67,34 @@ def create_columns_for_aggregate_report(data):
     return u'\n,,,'.join(stringified_urls_and_counts)
 
 
-def create_columns_for_exhaustive_report(data):
-    """
-    Creates a csv string for additional columns in report
-    """
-    return u'\n,,,'.join(data['external_links'])
-
-
 def gather_links_from_html(html_string):
     """
     Takes some html blob as a string and extracts any external links, and
     returns them as a set
     """
     pattern = 'https?://.*?[" <]'
-    links = [
-        link[0:-1].strip()
-        for link in re.findall(pattern, html_string,)
-        if (not link.lower().endswith('.png"') and
-            not link.lower().endswith('.jpg"') and
-            not link.lower().endswith('.jpeg"') and
-            not link.lower().endswith('.gif"') and
-            not '.edx.org' in link)
-    ]
+
+    links = []
+    for link in re.findall(pattern, html_string,):
+        link = link[0:-1].strip()
+        if (link.lower().endswith('.png"') or
+            link.lower().endswith('.jpg"') or
+            link.lower().endswith('.jpeg"') or
+            link.lower().endswith('.gif"') or
+            '.edx.org' in link):
+            continue
+
+        # Want to verify the link captured is a proper url
+        # If not, toss it out and throw a log message
+        try:
+            urlparse(link)
+        except ValueError:
+            LOGGER.warning(
+                "Unparsable URL found. Not including in report: %s" % link
+            )
+            continue
+
+        links.append(link)
     return links
 
 
@@ -155,8 +160,11 @@ def query_coursegraph():
     )
     query = '''MATCH
                 (c:course)-[:PARENT_OF*]->(h:html) 
-              WHERE 
-                h.data =~ '.*https?://.*'
+              WHERE (
+                h.data CONTAINS 'https://'
+                OR
+                h.data CONTAINS 'http://'
+              )
               RETURN
                 c.display_name as course_title,
                 c.org as organization,
@@ -166,59 +174,83 @@ def query_coursegraph():
     return results.data()
 
 
+def split_up_results(processed_results_part1):
+    """
+    Splits up a dictionary of processed_results into a list of
+    two smaller dictionaries.
+    """
+    # NOTE: we are splitting this into 2 dicts because it is 1) easy to do
+    # and 2) we have about 8 MB of overhead for newly added strings to this
+    # report before it becomes a problem again... which should not be for
+    # a veeeery long time.
+    #
+    # If emails fail due to size in the future, implement a solution that
+    # dynamically chooses chunk size and email quantity based on size of
+    # string data included in each of the dictionary entries being
+    # iterated over.
+    processed_results_part2 = {}
+
+    original_len = len(processed_results_part1)
+    while len(processed_results_part1) > (original_len / 2):
+        k, v = processed_results_part1.popitem()
+        processed_results_part2[k] = v
+
+    return [processed_results_part1, processed_results_part2]
+
+
 def generate_and_email_report():
     """
     Generates a report an sends it as an email with an attachment
     """
-    LOGGER.info("Querying Course Graph DB...")
-    raw_results = query_coursegraph()
-    processed_results = process_coursegraph_results(raw_results)
 
-    LOGGER.info("Generating exhaustive external links spreadsheet...")
-    exhaustive_report = create_csv_string(
-        processed_results,
-        EXHAUSTIVE_REPORT_CSV_HEADER_ROW,
-        create_columns_for_exhaustive_report,
-    )
-
-    LOGGER.info("Generating aggregate external links spreadsheet...")
-    aggregate_report = create_csv_string(
-        processed_results,
-        AGGREGATE_REPORT_CSV_HEADER_ROW,
-        create_columns_for_aggregate_report
-    )
-
+    from_email = os.environ.get('SEND_EMAIL_FROM')
     today = str(date.today())
-    filenames = [
-        'external-resource-link-report-{}.csv'.format(today),
-        'external-resource-domain-report-{}.csv'.format(today)
-    ]
-    attachment_data = {
-        filenames[0]: exhaustive_report.encode('utf-8'),
-        filenames[1]: aggregate_report.encode('utf-8'),
-    }
-
     subject = 'External Resource Link Report'
     body = '''Dear Customer Success,
 Find attached a file containing course keys and their respective
 external resource links.
 
 If you have any questions/concerns with the report, please ask the
-Enterprise Team (kindly)!
+Enterprise Team!
 
 Sincerely,
 The Enterprise Team'''
 
-    from_email = os.environ.get('SEND_EMAIL_FROM')
+    LOGGER.info("Querying Course Graph DB...")
+    raw_results = query_coursegraph()
 
-    LOGGER.info("Emailing spreadsheets...")
-    send_email_with_attachment(
-        subject,
-        body,
-        from_email,
-        TO_EMAILS.split(','),
-        attachment_data
-    )
+    # Results are too large to send in 1 email (~10MB is the limit) so
+    # we split up the results into two parts
+    processed_results = process_coursegraph_results(raw_results)
+    result_dicts = split_up_results(processed_results)
+
+    for index, result in enumerate(result_dicts):
+        readable_number = index + 1
+
+        LOGGER.info(
+            "Generating aggregate external links spreadsheet part %s..." % readable_number
+        )
+        aggregate_report_data = create_csv_string(
+            result,
+            AGGREGATE_REPORT_CSV_HEADER_ROW,
+            create_columns_for_aggregate_report
+        )
+        filename = 'external-resource-domain-report-part{}-{}.csv'.format(
+            readable_number,
+            today,
+        )
+        attachment_data = {filename: aggregate_report_data.encode('utf-8')}
+
+        LOGGER.info(
+            "Emailing aggregate spreadsheet part %s..." % readable_number
+        )
+        send_email_with_attachment(
+            subject,
+            body,
+            from_email,
+            TO_EMAILS.split(','),
+            attachment_data
+        )
 
 
 if __name__ == '__main__':
