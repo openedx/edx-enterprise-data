@@ -96,11 +96,12 @@ class EnterpriseReportSender(object):
     @property
     def data_report_file_name(self):
         """Get the full path to the report file."""
-        return "{dir}/{enterprise_id}_{data}_{ext}_{date}.{ext}".format(
+        date_str = "_{}".format(NOW) if self.reporting_config.get('include_date') else ""
+        return "{dir}/{enterprise_id}_{data}_{ext}{date_str}.{ext}".format(
             dir=self.FILE_WRITE_DIRECTORY,
             enterprise_id=self.enterprise_customer_uuid,
             data=self.data_type,
-            date=NOW,
+            date_str=date_str,
             ext=self.report_type,
         )
 

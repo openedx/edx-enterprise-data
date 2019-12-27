@@ -8,8 +8,6 @@ import os
 import tempfile
 import unittest
 from collections import OrderedDict
-from zipfile import ZipFile
-
 import ddt
 import pgpy
 from pgpy.constants import CompressionAlgorithm, HashAlgorithm, KeyFlags, PubKeyAlgorithm, SymmetricKeyAlgorithm
@@ -245,6 +243,21 @@ class TestCompressEncrypt(unittest.TestCase):
 
         with self.assertRaises(PGPError):
             wrong_key.decrypt(message)
+
+    @ddt.data(
+        '_catalog_json_2019-09-30.json',
+        '_catalog_json.json'
+    )
+    def test_compression_file_name(self, file_suffix):
+        """
+        Tests that files are compressed with the correct file name, even when date is included or excluded
+        """
+        tf = tempfile.NamedTemporaryFile(suffix=file_suffix)
+        tf.write(b'randomtext54321')
+        actual_file_name = utils._get_compressed_file([tf])
+        expected_file_name = tf.name.split('.json', 1)[0] + '.zip'
+        assert actual_file_name == expected_file_name
+
 
 class TestPrepareAttachments(unittest.TestCase):
 
