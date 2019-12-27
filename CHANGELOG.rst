@@ -17,10 +17,6 @@ Unreleased
 
 =========================
 
-[1.3.11] - 2019-12-27
----------------------
-* Added the ability to include or exclude date from reporting configuration file name.
-
 [1.3.10] - 2019-12-11
 ---------------------
 * Added the correct condition for logging the warning in enterprise-enrollments endpoint.
