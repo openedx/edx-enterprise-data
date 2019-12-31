@@ -17,6 +17,10 @@ Unreleased
 
 =========================
 
+[1.3.12] - 2019-12-31
+---------------------
+* Update edx-rbac.
+
 [1.3.11] - 2019-12-27
 ---------------------
 * Added the ability to include or exclude date from reporting configuration file name.
