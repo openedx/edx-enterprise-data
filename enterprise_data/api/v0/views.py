@@ -112,6 +112,10 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         elif learner_activity_param == 'inactive_past_month':
             queryset = self.filter_inactive_learners(queryset, past_month_date)
 
+        search_email = query_filters.get('search')
+        if search_email:
+            queryset = queryset.filter(user_email__icontains=search_email)
+
         return queryset
 
     def filter_active_enrollments(self, queryset):

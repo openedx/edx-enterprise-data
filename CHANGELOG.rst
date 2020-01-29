@@ -13,9 +13,12 @@ Change Log
 
 Unreleased
 ----------
-* Remove AUTHORS file
 
 =========================
+
+[1.3.13] - 2020-01-20
+---------------------
+* added support of `search` query param in EnterpriseEnrollmentsViewSet.
 
 [1.3.12] - 2019-12-31
 ---------------------
