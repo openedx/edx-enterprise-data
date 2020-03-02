@@ -1,3 +1,5 @@
+-c constraints.txt
+
 tox==3.0.0
 tox-battery==0.5.1
 pytest==3.7.1

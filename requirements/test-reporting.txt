@@ -4,28 +4,33 @@
 #
 #    pip-compile --output-file=requirements/test-reporting.txt requirements/test-reporting.in
 #
+appdirs==1.4.3            # via virtualenv
 atomicwrites==1.3.0       # via pytest
 attrs==19.3.0             # via pytest
 configparser==4.0.2       # via importlib-metadata
-contextlib2==0.6.0.post1  # via importlib-metadata
-coverage==5.0.1           # via pytest-cov
-ddt==1.1.2
+contextlib2==0.6.0.post1  # via importlib-metadata, virtualenv
+coverage==5.0.3           # via pytest-cov
+ddt==1.1.2                # via -r requirements/test-reporting.in
+distlib==0.3.0            # via virtualenv
+filelock==3.0.12          # via virtualenv
 funcsigs==1.0.2           # via mock, pytest
-importlib-metadata==1.3.0  # via pluggy
-mock==2.0.0
-more-itertools==5.0.0     # via pytest, zipp
-pathlib2==2.3.5           # via importlib-metadata, pytest
+importlib-metadata==1.5.0  # via pluggy, virtualenv
+importlib-resources==1.0.2  # via virtualenv
+mock==2.0.0               # via -r requirements/test-reporting.in
+more-itertools==5.0.0     # via pytest
+pathlib2==2.3.5           # via importlib-metadata, importlib-resources, pytest, virtualenv
 pbr==5.4.4                # via mock
 pluggy==0.13.1            # via pytest, tox
 py==1.8.1                 # via pytest, tox
-pytest-cov==2.5.1
-pytest==3.7.1
+pytest-cov==2.5.1         # via -r requirements/test-reporting.in
+pytest==3.7.1             # via -r requirements/test-reporting.in, pytest-cov
 scandir==1.10.0           # via pathlib2
-six==1.13.0               # via mock, more-itertools, pathlib2, pytest, tox
-tox-battery==0.5.1
-tox==3.0.0
-virtualenv==16.7.9        # via tox
-zipp==0.6.0               # via importlib-metadata
+six==1.10.0               # via -c requirements/constraints.txt, mock, more-itertools, pathlib2, pytest, tox, virtualenv
+tox-battery==0.5.1        # via -r requirements/test-reporting.in
+tox==3.0.0                # via -r requirements/test-reporting.in, tox-battery
+typing==3.7.4.1           # via importlib-resources
+virtualenv==20.0.7        # via tox
+zipp==1.2.0               # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
