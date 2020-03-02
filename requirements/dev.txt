@@ -26,7 +26,7 @@ click-log==0.3.2          # via edx-lint
 click==7.0                # via click-log, edx-lint, pip-tools, py2neo
 colorama==0.3.7           # via awscli, py2neo
 configparser==4.0.2       # via importlib-metadata, pydocstyle, pylint
-contextlib2==0.6.0.post1  # via importlib-metadata, virtualenv
+contextlib2==0.6.0.post1  # via importlib-metadata, virtualenv, zipp
 cryptography==2.8         # via -r requirements/base.in, django-fernet-fields, paramiko, pgpy, pyopenssl
 diff-cover==2.6.0         # via -r requirements/dev-enterprise_data.in
 distlib==0.3.0            # via caniusepython3, virtualenv
@@ -44,14 +44,14 @@ edx-i18n-tools==0.5.0     # via -r requirements/dev-enterprise_data.in
 edx-lint==1.4.1           # via -r requirements/dev-enterprise_data.in, -r requirements/quality.in
 edx-opaque-keys==2.0.1    # via -r requirements/base.in, edx-drf-extensions
 edx-rbac==1.1.0           # via -r requirements/base.in
-edx-rest-api-client==4.0.1  # via -r requirements/base.in
+edx-rest-api-client==3.0.2  # via -c requirements/constraints.txt, -r requirements/base.in
 enum34==1.1.9             # via astroid, cryptography, pgpy
-filelock==3.0.12          # via virtualenv
+filelock==3.0.12          # via tox, virtualenv
 future==0.18.2            # via backports.os, pyjwkest, vertica-python
 futures==3.2.0 ; python_version == "2.7"  # via -r requirements/base.in, -r requirements/quality.in, caniusepython3, isort, s3transfer
 idna==2.8                 # via requests
-importlib-metadata==1.5.0  # via inflect, path.py, pluggy, virtualenv
-importlib-resources==1.0.2  # via virtualenv
+importlib-metadata==1.5.0  # via inflect, path.py, pluggy, tox, virtualenv
+importlib-resources==1.1.0  # via virtualenv
 inflect==3.0.2            # via jinja2-pluralize
 ipaddress==1.0.23         # via cryptography
 isort==4.3.21             # via -r requirements/quality.in, pylint
@@ -65,7 +65,7 @@ mccabe==0.6.1             # via pylint
 neobolt==1.7.16           # via py2neo
 neotime==1.7.4            # via py2neo
 newrelic==5.8.0.136       # via edx-django-utils
-packaging==20.1           # via caniusepython3
+packaging==20.1           # via caniusepython3, tox
 paramiko==2.4             # via -r requirements/base.in
 path.py==11.5.2           # via edx-i18n-tools
 pathlib2==2.3.5           # via importlib-metadata, importlib-resources, virtualenv
@@ -108,14 +108,15 @@ rules==2.2                # via -r requirements/base.in
 s3transfer==0.1.13        # via awscli, boto3
 scandir==1.10.0           # via pathlib2
 semantic-version==2.8.4   # via edx-drf-extensions
-singledispatch==3.4.0.3   # via astroid, pgpy, pylint
+singledispatch==3.4.0.3   # via astroid, importlib-resources, pgpy, pylint
 six==1.10.0               # via -c requirements/constraints.txt, -r requirements/base.in, astroid, bcrypt, bleach, cryptography, diff-cover, edx-drf-extensions, edx-i18n-tools, edx-lint, edx-opaque-keys, edx-rbac, neotime, packaging, pathlib2, pgpy, pip-tools, prompt-toolkit, pydocstyle, pyjwkest, pylint, pynacl, pyopenssl, python-dateutil, readme-renderer, singledispatch, stevedore, tox, vertica-python, virtualenv
 slumber==0.7.1            # via edx-rest-api-client
 snowballstemmer==2.0.0    # via pydocstyle
 stevedore==1.32.0         # via edx-opaque-keys
 testfixtures==6.14.0      # via -r requirements/quality.in
+toml==0.10.0              # via tox
 tox-battery==0.5.1        # via -r requirements/dev-enterprise_data.in
-tox==3.0.0                # via -r requirements/base.in, -r requirements/dev-enterprise_data.in, tox-battery
+tox==3.14.3               # via -c requirements/constraints.txt, -r requirements/dev-enterprise_data.in, tox-battery
 tqdm==4.43.0              # via twine
 twine==1.15.0             # via -r requirements/dev-enterprise_data.in
 typing==3.7.4.1           # via importlib-resources
@@ -127,7 +128,7 @@ wcwidth==0.1.8            # via prompt-toolkit
 webencodings==0.5.1       # via bleach
 wheel==0.34.2             # via -r requirements/dev-enterprise_data.in
 wrapt==1.12.0             # via astroid
-zipp==1.2.0               # via importlib-metadata
+zipp==1.2.0               # via importlib-metadata, importlib-resources
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

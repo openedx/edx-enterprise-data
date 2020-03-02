@@ -6,7 +6,6 @@
 #
 amqp==1.4.9               # via kombu
 anyjson==0.3.3            # via kombu
-appdirs==1.4.3            # via virtualenv
 atomicwrites==1.3.0       # via pytest
 attrs==19.3.0             # via pytest
 awscli==1.11.178          # via -r requirements/base.in
@@ -21,12 +20,11 @@ chardet==3.0.4            # via requests
 click==7.0                # via py2neo
 colorama==0.3.7           # via awscli, py2neo
 configparser==4.0.2       # via importlib-metadata
-contextlib2==0.6.0.post1  # via importlib-metadata, virtualenv
+contextlib2==0.6.0.post1  # via importlib-metadata
 cookies==2.2.1            # via responses
 coverage==5.0.3           # via pytest-cov
 cryptography==2.8         # via -r requirements/base.in, django-fernet-fields, paramiko, pgpy, pyopenssl
 ddt==1.2.2                # via -r requirements/test.in
-distlib==0.3.0            # via virtualenv
 django-crum==0.7.5        # via edx-rbac
 django-fernet-fields==0.5  # via -r requirements/base.in
 django-model-utils==3.2.0  # via -r requirements/base.in, -r requirements/test.in, edx-rbac
@@ -39,19 +37,17 @@ edx-django-utils==2.0.4   # via -c requirements/constraints.txt, -r requirements
 edx-drf-extensions==3.0.0  # via -r requirements/base.in, -r requirements/test-master.in, edx-rbac
 edx-opaque-keys==2.0.1    # via -r requirements/base.in, edx-drf-extensions
 edx-rbac==1.1.0           # via -r requirements/base.in
-edx-rest-api-client==4.0.1  # via -r requirements/base.in
+edx-rest-api-client==3.0.2  # via -c requirements/constraints.txt, -r requirements/base.in
 enum34==1.1.9             # via cryptography, pgpy
 factory-boy==2.12.0       # via -r requirements/test.in
 faker==3.0.1              # via factory-boy
-filelock==3.0.12          # via virtualenv
 flaky==3.6.1              # via -r requirements/test.in
 freezegun==0.3.15         # via -r requirements/test.in
 funcsigs==1.0.2           # via mock, pytest
 future==0.18.2            # via pyjwkest, vertica-python
 futures==3.2.0 ; python_version == "2.7"  # via -r requirements/base.in, s3transfer
 idna==2.8                 # via requests
-importlib-metadata==1.5.0  # via pluggy, pytest, virtualenv
-importlib-resources==1.0.2  # via virtualenv
+importlib-metadata==1.5.0  # via pluggy, pytest
 ipaddress==1.0.23         # via cryptography, faker
 jmespath==0.9.5           # via boto3, botocore
 kombu==3.0.37             # via celery
@@ -62,14 +58,14 @@ neotime==1.7.4            # via py2neo
 newrelic==5.8.0.136       # via edx-django-utils
 packaging==20.1           # via pytest
 paramiko==2.4             # via -r requirements/base.in
-pathlib2==2.3.5           # via importlib-metadata, importlib-resources, pytest, pytest-django, virtualenv
+pathlib2==2.3.5           # via importlib-metadata, pytest, pytest-django
 pbr==5.4.4                # via stevedore
 pgpy==0.5.2               # via -r requirements/base.in
-pluggy==0.13.1            # via pytest, tox
+pluggy==0.13.1            # via pytest
 prompt-toolkit==2.0.10    # via py2neo
 psutil==1.2.1             # via edx-django-utils, edx-drf-extensions
 py2neo==4.3.0             # via -r requirements/base.in
-py==1.8.1                 # via pytest, pytest-catchlog, tox
+py==1.8.1                 # via pytest, pytest-catchlog
 pyasn1==0.4.8             # via paramiko, pgpy, rsa
 pycparser==2.19           # via cffi
 pycryptodomex==3.9.7      # via pyjwkest
@@ -97,16 +93,13 @@ s3transfer==0.1.13        # via awscli, boto3
 scandir==1.10.0           # via pathlib2
 semantic-version==2.8.4   # via edx-drf-extensions
 singledispatch==3.4.0.3   # via pgpy
-six==1.10.0               # via -c requirements/constraints.txt, -r requirements/base.in, bcrypt, cryptography, edx-drf-extensions, edx-opaque-keys, edx-rbac, faker, freezegun, mock, more-itertools, neotime, packaging, pathlib2, pgpy, prompt-toolkit, pyjwkest, pynacl, pyopenssl, pytest, python-dateutil, responses, singledispatch, stevedore, tox, vertica-python, virtualenv
+six==1.10.0               # via -c requirements/constraints.txt, -r requirements/base.in, bcrypt, cryptography, edx-drf-extensions, edx-opaque-keys, edx-rbac, faker, freezegun, mock, more-itertools, neotime, packaging, pathlib2, pgpy, prompt-toolkit, pyjwkest, pynacl, pyopenssl, pytest, python-dateutil, responses, singledispatch, stevedore, vertica-python
 slumber==0.7.1            # via edx-rest-api-client
 stevedore==1.32.0         # via edx-opaque-keys
 testfixtures==6.14.0      # via -r requirements/test.in
 text-unidecode==1.3       # via faker
-tox==3.0.0                # via -r requirements/base.in
-typing==3.7.4.1           # via importlib-resources
 unicodecsv==0.14.1        # via -r requirements/base.in
 urllib3==1.24.3           # via py2neo, requests
 vertica-python==0.7.3     # via -r requirements/base.in
-virtualenv==20.0.7        # via tox
 wcwidth==0.1.8            # via prompt-toolkit, pytest
 zipp==1.2.0               # via importlib-metadata
