@@ -1,7 +1,7 @@
 -c constraints.txt
 
 tox
-tox-battery==0.5.1
+tox-battery                         # Makes tox aware of requirements file changes
 pytest==3.7.1
 ddt==1.1.2
 mock==2.0.0

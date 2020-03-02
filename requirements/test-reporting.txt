@@ -28,10 +28,10 @@ pytest-cov==2.5.1         # via -r requirements/test-reporting.in
 pytest==3.7.1             # via -r requirements/test-reporting.in, pytest-cov
 scandir==1.10.0           # via pathlib2
 singledispatch==3.4.0.3   # via importlib-resources
-six==1.10.0               # via -c requirements/constraints.txt, mock, more-itertools, packaging, pathlib2, pytest, tox, virtualenv
+six==1.14.0               # via mock, more-itertools, packaging, pathlib2, pytest, tox, virtualenv
 toml==0.10.0              # via tox
-tox-battery==0.5.1        # via -r requirements/test-reporting.in
-tox==3.14.3               # via -c requirements/constraints.txt, -r requirements/test-reporting.in, tox-battery
+tox-battery==0.5.2        # via -c requirements/constraints.txt, -r requirements/test-reporting.in
+tox==3.14.5               # via -r requirements/test-reporting.in, tox-battery
 typing==3.7.4.1           # via importlib-resources
 virtualenv==20.0.7        # via tox
 zipp==1.2.0               # via importlib-metadata, importlib-resources

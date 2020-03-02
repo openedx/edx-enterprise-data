@@ -17,7 +17,7 @@ Django<1.12
 django-fernet-fields==0.5
 django-model-utils<4.0.0
 futures==3.2.0; python_version == "2.7"
-six==1.10.0
+six
 PGPy                                    # Required for Enterprise Reporting
 pyOpenSSL==17.4.0 # Any version beyond this requires cryptography 2.X.X
 py2neo
