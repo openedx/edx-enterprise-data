@@ -13,6 +13,7 @@ Change Log
 
 Unreleased
 ----------
+* Upgrade python packages. Using requirements/base.in to load requirements.
 
 =========================
 
