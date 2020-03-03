@@ -94,7 +94,7 @@ pylint==1.9.5             # via edx-lint, pylint-celery, pylint-django, pylint-p
 pyminizip==0.2.4          # via -r requirements/base.in
 pymongo==3.10.1           # via edx-opaque-keys
 pynacl==1.3.0             # via paramiko
-pyopenssl==17.4.0         # via -r requirements/base.in
+pyopenssl==19.1.0         # via -r requirements/base.in
 pyparsing==2.4.6          # via packaging
 python-dateutil==2.8.1    # via botocore, edx-drf-extensions, vertica-python
 pytz==2019.3              # via celery, django, neotime, py2neo
