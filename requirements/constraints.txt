@@ -1,0 +1,27 @@
+# Version constraints for pip-installation.
+#
+# This file doesn't install any packages. It specifies version constraints
+# that will be applied if a package is needed.
+#
+# When pinning something here, please provide an explanation of why.  Ideally,
+# link to other information that will help people in the future to remove the
+# pin when possible.  Writing an issue against the offending project and
+# linking to it here is good.
+
+# TODO: Many pinned dependencies should be unpinned and/or moved to this constraints file.
+
+# Django version 2.0.0 dropped support to python2.7
+Django<2.0
+
+# django-waffle version 0.19.0 dropped support to Django 2.0 and 2.1, see https://github.com/django-waffle/django-waffle/blob/master/CHANGES
+django-waffle<0.19.0
+
+# edx-django-utils version 3.0.0 dropped support for python 2.7, see https://github.com/edx/edx-django-utils/releases/tag/3.0.0
+edx-django-utils<3.0.0
+
+# edx-django-utils version 4.0.0 dropped support for python 2.7, see https://github.com/edx/edx-rest-api-client/releases/tag/4.0.0
+edx-rest-api-client<4.0.0
+
+# it's experimental, so keep it pinned
+tox-battery==0.5.2
+
