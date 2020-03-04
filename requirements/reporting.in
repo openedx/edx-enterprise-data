@@ -1,0 +1,9 @@
+# Used for enterprise reporting
+
+paramiko==2.4
+vertica-python                          # Required for Enterprise Reporting
+pyminizip                               # Required for Enterprise Reporting
+celery==3.1.18                          # Run task workers in other locations
+unicodecsv==0.14.1                      # Allows exporting CSV with unicode support (a drop-in replacement for built-in csv module)
+boto3==1.4.7
+cryptography
