@@ -14,9 +14,8 @@ boto3==1.4.7
 cryptography
 paramiko==2.4
 Django
-django-fernet-fields==0.5
+django-fernet-fields
 django-model-utils
-futures==3.2.0; python_version == "2.7"
 six
 PGPy                                    # Required for Enterprise Reporting
 pyOpenSSL==17.4.0 # Any version beyond this requires cryptography 2.X.X
