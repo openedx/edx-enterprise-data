@@ -73,6 +73,7 @@ setup(
     ],
     include_package_data=True,
     install_requires=load_requirements('requirements/base.in'),
+    extras_require={'reporting':load_requirements('requirements/reporting.in')},
     license="AGPL 3.0",
     zip_safe=False,
 )

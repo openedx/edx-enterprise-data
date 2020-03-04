@@ -14,6 +14,7 @@ Change Log
 Unreleased
 ----------
 * Upgrade python packages. Using requirements/base.in to load requirements.
+* Package requirements of enterprise_reporting scripts are declared as extra requirements.
 
 =========================
 

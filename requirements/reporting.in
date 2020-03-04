@@ -1,4 +1,5 @@
 # Used for enterprise reporting
+-c constraints.txt
 
 paramiko
 vertica-python                          # Required for Enterprise Reporting
