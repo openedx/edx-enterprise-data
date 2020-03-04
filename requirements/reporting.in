@@ -1,6 +1,6 @@
 # Used for enterprise reporting
 
-paramiko==2.4
+paramiko
 vertica-python                          # Required for Enterprise Reporting
 pyminizip                               # Required for Enterprise Reporting
 celery==3.1.18                          # Run task workers in other locations

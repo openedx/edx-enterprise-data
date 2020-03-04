@@ -21,13 +21,16 @@ coverage: clean ## generate and view HTML coverage report
 upgrade: ## update the requirements/*.txt files with the latest packages satisfying requirements/*.in
 	pip install -q -r requirements/pip_tools.txt
 	pip-compile --upgrade -o requirements/pip_tools.txt requirements/pip_tools.in
-	pip-compile --upgrade -o requirements/base.txt requirements/base.in
-	pip-compile --upgrade -o requirements/dev.txt requirements/base.in requirements/dev-enterprise_data.in requirements/dev-enterprise_reporting.in requirements/quality.in
-	pip-compile --upgrade -o requirements/quality.txt requirements/base.in requirements/dev-enterprise_data.in requirements/quality.in requirements/test.in
+	pip-compile --upgrade -o requirements/base.txt requirements/base.in requirements/reporting.in
+	pip-compile --upgrade -o requirements/dev.txt requirements/base.in requirements/reporting.in requirements/dev-enterprise_data.in \
+		                                      requirements/dev-enterprise_reporting.in requirements/quality.in
+	pip-compile --upgrade -o requirements/quality.txt requirements/base.in requirements/reporting.in requirements/dev-enterprise_data.in \
+	                                              requirements/quality.in requirements/test.in
 	pip-compile --upgrade -o requirements/travis.txt requirements/travis.in
-	pip-compile --upgrade -o requirements/test.txt requirements/base.in requirements/test.in
+	pip-compile --upgrade -o requirements/test.txt requirements/base.in requirements/reporting.in requirements/test.in
 	pip-compile --upgrade -o requirements/test-reporting.txt requirements/test-reporting.in
-	pip-compile --upgrade -o requirements/test-master.txt requirements/base.in requirements/test-master.in requirements/test.in
+	pip-compile --upgrade -o requirements/test-master.txt requirements/base.in requirements/reporting.in requirements/test-master.in \
+	                                                      requirements/test.in
 
 requirements: ## install development environment requirements
 	pip install -qr requirements/base.txt --exists-action w
