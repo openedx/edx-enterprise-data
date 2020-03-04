@@ -4,7 +4,7 @@ vertica-python                          # Required for Enterprise Reporting
 pyminizip                               # Required for Enterprise Reporting
 celery==3.1.18                          # Run task workers in other locations
 unicodecsv==0.14.1                      # Allows exporting CSV with unicode support (a drop-in replacement for built-in csv module)
-requests==2.22.0                         # Required for SAPSuccessFactorsAPIClient
+requests                                # Required for SAPSuccessFactorsAPIClient
 edx-rest-api-client                     # For accessing the Enrollment API (and possibly other edX APIs)
 edx-django-utils
 edx-drf-extensions
@@ -13,9 +13,9 @@ awscli==1.11.178                        # for assuming aws roles for sending ema
 boto3==1.4.7
 cryptography
 paramiko==2.4
-Django<1.12
+Django
 django-fernet-fields==0.5
-django-model-utils<4.0.0
+django-model-utils
 futures==3.2.0; python_version == "2.7"
 six
 PGPy                                    # Required for Enterprise Reporting
