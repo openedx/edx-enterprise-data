@@ -9,8 +9,8 @@ edx-rest-api-client                     # For accessing the Enrollment API (and 
 edx-django-utils
 edx-drf-extensions
 edx-opaque-keys
-awscli==1.11.178                        # for assuming aws roles for sending email via SES
-boto3==1.4.7
+awscli                                  # for assuming aws roles for sending email via SES
+boto3
 cryptography
 paramiko==2.4
 Django<1.12
