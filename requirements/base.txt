@@ -19,7 +19,7 @@ click==7.0                # via py2neo
 colorama==0.3.7           # via awscli, py2neo
 cryptography==2.8         # via -r requirements/base.in, django-fernet-fields, paramiko, pgpy, pyopenssl
 django-crum==0.7.5        # via edx-rbac
-django-fernet-fields==0.5  # via -r requirements/base.in
+django-fernet-fields==0.6  # via -r requirements/base.in
 django-model-utils==3.2.0  # via -c requirements/constraints.txt, -r requirements/base.in, edx-rbac
 django-waffle==0.18.0     # via -c requirements/constraints.txt, edx-django-utils, edx-drf-extensions
 django==1.11.29           # via -c requirements/constraints.txt, -r requirements/base.in, django-crum, django-fernet-fields, django-model-utils, edx-django-utils, edx-drf-extensions, edx-rbac, rest-condition
@@ -33,7 +33,7 @@ edx-rbac==1.1.1           # via -r requirements/base.in
 edx-rest-api-client==3.0.2  # via -c requirements/constraints.txt, -r requirements/base.in
 enum34==1.1.9             # via cryptography, pgpy
 future==0.18.2            # via pyjwkest
-futures==3.2.0 ; python_version == "2.7"  # via -r requirements/base.in, s3transfer
+futures==3.3.0 ; python_version == "2.7"  # via -c requirements/constraints.txt, s3transfer
 idna==2.9                 # via requests
 ipaddress==1.0.23         # via cryptography
 jmespath==0.9.5           # via boto3, botocore

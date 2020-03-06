@@ -16,7 +16,7 @@ filelock==3.0.12          # via tox, virtualenv
 idna==2.9                 # via requests
 importlib-metadata==1.5.0  # via importlib-resources, pluggy, tox, virtualenv
 importlib-resources==1.2.0  # via virtualenv
-packaging==20.1           # via tox
+packaging==20.3           # via tox
 pathlib2==2.3.5           # via importlib-metadata, importlib-resources, virtualenv
 pluggy==0.13.1            # via tox
 py==1.8.1                 # via tox
@@ -30,5 +30,5 @@ tox-battery==0.5.1        # via -r requirements/travis.in
 tox==3.14.5               # via -r requirements/travis.in, tox-battery
 typing==3.7.4.1           # via importlib-resources
 urllib3==1.25.8           # via requests
-virtualenv==20.0.7        # via tox
+virtualenv==20.0.8        # via tox
 zipp==1.2.0               # via importlib-metadata, importlib-resources

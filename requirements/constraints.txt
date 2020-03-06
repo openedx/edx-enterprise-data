@@ -25,6 +25,9 @@ edx-django-utils<3.0.0
 # edx-django-utils version 4.0.0 dropped support for python 2.7, see https://github.com/edx/edx-rest-api-client/releases/tag/4.0.0
 edx-rest-api-client<4.0.0
 
+# Already in python3
+futures; python_version == "2.7"
+
 # it's experimental, so keep it pinned
 tox-battery==0.5.2
 
