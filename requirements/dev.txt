@@ -32,9 +32,9 @@ diff-cover==2.6.0         # via -r requirements/dev-enterprise_data.in
 distlib==0.3.0            # via caniusepython3, virtualenv
 django-crum==0.7.5        # via edx-rbac
 django-fernet-fields==0.5  # via -r requirements/base.in
-django-model-utils==3.2.0  # via -r requirements/base.in, edx-rbac
+django-model-utils==3.2.0  # via -c requirements/constraints.txt, -r requirements/base.in, edx-rbac
 django-waffle==0.18.0     # via -c requirements/constraints.txt, edx-django-utils, edx-drf-extensions
-django==1.11.28           # via -c requirements/constraints.txt, -r requirements/base.in, django-crum, django-fernet-fields, django-model-utils, edx-django-utils, edx-drf-extensions, edx-i18n-tools, edx-rbac, rest-condition
+django==1.11.29           # via -c requirements/constraints.txt, -r requirements/base.in, django-crum, django-fernet-fields, django-model-utils, edx-django-utils, edx-drf-extensions, edx-i18n-tools, edx-rbac, rest-condition
 djangorestframework-jwt==1.11.0  # via edx-drf-extensions
 djangorestframework==3.9.4  # via edx-drf-extensions, rest-condition
 docutils==0.16            # via awscli, botocore, readme-renderer
@@ -49,7 +49,7 @@ enum34==1.1.9             # via astroid, cryptography, pgpy
 filelock==3.0.12          # via tox, virtualenv
 future==0.18.2            # via backports.os, pyjwkest
 futures==3.2.0 ; python_version == "2.7"  # via -r requirements/base.in, -r requirements/quality.in, caniusepython3, isort, s3transfer
-idna==2.8                 # via requests
+idna==2.9                 # via requests
 importlib-metadata==1.5.0  # via importlib-resources, inflect, path.py, pluggy, tox, virtualenv
 importlib-resources==1.2.0  # via virtualenv
 inflect==3.0.2            # via jinja2-pluralize
@@ -81,7 +81,7 @@ py2neo==4.3.0             # via -r requirements/base.in
 py==1.8.1                 # via tox
 pyasn1==0.4.8             # via paramiko, pgpy, rsa
 pycodestyle==2.5.0        # via -r requirements/quality.in
-pycparser==2.19           # via cffi
+pycparser==2.20           # via cffi
 pycryptodomex==3.9.7      # via pyjwkest
 pydocstyle==3.0.0         # via -r requirements/quality.in
 pygments==2.3.1           # via diff-cover, py2neo, readme-renderer
@@ -101,7 +101,7 @@ pytz==2019.3              # via celery, django, neotime, py2neo
 pyyaml==3.12              # via awscli, edx-i18n-tools
 readme-renderer==24.0     # via twine
 requests-toolbelt==0.9.1  # via twine
-requests==2.22.0          # via -r requirements/base.in, caniusepython3, edx-drf-extensions, edx-rest-api-client, pyjwkest, requests-toolbelt, slumber, twine
+requests==2.23.0          # via -r requirements/base.in, caniusepython3, edx-drf-extensions, edx-rest-api-client, pyjwkest, requests-toolbelt, slumber, twine
 rest-condition==1.0.3     # via edx-drf-extensions
 rsa==3.4.2                # via awscli
 rules==2.2                # via -r requirements/base.in
