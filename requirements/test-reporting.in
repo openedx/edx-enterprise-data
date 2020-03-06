@@ -1,4 +1,5 @@
 -c constraints.txt
+-r reporting.in
 
 tox
 tox-battery                         # Makes tox aware of requirements file changes

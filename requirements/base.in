@@ -1,24 +1,13 @@
 -c constraints.txt
 
-vertica-python                          # Required for Enterprise Reporting
-pyminizip                               # Required for Enterprise Reporting
-celery==3.1.18                          # Run task workers in other locations
-unicodecsv==0.14.1                      # Allows exporting CSV with unicode support (a drop-in replacement for built-in csv module)
 requests                                # Required for SAPSuccessFactorsAPIClient
 edx-rest-api-client                     # For accessing the Enrollment API (and possibly other edX APIs)
 edx-django-utils
 edx-drf-extensions
 edx-opaque-keys
-awscli==1.11.178                        # for assuming aws roles for sending email via SES
-boto3==1.4.7
-cryptography
-paramiko==2.4
 Django
 django-fernet-fields
 django-model-utils
 six
-PGPy                                    # Required for Enterprise Reporting
-pyOpenSSL==17.4.0 # Any version beyond this requires cryptography 2.X.X
-py2neo
 edx-rbac
 rules

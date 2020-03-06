@@ -1,0 +1,13 @@
+# Used for enterprise reporting
+-c constraints.txt
+
+awscli==1.11.178                        # for assuming aws roles for sending email via SES
+boto3==1.4.7
+celery==3.1.18                          # Run task workers in other locations
+cryptography
+paramiko
+PGPy                                    # Required for Enterprise Reporting
+py2neo
+pyminizip                               # Required for Enterprise Reporting
+unicodecsv==0.14.1                      # Allows exporting CSV with unicode support (a drop-in replacement for built-in csv module)
+vertica-python                          # Required for Enterprise Reporting

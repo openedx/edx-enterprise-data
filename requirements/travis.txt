@@ -26,7 +26,7 @@ scandir==1.10.0           # via pathlib2
 singledispatch==3.4.0.3   # via importlib-resources
 six==1.14.0               # via packaging, pathlib2, tox, virtualenv
 toml==0.10.0              # via tox
-tox-battery==0.5.1        # via -r requirements/travis.in
+tox-battery==0.5.2        # via -c requirements/constraints.txt, -r requirements/travis.in
 tox==3.14.5               # via -r requirements/travis.in, tox-battery
 typing==3.7.4.1           # via importlib-resources
 urllib3==1.25.8           # via requests
