@@ -12,7 +12,11 @@ from collections import OrderedDict
 from io import open  # pylint: disable=redefined-builtin
 from uuid import UUID
 
-from enterprise_reporting.clients.enterprise import EnterpriseAPIClient, EnterpriseDataApiClient
+from enterprise_reporting.clients.enterprise import (
+    AnalyticsDataApiClient,
+    EnterpriseAPIClient,
+    EnterpriseDataApiClient
+)
 from enterprise_reporting.clients.vertica import VerticaClient
 from enterprise_reporting.delivery_method import SFTPDeliveryMethod, SMTPDeliveryMethod
 from enterprise_reporting.utils import decrypt_string, generate_data
@@ -157,6 +161,18 @@ class EnterpriseReportSender(object):
             writer.writerow(list(OrderedDict(sorted(enrollments[0].items())).keys()))
             for enrollment in enrollments:
                 writer.writerow(list(OrderedDict(sorted(enrollment.items())).values()))
+        return [data_report_file]
+
+    def _generate_enterprise_report_engagement_csv(self):
+        """Query the Analytics Data API to get engagement data to be turned into a CSV."""
+        engagements = AnalyticsDataApiClient().get_enterprise_engagements(self.enterprise_customer_uuid)['results']
+        if not engagements:
+            return []
+        with open(self.data_report_file_name, 'w') as data_report_file:
+            writer = csv.writer(data_report_file)
+            writer.writerow(list(OrderedDict(sorted(engagements[0].items())).keys()))
+            for engagement in engagements:
+                writer.writerow(list(OrderedDict(sorted(engagement.items())).values()))
         return [data_report_file]
 
     def _generate_enterprise_report_progress_v2_json(self):
