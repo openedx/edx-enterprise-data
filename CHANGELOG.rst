@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[1.3.15] - 2020-03-10
+---------------------
+* Added enterprise learner engagement report.
+
 [1.3.14] - 2020-03-06
 ---------------------
 * Upgrade python packages. Using requirements/base.in to load requirements.

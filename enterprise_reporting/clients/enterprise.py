@@ -113,3 +113,24 @@ class EnterpriseDataApiClient(EdxOAuth2APIClient):
             should_traverse_pagination=True,
             querystring={'page_size': self.PAGE_SIZE},
         )
+
+
+class AnalyticsDataApiClient(EdxOAuth2APIClient):
+    """
+    Client for connecting to the Analytics Data API.
+    """
+
+    API_BASE_URL = os.getenv('ANALYTICS_API_URL', default='') + '/api/v0'
+    APPEND_SLASH = True
+
+    PAGE_SIZE = os.getenv('PAGE_SIZE', default=1000)
+
+    @EdxOAuth2APIClient.refresh_token
+    def get_enterprise_engagements(self, enterprise_customer_uuid):
+        return self._load_data(
+            'enterprise',
+            resource_id=enterprise_customer_uuid,
+            detail_resource='engagements',
+            should_traverse_pagination=True,
+            querystring={'page_size': self.PAGE_SIZE},
+        )
