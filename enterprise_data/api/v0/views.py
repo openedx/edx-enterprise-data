@@ -11,7 +11,7 @@ from edx_rbac.mixins import PermissionRequiredMixin
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
 from edx_rest_framework_extensions.paginators import DefaultPagination
 from rest_framework import filters, viewsets
-from rest_framework.decorators import list_route
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from django.db.models import Count, Max, OuterRef, Q, Subquery, Value
@@ -184,7 +184,7 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         created_max = queryset.aggregate(Max('created'))
         return created_max['created__max']
 
-    @list_route()
+    @action(detail=False)
     def overview(self, request, **kwargs):  # pylint: disable=unused-argument
         """
         Returns the following data:
