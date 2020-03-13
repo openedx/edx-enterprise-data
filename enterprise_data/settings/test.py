@@ -57,15 +57,13 @@ INSTALLED_APPS = (
     "rules.apps.AutodiscoverRulesConfig",
 )
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "crum.CurrentRequestUserMiddleware",
     "waffle.middleware.WaffleMiddleware",
 ]
-
-MIDDLEWARE = MIDDLEWARE_CLASSES  # Django 1.10 compatibility - the setting was renamed
 
 AUTHENTICATION_BACKENDS = [
     "rules.permissions.ObjectPermissionBackend",
