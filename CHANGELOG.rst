@@ -13,9 +13,13 @@ Change Log
 
 Unreleased
 ----------
-* Fix compatibility warnings with Django2.0. Remove support for Django<1.9
 
 =========================
+
+[1.3.16] - 2020-03-13
+---------------------
+* Fix compatibility warnings with Django2.0. Remove support for Django<1.9,
+* Upgrade python packages.
 
 [1.3.15] - 2020-03-10
 ---------------------
