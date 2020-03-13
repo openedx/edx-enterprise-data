@@ -6,6 +6,7 @@ from __future__ import absolute_import, unicode_literals
 from django.conf.urls import include, url
 from django.contrib import admin
 
+app_name = 'enterprise_data'  # pylint: disable=invalid-name
 urlpatterns = [
     url(
         r'^enterprise/api/',

@@ -13,6 +13,7 @@ Change Log
 
 Unreleased
 ----------
+* Fix compatibility warnings with Django2.0. Remove support for Django<1.9
 
 =========================
 
