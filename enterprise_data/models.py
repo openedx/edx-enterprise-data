@@ -38,6 +38,7 @@ class EnterpriseEnrollment(models.Model):
         'EnterpriseUser',
         related_name='enrollments',
         to_field='enterprise_user_id',
+        on_delete=models.CASCADE,
     )
     course_id = models.CharField(max_length=255, help_text='The course the learner is enrolled in.')
     enrollment_created_timestamp = models.DateTimeField()
