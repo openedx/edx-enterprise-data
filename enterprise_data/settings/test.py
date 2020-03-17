@@ -55,6 +55,9 @@ INSTALLED_APPS = (
     "enterprise_reporting",
     "enterprise_data_roles",
     "rules.apps.AutodiscoverRulesConfig",
+
+    # drf-jwt
+    "rest_framework_jwt",
 )
 
 MIDDLEWARE = [
@@ -108,6 +111,7 @@ JWT_AUTH = {
     'JWT_SUPPORTED_VERSION': '1.0.0',
     'JWT_VERIFY_AUDIENCE': False,
     'JWT_VERIFY_EXPIRATION': True,
+    'JWT_AUTH_HEADER_PREFIX': 'JWT',
 
     # JWT_ISSUERS enables token decoding for multiple issuers (Note: This is not a native DRF-JWT field)
     # We use it to allow different values for the 'ISSUER' field, but keep the same SECRET_KEY and
