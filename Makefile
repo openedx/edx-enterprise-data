@@ -32,6 +32,7 @@ upgrade: ## update the requirements/*.txt files with the latest packages satisfy
 	pip-compile --upgrade -o requirements/test-master.txt requirements/base.in requirements/reporting.in requirements/test-master.in \
 	                                                      requirements/test.in
 	# Let tox control the Django version for tests
+	grep -e "^django==" requirements/base.txt > requirements/django.txt
 	sed '/^[dD]jango==/d' requirements/test-master.txt > requirements/test-master.tmp
 	mv requirements/test-master.tmp requirements/test-master.txt
 	sed '/^[dD]jango==/d' requirements/test-reporting.txt > requirements/test-reporting.tmp
