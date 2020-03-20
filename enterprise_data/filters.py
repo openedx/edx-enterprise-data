@@ -85,3 +85,25 @@ class AuditEnrollmentsFilterBackend(filters.BaseFilterBackend, FiltersMixin):
             queryset = queryset.exclude(**filter_query)
 
         return queryset
+
+
+class AuditUsersEnrollmentFilterBackend(filters.BaseFilterBackend, FiltersMixin):
+    """
+    Filter backend to filter Enterprise Users with 'audit' mode enrollments.
+    """
+
+    def filter_queryset(self, request, queryset, view):
+        """
+        Filter out queryset on the basis of its enrollment mode.
+
+        If `enable_audit_data_reporting` is not enabled then it will exclude the Users with 'audit' mode enrollment.
+        """
+        enterprise_id = view.kwargs['enterprise_id']
+
+        self.update_session_with_enterprise_data(request)
+
+        enable_audit_data_reporting = request.session['enable_audit_data_reporting'].get(enterprise_id, False)
+
+        return queryset if enable_audit_data_reporting else queryset.filter(
+            ~Q(enrollments__user_current_enrollment_mode='audit')
+        )

@@ -691,16 +691,14 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
             user=self.user
         )
         self.client.force_authenticate(user=self.user)  # pylint: disable=no-member
-        enterprise_api_client = mock.patch(
-            'enterprise_data.filters.EnterpriseApiClient',
-            mock.Mock(
-                return_value=mock.Mock(
-                    get_enterprise_customer=mock.Mock(return_value=get_dummy_enterprise_api_data())
-                )
-            )
+        mocked_get_enterprise_customer = mock.patch(
+            'enterprise_data.filters.EnterpriseApiClient.get_enterprise_customer',
+            return_value=get_dummy_enterprise_api_data()
         )
-        self.enterprise_api_client = enterprise_api_client.start()
-        self.addCleanup(enterprise_api_client.stop)
+
+        self.mocked_get_enterprise_customer = mocked_get_enterprise_customer.start()
+        self.addCleanup(mocked_get_enterprise_customer.stop)
+
         self.enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
 
         one_day = timedelta(days=1)
@@ -853,6 +851,18 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
             enterprise_id=self.enterprise_id,
         )
 
+        # User with a audit mode enrollment
+        self.ent_user10 = EnterpriseUserFactory(
+            enterprise_user_id=10,
+            enterprise_id=self.enterprise_id,
+        )
+        EnterpriseEnrollmentFactory(
+            enterprise_user=self.ent_user10,
+            has_passed=True,
+            enterprise_id=self.enterprise_id,
+            consent_granted=True,
+            user_current_enrollment_mode='audit',
+        )
         self.set_jwt_cookie()
 
     def test_viewset_no_query_params(self):
@@ -860,10 +870,21 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
         EnterpriseUserViewset should return all users if no filtering query
         params are present
         """
-        url = reverse('v0:enterprise-users-list',
-                      kwargs={'enterprise_id': self.enterprise_id})
+        url = reverse('v0:enterprise-users-list', kwargs={'enterprise_id': self.enterprise_id})
         response = self.client.get(url)
         assert response.json()['count'] == 8
+
+    def test_viewset_with_audit_reporting(self):
+        """
+        EnterpriseUserViewset should return all users inclusive with audit enrollments.
+        """
+        self.mocked_get_enterprise_customer.return_value = {
+            'uuid': self.enterprise_id,
+            'enable_audit_data_reporting': True,
+        }
+        url = reverse('v0:enterprise-users-list', kwargs={'enterprise_id': self.enterprise_id})
+        response = self.client.get(url)
+        assert response.json()['count'] == 9
 
     @mock.patch('enterprise_data.api.v0.views.EnterpriseUsersViewSet.paginate_queryset')
     def test_viewset_no_query_params_no_pagination(self, mock_paginate):
