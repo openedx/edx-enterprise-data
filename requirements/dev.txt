@@ -14,7 +14,7 @@ backports.functools-lru-cache==1.6.1  # via astroid, caniusepython3, isort, pyli
 backports.os==0.1.1       # via path.py
 bcrypt==3.1.7             # via paramiko
 billiard==3.3.0.23        # via celery
-bleach==3.1.1             # via readme-renderer
+bleach==3.1.3             # via readme-renderer
 boto3==1.4.7              # via -r requirements/reporting.in
 botocore==1.7.36          # via awscli, boto3, s3transfer
 caniusepython3==7.2.0     # via -r requirements/quality.in
@@ -39,7 +39,7 @@ djangorestframework==3.9.4  # via drf-jwt, edx-drf-extensions, rest-condition
 docutils==0.16            # via awscli, botocore, readme-renderer
 drf-jwt==1.14.0           # via -c requirements/constraints.txt, edx-drf-extensions
 edx-django-utils==2.0.4   # via -c requirements/constraints.txt, -r requirements/base.in, edx-drf-extensions, edx-rest-api-client
-edx-drf-extensions==5.0.0  # via -r requirements/base.in, edx-rbac
+edx-drf-extensions==5.0.2  # via -r requirements/base.in, edx-rbac
 edx-i18n-tools==0.5.0     # via -r requirements/dev-enterprise_data.in
 edx-lint==1.4.1           # via -r requirements/dev-enterprise_data.in, -r requirements/quality.in
 edx-opaque-keys==2.0.1    # via -r requirements/base.in, edx-drf-extensions
@@ -51,7 +51,7 @@ future==0.18.2            # via backports.os, pyjwkest
 futures==3.2.0 ; python_version == "2.7"  # via -c requirements/constraints.txt, -r requirements/quality.in, caniusepython3, isort, s3transfer
 idna==2.9                 # via requests
 importlib-metadata==1.5.0  # via importlib-resources, inflect, path.py, pluggy, tox, virtualenv
-importlib-resources==1.3.1  # via virtualenv
+importlib-resources==1.4.0  # via virtualenv
 inflect==3.0.2            # via jinja2-pluralize
 ipaddress==1.0.23         # via cryptography
 isort==4.3.21             # via -r requirements/quality.in, pylint
@@ -122,7 +122,7 @@ typing==3.7.4.1           # via importlib-resources
 unicodecsv==0.14.1        # via -r requirements/reporting.in
 urllib3==1.24.3           # via py2neo, requests
 vertica-python==0.10.2    # via -r requirements/reporting.in
-virtualenv==20.0.10       # via tox
+virtualenv==20.0.13       # via tox
 wcwidth==0.1.8            # via prompt-toolkit
 webencodings==0.5.1       # via bleach
 wheel==0.34.2             # via -r requirements/dev-enterprise_data.in
