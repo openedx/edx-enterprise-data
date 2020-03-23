@@ -1,16 +1,10 @@
 language: python
 python:
-  - 2.7
-  - 3.6
+  - 3.5
 env:
   - TOXENV=django111-data
   - TOXENV=django111-reporting
-matrix:
-  include:
-  - python: 3.6
-    env: TOXENV=quality
-  - python: 2.7
-    env: TOXENV=quality
+  - TOXENV=quality
 cache:
   - pip
 install:
