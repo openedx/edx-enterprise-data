@@ -8,6 +8,7 @@ from datetime import date, datetime, timedelta
 
 import ddt
 import mock
+import pytz
 from pytest import mark
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -247,7 +248,12 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
                 enterprise_user=enterprise,
                 enterprise_id=enterprise_id,
                 user_email='user{}@example.com'.format(index),
-                passed_timestamp=passed_date,
+                passed_timestamp=datetime(
+                    year=passed_date.year,
+                    month=passed_date.month,
+                    day=passed_date.day,
+                    tzinfo=pytz.utc,
+                ),
                 course_title='course101',
                 has_passed=True,
                 consent_granted=True,

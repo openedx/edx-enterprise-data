@@ -7,6 +7,7 @@ from __future__ import absolute_import, unicode_literals
 from datetime import datetime
 
 import factory
+import pytz
 from faker import Factory as FakerFactory
 from faker.providers import misc
 
@@ -61,8 +62,8 @@ class UserFactory(factory.django.DjangoModelFactory):
     is_staff = factory.lazy_attribute(lambda x: False)
     is_active = True
     is_superuser = False
-    last_login = datetime(2012, 1, 1)
-    date_joined = datetime(2011, 1, 1)
+    last_login = datetime(2012, 1, 1, tzinfo=pytz.utc)
+    date_joined = datetime(2011, 1, 1, tzinfo=pytz.utc)
 
 
 class EnterpriseUserFactory(factory.django.DjangoModelFactory):
@@ -78,7 +79,7 @@ class EnterpriseUserFactory(factory.django.DjangoModelFactory):
     lms_user_id = factory.lazy_attribute(lambda x: FAKER.random_int(min=1))  # pylint: disable=no-member
     enterprise_user_id = factory.lazy_attribute(lambda x: FAKER.random_int(min=1))  # pylint: disable=no-member
     enterprise_sso_uid = factory.lazy_attribute(lambda x: FAKER.text(max_nb_chars=255))  # pylint: disable=no-member
-    user_account_creation_timestamp = datetime(2011, 1, 1)
+    user_account_creation_timestamp = datetime(2011, 1, 1, tzinfo=pytz.utc)
     user_username = factory.Sequence(u'robot{0}'.format)
     user_email = factory.Sequence(u'robot+test+{0}@edx.org'.format)
     user_country_code = factory.lazy_attribute(lambda x: FAKER.country_code())  # pylint: disable=no-member
