@@ -8,7 +8,7 @@ from edx_rest_framework_extensions.auth.jwt.cookies import jwt_cookie_name
 from edx_rest_framework_extensions.auth.jwt.tests.utils import generate_jwt_token, generate_unversioned_payload
 
 
-class JWTTestMixin(object):
+class JWTTestMixin:
     """
     Mixin for JWT test related utils.
     """

@@ -15,7 +15,7 @@ from enterprise_data.clients import EnterpriseApiClient
 CONSENT_TRUE_OR_NOENROLL_Q = Q(enrollments__consent_granted=True) | Q(enrollments__isnull=True)
 
 
-class FiltersMixin(object):
+class FiltersMixin:
     """
     Util mixin for enterprise_data filters.
     """

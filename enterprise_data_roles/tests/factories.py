@@ -21,7 +21,7 @@ class EnterpriseDataFeatureRoleFactory(factory.django.DjangoModelFactory):
 
     Creates an instance of EnterpriseDataFeatureRole with minimal boilerplate
     """
-    class Meta(object):
+    class Meta:
         model = EnterpriseDataFeatureRole
 
     name = factory.Sequence(u'User Role-{0}'.format)
@@ -34,7 +34,7 @@ class EnterpriseDataRoleAssignmentFactory(factory.django.DjangoModelFactory):
 
     Creates an instance of EnterpriseDataRoleAssignment with minimal boilerplate
     """
-    class Meta(object):
+    class Meta:
         model = EnterpriseDataRoleAssignment
 
     user = factory.SubFactory(UserFactory)

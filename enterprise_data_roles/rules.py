@@ -24,7 +24,7 @@ def request_user_has_implicit_access(*args, **kwargs):  # pylint: disable=unused
         boolean: whether the request user has access or not
     """
     request = crum.get_current_request()
-    __, __, request_kwargs = resolve(request.path)
+    _, _, request_kwargs = resolve(request.path)
     enterprise_id_in_request = request_kwargs.get('enterprise_id')
 
     decoded_jwt = get_decoded_jwt(request) or get_decoded_jwt_from_auth(request)
@@ -44,7 +44,7 @@ def request_user_has_explicit_access(*args, **kwargs):  # pylint: disable=unused
         boolean: whether the request user has access or not
     """
     request = crum.get_current_request()
-    __, __, request_kwargs = resolve(request.path)
+    _, _, request_kwargs = resolve(request.path)
     enterprise_id_in_request = request_kwargs.get('enterprise_id')
 
     return user_has_access_via_database(

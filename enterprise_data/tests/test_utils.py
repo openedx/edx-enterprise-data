@@ -26,7 +26,7 @@ class EnterpriseEnrollmentFactory(factory.django.DjangoModelFactory):
     Creates an instance of EnterpriseCourseEnrollment with minimal boilerplate.
     """
 
-    class Meta(object):
+    class Meta:
         """
         Meta for EnterpriseCourseEnrollmentFactory.
         """
@@ -48,7 +48,7 @@ class UserFactory(factory.django.DjangoModelFactory):
 
     Creates an instance of User with minimal boilerplate
     """
-    class Meta(object):
+    class Meta:
         model = User
         django_get_or_create = ('email', 'username')
 
@@ -72,7 +72,7 @@ class EnterpriseUserFactory(factory.django.DjangoModelFactory):
 
     Creates an instance of Enterprise User with minimal boilerplate
     """
-    class Meta(object):
+    class Meta:
         model = EnterpriseUser
 
     enterprise_id = str(FAKER.uuid4())  # pylint: disable=no-member

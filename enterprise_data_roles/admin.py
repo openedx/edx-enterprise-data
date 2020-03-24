@@ -32,7 +32,7 @@ class EnterpriseDataRoleAssignmentAdmin(UserRoleAssignmentAdmin):
     Django admin for EnterpriseDataRoleAssignment Model.
     """
 
-    class Meta(object):
+    class Meta:
         """
         Meta class for EnterpriseDataRoleAssignmentAdmin.
         """
