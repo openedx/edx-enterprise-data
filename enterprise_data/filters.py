@@ -1,7 +1,7 @@
 """
 Filters for enterprise data views.
 """
-from __future__ import absolute_import, unicode_literals
+
 
 from rest_framework import filters
 

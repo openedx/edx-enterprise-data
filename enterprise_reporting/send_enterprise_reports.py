@@ -3,7 +3,7 @@
 Sends an Enterprise Customer's data file to a configured destination.
 """
 
-from __future__ import absolute_import, unicode_literals
+
 
 import argparse
 import logging

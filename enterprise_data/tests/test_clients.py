@@ -2,7 +2,7 @@
 """
 Tests for clients in enterprise_data.
 """
-from __future__ import absolute_import, unicode_literals
+
 
 from edx_rest_api_client.exceptions import HttpClientError
 from mock import ANY, Mock, mock

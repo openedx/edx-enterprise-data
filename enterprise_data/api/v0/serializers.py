@@ -2,7 +2,7 @@
 """
 Serializers for enterprise api version 0 endpoint.
 """
-from __future__ import absolute_import, unicode_literals
+
 
 from datetime import date
 

@@ -2,7 +2,7 @@
 """
 Mixins for enterprise data tests.
 """
-from __future__ import absolute_import, unicode_literals
+
 
 from edx_rest_framework_extensions.auth.jwt.cookies import jwt_cookie_name
 from edx_rest_framework_extensions.auth.jwt.tests.utils import generate_jwt_token, generate_unversioned_payload
