@@ -13,10 +13,14 @@ Change Log
 
 Unreleased
 ----------
-* Fix for JWT being double encoded
-* Drop python 2.7 support
 
 =========================
+
+[2.0.0] - 2020-04-01
+--------------------
+* Fix for JWT being double encoded
+* Drop python 2.7 support
+* Add support to Django 2.0, 2.1 and 2.2
 
 [1.3.16] - 2020-03-13
 ---------------------
