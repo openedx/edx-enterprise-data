@@ -128,6 +128,7 @@ class EnterpriseUser(models.Model):
         return self.__str__()
 
 
+@python_2_unicode_compatible
 class EnterpriseSubsectionGrade(models.Model):
     """
     Enterprise subsection grades of learners for course they are enrolled in.

@@ -57,7 +57,7 @@ class EnterpriseFilterTestCase(APITransactionTestCase):
         self.addCleanup(mocked_get_enterprise_customer.stop)
         self.enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
 
-        self.set_jwt_cookie()
+        self.set_jwt_cookie()  # pylint: disable=no-member
 
 
 @ddt.ddt
@@ -67,9 +67,6 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, EnterpriseFilterTestCase):
     Tests for EnterpriseEnrollmentsViewSet
     """
     fixtures = ('enterprise_enrollment', 'enterprise_user', )
-
-    def setUp(self):
-        super(TestEnterpriseEnrollmentsViewSet, self).setUp()
 
     @staticmethod
     def _get_enrollments_expected_data(enrollments):
@@ -1327,9 +1324,6 @@ class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, EnterpriseFilterTestCa
     """
     fixtures = ('enterprise_enrollment', 'enterprise_user', )
 
-    def setUp(self):
-        super(TestEnterpriseLearnerCompletedCourses, self).setUp()
-
     def test_get_learner_completed_courses(self):
         """
         Test that we get correct number of courses completed by a learner.
@@ -1579,9 +1573,6 @@ class TestEnterpriseLearnerSubsectionGrades(JWTTestMixin, EnterpriseFilterTestCa
     """
     fixtures = ('enterprise_subsection_grade', 'enterprise_user', )
 
-    def setUp(self):
-        super(TestEnterpriseLearnerSubsectionGrades, self).setUp()
-
     def _subsection_grade_url(self, enterprise_id=None):
         """
         Returns: url for subsection grade API
@@ -1633,6 +1624,3 @@ class TestEnterpriseLearnerSubsectionGrades(JWTTestMixin, EnterpriseFilterTestCa
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()['count'], 0)
-
-
-
