@@ -125,7 +125,7 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         """
         return queryset.filter(
             has_passed=False,
-            course_end__gte=date.today(),
+            course_end__gte=timezone.now(),
         )
 
     def filter_distinct_learners(self, queryset):
@@ -162,7 +162,7 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         """
         Filters only those learners who completed a course in last week.
         """
-        date_today = date.today()
+        date_today = timezone.now()
         date_week_before = date_today - timedelta(weeks=1)
         return queryset.filter(
             has_passed=True,
