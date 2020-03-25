@@ -8,7 +8,6 @@ from datetime import date, datetime, timedelta
 
 import ddt
 import mock
-import pytz
 from pytest import mark
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -239,7 +238,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
             url=reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': enterprise_id})
         )
 
-        date_today = date.today()
+        date_today = timezone.now()
         in_past_week_passed_dates = [date_today, date_today - timedelta(days=2)]
         before_past_week_passed_dates = [date_today - timedelta(weeks=2)]
         passed_dates = in_past_week_passed_dates + before_past_week_passed_dates
@@ -248,12 +247,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
                 enterprise_user=enterprise,
                 enterprise_id=enterprise_id,
                 user_email='user{}@example.com'.format(index),
-                passed_timestamp=datetime(
-                    year=passed_date.year,
-                    month=passed_date.month,
-                    day=passed_date.day,
-                    tzinfo=pytz.utc,
-                ),
+                passed_timestamp=passed_date,
                 course_title='course101',
                 has_passed=True,
                 consent_granted=True,
@@ -265,7 +259,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         assert result['count'] == len(in_past_week_passed_dates)
         for enrollment, passed_date in zip(result['results'], in_past_week_passed_dates):
             assert enrollment['progress_status'] == 'Passed'
-            assert datetime.strptime(enrollment['passed_timestamp'], "%Y-%m-%dT%H:%M:%SZ").date() == passed_date
+            assert enrollment['passed_timestamp'] == passed_date.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
     @ddt.data(
         (
