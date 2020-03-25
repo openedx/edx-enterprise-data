@@ -1,0 +1,102 @@
+[
+  {
+    "model": "enterprise_data.EnterpriseSubsectionGrade",
+    "pk": 1,
+    "fields": {
+      "enterprise_id": "ee5e6b3a069a4947bb8dd2dbc323396c",
+      "enterprise_name": "Enterprise 1",
+      "lms_user_id": 11,
+      "enterprise_user_id": 111,
+      "course_id": "edX/Open_DemoX/edx_demo_course",
+      "user_email": "test@example.com",
+      "username": "test_user",
+      "section_block_id": "block-v1:edX+DnDv2101x+2016+type@chapter+block@d18abaffdfa44a1c9177a9e084d8c4a7",
+      "section_display_name": "Section 1",
+      "section_index": 1,
+      "subsection_block_id": "block-v1:edX+DnDv2101x+2016+type@sequential+block@f5188c028bb748ee8f51e534231fd3be",
+      "subsection_display_name": "Subsection 1",
+      "subsection_index": 1,
+      "subsection_grade_created": "2020-02-27 16:02:38Z",
+      "first_attempted": "2020-02-26 16:02:38Z",
+      "earned_all": 0.8,
+      "possible_all": 1.0,
+      "earned_graded": 0.6,
+      "possible_graded": 1.0
+    }
+  },
+  {
+    "model": "enterprise_data.EnterpriseSubsectionGrade",
+    "pk": 2,
+    "fields": {
+      "enterprise_id": "ee5e6b3a069a4947bb8dd2dbc323396c",
+      "enterprise_name": "Enterprise 1",
+      "lms_user_id": 11,
+      "enterprise_user_id": 111,
+      "course_id": "edX/Open_DemoX/edx_demo_course",
+      "user_email": "test@example.com",
+      "username": "test_user",
+      "section_block_id": "block-v1:edX+DnDv2101x+2016+type@chapter+block@d18abaffdfa44a1c9177a9e084d8c4a7",
+      "section_display_name": "Section 1",
+      "section_index": 1,
+      "subsection_block_id": "block-v1:edX+DnDv2101x+2016+type@sequential+block@f5188c028bb748ee8f51e534231fd3te",
+      "subsection_display_name": "Subsection 2",
+      "subsection_index": 1,
+      "subsection_grade_created": "2020-02-28 16:02:38Z",
+      "first_attempted": "2020-02-26 16:02:38Z",
+      "earned_all": 0.7,
+      "possible_all": 1.0,
+      "earned_graded": 0.5,
+      "possible_graded": 1.0
+    }
+  },
+  {
+    "model": "enterprise_data.EnterpriseSubsectionGrade",
+    "pk": 3,
+    "fields": {
+      "enterprise_id": "ee5e6b3a069a4947bb8dd2dbc323396c",
+      "enterprise_name": "Enterprise 1",
+      "lms_user_id": 11,
+      "enterprise_user_id": 111,
+      "course_id": "edX/Open_DemoX/edx_demo_course",
+      "user_email": "test@example.com",
+      "username": "test_user",
+      "section_block_id": "block-v1:edX+DnDv2101x+2016+type@chapter+block@d18abaffdfa44a1c9177a9e084d8c4a8",
+      "section_display_name": "Section 2",
+      "section_index": 1,
+      "subsection_block_id": "block-v1:edX+DnDv2101x+2016+type@sequential+block@f5188c028bb748ee8f51e734231fd3be",
+      "subsection_display_name": "Subsection 1 of section 2",
+      "subsection_index": 1,
+      "subsection_grade_created": "2020-03-17 16:02:38Z",
+      "first_attempted": "2020-02-26 16:02:38Z",
+      "earned_all": 0.2,
+      "possible_all": 1.0,
+      "earned_graded": 0.1,
+      "possible_graded": 1.0
+    }
+  },
+  {
+    "model": "enterprise_data.EnterpriseSubsectionGrade",
+    "pk": 4,
+    "fields": {
+      "enterprise_id": "ee5e6b3a069a4947bb8dd2dbc323396c",
+      "enterprise_name": "Enterprise 1",
+      "lms_user_id": 11,
+      "enterprise_user_id": 111,
+      "course_id": "edX/Open_DemoX/edx_demo_course",
+      "user_email": "test@example.com",
+      "username": "test_user",
+      "section_block_id": "block-v1:edX+DnDv2101x+2016+type@chapter+block@d18abaffdfa44a1c9177a9e084d8c4a7",
+      "section_display_name": "Section 2",
+      "section_index": 1,
+      "subsection_block_id": "block-v1:edX+DnDv2101x+2016+type@sequential+block@f5188c028bb748ee8f51e534231fd3be",
+      "subsection_display_name": "Subsection 2 of section 2",
+      "subsection_index": 1,
+      "subsection_grade_created": "2020-03-21 16:02:38Z",
+      "first_attempted": "2020-02-26 16:02:38Z",
+      "earned_all": 0.9,
+      "possible_all": 1.0,
+      "earned_graded": 0.3,
+      "possible_graded": 1.0
+    }
+  }
+]

@@ -85,3 +85,17 @@ class AuditEnrollmentsFilterBackend(filters.BaseFilterBackend, FiltersMixin):
             queryset = queryset.exclude(**filter_query)
 
         return queryset
+
+
+class EnterpriseFilterBackend(filters.BaseFilterBackend, FiltersMixin):
+    """
+    Filter backend for any view that needs to filter results base on enterprise_id.
+    """
+
+    def filter_queryset(self, request, queryset, view):
+        """
+        Filter a queryset for results where enterprise_id is matched with provided enterprise_id.
+        """
+        current_enterprise = view.kwargs.get('enterprise_id', None)
+        filter_kwargs = {'enterprise_id': current_enterprise}
+        return queryset.filter(**filter_kwargs)

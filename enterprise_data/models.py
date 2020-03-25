@@ -126,3 +126,48 @@ class EnterpriseUser(models.Model):
         Return uniquely identifying string representation.
         """
         return self.__str__()
+
+
+class EnterpriseSubsectionGrade(models.Model):
+    """
+    Enterprise subsection grades of learners for course they are enrolled in.
+    """
+
+    enterprise_id = models.UUIDField()
+    enterprise_name = models.CharField(max_length=255)
+    user_email = models.CharField(max_length=255)
+    username = models.CharField(max_length=255)
+    lms_user_id = models.PositiveIntegerField()
+    enterprise_user = models.ForeignKey(
+        'EnterpriseUser',
+        related_name='subsection_grades',
+        to_field='enterprise_user_id',
+        on_delete=models.CASCADE,
+    )
+    course_id = models.CharField(max_length=255)
+    section_block_id = models.CharField(max_length=564)
+    section_display_name = models.CharField(max_length=255)
+    section_index = models.PositiveIntegerField()
+    subsection_block_id = models.CharField(max_length=564)
+    subsection_display_name = models.CharField(max_length=255)
+    subsection_index = models.PositiveIntegerField()
+    subsection_grade_created = models.DateTimeField(null=True)
+    first_attempted = models.DateTimeField(null=True)
+    earned_all = models.FloatField()
+    possible_all = models.FloatField()
+    earned_graded = models.FloatField()
+    possible_graded = models.FloatField()
+
+    class Meta:
+        app_label = 'enterprise_data'
+        db_table = 'enterprise_subsection_grade'
+
+    def __str__(self):
+        """
+        Return a human-readable string representation of the object.
+        """
+        return "<Enterprise subsection {subsection} grade for user {user} in {course}>".format(
+            subsection=self.subsection_block_id,
+            user=self.enterprise_user_id,
+            course=self.course_id
+        )

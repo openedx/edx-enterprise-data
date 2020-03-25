@@ -24,8 +24,9 @@ from enterprise_data.filters import (
     CONSENT_TRUE_OR_NOENROLL_Q,
     AuditEnrollmentsFilterBackend,
     ConsentGrantedFilterBackend,
+    EnterpriseFilterBackend,
 )
-from enterprise_data.models import EnterpriseEnrollment, EnterpriseUser
+from enterprise_data.models import EnterpriseEnrollment, EnterpriseSubsectionGrade, EnterpriseUser
 
 LOGGER = getLogger(__name__)
 
@@ -335,3 +336,14 @@ class EnterpriseLearnerCompletedCoursesViewSet(EnterpriseViewSet, viewsets.Model
             consent_granted=True,
         ).values('user_email').annotate(completed_courses=Count('course_id')).order_by('user_email')
         return enrollments
+
+
+class EnterpriseLearnerSubsectionGradesViewSet(EnterpriseViewSet, viewsets.ReadOnlyModelViewSet):
+    """
+    View to manage enterprise learner subsection grades.
+    """
+    queryset = EnterpriseSubsectionGrade.objects.all()
+    serializer_class = serializers.EnterpriseSubsectionGradeSerializer
+    filter_backends = (filters.OrderingFilter, EnterpriseFilterBackend, )
+    ordering_fields = ('course_id', 'user_email', )
+    ordering = ('course_id', )

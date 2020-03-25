@@ -8,7 +8,7 @@ from datetime import date
 
 from rest_framework import serializers
 
-from enterprise_data.models import EnterpriseEnrollment, EnterpriseUser
+from enterprise_data.models import EnterpriseEnrollment, EnterpriseSubsectionGrade, EnterpriseUser
 
 
 class EnterpriseEnrollmentSerializer(serializers.ModelSerializer):
@@ -85,3 +85,13 @@ class LearnerCompletedCoursesSerializer(serializers.Serializer):    # pylint: di
     """
     user_email = serializers.EmailField()
     completed_courses = serializers.IntegerField()
+
+
+class EnterpriseSubsectionGradeSerializer(serializers.ModelSerializer):
+    """
+    Serializer for EnterpriseSubsectionGrade model.
+    """
+
+    class Meta:
+        model = EnterpriseSubsectionGrade
+        fields = '__all__'

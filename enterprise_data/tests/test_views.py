@@ -34,16 +34,13 @@ from enterprise_data_roles.constants import (
 from enterprise_data_roles.models import EnterpriseDataFeatureRole, EnterpriseDataRoleAssignment
 
 
-@ddt.ddt
-@mark.django_db
-class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
+class EnterpriseFilterTestCase(APITransactionTestCase):
     """
-    Tests for EnterpriseEnrollmentsViewSet
+    Base class for tests where enterprise filter is applied.
     """
-    fixtures = ('enterprise_enrollment', 'enterprise_user', )
 
     def setUp(self):
-        super(TestEnterpriseEnrollmentsViewSet, self).setUp()
+        super(EnterpriseFilterTestCase, self).setUp()
         self.user = UserFactory(is_staff=True)
         role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
         self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
@@ -51,7 +48,6 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
             user=self.user
         )
         self.client.force_authenticate(user=self.user)  # pylint: disable=no-member
-
         mocked_get_enterprise_customer = mock.patch(
             'enterprise_data.filters.EnterpriseApiClient.get_enterprise_customer',
             return_value=get_dummy_enterprise_api_data()
@@ -60,7 +56,20 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         self.mocked_get_enterprise_customer = mocked_get_enterprise_customer.start()
         self.addCleanup(mocked_get_enterprise_customer.stop)
         self.enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
+
         self.set_jwt_cookie()
+
+
+@ddt.ddt
+@mark.django_db
+class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, EnterpriseFilterTestCase):
+    """
+    Tests for EnterpriseEnrollmentsViewSet
+    """
+    fixtures = ('enterprise_enrollment', 'enterprise_user', )
+
+    def setUp(self):
+        super(TestEnterpriseEnrollmentsViewSet, self).setUp()
 
     @staticmethod
     def _get_enrollments_expected_data(enrollments):
@@ -677,31 +686,13 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
 
 @ddt.ddt
 @mark.django_db
-class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
+class TestEnterpriseUsersViewSet(JWTTestMixin, EnterpriseFilterTestCase):
     """
     Tests for EnterpriseUsersViewSet
     """
 
     def setUp(self):
         super(TestEnterpriseUsersViewSet, self).setUp()
-        self.user = UserFactory(is_staff=True)
-        role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
-        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
-            role=role,
-            user=self.user
-        )
-        self.client.force_authenticate(user=self.user)  # pylint: disable=no-member
-        enterprise_api_client = mock.patch(
-            'enterprise_data.filters.EnterpriseApiClient',
-            mock.Mock(
-                return_value=mock.Mock(
-                    get_enterprise_customer=mock.Mock(return_value=get_dummy_enterprise_api_data())
-                )
-            )
-        )
-        self.enterprise_api_client = enterprise_api_client.start()
-        self.addCleanup(enterprise_api_client.stop)
-        self.enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
 
         one_day = timedelta(days=1)
         date_in_past = timezone.now() - one_day
@@ -852,8 +843,6 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
             has_passed=False,
             enterprise_id=self.enterprise_id,
         )
-
-        self.set_jwt_cookie()
 
     def test_viewset_no_query_params(self):
         """
@@ -1332,7 +1321,7 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
 
 
 @ddt.ddt
-class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, APITransactionTestCase):
+class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, EnterpriseFilterTestCase):
     """
     Tests for EnterpriseLearnerCompletedCoursesViewSet.
     """
@@ -1340,30 +1329,6 @@ class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, APITransactionTestCase
 
     def setUp(self):
         super(TestEnterpriseLearnerCompletedCourses, self).setUp()
-        self.user = UserFactory(is_staff=True)
-        role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
-        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
-            role=role,
-            user=self.user
-        )
-        self.client.force_authenticate(user=self.user)  # pylint: disable=no-member
-        enterprise_api_client = mock.patch(
-            'enterprise_data.filters.EnterpriseApiClient',
-            mock.Mock(
-                return_value=mock.Mock(
-                    get_enterprise_customer=mock.Mock(return_value=get_dummy_enterprise_api_data())
-                )
-            )
-        )
-        self.enterprise_api_client = enterprise_api_client.start()
-        self.addCleanup(enterprise_api_client.stop)
-
-        self.enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
-        self.enterprise_api_client.return_value.get_enterprise_customer.return_value = {
-            'uuid': self.enterprise_id
-        }
-
-        self.set_jwt_cookie()
 
     def test_get_learner_completed_courses(self):
         """
@@ -1606,3 +1571,68 @@ class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, APITransactionTestCase
         response = self.client.get(url)
 
         assert response.status_code == status.HTTP_200_OK
+
+
+class TestEnterpriseLearnerSubsectionGrades(JWTTestMixin, EnterpriseFilterTestCase):
+    """
+    Tests for EnterpriseLearnerSubsectionGrades.
+    """
+    fixtures = ('enterprise_subsection_grade', 'enterprise_user', )
+
+    def setUp(self):
+        super(TestEnterpriseLearnerSubsectionGrades, self).setUp()
+
+    def _subsection_grade_url(self, enterprise_id=None):
+        """
+        Returns: url for subsection grade API
+        """
+        return reverse(
+            'v0:enterprise-learner-subsection-grades-list',
+            kwargs={'enterprise_id': enterprise_id if enterprise_id else self.enterprise_id},
+        )
+
+    def test_get_learner_subsectin_grades_all(self):
+        """
+        Test we get expected subsection records.
+        """
+        url = self._subsection_grade_url()
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        json_data = response.json()
+        self.assertEqual(json_data['count'], 4)  # we have 4 records added by fixtures
+
+        # Make sure we all fields and test data available in response
+        expectd_data = {
+            "enterprise_id": "ee5e6b3a-069a-4947-bb8d-d2dbc323396c",
+            "enterprise_name": "Enterprise 1",
+            "lms_user_id": 11,
+            "enterprise_user": 111,
+            "course_id": "edX/Open_DemoX/edx_demo_course",
+            "user_email": "test@example.com",
+            "username": "test_user",
+            "section_block_id": "block-v1:edX+DnDv2101x+2016+type@chapter+block@d18abaffdfa44a1c9177a9e084d8c4a7",
+            "section_display_name": "Section 1",
+            "section_index": 1,
+            "subsection_block_id": "block-v1:edX+DnDv2101x+2016+type@sequential+block@f5188c028bb748ee8f51e534231fd3be",
+            "subsection_display_name": "Subsection 1",
+            "subsection_index": 1,
+            "subsection_grade_created": "2020-02-27T16:02:38Z",
+            "first_attempted": "2020-02-26T16:02:38Z",
+            "earned_all": 0.8,
+            "possible_all": 1.0,
+            "earned_graded": 0.6,
+            "possible_graded": 1.0
+        }
+        self.assertDictContainsSubset(expectd_data, json_data['results'][0])
+
+    def test_get_learner_subsectin_grades_zero_records(self):
+        """
+        Test with enterprise having no records.
+        """
+        url = self._subsection_grade_url('5a16fae8-d8ba-464e-baf2-8c9211ccb343')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()['count'], 0)
+
+
+
