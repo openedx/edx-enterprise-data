@@ -23,6 +23,7 @@ from enterprise_data.api.v0 import serializers
 from enterprise_data.filters import (
     CONSENT_TRUE_OR_NOENROLL_Q,
     AuditEnrollmentsFilterBackend,
+    AuditUsersEnrollmentFilterBackend,
     ConsentGrantedFilterBackend,
 )
 from enterprise_data.models import EnterpriseEnrollment, EnterpriseUser
@@ -222,7 +223,7 @@ class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
     """
     queryset = EnterpriseUser.objects.all()
     serializer_class = serializers.EnterpriseUserSerializer
-    filter_backends = (filters.OrderingFilter,)
+    filter_backends = (filters.OrderingFilter, AuditUsersEnrollmentFilterBackend,)
     ordering_fields = '__all__'
     ordering = ('user_email',)
 
