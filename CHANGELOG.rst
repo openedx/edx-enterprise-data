@@ -13,6 +13,7 @@ Change Log
 
 Unreleased
 ----------
+* Drop python 2.7 support
 
 =========================
 

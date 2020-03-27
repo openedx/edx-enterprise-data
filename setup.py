@@ -57,10 +57,10 @@ setup(
     name="edx-enterprise-data",
     version=VERSION,
     classifiers=[
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
+        'Framework :: Django',
+        'Framework :: Django :: 1.11',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.5',
     ],
     description="""Enterprise Reporting""",
     author="edX",
