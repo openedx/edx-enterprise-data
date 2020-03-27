@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('enterprise_id', models.UUIDField()),
                 ('lms_user_id', models.PositiveIntegerField()),
-                ('enterprise_user_id', models.PositiveIntegerField()),
+                ('enterprise_user_id', models.PositiveIntegerField(unique=True)),
                 ('enterprise_sso_uid', models.CharField(max_length=255, null=True)),
                 ('user_account_creation_timestamp', models.DateTimeField(null=True)),
                 ('user_email', models.CharField(max_length=255, null=True)),
