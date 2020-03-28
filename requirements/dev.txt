@@ -13,7 +13,7 @@ awscli==1.11.178          # via -r requirements/reporting.in
 backports.functools-lru-cache==1.6.1  # via caniusepython3
 bcrypt==3.1.7             # via paramiko
 billiard==3.3.0.23        # via celery
-bleach==3.1.3             # via readme-renderer
+bleach==3.1.4             # via readme-renderer
 boto3==1.4.7              # via -r requirements/reporting.in
 botocore==1.7.36          # via awscli, boto3, s3transfer
 caniusepython3==7.2.0     # via -r requirements/quality.in
@@ -39,13 +39,13 @@ edx-django-utils==2.0.4   # via -c requirements/constraints.txt, -r requirements
 edx-drf-extensions==5.0.2  # via -r requirements/base.in, edx-rbac
 edx-i18n-tools==0.5.0     # via -r requirements/dev-enterprise_data.in
 edx-lint==1.4.1           # via -r requirements/dev-enterprise_data.in, -r requirements/quality.in
-edx-opaque-keys==2.0.1    # via -r requirements/base.in, edx-drf-extensions
-edx-rbac==1.1.1           # via -r requirements/base.in
+edx-opaque-keys==2.0.2    # via -r requirements/base.in, edx-drf-extensions
+edx-rbac==1.1.2           # via -r requirements/base.in
 edx-rest-api-client==3.0.2  # via -c requirements/constraints.txt, -r requirements/base.in
 filelock==3.0.12          # via tox, virtualenv
 future==0.18.2            # via pyjwkest
 idna==2.9                 # via requests
-importlib-metadata==1.5.0  # via importlib-resources, inflect, path, pluggy, tox, virtualenv
+importlib-metadata==1.6.0  # via importlib-resources, inflect, path, pluggy, tox, virtualenv
 importlib-resources==1.4.0  # via virtualenv
 inflect==3.0.2            # via jinja2-pluralize
 isort==4.3.21             # via -r requirements/quality.in, pylint
@@ -107,14 +107,14 @@ stevedore==1.32.0         # via edx-opaque-keys
 testfixtures==6.14.0      # via -r requirements/quality.in
 toml==0.10.0              # via tox
 tox-battery==0.5.2        # via -c requirements/constraints.txt, -r requirements/dev-enterprise_data.in
-tox==3.14.5               # via -r requirements/dev-enterprise_data.in, tox-battery
+tox==3.14.6               # via -r requirements/dev-enterprise_data.in, tox-battery
 tqdm==4.43.0              # via twine
 twine==1.15.0             # via -r requirements/dev-enterprise_data.in
 typed-ast==1.4.1          # via astroid
 unicodecsv==0.14.1        # via -r requirements/reporting.in
 urllib3==1.24.3           # via py2neo, requests
 vertica-python==0.10.2    # via -r requirements/reporting.in
-virtualenv==20.0.13       # via tox
+virtualenv==20.0.15       # via tox
 wcwidth==0.1.9            # via prompt-toolkit
 webencodings==0.5.1       # via bleach
 wheel==0.34.2             # via -r requirements/dev-enterprise_data.in

@@ -25,7 +25,7 @@ ddt==1.1.2                # via -r requirements/test-reporting.in
 distlib==0.3.0            # via virtualenv
 docutils==0.16            # via awscli, botocore
 filelock==3.0.12          # via tox, virtualenv
-importlib-metadata==1.5.0  # via importlib-resources, pluggy, tox, virtualenv
+importlib-metadata==1.6.0  # via importlib-resources, pluggy, tox, virtualenv
 importlib-resources==1.4.0  # via virtualenv
 jmespath==0.9.5           # via boto3, botocore
 kombu==3.0.37             # via celery
@@ -58,11 +58,11 @@ s3transfer==0.1.13        # via awscli, boto3
 six==1.14.0               # via bcrypt, cryptography, mock, neotime, packaging, pathlib2, pgpy, prompt-toolkit, pynacl, pytest, python-dateutil, tox, vertica-python, virtualenv
 toml==0.10.0              # via tox
 tox-battery==0.5.2        # via -c requirements/constraints.txt, -r requirements/test-reporting.in
-tox==3.14.5               # via -r requirements/test-reporting.in, tox-battery
+tox==3.14.6               # via -r requirements/test-reporting.in, tox-battery
 unicodecsv==0.14.1        # via -r requirements/reporting.in
 urllib3==1.24.3           # via py2neo
 vertica-python==0.10.2    # via -r requirements/reporting.in
-virtualenv==20.0.13       # via tox
+virtualenv==20.0.15       # via tox
 wcwidth==0.1.9            # via prompt-toolkit
 zipp==1.2.0               # via importlib-metadata, importlib-resources
 
