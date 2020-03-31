@@ -58,7 +58,7 @@ class EnterpriseDataRoleAssignment(UserRoleAssignment):
         Return human-readable string representation.
         """
         return "EnterpriseDataRoleAssignment(name={name}, user={user})".format(
-            name=self.role.name,
+            name=self.role.name,  # pylint: disable=no-member
             user=self.user.id,
         )
 

@@ -56,7 +56,7 @@ class EnterpriseViewSet(PermissionRequiredMixin, viewsets.ViewSet):
         """
         if 'no_page' in self.request.query_params:
             return None
-        return super(EnterpriseViewSet, self).paginate_queryset(queryset)
+        return super(EnterpriseViewSet, self).paginate_queryset(queryset)  # pylint: disable=no-member
 
 
 class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):

@@ -1,1 +1,1 @@
-django==1.11.29           # via -c requirements/constraints.txt, -r requirements/base.in, django-crum, django-fernet-fields, django-model-utils, drf-jwt, edx-django-utils, edx-drf-extensions, edx-rbac, rest-condition
+django==1.11.29           # via -c requirements/constraints.txt, -r requirements/base.in, django-crum, django-fernet-fields, django-model-utils, djangorestframework, drf-jwt, edx-django-utils, edx-drf-extensions, edx-rbac, rest-condition
