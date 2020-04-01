@@ -13,6 +13,7 @@ Change Log
 
 Unreleased
 ----------
+* Fix for JWT being double encoded
 * Drop python 2.7 support
 
 =========================

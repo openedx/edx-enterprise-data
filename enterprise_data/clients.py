@@ -32,6 +32,8 @@ class EnterpriseApiClient(EdxRestApiClient):
         """
         Initialize client with given jwt.
         """
+        # If jwt token in request is already encoded into bytes decode it to avoid double encoding downstream
+        jwt = jwt.decode() if isinstance(jwt, bytes) else jwt
         super(EnterpriseApiClient, self).__init__(self.API_BASE_URL, jwt=jwt)
 
     def get_enterprise_learner(self, user):
