@@ -5,6 +5,10 @@ env:
   - TOXENV=django111-data
   - TOXENV=django111-reporting
   - TOXENV=quality
+  - TOXENV=django20-data
+  - TOXENV=django21-data
+  - TOXENV=django22-data
+  - TOXENV=django22-reporting
 cache:
   - pip
 install:

@@ -61,7 +61,7 @@ tox-battery==0.5.2        # via -c requirements/constraints.txt, -r requirements
 tox==3.14.6               # via -r requirements/test-reporting.in, tox-battery
 unicodecsv==0.14.1        # via -r requirements/reporting.in
 urllib3==1.24.3           # via py2neo
-vertica-python==0.10.2    # via -r requirements/reporting.in
+vertica-python==0.10.3    # via -r requirements/reporting.in
 virtualenv==20.0.15       # via tox
 wcwidth==0.1.9            # via prompt-toolkit
 zipp==1.2.0               # via importlib-metadata, importlib-resources

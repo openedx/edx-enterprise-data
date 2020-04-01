@@ -67,5 +67,5 @@ slumber==0.7.1            # via edx-rest-api-client
 stevedore==1.32.0         # via edx-opaque-keys
 unicodecsv==0.14.1        # via -r requirements/reporting.in
 urllib3==1.24.3           # via py2neo, requests
-vertica-python==0.10.2    # via -r requirements/reporting.in
+vertica-python==0.10.3    # via -r requirements/reporting.in
 wcwidth==0.1.9            # via prompt-toolkit
