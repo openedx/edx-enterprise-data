@@ -76,6 +76,11 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         """
         Returns all learner enrollment records for a given enterprise.
         """
+        if getattr(self, 'swagger_fake_view', False):
+            # queryset just for schema generation metadata
+            # See: https://github.com/axnsan12/drf-yasg/issues/333
+            return EnterpriseEnrollment.objects.none()
+
         enterprise_id = self.kwargs['enterprise_id']
 
         enterprise = EnterpriseUser.objects.filter(enterprise_id=enterprise_id)
@@ -328,6 +333,11 @@ class EnterpriseLearnerCompletedCoursesViewSet(EnterpriseViewSet, viewsets.Model
         """
         Returns number of completed courses against each learner.
         """
+        if getattr(self, 'swagger_fake_view', False):
+            # queryset just for schema generation metadata
+            # See: https://github.com/axnsan12/drf-yasg/issues/333
+            return EnterpriseEnrollment.objects.none()
+
         enterprise_id = self.kwargs['enterprise_id']
         # Get the number of completed courses against a learner.
         enrollments = EnterpriseEnrollment.objects.filter(
