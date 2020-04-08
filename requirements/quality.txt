@@ -16,16 +16,16 @@ bleach==3.1.4             # via readme-renderer
 boto3==1.4.7              # via -r requirements/reporting.in
 botocore==1.7.36          # via awscli, boto3, s3transfer
 celery==3.1.18            # via -r requirements/reporting.in
-certifi==2019.11.28       # via py2neo, requests
+certifi==2020.4.5.1       # via py2neo, requests
 cffi==1.14.0              # via bcrypt, cryptography, pynacl
 chardet==3.0.4            # via requests
 click-log==0.3.2          # via edx-lint
 click==7.0                # via click-log, edx-lint, pip-tools, py2neo
 colorama==0.3.7           # via awscli, py2neo
 coverage==5.0.4           # via pytest-cov
-cryptography==2.8         # via -r requirements/reporting.in, django-fernet-fields, paramiko, pgpy
+cryptography==2.9         # via -r requirements/reporting.in, django-fernet-fields, paramiko, pgpy
 ddt==1.3.1                # via -r requirements/test.in
-diff-cover==2.6.0         # via -r requirements/dev-enterprise_data.in
+diff-cover==2.6.1         # via -r requirements/dev-enterprise_data.in
 distlib==0.3.0            # via virtualenv
 django-crum==0.7.5        # via edx-rbac
 django-fernet-fields==0.6  # via -r requirements/base.in
@@ -35,13 +35,13 @@ django==1.11.29           # via -c requirements/constraints.txt, -r requirements
 djangorestframework==3.11.0  # via drf-jwt, edx-drf-extensions, rest-condition
 docutils==0.16            # via awscli, botocore, readme-renderer
 drf-jwt==1.14.0           # via -c requirements/constraints.txt, edx-drf-extensions
-edx-django-utils==2.0.4   # via -c requirements/constraints.txt, -r requirements/base.in, edx-drf-extensions, edx-rest-api-client
+edx-django-utils==3.1     # via -r requirements/base.in, edx-drf-extensions, edx-rest-api-client
 edx-drf-extensions==5.0.2  # via -r requirements/base.in, edx-rbac
 edx-i18n-tools==0.5.0     # via -r requirements/dev-enterprise_data.in
 edx-lint==1.4.1           # via -r requirements/dev-enterprise_data.in, -r requirements/quality.in
 edx-opaque-keys==2.0.2    # via -r requirements/base.in, edx-drf-extensions
 edx-rbac==1.1.2           # via -r requirements/base.in
-edx-rest-api-client==3.0.2  # via -c requirements/constraints.txt, -r requirements/base.in
+edx-rest-api-client==5.1.0  # via -r requirements/base.in
 factory-boy==2.12.0       # via -r requirements/test.in
 faker==4.0.2              # via factory-boy
 filelock==3.0.12          # via tox, virtualenv
@@ -70,7 +70,7 @@ paramiko==2.7.1           # via -r requirements/reporting.in
 path.py==12.4.0           # via edx-i18n-tools
 path==13.1.0              # via path.py
 pathlib2==2.3.5           # via pytest
-pbr==5.4.4                # via stevedore
+pbr==5.4.5                # via stevedore
 pgpy==0.5.2               # via -r requirements/reporting.in
 pip-tools==4.5.1          # via -r requirements/dev-enterprise_data.in
 pkginfo==1.5.0.1          # via twine
@@ -95,7 +95,7 @@ pylint==2.4.2             # via edx-lint, pylint-celery, pylint-django, pylint-p
 pyminizip==0.2.4          # via -r requirements/reporting.in
 pymongo==3.10.1           # via edx-opaque-keys
 pynacl==1.3.0             # via paramiko
-pyparsing==2.4.6          # via packaging
+pyparsing==2.4.7          # via packaging
 pytest-cov==2.8.1         # via -r requirements/test.in
 pytest-django==3.9.0      # via -r requirements/test.in
 pytest==5.4.1             # via pytest-cov, pytest-django
@@ -120,13 +120,13 @@ text-unidecode==1.3       # via faker
 toml==0.10.0              # via tox
 tox-battery==0.5.2        # via -c requirements/constraints.txt, -r requirements/dev-enterprise_data.in
 tox==3.14.6               # via -r requirements/dev-enterprise_data.in, tox-battery
-tqdm==4.44.1              # via twine
+tqdm==4.45.0              # via twine
 twine==1.15.0             # via -r requirements/dev-enterprise_data.in
 typed-ast==1.4.1          # via astroid
 unicodecsv==0.14.1        # via -r requirements/reporting.in
 urllib3==1.24.3           # via py2neo, requests
 vertica-python==0.10.3    # via -r requirements/reporting.in
-virtualenv==20.0.15       # via tox
+virtualenv==20.0.16       # via tox
 wcwidth==0.1.9            # via prompt-toolkit, pytest
 webencodings==0.5.1       # via bleach
 wheel==0.34.2             # via -r requirements/dev-enterprise_data.in
