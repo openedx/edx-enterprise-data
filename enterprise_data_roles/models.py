@@ -2,7 +2,7 @@
 """
 Database models for enterprise data.
 """
-from __future__ import absolute_import, unicode_literals
+
 
 from edx_rbac.models import UserRole, UserRoleAssignment
 

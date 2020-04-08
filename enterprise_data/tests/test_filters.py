@@ -2,7 +2,7 @@
 """
 Tests for filters in enterprise_data.
 """
-from __future__ import absolute_import, unicode_literals
+
 
 import mock
 from rest_framework import status

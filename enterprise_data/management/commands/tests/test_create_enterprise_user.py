@@ -1,7 +1,7 @@
 """
 Tests for create_enterprise_user management command
 """
-from __future__ import absolute_import, unicode_literals
+
 
 from unittest import TestCase
 

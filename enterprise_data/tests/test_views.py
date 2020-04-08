@@ -2,7 +2,7 @@
 """
 Tests for views in the `enterprise_data` module.
 """
-from __future__ import absolute_import, unicode_literals
+
 
 from datetime import date, datetime, timedelta
 
