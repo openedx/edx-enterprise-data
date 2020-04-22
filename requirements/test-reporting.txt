@@ -19,8 +19,8 @@ certifi==2020.4.5.1       # via py2neo
 cffi==1.14.0              # via bcrypt, cryptography, pynacl
 click==7.0                # via py2neo
 colorama==0.3.7           # via awscli, py2neo
-coverage==5.0.4           # via pytest-cov
-cryptography==2.9         # via -r requirements/reporting.in, paramiko, pgpy
+coverage==5.1             # via pytest-cov
+cryptography==2.9.1       # via -r requirements/reporting.in, paramiko, pgpy
 ddt==1.1.2                # via -r requirements/test-reporting.in
 distlib==0.3.0            # via virtualenv
 docutils==0.16            # via awscli, botocore
@@ -31,7 +31,7 @@ jmespath==0.9.5           # via boto3, botocore
 kombu==3.0.37             # via celery
 mock==2.0.0               # via -r requirements/test-reporting.in
 more-itertools==8.2.0     # via pytest
-neobolt==1.7.16           # via py2neo
+neobolt==1.7.17           # via py2neo
 neotime==1.7.4            # via py2neo
 packaging==20.3           # via tox
 paramiko==2.7.1           # via -r requirements/reporting.in
@@ -62,7 +62,7 @@ tox==3.14.6               # via -r requirements/test-reporting.in, tox-battery
 unicodecsv==0.14.1        # via -r requirements/reporting.in
 urllib3==1.24.3           # via py2neo
 vertica-python==0.10.3    # via -r requirements/reporting.in
-virtualenv==20.0.16       # via tox
+virtualenv==20.0.18       # via tox
 wcwidth==0.1.9            # via prompt-toolkit
 zipp==1.2.0               # via importlib-metadata, importlib-resources
 
