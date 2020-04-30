@@ -11,16 +11,13 @@
 # TODO: Many pinned dependencies should be unpinned and/or moved to this constraints file.
 
 # Django version 2.0.0 dropped support to python2.7
-Django<2.0
-
-# django-model-utils version 4.0.0 dropped support to python 2.7
-django-model-utils<4.0.0
-
-# django-waffle version 0.19.0 dropped support to Django 2.0 and 2.1, see https://github.com/django-waffle/django-waffle/blob/master/CHANGES
-django-waffle<0.19.0
+Django>=2.2,<2.3
 
 # See https://github.com/Styria-Digital/django-rest-framework-jwt/issues/40
 drf-jwt<1.15.0
+
+# pip20+ requires for greater version of pip-tools. But installing 19.3.1 in all our containers and VMs.
+pip-tools<5.0.0
 
 # readme-renderer requires Pygments>=2.5.1 which is not compatible with py2neo==4.3.0
 readme-renderer<25.0
