@@ -39,7 +39,7 @@ edx-django-utils==3.2.1   # via -r requirements/base.in, edx-drf-extensions, edx
 edx-drf-extensions==5.0.2  # via -r requirements/base.in, edx-rbac
 edx-i18n-tools==0.5.0     # via -r requirements/dev-enterprise_data.in
 edx-lint==1.4.1           # via -r requirements/dev-enterprise_data.in, -r requirements/quality.in
-edx-opaque-keys==2.0.2    # via -r requirements/base.in, edx-drf-extensions
+edx-opaque-keys==2.1.0    # via -r requirements/base.in, edx-drf-extensions
 edx-rbac==1.1.3           # via -r requirements/base.in
 edx-rest-api-client==5.1.0  # via -r requirements/base.in
 factory-boy==2.12.0       # via -r requirements/test.in
@@ -72,7 +72,7 @@ path==13.1.0              # via path.py
 pathlib2==2.3.5           # via pytest
 pbr==5.4.5                # via stevedore
 pgpy==0.5.2               # via -r requirements/reporting.in
-pip-tools==4.5.1          # via -c requirements/constraints.txt, -r requirements/dev-enterprise_data.in
+pip-tools==5.1.0          # via -r requirements/dev-enterprise_data.in
 pkginfo==1.5.0.1          # via twine
 pluggy==0.13.1            # via diff-cover, pytest, tox
 polib==1.1.0              # via edx-i18n-tools
@@ -135,4 +135,5 @@ wrapt==1.11.2             # via astroid
 zipp==1.2.0               # via importlib-metadata, importlib-resources
 
 # The following packages are considered to be unsafe in a requirements file:
+# pip
 # setuptools

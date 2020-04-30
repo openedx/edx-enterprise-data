@@ -16,9 +16,6 @@ Django>=2.2,<2.3
 # See https://github.com/Styria-Digital/django-rest-framework-jwt/issues/40
 drf-jwt<1.15.0
 
-# pip20+ requires for greater version of pip-tools. But installing 19.3.1 in all our containers and VMs.
-pip-tools<5.0.0
-
 # readme-renderer requires Pygments>=2.5.1 which is not compatible with py2neo==4.3.0
 readme-renderer<25.0
 
