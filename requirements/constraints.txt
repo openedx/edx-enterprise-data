@@ -22,4 +22,5 @@ readme-renderer<25.0
 # it's experimental, so keep it pinned
 tox-battery==0.5.2
 
+# Constrain until https://github.com/datadriventests/ddt/issues/83 is fixed.
 ddt<1.4.0
