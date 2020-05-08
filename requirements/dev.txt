@@ -8,36 +8,36 @@ amqp==1.4.9               # via kombu
 anyjson==0.3.3            # via kombu
 appdirs==1.4.3            # via virtualenv
 astroid==2.3.3            # via pylint, pylint-celery
-awscli==1.11.178          # via -r requirements/reporting.in
+awscli==1.16.178          # via -r requirements/reporting.in
 bcrypt==3.1.7             # via paramiko
 billiard==3.3.0.23        # via celery
 bleach==3.1.5             # via readme-renderer
-boto3==1.4.7              # via -r requirements/reporting.in
-botocore==1.7.36          # via awscli, boto3, s3transfer
+boto3==1.9.100            # via -r requirements/reporting.in
+botocore==1.12.168        # via awscli, boto3, s3transfer
 celery==3.1.18            # via -r requirements/reporting.in
 certifi==2020.4.5.1       # via py2neo, requests
 cffi==1.14.0              # via bcrypt, cryptography, pynacl
 chardet==3.0.4            # via requests
 click-log==0.3.2          # via edx-lint
 click==7.0                # via click-log, edx-lint, pip-tools, py2neo
-colorama==0.3.7           # via awscli, py2neo
+colorama==0.3.9           # via awscli, py2neo
 cryptography==2.9.2       # via -r requirements/reporting.in, django-fernet-fields, paramiko, pgpy
 diff-cover==2.6.1         # via -r requirements/dev-enterprise_data.in
 distlib==0.3.0            # via virtualenv
 django-crum==0.7.6        # via edx-rbac
 django-fernet-fields==0.6  # via -r requirements/base.in
-django-model-utils==3.2.0  # via -r requirements/base.in, edx-rbac
+django-model-utils==4.0.0  # via -r requirements/base.in, edx-rbac
 django-waffle==0.20.0     # via edx-django-utils, edx-drf-extensions
 django==2.2.12            # via -c requirements/constraints.txt, -r requirements/base.in, django-crum, django-fernet-fields, django-model-utils, djangorestframework, drf-jwt, edx-django-utils, edx-drf-extensions, edx-i18n-tools, edx-rbac, rest-condition
 djangorestframework==3.11.0  # via drf-jwt, edx-drf-extensions, rest-condition
 docutils==0.16            # via awscli, botocore, readme-renderer
 drf-jwt==1.14.0           # via -c requirements/constraints.txt, edx-drf-extensions
-edx-django-utils==3.2.1   # via -r requirements/base.in, edx-drf-extensions, edx-rest-api-client
-edx-drf-extensions==5.0.2  # via -r requirements/base.in, edx-rbac
-edx-i18n-tools==0.5.0     # via -r requirements/dev-enterprise_data.in
+edx-django-utils==3.2.2   # via -r requirements/base.in, edx-drf-extensions, edx-rest-api-client
+edx-drf-extensions==6.0.0  # via -r requirements/base.in, edx-rbac
+edx-i18n-tools==0.5.1     # via -r requirements/dev-enterprise_data.in
 edx-lint==1.4.1           # via -r requirements/dev-enterprise_data.in, -r requirements/quality.in
 edx-opaque-keys==2.1.0    # via -r requirements/base.in, edx-drf-extensions
-edx-rbac==1.1.3           # via -r requirements/base.in
+edx-rbac==1.2.0           # via -r requirements/base.in
 edx-rest-api-client==5.1.0  # via -r requirements/base.in
 filelock==3.0.12          # via tox, virtualenv
 future==0.18.2            # via pyjwkest
@@ -55,14 +55,14 @@ markupsafe==1.1.1         # via jinja2
 mccabe==0.6.1             # via pylint
 neobolt==1.7.17           # via py2neo
 neotime==1.7.4            # via py2neo
-newrelic==5.12.0.140      # via edx-django-utils
+newrelic==5.12.1.141      # via edx-django-utils
 packaging==20.3           # via bleach, tox
 paramiko==2.7.1           # via -r requirements/reporting.in
 path.py==12.4.0           # via edx-i18n-tools
 path==13.1.0              # via path.py
 pbr==5.4.5                # via stevedore
 pgpy==0.5.2               # via -r requirements/reporting.in
-pip-tools==5.1.0          # via -r requirements/dev-enterprise_data.in
+pip-tools==5.1.2          # via -r requirements/dev-enterprise_data.in
 pkginfo==1.5.0.1          # via twine
 pluggy==0.13.1            # via diff-cover, tox
 polib==1.1.0              # via edx-i18n-tools
@@ -88,14 +88,14 @@ pynacl==1.3.0             # via paramiko
 pyparsing==2.4.7          # via packaging
 python-dateutil==2.8.1    # via botocore, edx-drf-extensions, vertica-python
 pytz==2020.1              # via celery, django, neotime, py2neo
-pyyaml==3.12              # via awscli, edx-i18n-tools
+pyyaml==5.1               # via awscli, edx-i18n-tools
 readme-renderer==24.0     # via -c requirements/constraints.txt, twine
 requests-toolbelt==0.9.1  # via twine
 requests==2.23.0          # via -r requirements/base.in, edx-drf-extensions, edx-rest-api-client, pyjwkest, requests-toolbelt, slumber, twine
 rest-condition==1.0.3     # via edx-drf-extensions
 rsa==3.4.2                # via awscli
 rules==2.2                # via -r requirements/base.in
-s3transfer==0.1.13        # via awscli, boto3
+s3transfer==0.2.1         # via awscli, boto3
 semantic-version==2.8.5   # via edx-drf-extensions
 six==1.14.0               # via -r requirements/base.in, astroid, bcrypt, bleach, cryptography, diff-cover, django-waffle, edx-drf-extensions, edx-i18n-tools, edx-lint, edx-opaque-keys, edx-rbac, neotime, packaging, pgpy, pip-tools, prompt-toolkit, pyjwkest, pynacl, python-dateutil, readme-renderer, stevedore, tox, vertica-python, virtualenv
 slumber==0.7.1            # via edx-rest-api-client
@@ -105,14 +105,14 @@ stevedore==1.32.0         # via edx-opaque-keys
 testfixtures==6.14.1      # via -r requirements/quality.in
 toml==0.10.0              # via tox
 tox-battery==0.5.2        # via -c requirements/constraints.txt, -r requirements/dev-enterprise_data.in
-tox==3.14.6               # via -r requirements/dev-enterprise_data.in, tox-battery
-tqdm==4.45.0              # via twine
+tox==3.15.0               # via -r requirements/dev-enterprise_data.in, tox-battery
+tqdm==4.46.0              # via twine
 twine==1.15.0             # via -r requirements/dev-enterprise_data.in
 typed-ast==1.4.1          # via astroid
 unicodecsv==0.14.1        # via -r requirements/reporting.in
-urllib3==1.24.3           # via py2neo, requests
+urllib3==1.24.3           # via botocore, py2neo, requests
 vertica-python==0.10.3    # via -r requirements/reporting.in
-virtualenv==20.0.18       # via tox
+virtualenv==20.0.20       # via tox
 wcwidth==0.1.9            # via prompt-toolkit
 webencodings==0.5.1       # via bleach
 wheel==0.34.2             # via -r requirements/dev-enterprise_data.in

@@ -14,9 +14,6 @@ script:
   - tox
 after_success:
   - codecov
-jobs:
-  allow_failures:
-    - python: 3.8
 deploy:
   provider: pypi
   user: edx

@@ -22,3 +22,4 @@ readme-renderer<25.0
 # it's experimental, so keep it pinned
 tox-battery==0.5.2
 
+ddt<1.4.0
