@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-appdirs==1.4.3            # via virtualenv
+appdirs==1.4.4            # via virtualenv
 certifi==2020.4.5.1       # via requests
 chardet==3.0.4            # via requests
 codecov==2.0.22           # via -r requirements/travis.in
