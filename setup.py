@@ -61,6 +61,7 @@ setup(
         'Framework :: Django :: 2.2',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.8',
     ],
     description="""Enterprise Reporting""",
     author="edX",
