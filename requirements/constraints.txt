@@ -14,7 +14,7 @@
 Django>=2.2,<2.3
 
 # See https://github.com/Styria-Digital/django-rest-framework-jwt/issues/40
-drf-jwt<1.15.0
+drf-jwt<1.16.0
 
 # readme-renderer requires Pygments>=2.5.1 which is not compatible with py2neo==4.3.0
 readme-renderer<25.0
