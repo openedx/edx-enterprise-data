@@ -234,7 +234,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
     def test_get_queryset_returns_enrollments_with_passed_date_filter(self):
         enterprise = EnterpriseUserFactory()
         enterprise_id = enterprise.enterprise_id
-        url = u"{url}?passed_date=last_week".format(
+        url = "{url}?passed_date=last_week".format(
             url=reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': enterprise_id})
         )
 
@@ -362,7 +362,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
     def test_get_queryset_returns_enrollments_with_learner_activity_filter(self, activity_filter, expected_dates):
         enterprise = EnterpriseUserFactory()
         enterprise_id = enterprise.enterprise_id
-        url = u"{url}?learner_activity={activity_filter}".format(
+        url = "{url}?learner_activity={activity_filter}".format(
             url=reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': enterprise_id}),
             activity_filter=activity_filter
         )
@@ -408,7 +408,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         """
         enterprise = EnterpriseUserFactory()
         enterprise_id = enterprise.enterprise_id
-        url = u"{url}?learner_activity={activity_filter}".format(
+        url = "{url}?learner_activity={activity_filter}".format(
             url=reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': enterprise_id}),
             activity_filter=activity_filter
         )
@@ -493,7 +493,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         """
         enterprise = EnterpriseUserFactory()
         enterprise_id = enterprise.enterprise_id
-        url = u"{url}?learner_activity={activity_filter}".format(
+        url = "{url}?learner_activity={activity_filter}".format(
             url=reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': enterprise_id}),
             activity_filter=activity_filter
         )
