@@ -76,7 +76,7 @@ class EnterpriseAPIClient(EdxOAuth2APIClient):
                 content_metadata[item[key]] = item
 
         # We only made this a dictionary to help filter out duplicates by a common key. We just want values now.
-        return content_metadata.values()
+        return list(content_metadata.values())
 
 
 def extract_catalog_uuids_from_reporting_config(reporting_config):

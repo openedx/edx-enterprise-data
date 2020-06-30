@@ -172,11 +172,11 @@ class TestUtilsCoursegraph(unittest.TestCase):
             }),
         ])
         expected = (
-            u'Course Key,Course Title,Partner,External Domain,Count\n'
-            u'course-v1:I+am+a+test1,"course1",edx,http://www.google.com,2\n'
-            u',,,http://www.facebook.com,1\n'
-            u'course-v1:I+am+a+test2,"course2",edx,http://www.google2.com,4\n'
-            u'course-v1:I+am+a+test3,"course3",edx2,http://www.google3.com,1\n'
+            'Course Key,Course Title,Partner,External Domain,Count\n'
+            'course-v1:I+am+a+test1,"course1",edx,http://www.google.com,2\n'
+            ',,,http://www.facebook.com,1\n'
+            'course-v1:I+am+a+test2,"course2",edx,http://www.google2.com,4\n'
+            'course-v1:I+am+a+test3,"course3",edx2,http://www.google3.com,1\n'
         )
         actual = create_csv_string(
             processed_results,

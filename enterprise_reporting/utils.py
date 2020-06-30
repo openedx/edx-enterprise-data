@@ -97,7 +97,7 @@ def prepare_attachments(attachment_data):
     """
 
     attachments = []
-    for filename, data in attachment_data.items():
+    for filename, data in list(attachment_data.items()):
         if data is None:
             msg_attachment = MIMEApplication(open(filename, 'rb').read())
         else:
@@ -228,14 +228,14 @@ def flatten_dict(d, target='key' or 'value'):
 
     flattened = []
     target_is_key = target == 'key'
-    for key, value in OrderedDict(sorted(d.items())).items():
+    for key, value in list(OrderedDict(sorted(d.items())).items()):
 
         # Simple case: recursively flatten the dictionary.
         if isinstance(value, dict):
-            flattened += map(
+            flattened += list(map(
                 format_nested if target_is_key else lambda x: x,
                 flatten_dict(value, target=target)
-            )
+            ))
 
         # We are suddenly in muddy waters, because lists can have multiple types within them in JSON.
         elif isinstance(value, list):
@@ -263,11 +263,11 @@ def flatten_dict(d, target='key' or 'value'):
                         _flattened_dict = [format_nested(flattened_item, _key=index)
                                            for flattened_item in _flattened_dict]
 
-                    flattened += map(format_nested if target_is_key else lambda x: x, _flattened_dict)
+                    flattened += list(map(format_nested if target_is_key else lambda x: x, _flattened_dict))
 
             # All items are non-dict, so just directly add either the index or the value.
             else:
-                flattened += map(format_nested, range(len(value))) if target_is_key else value
+                flattened += list(map(format_nested, list(range(len(value))))) if target_is_key else value
 
         # Kindergarten -- just add to the list.
         else:
@@ -282,7 +282,7 @@ def generate_data(item, target='key' or 'value'):
     """
     data = []
     target_is_key = target == 'key'
-    for key, value in OrderedDict(sorted(item.items())).items():
+    for key, value in list(OrderedDict(sorted(item.items())).items()):
         if target_is_key:
             data.append(key)
             continue

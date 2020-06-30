@@ -206,7 +206,7 @@ class EnterpriseReportSender(object):
 
         LOGGER.info('Beginning to write content metadata groups to CSVs...')
         files = []
-        for content_type, grouped_items in grouped_content_metadata.items():
+        for content_type, grouped_items in list(grouped_content_metadata.items()):
             with open(self.data_report_file_name_with.format(content_type), 'w') as data_report_file:
                 writer = csv.writer(data_report_file)
                 if grouped_items:

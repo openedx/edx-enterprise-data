@@ -11,10 +11,7 @@ import logging
 import os
 import re
 import sys
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
+from urllib.parse import urlparse
 
 from py2neo import Graph
 
@@ -23,7 +20,7 @@ from enterprise_reporting.utils import send_email_with_attachment
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
-AGGREGATE_REPORT_CSV_HEADER_ROW = u'Course Key,Course Title,Partner,External Domain,Count\n'
+AGGREGATE_REPORT_CSV_HEADER_ROW = 'Course Key,Course Title,Partner,External Domain,Count\n'
 
 
 def create_csv_string(processed_results, header_row, additional_columns):
@@ -41,8 +38,8 @@ def create_csv_string(processed_results, header_row, additional_columns):
 
     Returns (unicode) string
     """
-    for course_key, data in processed_results.items():
-        header_row += u'{},"{}",{},{}\n'.format(
+    for course_key, data in list(processed_results.items()):
+        header_row += '{},"{}",{},{}\n'.format(
             course_key,
             data['course_title'],
             data['organization'],
@@ -56,15 +53,15 @@ def create_columns_for_aggregate_report(data):
     Creates a csv string for additional columns in report
     """
     urls_sorted_by_counts = sorted(
-        data['domain_count'].items(),
+        list(data['domain_count'].items()),
         key=operator.itemgetter(1),
         reverse=True
     )
     stringified_urls_and_counts = [
-        u'{},{}'.format(url, count)
+        '{},{}'.format(url, count)
         for url, count in urls_sorted_by_counts
     ]
-    return u'\n,,,'.join(stringified_urls_and_counts)
+    return '\n,,,'.join(stringified_urls_and_counts)
 
 
 def gather_links_from_html(html_string):
@@ -136,7 +133,7 @@ def process_coursegraph_results(raw_results):
         # calculate the unique counts for all the urls
         domains_with_counts = dict(Counter(domains))
 
-        for domain, count in domains_with_counts.items():
+        for domain, count in list(domains_with_counts.items()):
             if domain in processed_results[course_key]['domain_count']:
                 processed_results[course_key]['domain_count'][domain] += count
             else:
