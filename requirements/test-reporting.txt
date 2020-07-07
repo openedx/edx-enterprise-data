@@ -9,17 +9,17 @@ anyjson==0.3.3            # via kombu
 appdirs==1.4.4            # via virtualenv
 atomicwrites==1.4.0       # via pytest
 attrs==19.3.0             # via pytest
-awscli==1.18.91           # via -r requirements/reporting.in
+awscli==1.18.94           # via -r requirements/reporting.in
 bcrypt==3.1.7             # via paramiko
 billiard==3.3.0.23        # via celery
-boto3==1.14.14            # via -r requirements/reporting.in
-botocore==1.17.14         # via awscli, boto3, s3transfer
+boto3==1.14.17            # via -r requirements/reporting.in
+botocore==1.17.17         # via awscli, boto3, s3transfer
 celery==3.1.18            # via -r requirements/reporting.in
 certifi==2020.6.20        # via py2neo
 cffi==1.14.0              # via bcrypt, cryptography, pynacl
 click==7.0                # via py2neo
 colorama==0.4.3           # via awscli, py2neo
-coverage==5.1             # via pytest-cov
+coverage==5.2             # via pytest-cov
 cryptography==2.9.2       # via -r requirements/reporting.in, paramiko, pgpy
 ddt==1.1.2                # via -c requirements/constraints.txt, -r requirements/test-reporting.in
 distlib==0.3.1            # via virtualenv

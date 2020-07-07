@@ -8,12 +8,12 @@ amqp==1.4.9               # via kombu
 anyjson==0.3.3            # via kombu
 appdirs==1.4.4            # via virtualenv
 astroid==2.3.3            # via pylint, pylint-celery
-awscli==1.18.91           # via -r requirements/reporting.in
+awscli==1.18.94           # via -r requirements/reporting.in
 bcrypt==3.1.7             # via paramiko
 billiard==3.3.0.23        # via celery
 bleach==3.1.5             # via readme-renderer
-boto3==1.14.14            # via -r requirements/reporting.in
-botocore==1.17.14         # via awscli, boto3, s3transfer
+boto3==1.14.17            # via -r requirements/reporting.in
+botocore==1.17.17         # via awscli, boto3, s3transfer
 celery==3.1.18            # via -r requirements/reporting.in
 certifi==2020.6.20        # via py2neo, requests
 cffi==1.14.0              # via bcrypt, cryptography, pynacl
@@ -21,7 +21,7 @@ chardet==3.0.4            # via requests
 click-log==0.3.2          # via edx-lint
 click==7.0                # via click-log, edx-lint, pip-tools, py2neo
 colorama==0.4.3           # via awscli, py2neo
-cryptography==2.9.2       # via -r requirements/reporting.in, django-fernet-fields, paramiko, pgpy, pyjwt
+cryptography==2.9.2       # via -r requirements/reporting.in, django-fernet-fields, paramiko, pgpy
 diff-cover==3.0.1         # via -r requirements/dev-enterprise_data.in
 distlib==0.3.1            # via virtualenv
 django-crum==0.7.6        # via edx-rbac
@@ -31,7 +31,7 @@ django-waffle==1.0.0      # via edx-django-utils, edx-drf-extensions
 django==2.2.14            # via -c requirements/constraints.txt, -r requirements/base.in, django-crum, django-fernet-fields, django-model-utils, djangorestframework, drf-jwt, edx-django-utils, edx-drf-extensions, edx-i18n-tools, edx-rbac, rest-condition
 djangorestframework==3.11.0  # via drf-jwt, edx-drf-extensions, rest-condition
 docutils==0.15.2          # via awscli, botocore, readme-renderer
-drf-jwt==1.16.2           # via edx-drf-extensions
+drf-jwt==1.14.0           # via -c requirements/constraints.txt, edx-drf-extensions
 edx-django-utils==3.2.3   # via -r requirements/base.in, edx-drf-extensions, edx-rest-api-client
 edx-drf-extensions==6.1.0  # via -r requirements/base.in, edx-rbac
 edx-i18n-tools==0.5.3     # via -r requirements/dev-enterprise_data.in
@@ -77,7 +77,7 @@ pycryptodomex==3.9.8      # via pyjwkest
 pydocstyle==5.0.2         # via -r requirements/quality.in
 pygments==2.3.1           # via diff-cover, py2neo, readme-renderer
 pyjwkest==1.4.2           # via edx-drf-extensions
-pyjwt[crypto]==1.7.1      # via drf-jwt, edx-rest-api-client
+pyjwt==1.7.1              # via drf-jwt, edx-rest-api-client
 pylint-celery==0.3        # via edx-lint
 pylint-django==2.0.11     # via edx-lint
 pylint-plugin-utils==0.6  # via pylint-celery, pylint-django
