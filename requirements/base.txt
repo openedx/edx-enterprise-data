@@ -6,11 +6,11 @@
 #
 amqp==1.4.9               # via kombu
 anyjson==0.3.3            # via kombu
-awscli==1.18.94           # via -r requirements/reporting.in
+awscli==1.18.95           # via -r requirements/reporting.in
 bcrypt==3.1.7             # via paramiko
 billiard==3.3.0.23        # via celery
-boto3==1.14.17            # via -r requirements/reporting.in
-botocore==1.17.17         # via awscli, boto3, s3transfer
+boto3==1.14.18            # via -r requirements/reporting.in
+botocore==1.17.18         # via awscli, boto3, s3transfer
 celery==3.1.18            # via -r requirements/reporting.in
 certifi==2020.6.20        # via py2neo, requests
 cffi==1.14.0              # via bcrypt, cryptography, pynacl

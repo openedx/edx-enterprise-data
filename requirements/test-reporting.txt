@@ -9,11 +9,11 @@ anyjson==0.3.3            # via kombu
 appdirs==1.4.4            # via virtualenv
 atomicwrites==1.4.0       # via pytest
 attrs==19.3.0             # via pytest
-awscli==1.18.94           # via -r requirements/reporting.in
+awscli==1.18.95           # via -r requirements/reporting.in
 bcrypt==3.1.7             # via paramiko
 billiard==3.3.0.23        # via celery
-boto3==1.14.17            # via -r requirements/reporting.in
-botocore==1.17.17         # via awscli, boto3, s3transfer
+boto3==1.14.18            # via -r requirements/reporting.in
+botocore==1.17.18         # via awscli, boto3, s3transfer
 celery==3.1.18            # via -r requirements/reporting.in
 certifi==2020.6.20        # via py2neo
 cffi==1.14.0              # via bcrypt, cryptography, pynacl
@@ -62,7 +62,7 @@ tox==3.16.1               # via -r requirements/test-reporting.in, tox-battery
 unicodecsv==0.14.1        # via -r requirements/reporting.in
 urllib3==1.24.3           # via botocore, py2neo
 vertica-python==0.10.4    # via -r requirements/reporting.in
-virtualenv==20.0.25       # via tox
+virtualenv==20.0.26       # via tox
 wcwidth==0.2.5            # via prompt-toolkit
 zipp==1.2.0               # via importlib-metadata, importlib-resources
 
