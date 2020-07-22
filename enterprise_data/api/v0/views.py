@@ -121,6 +121,9 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         search_email = query_filters.get('search')
         if search_email:
             queryset = queryset.filter(user_email__icontains=search_email)
+        search_course = query_filters.get('search_course')
+        if search_course:
+            queryset = queryset.filter(course_title__icontains=search_course)
 
         return queryset
 

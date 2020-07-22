@@ -213,6 +213,44 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         assert response['count'] == expected_count
         assert response == expected_response
 
+    @ddt.data(
+        ('keep', 2),
+        ('Beekeep', 1),
+        ('101', 2)
+    )
+    @ddt.unpack
+    def test_get_enterprise_enrollments_with_course_search(self, search_course, expected_count):
+        enterprise_user = EnterpriseUserFactory(enterprise_id=self.enterprise_id)
+        course_titles = ["Beekeeping 101", "Keeping it together", "Bears and their mountains 101"]
+        for course_title in course_titles:
+            EnterpriseEnrollmentFactory(
+                enterprise_user=enterprise_user,
+                enterprise_id=self.enterprise_id,
+                course_title=course_title,
+                has_passed=False,
+            )
+        enrollments = EnterpriseEnrollment.objects.filter(
+            enterprise_id=self.enterprise_id,
+            course_title__icontains=search_course
+        )
+        enrollments = EnterpriseEnrollment.objects.filter(
+            enterprise_id=self.enterprise_id,
+            course_title__icontains=search_course)
+        expected_course_titles = [en.course_title for en in enrollments]
+        response = self.client.get(
+            reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': self.enterprise_id}),
+            data={'search_course': search_course}
+        ).json()
+        response = self.client.get(
+            reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': self.enterprise_id}),
+            data={'search_course': search_course}
+        ).json()
+
+        assert response['count'] == expected_count
+
+        for result in response["results"]:
+            assert result["course_title"] in expected_course_titles
+
     def test_get_queryset_returns_no_enrollments(self):
         """ Test that enterprise with no enrollments returns empty list """
         enterprise = EnterpriseUserFactory()
