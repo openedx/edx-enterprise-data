@@ -39,7 +39,33 @@ class EnterpriseEnrollmentFactory(factory.django.DjangoModelFactory):
     course_id = factory.lazy_attribute(lambda x: FAKER.slug())  # pylint: disable=no-member
     enrollment_created_timestamp = factory.lazy_attribute(lambda x: '2018-01-01T00:00:00Z')
     user_current_enrollment_mode = factory.lazy_attribute(lambda x: 'verified')
-    has_passed = False
+    has_passed = factory.lazy_attribute(lambda x: FAKER.boolean())  # pylint: disable=no-member
+    consent_granted = True
+    course_title = factory.lazy_attribute(lambda x: ' '.join(FAKER.words(nb=2)).title())  # pylint: disable=no-member
+    course_start = factory.lazy_attribute(lambda x: FAKER.date_time_between(  # pylint: disable=no-member
+        start_date='-2M',
+        end_date='+2M',
+        tzinfo=pytz.utc))
+    user_email = factory.lazy_attribute(lambda x: FAKER.email())  # pylint: disable=no-member
+    current_grade = factory.lazy_attribute(
+        lambda x: FAKER.pyfloat(right_digits=2, min_value=0, max_value=1))  # pylint: disable=no-member
+
+    @factory.lazy_attribute
+    def course_end(self):
+        return FAKER.date_time_between(   # pylint: disable=no-member
+            start_date=self.course_start,
+            end_date="+8M",
+            tzinfo=pytz.utc)
+
+    @factory.lazy_attribute
+    def passed_timestamp(self):
+        """ Create a passed timestamp if a course has been passed """
+        if self.has_passed:
+            return FAKER.date_time_between(  # pylint: disable=no-member
+                start_date=self.course_start,
+                end_date=self.course_end,
+                tzinfo=pytz.utc)
+        return None
 
 
 class UserFactory(factory.django.DjangoModelFactory):

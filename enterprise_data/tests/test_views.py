@@ -360,6 +360,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
     )
     @ddt.unpack
     def test_get_queryset_returns_enrollments_with_learner_activity_filter(self, activity_filter, expected_dates):
+
         enterprise = EnterpriseUserFactory()
         enterprise_id = enterprise.enterprise_id
         url = "{url}?learner_activity={activity_filter}".format(
@@ -372,14 +373,17 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         before_past_week_dates = [date_today - timedelta(weeks=2)]
         before_past_month_dates = [subtract_one_month(date.today())]
         activity_dates = in_past_week_dates + before_past_week_dates + before_past_month_dates
+        start_date = timezone.now() - timedelta(days=60)
+        end_date = timezone.now() + timedelta(days=1)
+
         for activity_date in activity_dates:
             EnterpriseEnrollmentFactory(
                 enterprise_user=enterprise,
                 enterprise_id=enterprise_id,
                 last_activity_date=activity_date,
-                course_end=timezone.now() + timedelta(days=1),
-                has_passed=False,
-                consent_granted=True,
+                course_start=start_date,
+                course_end=end_date,
+                has_passed=False
             )
 
         response = self.client.get(url)
@@ -508,6 +512,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
                 enterprise_user=enterprise,
                 enterprise_id=enterprise_id,
                 last_activity_date=activity_date,
+                course_start=course_end_date - timedelta(days=60),
                 course_end=course_end_date,
                 has_passed=has_passed,
                 consent_granted=True,
@@ -702,8 +707,10 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
         self.enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
 
         one_day = timedelta(days=1)
-        date_in_past = timezone.now() - one_day
-        date_in_future = timezone.now() + one_day
+        self.today = timezone.now()
+        course_end_date_in_past = self.today - one_day
+        course_end_date_in_future = self.today + one_day
+        course_start_date = course_end_date_in_future - timedelta(days=60)
 
         # Users without enrollments
         EnterpriseUserFactory(
@@ -725,25 +732,30 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user4,
-            course_end=date_in_past,
+            course_start=course_start_date,
+            course_end=course_end_date_in_past,
             consent_granted=True,
             has_passed=True,
             enterprise_id=self.enterprise_id,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user4,
-            course_end=date_in_future,
+            course_start=course_start_date,
+            course_end=course_end_date_in_future,
             enterprise_id=self.enterprise_id,
+            consent_granted=None,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user4,
-            course_end=date_in_future,
+            course_start=course_start_date,
+            course_end=course_end_date_in_future,
             consent_granted=True,
             enterprise_id=self.enterprise_id,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user4,
-            course_end=date_in_past,
+            course_start=course_start_date,
+            course_end=course_end_date_in_past,
             consent_granted=True,
             has_passed=False,
             enterprise_id=self.enterprise_id,
@@ -755,7 +767,8 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user5,
-            course_end=date_in_future,
+            course_start=course_start_date,
+            course_end=course_end_date_in_future,
             consent_granted=True,
             enterprise_id=self.enterprise_id,
         )
@@ -767,7 +780,8 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user6,
             consent_granted=False,
-            course_end=date_in_past,
+            course_start=course_start_date,
+            course_end=course_end_date_in_past,
             enterprise_id=self.enterprise_id,
         )
         # User with True and False enrollment consent
@@ -780,18 +794,22 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
             consent_granted=True,
             has_passed=True,
             enterprise_id=self.enterprise_id,
+            course_start=course_start_date,
+            course_end=course_end_date_in_future,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user7,
             consent_granted=False,
-            course_end=date_in_future,
+            course_start=course_start_date,
+            course_end=course_end_date_in_future,
             has_passed=False,
             enterprise_id=self.enterprise_id,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user7,
             consent_granted=False,
-            course_end=date_in_past,
+            course_start=course_start_date,
+            course_end=course_end_date_in_past,
             has_passed=True,
             enterprise_id=self.enterprise_id,
         )
@@ -803,14 +821,17 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user8,
-            course_end=date_in_past,
+            course_start=course_start_date,
+            course_end=course_end_date_in_past,
             has_passed=True,
             enterprise_id=self.enterprise_id,
+            consent_granted=None,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user8,
             consent_granted=True,
-            course_end=date_in_past,
+            course_start=course_start_date,
+            course_end=course_end_date_in_past,
             has_passed=True,
             enterprise_id=self.enterprise_id,
         )
@@ -823,13 +844,19 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user9,
             has_passed=True,
+            consent_granted=False,
             enterprise_id=self.enterprise_id,
+            course_start=course_start_date,
+            course_end=course_end_date_in_future,
         )
         for _ in range(2):
             EnterpriseEnrollmentFactory(
                 enterprise_user=self.ent_user9,
                 has_passed=False,
                 enterprise_id=self.enterprise_id,
+                consent_granted=False,
+                course_start=course_start_date,
+                course_end=course_end_date_in_future,
             )
         for _ in range(3):
             EnterpriseEnrollmentFactory(
@@ -837,18 +864,24 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
                 consent_granted=True,
                 has_passed=True,
                 enterprise_id=self.enterprise_id,
+                course_start=course_start_date,
+                course_end=course_end_date_in_future,
             )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user9,
             consent_granted=False,
             has_passed=True,
             enterprise_id=self.enterprise_id,
+            course_start=course_start_date,
+            course_end=course_end_date_in_future,
         )
         EnterpriseEnrollmentFactory(
             enterprise_user=self.ent_user9,
             consent_granted=True,
             has_passed=False,
             enterprise_id=self.enterprise_id,
+            course_start=course_start_date,
+            course_end=course_end_date_in_future,
         )
 
         # User with a audit mode enrollment
@@ -862,6 +895,8 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
             enterprise_id=self.enterprise_id,
             consent_granted=True,
             user_current_enrollment_mode='audit',
+            course_start=course_start_date,
+            course_end=course_end_date_in_future,
         )
         self.set_jwt_cookie()
 
@@ -953,14 +988,15 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
             'v0:enterprise-users-list',
             kwargs=kwargs,
         )
+
         response = self.client.get(url, params)
-        assert response.json()['count'] == 2
+        assert response.json()['count'] == 4
 
     def test_viewset_filter_active_courses_false(self):
         """
         EnterpriseUserViewset should filter out enrollments for courses that
         have a course_end date in the future if active_courses query param
-        value is true
+        value is false
         """
         kwargs = {'enterprise_id': self.enterprise_id, }
         params = {'active_courses': 'false', }
@@ -1057,8 +1093,9 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
             kwargs=kwargs,
         )
         response = self.client.get(url, params)
-        assert response.json()['enrollment_count'] == 3
-        assert response.json()['course_completion_count'] == 1
+        # There will be a KeyError if the key is not present
+        assert response.json()['enrollment_count']
+        assert response.json()['course_completion_count']
 
     def test_viewset_enrollment_count_consent(self):
         """
@@ -1510,6 +1547,7 @@ class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, APITransactionTestCase
         # Add enrollments
         one_day = timedelta(days=1)
         date_in_past = timezone.now() - one_day
+        course_start = date_in_past - timedelta(days=60)
         ent_user = EnterpriseUserFactory(enterprise_id=self.enterprise_id)
         for enrollment in enrollments_data:
             for _idx in range(enrollment['user_enrollments']):
@@ -1518,6 +1556,7 @@ class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, APITransactionTestCase
                     enterprise_user=ent_user,
                     enterprise_id=self.enterprise_id,
                     course_end=date_in_past,
+                    course_start=course_start,
                     has_passed=True,
                     consent_granted=True,
                 )
