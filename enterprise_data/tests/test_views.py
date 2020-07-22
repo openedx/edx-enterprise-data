@@ -8,6 +8,7 @@ from datetime import date, datetime, timedelta
 
 import ddt
 import mock
+import pytz
 from pytest import mark
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -250,6 +251,120 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
 
         for result in response["results"]:
             assert result["course_title"] in expected_course_titles
+
+    @ddt.data(
+        ('2020-09-29T00:00:00Z', 1),
+        ('2020-09-01T00:00:00Z', 2),
+        ('2020-08-25T00:00:00Z', 3)
+    )
+    @ddt.unpack
+    def test_get_enterprise_enrollments_with_start_date_search(self, search_date, expected_count):
+        enterprise_user = EnterpriseUserFactory(enterprise_id=self.enterprise_id)
+        course_start_dates = [
+            pytz.utc.localize(datetime(2020, 9, 30)),
+            pytz.utc.localize(datetime(2020, 9, 3)),
+            pytz.utc.localize(datetime(2020, 8, 30))]
+        for start_date in course_start_dates:
+            EnterpriseEnrollmentFactory(
+                enterprise_user=enterprise_user,
+                enterprise_id=self.enterprise_id,
+                course_start=start_date,
+            )
+        enrollments = EnterpriseEnrollment.objects.filter(
+            enterprise_id=self.enterprise_id,
+            course_start__gte=search_date,
+        )
+
+        expected_course_start_dates = [en.course_start for en in enrollments]
+
+        response = self.client.get(
+            reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': self.enterprise_id}),
+            data={'search_start_date': search_date}
+        ).json()
+
+        assert response['count'] == expected_count
+
+        for result in response["results"]:
+            assert pytz.utc.localize(datetime.strptime(result["course_start"], "%Y-%m-%dT%H:%M:%SZ")) \
+                in expected_course_start_dates
+
+    @ddt.data(
+        ("", "keep", "2020-09-01T00:00:00Z", 2),
+        ("test", "", "2020-08-25T00:00:00Z", 2),
+        ("test", "Beekeep", "", 1),
+        ("test", "keep", "2020-09-01T00:00:00Z", 1)
+    )
+    @ddt.unpack
+    def test_get_enrollements_multiple_filters(self, search_email, search_course, search_date, expected_count):
+        """ Integration test ensuring that filters work together as expected """
+        enterprise_user = EnterpriseUserFactory(enterprise_id=self.enterprise_id)
+        course_titles = ["Beekeeping 101", "Keeping it together", "Bears and their mountains 101"]
+        course_start_dates = [
+            pytz.utc.localize(datetime(2020, 9, 30)),
+            pytz.utc.localize(datetime(2020, 9, 3)),
+            pytz.utc.localize(datetime(2020, 8, 30))]
+        emails = ["test@test.com", "realmail@r.com", "foo@baz.com"]
+
+        for title, email, start_date in zip(course_titles, emails, course_start_dates):
+            EnterpriseEnrollmentFactory(
+                enterprise_user=enterprise_user,
+                enterprise_id=self.enterprise_id,
+                course_title=title,
+                course_start=start_date,
+                user_email=email
+            )
+
+        EnterpriseEnrollmentFactory(
+                enterprise_user=enterprise_user,
+                enterprise_id=self.enterprise_id,
+                course_title=course_titles[1],
+                course_start=course_start_dates[2],
+                user_email=emails[0]
+            )
+
+        search_kwargs = {
+            "enterprise_id": self.enterprise_id
+        }
+        if search_email:
+            search_kwargs["user_email__icontains"] = search_email
+        if search_course:
+            search_kwargs["course_title__icontains"] = search_course
+        if search_date:
+            search_kwargs["course_start__gte"] = search_date
+
+        enrollments = EnterpriseEnrollment.objects.filter(**search_kwargs)
+
+        expected_course_titles = []
+        expected_course_dates = []
+        expected_course_emails = []
+        for en in enrollments:
+            expected_course_titles.append(en.course_title)
+            expected_course_dates.append(en.course_start)
+            expected_course_emails.append(en.user_email)
+
+        data_dict = dict()
+        if search_date:
+            data_dict["search_start_date"] = search_date
+        if search_course:
+            data_dict["search_course"] = search_course
+        if search_email:
+            data_dict["search"] = search_email
+
+        response = self.client.get(
+            reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': self.enterprise_id}),
+            data=data_dict
+        ).json()
+
+        assert response['count'] == expected_count
+
+        for result in response["results"]:
+            if search_date:
+                assert pytz.utc.localize(datetime.strptime(result["course_start"], "%Y-%m-%dT%H:%M:%SZ")) \
+                    in expected_course_dates
+            if search_course:
+                assert result["course_title"] in expected_course_titles
+            if search_email:
+                assert result["user_email"] in expected_course_emails
 
     def test_get_queryset_returns_no_enrollments(self):
         """ Test that enterprise with no enrollments returns empty list """
