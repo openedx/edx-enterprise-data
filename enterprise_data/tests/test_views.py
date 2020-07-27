@@ -253,26 +253,45 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
             assert result["course_title"] in expected_course_titles
 
     @ddt.data(
-        ('2020-09-29T00:00:00Z', 1),
-        ('2020-09-01T00:00:00Z', 2),
-        ('2020-08-25T00:00:00Z', 3)
+        ('2020-09-30T00:00:00Z', 3),
+        ('2020-09-03T00:00:00Z', 2),
+        ('2020-08-30T00:00:00Z', 1)
     )
     @ddt.unpack
     def test_get_enterprise_enrollments_with_start_date_search(self, search_date, expected_count):
-        enterprise_user = EnterpriseUserFactory(enterprise_id=self.enterprise_id)
+        enterprise_user0 = EnterpriseUserFactory(enterprise_id=self.enterprise_id)
+        enterprise_user1 = EnterpriseUserFactory(enterprise_id=self.enterprise_id)
+        enterprise_user2 = EnterpriseUserFactory(enterprise_id=self.enterprise_id)
         course_start_dates = [
             pytz.utc.localize(datetime(2020, 9, 30)),
             pytz.utc.localize(datetime(2020, 9, 3)),
             pytz.utc.localize(datetime(2020, 8, 30))]
         for start_date in course_start_dates:
             EnterpriseEnrollmentFactory(
-                enterprise_user=enterprise_user,
+                enterprise_user=enterprise_user0,
                 enterprise_id=self.enterprise_id,
                 course_start=start_date,
             )
+
+        EnterpriseEnrollmentFactory(
+                enterprise_user=enterprise_user1,
+                enterprise_id=self.enterprise_id,
+                course_start=course_start_dates[0],
+            )
+        EnterpriseEnrollmentFactory(
+                enterprise_user=enterprise_user2,
+                enterprise_id=self.enterprise_id,
+                course_start=course_start_dates[0],
+            )
+        EnterpriseEnrollmentFactory(
+                enterprise_user=enterprise_user2,
+                enterprise_id=self.enterprise_id,
+                course_start=course_start_dates[1],
+            )
+
         enrollments = EnterpriseEnrollment.objects.filter(
             enterprise_id=self.enterprise_id,
-            course_start__gte=search_date,
+            course_start=search_date,
         )
 
         expected_course_start_dates = [en.course_start for en in enrollments]
@@ -289,25 +308,26 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
                 in expected_course_start_dates
 
     @ddt.data(
-        ("", "keep", "2020-09-01T00:00:00Z", 2),
-        ("test", "", "2020-08-25T00:00:00Z", 2),
+        ("", "keep", "2020-09-03T00:00:00Z", 2),
+        ("test", "", "2020-08-30T00:00:00Z", 2),
         ("test", "Beekeep", "", 1),
-        ("test", "keep", "2020-09-01T00:00:00Z", 1)
+        ("real", "keep", "2020-09-03T00:00:00Z", 1)
     )
     @ddt.unpack
-    def test_get_enrollements_multiple_filters(self, search_email, search_course, search_date, expected_count):
+    def test_get_enrollments_multiple_filters(self, search_email, search_course, search_date, expected_count):
         """ Integration test ensuring that filters work together as expected """
-        enterprise_user = EnterpriseUserFactory(enterprise_id=self.enterprise_id)
+        enterprise_user0 = EnterpriseUserFactory(enterprise_id=self.enterprise_id)
+        enterprise_user1 = EnterpriseUserFactory(enterprise_id=self.enterprise_id)
         course_titles = ["Beekeeping 101", "Keeping it together", "Bears and their mountains 101"]
         course_start_dates = [
-            pytz.utc.localize(datetime(2020, 9, 30)),
+            pytz.utc.localize(datetime(2020, 8, 30)),
             pytz.utc.localize(datetime(2020, 9, 3)),
             pytz.utc.localize(datetime(2020, 8, 30))]
         emails = ["test@test.com", "realmail@r.com", "foo@baz.com"]
 
         for title, email, start_date in zip(course_titles, emails, course_start_dates):
             EnterpriseEnrollmentFactory(
-                enterprise_user=enterprise_user,
+                enterprise_user=enterprise_user0,
                 enterprise_id=self.enterprise_id,
                 course_title=title,
                 course_start=start_date,
@@ -315,9 +335,16 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
             )
 
         EnterpriseEnrollmentFactory(
-                enterprise_user=enterprise_user,
+                enterprise_user=enterprise_user1,
                 enterprise_id=self.enterprise_id,
-                course_title=course_titles[1],
+                course_title=course_titles[0],
+                course_start=course_start_dates[1],
+                user_email=emails[2]
+            )
+        EnterpriseEnrollmentFactory(
+                enterprise_user=enterprise_user0,
+                enterprise_id=self.enterprise_id,
+                course_title=course_titles[2],
                 course_start=course_start_dates[2],
                 user_email=emails[0]
             )
@@ -330,7 +357,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         if search_course:
             search_kwargs["course_title__icontains"] = search_course
         if search_date:
-            search_kwargs["course_start__gte"] = search_date
+            search_kwargs["course_start"] = search_date
 
         enrollments = EnterpriseEnrollment.objects.filter(**search_kwargs)
 

@@ -125,10 +125,9 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         search_course = query_filters.get('search_course')
         if search_course:
             queryset = queryset.filter(course_title__icontains=search_course)
-
         search_start_date = query_filters.get('search_start_date')
         if search_start_date:
-            queryset = queryset.filter(course_start__gte=search_start_date)
+            queryset = queryset.filter(course_start=search_start_date)
 
         return queryset
 
