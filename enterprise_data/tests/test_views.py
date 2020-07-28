@@ -3,7 +3,6 @@
 Tests for views in the `enterprise_data` module.
 """
 
-
 from datetime import date, datetime, timedelta
 
 import ddt
@@ -18,7 +17,7 @@ from django.utils import timezone
 
 from enterprise_data.api.v0.serializers import EnterpriseEnrollmentSerializer
 from enterprise_data.api.v0.views import subtract_one_month
-from enterprise_data.models import EnterpriseEnrollment
+from enterprise_data.models import EnterpriseEnrollment, EnterpriseUser
 from enterprise_data.tests.mixins import JWTTestMixin
 from enterprise_data.tests.test_utils import (
     EnterpriseEnrollmentFactory,
@@ -62,6 +61,11 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         self.addCleanup(mocked_get_enterprise_customer.stop)
         self.enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
         self.set_jwt_cookie()
+
+    def tearDown(self):
+        super(TestEnterpriseEnrollmentsViewSet, self).tearDown()
+        EnterpriseUser.objects.all().delete()
+        EnterpriseEnrollment.objects.all().delete()
 
     @staticmethod
     def _get_enrollments_expected_data(enrollments):
@@ -185,213 +189,6 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         assert response.status_code == status.HTTP_200_OK
         result = response.json()
         assert result == expected_result
-
-    @ddt.data(
-        ('test_1234@example.com', 1),
-        ('test_1234', 1),
-        ('test_5678@example.com', 0),
-    )
-    @ddt.unpack
-    def test_get_enterprise_enrollments_with_email_search(self, search_email, expected_count):
-        """Test that with email_search param we get correct results"""
-        enterprise_user = EnterpriseUserFactory(enterprise_id=self.enterprise_id, user_email=search_email)
-        EnterpriseEnrollmentFactory(
-            enterprise_user=enterprise_user,
-            enterprise_id=self.enterprise_id,
-            user_email='test_1234@example.com',
-            consent_granted=True,
-        )
-
-        enrollments = EnterpriseEnrollment.objects.filter(
-            enterprise_id=self.enterprise_id,
-            user_email__icontains=search_email
-        )
-        expected_response = self._get_enrollments_expected_data(enrollments)
-        response = self.client.get(
-            reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': self.enterprise_id}),
-            data={'search': search_email}
-        ).json()
-        assert response['count'] == expected_count
-        assert response == expected_response
-
-    @ddt.data(
-        ('keep', 2),
-        ('Beekeep', 1),
-        ('101', 2)
-    )
-    @ddt.unpack
-    def test_get_enterprise_enrollments_with_course_search(self, search_course, expected_count):
-        enterprise_user = EnterpriseUserFactory(enterprise_id=self.enterprise_id)
-        course_titles = ["Beekeeping 101", "Keeping it together", "Bears and their mountains 101"]
-        for course_title in course_titles:
-            EnterpriseEnrollmentFactory(
-                enterprise_user=enterprise_user,
-                enterprise_id=self.enterprise_id,
-                course_title=course_title,
-                has_passed=False,
-            )
-        enrollments = EnterpriseEnrollment.objects.filter(
-            enterprise_id=self.enterprise_id,
-            course_title__icontains=search_course
-        )
-        enrollments = EnterpriseEnrollment.objects.filter(
-            enterprise_id=self.enterprise_id,
-            course_title__icontains=search_course)
-        expected_course_titles = [en.course_title for en in enrollments]
-        response = self.client.get(
-            reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': self.enterprise_id}),
-            data={'search_course': search_course}
-        ).json()
-        response = self.client.get(
-            reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': self.enterprise_id}),
-            data={'search_course': search_course}
-        ).json()
-
-        assert response['count'] == expected_count
-
-        for result in response["results"]:
-            assert result["course_title"] in expected_course_titles
-
-    @ddt.data(
-        ('2020-09-30T00:00:00Z', 3),
-        ('2020-09-03T00:00:00Z', 2),
-        ('2020-08-30T00:00:00Z', 1)
-    )
-    @ddt.unpack
-    def test_get_enterprise_enrollments_with_start_date_search(self, search_date, expected_count):
-        enterprise_user0 = EnterpriseUserFactory(enterprise_id=self.enterprise_id)
-        enterprise_user1 = EnterpriseUserFactory(enterprise_id=self.enterprise_id)
-        enterprise_user2 = EnterpriseUserFactory(enterprise_id=self.enterprise_id)
-        course_start_dates = [
-            pytz.utc.localize(datetime(2020, 9, 30)),
-            pytz.utc.localize(datetime(2020, 9, 3)),
-            pytz.utc.localize(datetime(2020, 8, 30))]
-        for start_date in course_start_dates:
-            EnterpriseEnrollmentFactory(
-                enterprise_user=enterprise_user0,
-                enterprise_id=self.enterprise_id,
-                course_start=start_date,
-            )
-
-        EnterpriseEnrollmentFactory(
-                enterprise_user=enterprise_user1,
-                enterprise_id=self.enterprise_id,
-                course_start=course_start_dates[0],
-            )
-        EnterpriseEnrollmentFactory(
-                enterprise_user=enterprise_user2,
-                enterprise_id=self.enterprise_id,
-                course_start=course_start_dates[0],
-            )
-        EnterpriseEnrollmentFactory(
-                enterprise_user=enterprise_user2,
-                enterprise_id=self.enterprise_id,
-                course_start=course_start_dates[1],
-            )
-
-        enrollments = EnterpriseEnrollment.objects.filter(
-            enterprise_id=self.enterprise_id,
-            course_start=search_date,
-        )
-
-        expected_course_start_dates = [en.course_start for en in enrollments]
-
-        response = self.client.get(
-            reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': self.enterprise_id}),
-            data={'search_start_date': search_date}
-        ).json()
-
-        assert response['count'] == expected_count
-
-        for result in response["results"]:
-            assert pytz.utc.localize(datetime.strptime(result["course_start"], "%Y-%m-%dT%H:%M:%SZ")) \
-                in expected_course_start_dates
-
-    @ddt.data(
-        ("", "keep", "2020-09-03T00:00:00Z", 2),
-        ("test", "", "2020-08-30T00:00:00Z", 2),
-        ("test", "Beekeep", "", 1),
-        ("real", "keep", "2020-09-03T00:00:00Z", 1)
-    )
-    @ddt.unpack
-    def test_get_enrollments_multiple_filters(self, search_email, search_course, search_date, expected_count):
-        """ Integration test ensuring that filters work together as expected """
-        enterprise_user0 = EnterpriseUserFactory(enterprise_id=self.enterprise_id)
-        enterprise_user1 = EnterpriseUserFactory(enterprise_id=self.enterprise_id)
-        course_titles = ["Beekeeping 101", "Keeping it together", "Bears and their mountains 101"]
-        course_start_dates = [
-            pytz.utc.localize(datetime(2020, 8, 30)),
-            pytz.utc.localize(datetime(2020, 9, 3)),
-            pytz.utc.localize(datetime(2020, 8, 30))]
-        emails = ["test@test.com", "realmail@r.com", "foo@baz.com"]
-
-        for title, email, start_date in zip(course_titles, emails, course_start_dates):
-            EnterpriseEnrollmentFactory(
-                enterprise_user=enterprise_user0,
-                enterprise_id=self.enterprise_id,
-                course_title=title,
-                course_start=start_date,
-                user_email=email
-            )
-
-        EnterpriseEnrollmentFactory(
-                enterprise_user=enterprise_user1,
-                enterprise_id=self.enterprise_id,
-                course_title=course_titles[0],
-                course_start=course_start_dates[1],
-                user_email=emails[2]
-            )
-        EnterpriseEnrollmentFactory(
-                enterprise_user=enterprise_user0,
-                enterprise_id=self.enterprise_id,
-                course_title=course_titles[2],
-                course_start=course_start_dates[2],
-                user_email=emails[0]
-            )
-
-        search_kwargs = {
-            "enterprise_id": self.enterprise_id
-        }
-        if search_email:
-            search_kwargs["user_email__icontains"] = search_email
-        if search_course:
-            search_kwargs["course_title__icontains"] = search_course
-        if search_date:
-            search_kwargs["course_start"] = search_date
-
-        enrollments = EnterpriseEnrollment.objects.filter(**search_kwargs)
-
-        expected_course_titles = []
-        expected_course_dates = []
-        expected_course_emails = []
-        for en in enrollments:
-            expected_course_titles.append(en.course_title)
-            expected_course_dates.append(en.course_start)
-            expected_course_emails.append(en.user_email)
-
-        data_dict = dict()
-        if search_date:
-            data_dict["search_start_date"] = search_date
-        if search_course:
-            data_dict["search_course"] = search_course
-        if search_email:
-            data_dict["search"] = search_email
-
-        response = self.client.get(
-            reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': self.enterprise_id}),
-            data=data_dict
-        ).json()
-
-        assert response['count'] == expected_count
-
-        for result in response["results"]:
-            if search_date:
-                assert pytz.utc.localize(datetime.strptime(result["course_start"], "%Y-%m-%dT%H:%M:%SZ")) \
-                    in expected_course_dates
-            if search_course:
-                assert result["course_title"] in expected_course_titles
-            if search_email:
-                assert result["user_email"] in expected_course_emails
 
     def test_get_queryset_returns_no_enrollments(self):
         """ Test that enterprise with no enrollments returns empty list """
@@ -1080,6 +877,11 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
         )
         self.set_jwt_cookie()
 
+    def tearDown(self):
+        super(TestEnterpriseUsersViewSet, self).tearDown()
+        EnterpriseUser.objects.all().delete()
+        EnterpriseEnrollment.objects.all().delete()
+
     def test_viewset_no_query_params(self):
         """
         EnterpriseUserViewset should return all users if no filtering query
@@ -1603,6 +1405,11 @@ class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, APITransactionTestCase
 
         self.set_jwt_cookie()
 
+    def tearDown(self):
+        super(TestEnterpriseLearnerCompletedCourses, self).tearDown()
+        EnterpriseUser.objects.all().delete()
+        EnterpriseEnrollment.objects.all().delete()
+
     def test_get_learner_completed_courses(self):
         """
         Test that we get correct number of courses completed by a learner.
@@ -1846,3 +1653,186 @@ class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, APITransactionTestCase
         response = self.client.get(url)
 
         assert response.status_code == status.HTTP_200_OK
+
+
+@ddt.ddt
+@mark.django_db
+class TestEnterpriseEnrollmentsViewSetFilters(JWTTestMixin, APITransactionTestCase):
+    """
+    Tests for EnterpriseEnrollmentsViewSet
+    """
+    fixtures = ('enterprise_enrollment', 'enterprise_user', )
+
+    def setUp(self):
+        super(TestEnterpriseEnrollmentsViewSetFilters, self).setUp()
+        self.user = UserFactory(is_staff=True)
+        role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
+        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
+            role=role,
+            user=self.user
+        )
+        self.client.force_authenticate(user=self.user)  # pylint: disable=no-member
+
+        mocked_get_enterprise_customer = mock.patch(
+            'enterprise_data.filters.EnterpriseApiClient.get_enterprise_customer',
+            return_value=get_dummy_enterprise_api_data()
+        )
+
+        self.mocked_get_enterprise_customer = mocked_get_enterprise_customer.start()
+        self.addCleanup(mocked_get_enterprise_customer.stop)
+        self.enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
+        self.set_jwt_cookie()
+
+        self.email_0 = "robot@robot.com"
+        self.email_1 = "mrrobot@foo.com"
+        self.email_2 = "definitelyHuman@bar.com"
+        self.enterprise_user_0 = EnterpriseUserFactory(enterprise_id=self.enterprise_id, user_email=self.email_0)
+        self.enterprise_user_1 = EnterpriseUserFactory(enterprise_id=self.enterprise_id, user_email=self.email_1)
+        self.enterprise_user_2 = EnterpriseUserFactory(enterprise_id=self.enterprise_id, user_email=self.email_2)
+
+        self.course_title_0 = "Beekeeping 101"
+        self.course_title_1 = "Keeping it together"
+        self.course_title_2 = "Plan 101"
+
+        self.course_date_0 = pytz.utc.localize(datetime(2020, 9, 30))
+        self.course_date_1 = pytz.utc.localize(datetime(2020, 9, 3))
+        self.course_date_2 = pytz.utc.localize(datetime(2020, 8, 30))
+
+        self.all_course_titles = [self.course_title_0, self.course_title_1, self.course_title_2]
+        self.all_course_dates = [self.course_date_0, self.course_date_1, self.course_date_2]
+        self.all_emails = [self.email_0, self.email_1, self.email_2]
+
+        # User 1 is enrolled in each course title with it's corresponding course date
+        for course_date, title in zip(self.all_course_dates, self.all_course_titles):
+            EnterpriseEnrollmentFactory(
+                enterprise_user=self.enterprise_user_0,
+                enterprise_id=self.enterprise_id,
+                user_email=self.enterprise_user_0.user_email,
+                consent_granted=True,
+                course_title=title,
+                course_start=course_date,
+            )
+
+        # User 2 is enrolled in the same first two courses and titles as user1
+        for course_date, title in zip(
+                                      [self.course_date_0, self.course_date_1],
+                                      [self.course_title_0, self.course_title_1]):
+            EnterpriseEnrollmentFactory(
+                enterprise_user=self.enterprise_user_1,
+                enterprise_id=self.enterprise_id,
+                user_email=self.enterprise_user_1.user_email,
+                consent_granted=True,
+                course_title=title,
+                course_start=course_date,
+            )
+
+        # User 3 is enrolled in the first course, but a different course run (different date)
+        EnterpriseEnrollmentFactory(
+                enterprise_user=self.enterprise_user_2,
+                enterprise_id=self.enterprise_id,
+                user_email=self.enterprise_user_2.user_email,
+                consent_granted=True,
+                course_title=self.course_title_0,
+                course_start=self.course_date_1,
+            )
+
+    def tearDown(self):
+        super(TestEnterpriseEnrollmentsViewSetFilters, self).tearDown()
+        EnterpriseUser.objects.all().delete()
+        EnterpriseEnrollment.objects.all().delete()
+
+    @ddt.data(
+        ("robot@robot.com", 3),  # the user with this email has 3 enrollements
+        ('robot', 5),  # Two users have 'robot' in their emails, between them there are 5 enrollments
+        ('human', 1),  # The user with 'human' in their email has only one enrollment
+        ('test_5678@example.com', 0),  # there is no user with this email
+    )
+    @ddt.unpack
+    def test_get_enterprise_enrollments_with_email_search(self, search_email, expected_count):
+        """Test that with email_search param we get correct results"""
+
+        expected_emails = [email for email in self.all_emails if search_email.lower() in email.lower()]
+        response = self.client.get(
+            reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': self.enterprise_id}),
+            data={'search': search_email}
+        ).json()
+
+        assert response['count'] == expected_count
+        for result in response['results']:
+            assert result['user_email'] in expected_emails
+
+    @ddt.data(
+        ('keep', 5),  # there are 5 enrollments in the that have 'keep' in their title
+        ('Beekeep', 3),  # there are only 3 enrollments with 'Beekeep' in their title
+        ('plan', 1)  # there is only one enrollment with 'plan' in the title
+    )
+    @ddt.unpack
+    def test_get_enterprise_enrollments_with_course_search(self, search_course, expected_count):
+        expected_titles = [title for title in self.all_course_titles if search_course.lower() in title.lower()]
+        response = self.client.get(
+            reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': self.enterprise_id}),
+            data={'search_course': search_course}
+        ).json()
+        response = self.client.get(
+            reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': self.enterprise_id}),
+            data={'search_course': search_course}
+        ).json()
+
+        assert response['count'] == expected_count
+
+        for result in response["results"]:
+            assert result["course_title"] in expected_titles
+
+    # the expected_count corresponds to the number of enrollments that have that start date
+    @ddt.data(
+        ('2020-09-30T00:00:00Z', 2),
+        ('2020-09-03T00:00:00Z', 3),
+        ('2020-08-30T00:00:00Z', 1)
+    )
+    @ddt.unpack
+    def test_get_enterprise_enrollments_with_start_date_search(self, search_date, expected_count):
+        response = self.client.get(
+            reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': self.enterprise_id}),
+            data={'search_start_date': search_date}
+        ).json()
+
+        assert response['count'] == expected_count
+
+        for result in response["results"]:
+            assert result["course_start"] == search_date
+
+    @ddt.data(
+        ("", "keep", "2020-09-03T00:00:00Z", 3),  # of the 5 courses with keep in the name, 3 start on this date
+        ("robot", "", "2020-09-03T00:00:00Z", 2),  # 2 users have 'robot' emails who have enrollments on this date
+        ("robot", "Beekeep", "", 2),  # 2 users have the 'robot' email, each is enrolled in a Beekeeping course
+        ("robot@robot.com", "keep", "2020-09-03T00:00:00Z", 1),  # there is only one enrollment that matches
+        ("mrrobot@foo.com", "Plan", "", 0)  # user email exists, but the user has no courses with plan in the title
+    )
+    @ddt.unpack
+    def test_get_enrollments_multiple_filters(self, search_email, search_course, search_date, expected_count):
+        """ Integration test ensuring that filters work together as expected """
+
+        expected_titles = [title for title in self.all_course_titles if search_course.lower() in title.lower()]
+        expected_emails = [email for email in self.all_emails if search_email.lower() in email.lower()]
+        data_dict = dict()
+        if search_date:
+            data_dict["search_start_date"] = search_date
+        if search_course:
+            data_dict["search_course"] = search_course
+        if search_email:
+            data_dict["search"] = search_email
+
+        response = self.client.get(
+            reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': self.enterprise_id}),
+            data=data_dict
+        ).json()
+
+        assert response['count'] == expected_count
+
+        for result in response["results"]:
+            if search_date:
+                assert result["course_start"] == search_date
+            if search_course:
+                assert result["course_title"] in expected_titles
+            if search_email:
+                assert result["user_email"] in expected_emails
