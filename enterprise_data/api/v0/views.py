@@ -122,6 +122,13 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         if search_email:
             queryset = queryset.filter(user_email__icontains=search_email)
 
+        search_course = query_filters.get('search_course')
+        if search_course:
+            queryset = queryset.filter(course_title__icontains=search_course)
+        search_start_date = query_filters.get('search_start_date')
+        if search_start_date:
+            queryset = queryset.filter(course_start=search_start_date)
+
         return queryset
 
     def filter_active_enrollments(self, queryset):
