@@ -1,9 +1,6 @@
 """
-management command for creating enterprise enrollments
+management command for creating enterprise enrollments in bulk
 """
-
-
-import sys
 
 from django.core.management.base import BaseCommand, CommandError
 
@@ -11,7 +8,7 @@ from enterprise_data.tests.test_utils import EnterpriseEnrollmentFactory, Enterp
 
 
 class Command(BaseCommand):
-    """ management command class """
+    """ management command class for creating enterprise enrollments in bulk """
     help = 'Creates 10 enterprise users with 5 random enrollments each'
 
     def add_arguments(self, parser):

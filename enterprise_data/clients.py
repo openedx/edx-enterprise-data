@@ -44,7 +44,7 @@ class EnterpriseApiClient(EdxRestApiClient):
         """
         try:
             querystring = {'username': user.username}
-            endpoint = getattr(self, 'enterprise-learner')  # pylint: disable=literal-used-as-attribute
+            endpoint = getattr(self, 'enterprise-learner')
             response = endpoint.get(**querystring)
         except (HttpClientError, HttpServerError) as exc:
             LOGGER.warning((
@@ -92,7 +92,7 @@ class EnterpriseApiClient(EdxRestApiClient):
             return cached_response.value
 
         try:
-            endpoint = getattr(self, 'enterprise-customer')  # pylint: disable=literal-used-as-attribute
+            endpoint = getattr(self, 'enterprise-customer')
             endpoint = endpoint(enterprise_id)
             response = endpoint.get()
         except (HttpClientError, HttpServerError) as exc:
