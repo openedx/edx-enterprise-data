@@ -15,6 +15,13 @@ Unreleased
 ----------
 
 =========================
+
+[2.1.0] - 2020-05-05
+--------------------
+* Updates factories to create more dummy data
+* Adds course and date filters to the enrollment view
+* Updates README with installation instructions
+
 [2.1.0] - 2020-05-05
 --------------------
 * Upgrade python packages.

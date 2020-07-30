@@ -107,7 +107,7 @@ class EnterpriseUserFactory(factory.django.DjangoModelFactory):
     enterprise_sso_uid = factory.lazy_attribute(lambda x: FAKER.text(max_nb_chars=255))  # pylint: disable=no-member
     user_account_creation_timestamp = datetime(2011, 1, 1, tzinfo=pytz.utc)
     user_username = factory.Sequence('robot{0}'.format)
-    user_email = factory.Sequence('robot+test+{0}@edx.org'.format)
+    user_email = factory.lazy_attribute(lambda x: FAKER.email())  # pylint: disable=no-member
     user_country_code = factory.lazy_attribute(lambda x: FAKER.country_code())  # pylint: disable=no-member
     last_activity_date = datetime(2012, 1, 1).date()
 

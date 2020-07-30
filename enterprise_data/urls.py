@@ -6,7 +6,7 @@ Enterprise_data url configuration.
 from django.conf.urls import include, url
 from django.contrib import admin
 
-app_name = 'enterprise_data'  # pylint: disable=invalid-name
+app_name = 'enterprise_data'
 urlpatterns = [
     url(
         r'^enterprise/api/',
