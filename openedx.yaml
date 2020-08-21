@@ -1,2 +1,2 @@
 oeps:
-  oep-7: True     # Python 3
+    oep-7: true   # Python 3
