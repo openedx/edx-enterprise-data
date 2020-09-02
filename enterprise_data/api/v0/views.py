@@ -27,6 +27,7 @@ from enterprise_data.filters import (
     ConsentGrantedFilterBackend,
 )
 from enterprise_data.models import EnterpriseEnrollment, EnterpriseUser
+from enterprise_data.paginators import EnterpriseEnrollmentsPagination
 
 LOGGER = getLogger(__name__)
 
@@ -64,6 +65,7 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
     Viewset for routes related to Enterprise course enrollments.
     """
     serializer_class = serializers.EnterpriseEnrollmentSerializer
+    pagination_class = EnterpriseEnrollmentsPagination
     filter_backends = (AuditEnrollmentsFilterBackend, ConsentGrantedFilterBackend, filters.OrderingFilter,)
     ordering_fields = '__all__'
     ordering = ('user_email',)

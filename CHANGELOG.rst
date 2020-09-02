@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[2.1.2] - 2020-09-03
+--------------------
+* Added custom pagination to increase page_size limit of Enterprise Enrollments API
+
 [2.1.0] - 2020-05-05
 --------------------
 * Updates factories to create more dummy data
