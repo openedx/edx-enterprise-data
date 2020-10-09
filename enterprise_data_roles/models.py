@@ -7,10 +7,8 @@ Database models for enterprise data.
 from edx_rbac.models import UserRole, UserRoleAssignment
 
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 
 
-@python_2_unicode_compatible
 class EnterpriseDataFeatureRole(UserRole):
     """
     User role definitions specific to EnterpriseData.
@@ -31,7 +29,6 @@ class EnterpriseDataFeatureRole(UserRole):
         return self.__str__()
 
 
-@python_2_unicode_compatible
 class EnterpriseDataRoleAssignment(UserRoleAssignment):
     """
     Model to map users to a EnterpriseDataFeatureRole.

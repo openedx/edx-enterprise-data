@@ -7,13 +7,11 @@ Database models for enterprise data.
 from logging import getLogger
 
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
 LOGGER = getLogger(__name__)
 
 
-@python_2_unicode_compatible
 class EnterpriseEnrollment(models.Model):
     """Enterprise Enrollment is the learner details for a specific course enrollment.
 
@@ -87,7 +85,6 @@ class EnterpriseEnrollment(models.Model):
         return self.__str__()
 
 
-@python_2_unicode_compatible
 class EnterpriseUser(models.Model):
     """Information includes a mix of the user's meta data.
 

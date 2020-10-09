@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[2.1.3] - 2020-10-09
+--------------------
+* Removed ``python_2_unicode_compatible`` decorator.
+
 [2.1.2] - 2020-09-03
 --------------------
 * Added custom pagination to increase page_size limit of Enterprise Enrollments API
