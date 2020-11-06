@@ -18,7 +18,7 @@ LOGGER = logging.getLogger(__name__)
 
 class DeliveryMethod(object):
     """
-    Base class for different types of Enterprise report delivery methods.
+    Base class  for different types of Enterprise report delivery methods.
     """
 
     def __init__(self, reporting_config, password):
