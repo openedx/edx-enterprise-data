@@ -229,6 +229,42 @@ class EnterpriseReportSender(object):
         'cl.lms_web_url AS LMS_WEB_URL',
     )
 
+    SNOWFLAKE_COMPLETION_QUERY = (
+        """
+        with selected_enterprise as (
+            SELECT
+                bee.enterprise_customer_uuid,
+                bee.lms_user_id,
+                bee.lms_courserun_key
+            FROM
+                prod.enterprise.ent_base_enterprise_enrollment as bee
+            WHERE
+                bee.enterprise_customer_uuid = '{enterprise_id}'
+        )
+        SELECT
+            {fields}
+        FROM
+            prod.lms.completion_blockcompletion as block
+        JOIN
+            selected_enterprise
+        ON
+            block.user_id = selected_enterprise.lms_user_id and block.course_key = selected_enterprise.lms_courserun_key
+        WHERE
+            block.block_type != 'discussion'
+        """
+    )
+
+    SNOWFLAKE_COMPLETION_QUERY_FIELDS = (
+        'ID',
+        'CREATED',
+        'MODIFIED',
+        'USER_ID',
+        'COURSE_KEY',
+        'BLOCK_KEY',
+        'BLOCK_TYPE',
+        'COMPLETION',
+    )
+
     FILE_WRITE_DIRECTORY = '/tmp'
 
     def __init__(self, reporting_config, delivery_method):
@@ -349,6 +385,22 @@ class EnterpriseReportSender(object):
             data_report_file_writer.writerow(headers)
             query = self.SNOWFLAKE_COURSE_STRUCTURE_QUERY.format(
                 fields=', '.join(self.SNOWFLAKE_COURSE_STRUCTURE_QUERY_FIELDS),
+                enterprise_id=self.enterprise_customer_uuid.replace('-', '')
+            )
+            LOGGER.debug('Executing this Snowflake query: {}'.format(query))
+            data_report_file_writer.writerows(snowflake_client.stream_results(query))
+        snowflake_client.close_connection()
+        return [data_report_file]
+
+    def _generate_enterprise_report_completion_csv(self):
+        """Query snowflake and write output to csv file."""
+        snowflake_client = SnowflakeClient()
+        snowflake_client.connect()
+        with open(self.data_report_file_name, 'w') as data_report_file:
+            data_report_file_writer = csv.writer(data_report_file)
+            data_report_file_writer.writerow(self.SNOWFLAKE_COMPLETION_QUERY_FIELDS)
+            query = self.SNOWFLAKE_COMPLETION_QUERY.format(
+                fields=','.join(self.SNOWFLAKE_COMPLETION_QUERY_FIELDS),
                 enterprise_id=self.enterprise_customer_uuid.replace('-', '')
             )
             LOGGER.debug('Executing this Snowflake query: {}'.format(query))
