@@ -17,7 +17,7 @@ from enterprise_reporting.clients.enterprise import (
     EnterpriseAPIClient,
     EnterpriseDataApiClient
 )
-from enterprise_reporting.clients.snowflake import SnowflakeClient
+from enterprise_reporting.clients.s3 import S3Client
 from enterprise_reporting.clients.vertica import VerticaClient
 from enterprise_reporting.delivery_method import SFTPDeliveryMethod, SMTPDeliveryMethod
 from enterprise_reporting.utils import decrypt_string, generate_data
@@ -57,212 +57,6 @@ class EnterpriseReportSender(object):
         'time_spent_hours',
         'last_activity_date',
         'user_current_enrollment_mode',
-    )
-
-    SNOWFLAKE_GRADES_QUERY = (
-        """
-        WITH enterprise as (
-            SELECT
-                ee.enterprise_customer_uuid,
-                lms_user_id as user_id
-            FROM 
-                prod.enterprise.ent_base_enterprise_enrollment as ee
-            WHERE 
-                ee.enterprise_customer_uuid = '{enterprise_id}'
-        )
-            SELECT
-                {fields}
-            FROM 
-                prod.lms.grades_persistentsubsectiongrade as grade
-            JOIN
-                enterprise
-            ON
-            grade.user_id = enterprise.user_id;
-        """
-    )
-    SNOWFLAKE_GRADES_QUERY_FIELDS = (
-        'enterprise.enterprise_customer_uuid AS ENTERPRISE_CUSTOMER_UUID',
-        'grade.user_id AS USER_ID',
-        'grade.course_id AS COURSE_ID',
-        'grade.usage_key AS USAGE_KEY',
-        'grade.earned_all AS EARNED_ALL',
-        'grade.possible_all AS POSSIBLE_ALL',
-        'grade.earned_graded AS EARNED_GRADED',
-        'grade.possible_graded AS POSSIBLE_GRADED',
-        'grade.first_attempted AS FIRST_ATTEMPTED'
-    )
-
-    SNOWFLAKE_COURSE_STRUCTURE_QUERY = (
-        """
-        WITH section_level as (
-        -- Pull in full course structure table; section data will be handled in joins.
-        SELECT * FROM prod.production.course_structure
-        ),
-        
-        subsection_level as (
-        -- Pull in full course structure table; subsection data will be handled in joins.
-        SELECT * FROM prod.production.course_structure
-        ),
-        
-        component_level as (
-        -- Pull in full course structure table; component data will be handled in joins.
-        SELECT * FROM prod.production.course_structure
-        ),
-        
-        section_index as (
-        -- Generates an index that says "n section is the nth section in this course".
-        -- Allows for section ordering.
-        WITH sub as (
-        SELECT
-            course_block_id,
-            section_block_id,
-            MAX(order_index) as order_index
-        FROM 
-            prod.production.course_structure
-        WHERE
-        /*Filter out higher level blocks 
-          so there is only one row per component.*/
-            block_type NOT IN (
-                'vertical',
-                'sequential',
-                'chapter',
-                'course')
-        GROUP BY
-                1,2)
-        SELECT
-            *,
-            ROW_NUMBER() OVER 
-            (PARTITION BY course_block_id 
-             ORDER BY order_index) as section_index
-        FROM
-            sub
-        ),
-        
-        subsection_index as (
-        -- Generates an index that says "n subsection is the nth subsection in this section".
-        -- Allows for subsection ordering.
-        WITH sub as (
-        SELECT
-            course_block_id,
-            section_block_id,
-            subsection_block_id,
-            MAX(order_index) as order_index
-        FROM 
-            prod.production.course_structure
-        WHERE
-        /*Filter out higher level blocks 
-          so there is only one row per component.*/
-            block_type not in (
-                'vertical',
-                'sequential',
-                'chapter',
-                'course')
-        GROUP BY
-            1,2,3)
-        SELECT
-            *,
-            ROW_NUMBER() OVER 
-            (PARTITION BY course_block_id, section_block_id 
-             ORDER BY order_index) as subsection_index
-        FROM
-            sub),
-            
-        selected_enterprise as (
-        -- Generate a distinct list of every course run key for selected_enterprise learner enrolled in.
-        -- Used to filter dataset down to only data relevant to selected_enterprise's courses.
-        SELECT DISTINCT
-            bee.lms_courserun_key as course_id
-        FROM
-            prod.enterprise.ent_base_enterprise_enrollment as bee
-        WHERE
-            bee.enterprise_customer_uuid = '{enterprise_id}'
-        )
-        
-        SELECT 
-            {fields}
-        FROM
-            component_level as cl
-        JOIN
-            section_level as sl
-        ON
-            cl.section_block_id = sl.block_id
-        JOIN
-            subsection_level as ssl
-        ON
-            cl.subsection_block_id = ssl.block_id
-        LEFT JOIN
-            section_index as si
-        ON
-            cl.section_block_id = si.section_block_id
-        LEFT JOIN
-            subsection_index as ssi
-        ON
-            ssl.block_id = ssi.subsection_block_id
-        JOIN
-            selected_enterprise
-        ON
-            cl.course_id = selected_enterprise.course_id
-        WHERE
-        /*Filter out higher level blocks 
-          so there is only one row per component.*/
-            cl.block_id NOT IN (
-                    'vertical',
-                    'sequential',
-                    'chapter',
-                    'course')
-        ORDER BY
-                cl.course_id,
-                cl.order_index;
-        """
-    )
-
-    SNOWFLAKE_COURSE_STRUCTURE_QUERY_FIELDS = (
-        'cl.course_id AS COURSE_ID',
-        'cl.section_block_id AS SECTION_BLOCK_ID',
-        'sl.display_name AS SECTION_DISPLAY_NAME',
-        'si.section_index AS SECTION_INDEX',
-        'ssl.block_id AS SUBSECTION_BLOCK_ID',
-        'ssl.display_name AS SUBSECTION_DISPLAY_NAME',
-        'ssi.subsection_index AS SUBSECTION_INDEX',
-        'cl.block_id AS COMPONENT_BLOCK_ID',
-        'cl.display_name AS COMPONENT_DISPLAY_NAME',
-        'cl.lms_web_url AS LMS_WEB_URL',
-    )
-
-    SNOWFLAKE_COMPLETION_QUERY = (
-        """
-        with selected_enterprise as (
-            SELECT
-                bee.enterprise_customer_uuid,
-                bee.lms_user_id,
-                bee.lms_courserun_key
-            FROM
-                prod.enterprise.ent_base_enterprise_enrollment as bee
-            WHERE
-                bee.enterprise_customer_uuid = '{enterprise_id}'
-        )
-        SELECT
-            {fields}
-        FROM
-            prod.lms.completion_blockcompletion as block
-        JOIN
-            selected_enterprise
-        ON
-            block.user_id = selected_enterprise.lms_user_id and block.course_key = selected_enterprise.lms_courserun_key
-        WHERE
-            block.block_type != 'discussion'
-        """
-    )
-
-    SNOWFLAKE_COMPLETION_QUERY_FIELDS = (
-        'ID',
-        'CREATED',
-        'MODIFIED',
-        'USER_ID',
-        'COURSE_KEY',
-        'BLOCK_KEY',
-        'BLOCK_TYPE',
-        'COMPLETION',
     )
 
     FILE_WRITE_DIRECTORY = '/tmp'
@@ -359,53 +153,30 @@ class EnterpriseReportSender(object):
         return [data_report_file]
 
     def _generate_enterprise_report_grade_csv(self):
-        """Query Snowflake and write output to csv file."""
-        snowflake_client = SnowflakeClient()
-        snowflake_client.connect()
-        with open(self.data_report_file_name, 'w') as data_report_file:
-            data_report_file_writer = csv.writer(data_report_file)
-            headers = [col.split(' AS ')[1] for col in self.SNOWFLAKE_GRADES_QUERY_FIELDS]
-            data_report_file_writer.writerow(headers)
-            query = self.SNOWFLAKE_GRADES_QUERY.format(
-                fields=', '.join(self.SNOWFLAKE_GRADES_QUERY_FIELDS),
-                enterprise_id=self.enterprise_customer_uuid.replace('-', '')
-            )
-            LOGGER.debug('Executing this Snowflake query: {}'.format(query))
-            data_report_file_writer.writerows(snowflake_client.stream_results(query))
-        snowflake_client.close_connection()
+        """Query S3 and write output to csv file."""
+        s3_client = S3Client()
+        with open(self.data_report_file_name, 'wb') as data_report_file:
+            LOGGER.debug('Fetching enterprise grade report from S3')
+            # temporarily adding file path for PEARSON
+            s3_client.get_enterprise_report('/PEARSON/ENT_REPORT_PEARSON_GRADE.csv', data_report_file)
         return [data_report_file]
 
     def _generate_enterprise_report_course_structure_csv(self):
-        """Query Snowflake and write output to csv file."""
-        snowflake_client = SnowflakeClient()
-        snowflake_client.connect()
-        with open(self.data_report_file_name, 'w') as data_report_file:
-            data_report_file_writer = csv.writer(data_report_file)
-            headers = [col.split(' AS ')[1] for col in self.SNOWFLAKE_COURSE_STRUCTURE_QUERY_FIELDS]
-            data_report_file_writer.writerow(headers)
-            query = self.SNOWFLAKE_COURSE_STRUCTURE_QUERY.format(
-                fields=', '.join(self.SNOWFLAKE_COURSE_STRUCTURE_QUERY_FIELDS),
-                enterprise_id=self.enterprise_customer_uuid.replace('-', '')
-            )
-            LOGGER.debug('Executing this Snowflake query: {}'.format(query))
-            data_report_file_writer.writerows(snowflake_client.stream_results(query))
-        snowflake_client.close_connection()
+        """Query S3 and write output to csv file."""
+        s3_client = S3Client()
+        with open(self.data_report_file_name, 'wb') as data_report_file:
+            LOGGER.debug('Fetching enterprise course structure report from S3')
+            # temporarily adding file path for PEARSON
+            s3_client.get_enterprise_report('/PEARSON/ENT_REPORT_PEARSON_COURSE_STRUCTURE.csv', data_report_file)
         return [data_report_file]
 
     def _generate_enterprise_report_completion_csv(self):
-        """Query snowflake and write output to csv file."""
-        snowflake_client = SnowflakeClient()
-        snowflake_client.connect()
-        with open(self.data_report_file_name, 'w') as data_report_file:
-            data_report_file_writer = csv.writer(data_report_file)
-            data_report_file_writer.writerow(self.SNOWFLAKE_COMPLETION_QUERY_FIELDS)
-            query = self.SNOWFLAKE_COMPLETION_QUERY.format(
-                fields=','.join(self.SNOWFLAKE_COMPLETION_QUERY_FIELDS),
-                enterprise_id=self.enterprise_customer_uuid.replace('-', '')
-            )
-            LOGGER.debug('Executing this Snowflake query: {}'.format(query))
-            data_report_file_writer.writerows(snowflake_client.stream_results(query))
-        snowflake_client.close_connection()
+        """Query S3 and write output to csv file."""
+        s3_client = S3Client()
+        with open(self.data_report_file_name, 'wb') as data_report_file:
+            LOGGER.debug('Fetching enterprise completion report from S3')
+            # temporarily adding file path for PEARSON
+            s3_client.get_enterprise_report('/PEARSON/ENT_REPORT_PEARSON_BLOCK_COMPLETION.csv', data_report_file)
         return [data_report_file]
 
     def _generate_enterprise_report_progress_v2_csv(self):
