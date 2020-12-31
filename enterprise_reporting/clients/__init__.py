@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Clients used to access third party systems.
 """
@@ -13,7 +12,7 @@ from six.moves import urllib
 from edx_rest_api_client.client import EdxRestApiClient
 
 
-class EdxOAuth2APIClient(object):
+class EdxOAuth2APIClient:
     """
     Base API Client for accessing edX IDA API endpoints.
     """

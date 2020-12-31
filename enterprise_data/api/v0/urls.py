@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 URL definitions for enterprise data api version 1 endpoint.
 """

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tests for the `enterprise-data` models module.
 """
@@ -23,7 +22,7 @@ class TestEnterpriseDataFeatureRole(unittest.TestCase):
         self.enterprise_data_feature_role = factories.EnterpriseDataFeatureRoleFactory(name="Test Role")
         self.enterprise_data_role_assignment = factories.EnterpriseDataRoleAssignmentFactory()
 
-        super(TestEnterpriseDataFeatureRole, self).setUp()
+        super().setUp()
 
     @ddt.data(str, repr)
     def test_string_conversion(self, method):
@@ -47,7 +46,7 @@ class TestEnterpriseDataRoleAssignment(unittest.TestCase):
             user__id=1,
         )
 
-        super(TestEnterpriseDataRoleAssignment, self).setUp()
+        super().setUp()
 
     @ddt.data(str, repr)
     def test_string_conversion(self, method):

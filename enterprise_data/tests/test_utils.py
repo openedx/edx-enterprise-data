@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Test factories.
 """
@@ -80,10 +79,10 @@ class UserFactory(factory.django.DjangoModelFactory):
 
     _DEFAULT_PASSWORD = 'test'
 
-    username = factory.Sequence('robot{0}'.format)
-    email = factory.Sequence('robot+test+{0}@edx.org'.format)
+    username = factory.Sequence('robot{}'.format)
+    email = factory.Sequence('robot+test+{}@edx.org'.format)
     password = factory.PostGenerationMethodCall('set_password', _DEFAULT_PASSWORD)
-    first_name = factory.Sequence('Robot{0}'.format)
+    first_name = factory.Sequence('Robot{}'.format)
     last_name = 'Test'
     is_staff = factory.lazy_attribute(lambda x: False)
     is_active = True
@@ -106,7 +105,7 @@ class EnterpriseUserFactory(factory.django.DjangoModelFactory):
     enterprise_user_id = factory.lazy_attribute(lambda x: FAKER.random_int(min=1))  # pylint: disable=no-member
     enterprise_sso_uid = factory.lazy_attribute(lambda x: FAKER.text(max_nb_chars=255))  # pylint: disable=no-member
     user_account_creation_timestamp = datetime(2011, 1, 1, tzinfo=pytz.utc)
-    user_username = factory.Sequence('robot{0}'.format)
+    user_username = factory.Sequence('robot{}'.format)
     user_email = factory.lazy_attribute(lambda x: FAKER.email())  # pylint: disable=no-member
     user_country_code = factory.lazy_attribute(lambda x: FAKER.country_code())  # pylint: disable=no-member
     last_activity_date = datetime(2012, 1, 1).date()

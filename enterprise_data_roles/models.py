@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Database models for enterprise data.
 """
@@ -20,7 +19,7 @@ class EnterpriseDataFeatureRole(UserRole):
         """
         Return human-readable string representation.
         """
-        return "EnterpriseDataFeatureRole(name={name})".format(name=self.name)
+        return f"EnterpriseDataFeatureRole(name={self.name})"
 
     def __repr__(self):
         """

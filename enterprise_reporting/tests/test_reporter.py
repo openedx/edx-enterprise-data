@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Test reporter.
 """
@@ -52,7 +51,7 @@ class TestReporter(unittest.TestCase):
 		self.reporting_config['include_date'] = flag_value
 		enterprise_report_sender = EnterpriseReportSender.create(self.reporting_config)
 		actual_file_name = enterprise_report_sender.data_report_file_name
-		date_str = "_{}".format(self.date) if self.reporting_config.get('include_date') else ""
+		date_str = f"_{self.date}" if self.reporting_config.get('include_date') else ""
 		expected_file_name = "{dir}/{enterprise_uuid}_{data_type}_{report_type}{date}.{report_type}".format(
 			dir=self.FILE_WRITE_DIRECTORY,
 			enterprise_uuid=self.reporting_config['enterprise_customer']['uuid'],

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Serializers for enterprise api version 0 endpoint.
 """
@@ -69,7 +68,7 @@ class EnterpriseUserSerializer(serializers.ModelSerializer):
         exclude = ('created', )
 
     def to_representation(self, instance):
-        representation = super(EnterpriseUserSerializer, self).to_representation(instance)
+        representation = super().to_representation(instance)
 
         if hasattr(instance, 'enrollment_count'):
             representation['enrollment_count'] = instance.enrollment_count

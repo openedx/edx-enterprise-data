@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tests for views in the `enterprise_data` module.
 """
@@ -6,7 +5,7 @@ Tests for views in the `enterprise_data` module.
 from datetime import date, datetime, timedelta
 
 import ddt
-import mock
+from unittest import mock
 import pytz
 from pytest import mark
 from rest_framework import status
@@ -43,7 +42,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
     fixtures = ('enterprise_enrollment', 'enterprise_user', )
 
     def setUp(self):
-        super(TestEnterpriseEnrollmentsViewSet, self).setUp()
+        super().setUp()
         self.user = UserFactory(is_staff=True)
         role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
         self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
@@ -63,7 +62,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         self.set_jwt_cookie()
 
     def tearDown(self):
-        super(TestEnterpriseEnrollmentsViewSet, self).tearDown()
+        super().tearDown()
         EnterpriseUser.objects.all().delete()
         EnterpriseEnrollment.objects.all().delete()
 
@@ -223,7 +222,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
             EnterpriseEnrollmentFactory(
                 enterprise_user=enterprise,
                 enterprise_id=enterprise_id,
-                user_email='user{}@example.com'.format(index),
+                user_email=f'user{index}@example.com',
                 passed_timestamp=passed_date,
                 course_title='course101',
                 has_passed=True,
@@ -306,12 +305,12 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
             EnterpriseEnrollmentFactory(
                 enterprise_user=enterprise_user,
                 enterprise_id=enterprise_id,
-                user_email='user{}@example.com'.format(index),
+                user_email=f'user{index}@example.com',
                 user_current_enrollment_mode=user_current_enrollment_mode,
                 course_title='course101',
                 has_passed=True,
                 consent_granted=True,
-                coupon_name='Test Coupon {}'.format(index),
+                coupon_name=f'Test Coupon {index}',
                 coupon_code=coupon_code,
                 offer=offer,
             )
@@ -665,7 +664,7 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
     """
 
     def setUp(self):
-        super(TestEnterpriseUsersViewSet, self).setUp()
+        super().setUp()
         self.user = UserFactory(is_staff=True)
         role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
         self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
@@ -878,7 +877,7 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
         self.set_jwt_cookie()
 
     def tearDown(self):
-        super(TestEnterpriseUsersViewSet, self).tearDown()
+        super().tearDown()
         EnterpriseUser.objects.all().delete()
         EnterpriseEnrollment.objects.all().delete()
 
@@ -1379,7 +1378,7 @@ class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, APITransactionTestCase
     fixtures = ('enterprise_enrollment', 'enterprise_user', )
 
     def setUp(self):
-        super(TestEnterpriseLearnerCompletedCourses, self).setUp()
+        super().setUp()
         self.user = UserFactory(is_staff=True)
         role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
         self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
@@ -1406,7 +1405,7 @@ class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, APITransactionTestCase
         self.set_jwt_cookie()
 
     def tearDown(self):
-        super(TestEnterpriseLearnerCompletedCourses, self).tearDown()
+        super().tearDown()
         EnterpriseUser.objects.all().delete()
         EnterpriseEnrollment.objects.all().delete()
 
@@ -1664,7 +1663,7 @@ class TestEnterpriseEnrollmentsViewSetFilters(JWTTestMixin, APITransactionTestCa
     fixtures = ('enterprise_enrollment', 'enterprise_user', )
 
     def setUp(self):
-        super(TestEnterpriseEnrollmentsViewSetFilters, self).setUp()
+        super().setUp()
         self.user = UserFactory(is_staff=True)
         role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
         self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
@@ -1737,7 +1736,7 @@ class TestEnterpriseEnrollmentsViewSetFilters(JWTTestMixin, APITransactionTestCa
             )
 
     def tearDown(self):
-        super(TestEnterpriseEnrollmentsViewSetFilters, self).tearDown()
+        super().tearDown()
         EnterpriseUser.objects.all().delete()
         EnterpriseEnrollment.objects.all().delete()
 
