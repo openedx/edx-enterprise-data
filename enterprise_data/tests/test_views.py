@@ -3,9 +3,9 @@ Tests for views in the `enterprise_data` module.
 """
 
 from datetime import date, datetime, timedelta
+from unittest import mock
 
 import ddt
-from unittest import mock
 import pytz
 from pytest import mark
 from rest_framework import status

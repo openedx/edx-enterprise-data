@@ -6,7 +6,6 @@ import os
 import unittest
 
 import json
-from unittest import mock
 
 from enterprise_reporting.clients.enterprise import (
     extract_catalog_uuids_from_reporting_config,

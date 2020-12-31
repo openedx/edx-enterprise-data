@@ -1,10 +1,10 @@
 """
 Tests for clients in enterprise_data.
 """
-
+from unittest import mock
+from unittest.mock import ANY, Mock
 
 from edx_rest_api_client.exceptions import HttpClientError
-from unittest.mock import ANY, Mock, mock
 from rest_framework.exceptions import NotFound, ParseError
 
 from django.test import TestCase

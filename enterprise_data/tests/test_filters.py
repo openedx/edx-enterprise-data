@@ -2,8 +2,8 @@
 Tests for filters in enterprise_data.
 """
 
-
 from unittest import mock
+
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase

@@ -6,9 +6,17 @@ env:
   - TOXENV=django22-data
   - TOXENV=django30-data
   - TOXENV=django31-data
+  - TOXENV=django22-reporting
+matrix:
+  allow_failures:
+    - python: 3.8
+      env: TOXENV=django30-data
+    - python: 3.8
+      env: TOXENV=django31-data
 cache:
   - pip
 install:
+  - pip install pip==20.0.2
   - pip install -r requirements/travis.txt
 script:
   - tox
@@ -19,7 +27,7 @@ deploy:
   user: edx
   distributions: sdist bdist_wheel
   on:
-    python: 3.5
+    python: 3.8
     tags: true
     condition: $TOXENV = quality
   password:

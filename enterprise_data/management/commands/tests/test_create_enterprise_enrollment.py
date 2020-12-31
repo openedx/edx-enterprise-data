@@ -1,11 +1,8 @@
 """
 Tests for create_enterprise_enrollment management command
 """
+from unittest import TestCase, mock
 
-
-from unittest import TestCase
-
-from unittest.mock import mock
 from pytest import mark
 
 from django.core.management import call_command
