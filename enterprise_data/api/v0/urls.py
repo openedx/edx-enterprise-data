@@ -9,7 +9,7 @@ from enterprise_data.api.v0 import views
 
 app_name = 'enterprise_data_api_v0'
 
-router = DefaultRouter()  # pylint: disable=invalid-name
+router = DefaultRouter()
 router.register(
     r'enterprise/(?P<enterprise_id>.+)/enrollments',
     views.EnterpriseEnrollmentsViewSet,

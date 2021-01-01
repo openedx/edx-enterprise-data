@@ -10,12 +10,13 @@ import pytz
 from faker import Factory as FakerFactory
 from faker.providers import misc
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 from enterprise_data.models import EnterpriseEnrollment, EnterpriseUser
 
 FAKER = FakerFactory.create()
 FAKER.add_provider(misc)
+User = get_user_model()
 
 
 class EnterpriseEnrollmentFactory(factory.django.DjangoModelFactory):

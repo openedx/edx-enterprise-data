@@ -199,7 +199,7 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         return created_max['created__max']
 
     @action(detail=False)
-    def overview(self, request, **kwargs):
+    def overview(self, request, **kwargs):  # pylint: disable=unused-argument
         """
         Returns the following data:
             - # of enrolled learners;
