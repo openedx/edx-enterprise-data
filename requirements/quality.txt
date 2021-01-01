@@ -4,149 +4,462 @@
 #
 #    make upgrade
 #
-amqp==1.4.9               # via kombu
-anyjson==0.3.3            # via kombu
-appdirs==1.4.4            # via virtualenv
-asn1crypto==1.4.0         # via oscrypto, snowflake-connector-python
-astroid==2.4.2            # via pylint, pylint-celery
-attrs==20.3.0             # via pytest
-awscli==1.18.159          # via -r requirements/reporting.in
-azure-common==1.1.26      # via snowflake-connector-python
-azure-core==1.9.0         # via azure-storage-blob
-azure-storage-blob==12.6.0  # via snowflake-connector-python
-bcrypt==3.2.0             # via paramiko
-billiard==3.3.0.23        # via celery
-bleach==3.2.1             # via readme-renderer
-boto3==1.15.18            # via -r requirements/reporting.in, snowflake-connector-python
-botocore==1.18.18         # via awscli, boto3, s3transfer
-celery==3.1.18            # via -r requirements/reporting.in
-certifi==2020.12.5        # via msrest, py2neo, requests, snowflake-connector-python
-cffi==1.14.4              # via bcrypt, cryptography, pynacl, snowflake-connector-python
-chardet==3.0.4            # via requests
-click-log==0.3.2          # via edx-lint
-click==7.1.2              # via click-log, edx-lint, pip-tools
-colorama==0.4.3           # via awscli, twine
-coverage==5.3.1           # via pytest-cov
-cryptography==3.3.1       # via -r requirements/reporting.in, azure-storage-blob, django-fernet-fields, paramiko, pgpy, py2neo, pyjwt, pyopenssl, secretstorage, snowflake-connector-python
-ddt==1.3.1                # via -c requirements/constraints.txt, -r requirements/test.in
-diff-cover==4.0.1         # via -r requirements/dev-enterprise_data.in
-distlib==0.3.1            # via virtualenv
-django-crum==0.7.9        # via edx-django-utils, edx-rbac
-django-fernet-fields==0.6  # via -r requirements/base.in
-django-model-utils==4.1.1  # via -r requirements/base.in, -r requirements/test.in, edx-rbac
-django-waffle==2.0.0      # via edx-django-utils, edx-drf-extensions
-django==2.2.17            # via -c requirements/constraints.txt, -r requirements/base.in, django-crum, django-fernet-fields, django-model-utils, djangorestframework, drf-jwt, edx-django-utils, edx-drf-extensions, edx-i18n-tools, edx-rbac, rest-condition
-djangorestframework==3.12.2  # via drf-jwt, edx-drf-extensions, rest-condition
-docker==4.4.1             # via py2neo
-docutils==0.15.2          # via awscli, readme-renderer
-drf-jwt==1.17.3           # via edx-drf-extensions
-edx-django-utils==3.13.0  # via -r requirements/base.in, edx-drf-extensions, edx-rest-api-client
-edx-drf-extensions==6.2.0  # via -r requirements/base.in, edx-rbac
-edx-i18n-tools==0.5.3     # via -r requirements/dev-enterprise_data.in
-edx-lint==1.6             # via -r requirements/dev-enterprise_data.in, -r requirements/quality.in
-edx-opaque-keys==2.1.1    # via -r requirements/base.in, edx-drf-extensions
-edx-rbac==1.3.3           # via -r requirements/base.in
-edx-rest-api-client==5.2.2  # via -r requirements/base.in
-english==2020.7.0         # via py2neo
-factory-boy==3.2.0        # via -r requirements/test.in
-faker==5.3.0              # via factory-boy
-filelock==3.0.12          # via tox, virtualenv
-flaky==3.7.0              # via -r requirements/test.in
-freezegun==1.0.0          # via -r requirements/test.in
-future==0.18.2            # via pyjwkest
-idna==2.10                # via requests
-inflect==5.0.2            # via jinja2-pluralize
-iniconfig==1.1.1          # via pytest
-isodate==0.6.0            # via msrest
-isort==5.7.0              # via -r requirements/quality.in, pylint
-jeepney==0.6.0            # via keyring, secretstorage
-jinja2-pluralize==0.3.0   # via diff-cover
-jinja2==2.11.2            # via diff-cover, jinja2-pluralize
-jmespath==0.10.0          # via boto3, botocore
-keyring==21.8.0           # via twine
-kombu==3.0.37             # via celery
-lazy-object-proxy==1.4.3  # via astroid
-markupsafe==1.1.1         # via jinja2
-mccabe==0.6.1             # via pylint
-mock==4.0.3               # via -r requirements/test.in
-monotonic==1.5            # via py2neo
-msrest==0.6.19            # via azure-storage-blob
-neotime==1.7.4            # via py2neo
-newrelic==5.24.0.153      # via edx-django-utils
-oauthlib==3.1.0           # via requests-oauthlib
-oscrypto==1.2.1           # via snowflake-connector-python
-packaging==20.8           # via bleach, py2neo, pytest, tox
-pansi==2020.7.3           # via py2neo
-paramiko==2.7.2           # via -r requirements/reporting.in
-path.py==12.5.0           # via edx-i18n-tools
-path==15.0.1              # via path.py
-pbr==5.5.1                # via stevedore
-pgpy==0.5.3               # via -r requirements/reporting.in
-pip-tools==5.5.0          # via -r requirements/dev-enterprise_data.in
-pkginfo==1.6.1            # via twine
-pluggy==0.13.1            # via diff-cover, pytest, tox
-polib==1.1.0              # via edx-i18n-tools
-prompt-toolkit==2.0.10    # via py2neo
-psutil==5.8.0             # via edx-django-utils
-py2neo==2020.1.1          # via -r requirements/reporting.in
-py==1.10.0                # via pytest, tox
-pyasn1==0.4.8             # via pgpy, rsa
-pycodestyle==2.6.0        # via -r requirements/quality.in
-pycparser==2.20           # via cffi
-pycryptodomex==3.9.9      # via pyjwkest, snowflake-connector-python
-pydocstyle==5.1.1         # via -r requirements/quality.in
-pygments==2.7.3           # via diff-cover, py2neo, readme-renderer
-pyjwkest==1.4.2           # via edx-drf-extensions
-pyjwt[crypto]==1.7.1      # via drf-jwt, edx-rest-api-client, snowflake-connector-python
-pylint-celery==0.3        # via edx-lint
-pylint-django==2.3.0      # via edx-lint
-pylint-plugin-utils==0.6  # via pylint-celery, pylint-django
-pylint==2.6.0             # via edx-lint, pylint-celery, pylint-django, pylint-plugin-utils
-pyminizip==0.2.4          # via -r requirements/reporting.in
-pymongo==3.11.2           # via edx-opaque-keys
-pynacl==1.4.0             # via paramiko
-pyopenssl==19.1.0         # via snowflake-connector-python
-pyparsing==2.4.7          # via packaging
-pytest-cov==2.10.1        # via -r requirements/test.in
-pytest-django==4.1.0      # via -r requirements/test.in
-pytest==6.2.1             # via pytest-cov, pytest-django
-python-dateutil==2.8.1    # via botocore, edx-drf-extensions, faker, freezegun, vertica-python
-pytz==2020.5              # via celery, django, neotime, py2neo, snowflake-connector-python
-pyyaml==5.3.1             # via awscli, edx-i18n-tools
-readme-renderer==24.0     # via -c requirements/constraints.txt, twine
-requests-oauthlib==1.3.0  # via msrest
-requests-toolbelt==0.9.1  # via twine
-requests==2.23.0          # via -r requirements/base.in, azure-core, docker, edx-drf-extensions, edx-rest-api-client, msrest, pyjwkest, requests-oauthlib, requests-toolbelt, responses, slumber, snowflake-connector-python, twine
-responses==0.12.1         # via -r requirements/test.in
-rest-condition==1.0.3     # via edx-drf-extensions
-rfc3986==1.4.0            # via twine
-rsa==4.5                  # via awscli
-rules==2.2                # via -r requirements/base.in
-s3transfer==0.3.3         # via awscli, boto3
-secretstorage==3.3.0      # via keyring
-semantic-version==2.8.5   # via edx-drf-extensions
-six==1.15.0               # via -r requirements/base.in, astroid, azure-core, bcrypt, bleach, cryptography, docker, edx-drf-extensions, edx-i18n-tools, edx-lint, edx-opaque-keys, edx-rbac, english, isodate, neotime, pansi, pgpy, prompt-toolkit, py2neo, pyjwkest, pynacl, pyopenssl, python-dateutil, readme-renderer, responses, tox, vertica-python, virtualenv, websocket-client
-slumber==0.7.1            # via edx-rest-api-client
-snowballstemmer==2.0.0    # via pydocstyle
-snowflake-connector-python==2.3.7  # via -r requirements/reporting.in
-sqlparse==0.4.1           # via django
-stevedore==3.3.0          # via edx-django-utils, edx-opaque-keys
-testfixtures==6.17.0      # via -r requirements/quality.in, -r requirements/test.in
-text-unidecode==1.3       # via faker
-toml==0.10.2              # via pylint, pytest, tox
-tox-battery==0.5.2        # via -c requirements/constraints.txt, -r requirements/dev-enterprise_data.in
-tox==3.20.1               # via -r requirements/dev-enterprise_data.in, tox-battery
-tqdm==4.55.0              # via twine
-twine==3.3.0              # via -r requirements/dev-enterprise_data.in
-unicodecsv==0.14.1        # via -r requirements/reporting.in
-urllib3==1.25.11          # via botocore, py2neo, requests, responses, snowflake-connector-python
-vertica-python==1.0.1     # via -r requirements/reporting.in
-virtualenv==20.2.2        # via tox
-wcwidth==0.2.5            # via prompt-toolkit
-webencodings==0.5.1       # via bleach
-websocket-client==0.57.0  # via docker
-wheel==0.36.2             # via -r requirements/dev-enterprise_data.in
-wrapt==1.12.1             # via astroid
+amqp==1.4.9
+    # via kombu
+anyjson==0.3.3
+    # via kombu
+appdirs==1.4.4
+    # via virtualenv
+asn1crypto==1.4.0
+    # via
+    #   oscrypto
+    #   snowflake-connector-python
+astroid==2.4.2
+    # via
+    #   pylint
+    #   pylint-celery
+attrs==20.3.0
+    # via pytest
+awscli==1.18.159
+    # via -r requirements/reporting.in
+azure-common==1.1.26
+    # via snowflake-connector-python
+azure-core==1.9.0
+    # via azure-storage-blob
+azure-storage-blob==12.6.0
+    # via snowflake-connector-python
+bcrypt==3.2.0
+    # via paramiko
+billiard==3.3.0.23
+    # via celery
+bleach==3.2.1
+    # via readme-renderer
+boto3==1.15.18
+    # via
+    #   -r requirements/reporting.in
+    #   snowflake-connector-python
+botocore==1.18.18
+    # via
+    #   awscli
+    #   boto3
+    #   s3transfer
+celery==3.1.18
+    # via -r requirements/reporting.in
+certifi==2020.12.5
+    # via
+    #   msrest
+    #   py2neo
+    #   requests
+    #   snowflake-connector-python
+cffi==1.14.4
+    # via
+    #   bcrypt
+    #   cryptography
+    #   pynacl
+    #   snowflake-connector-python
+chardet==3.0.4
+    # via requests
+click-log==0.3.2
+    # via edx-lint
+click==7.1.2
+    # via
+    #   click-log
+    #   edx-lint
+    #   pip-tools
+colorama==0.4.3
+    # via
+    #   awscli
+    #   twine
+coverage==5.3.1
+    # via pytest-cov
+cryptography==3.3.1
+    # via
+    #   -r requirements/reporting.in
+    #   azure-storage-blob
+    #   django-fernet-fields
+    #   paramiko
+    #   pgpy
+    #   py2neo
+    #   pyjwt
+    #   pyopenssl
+    #   snowflake-connector-python
+ddt==1.3.1
+    # via
+    #   -c requirements/constraints.txt
+    #   -r requirements/test.in
+diff-cover==4.0.1
+    # via -r requirements/dev-enterprise_data.in
+distlib==0.3.1
+    # via virtualenv
+django-crum==0.7.9
+    # via
+    #   edx-django-utils
+    #   edx-rbac
+django-fernet-fields==0.6
+    # via -r requirements/base.in
+django-model-utils==4.1.1
+    # via
+    #   -r requirements/base.in
+    #   -r requirements/test.in
+    #   edx-rbac
+django-waffle==2.0.0
+    # via
+    #   edx-django-utils
+    #   edx-drf-extensions
+django==2.2.17
+    # via
+    #   -c requirements/constraints.txt
+    #   -r requirements/base.in
+    #   django-crum
+    #   django-fernet-fields
+    #   django-model-utils
+    #   djangorestframework
+    #   drf-jwt
+    #   edx-django-utils
+    #   edx-drf-extensions
+    #   edx-i18n-tools
+    #   edx-rbac
+    #   rest-condition
+djangorestframework==3.12.2
+    # via
+    #   drf-jwt
+    #   edx-drf-extensions
+    #   rest-condition
+docker==4.4.1
+    # via py2neo
+docutils==0.15.2
+    # via
+    #   awscli
+    #   readme-renderer
+drf-jwt==1.17.3
+    # via edx-drf-extensions
+edx-django-utils==3.13.0
+    # via
+    #   -r requirements/base.in
+    #   edx-drf-extensions
+    #   edx-rest-api-client
+edx-drf-extensions==6.2.0
+    # via
+    #   -r requirements/base.in
+    #   edx-rbac
+edx-i18n-tools==0.5.3
+    # via -r requirements/dev-enterprise_data.in
+edx-lint==1.6
+    # via
+    #   -r requirements/dev-enterprise_data.in
+    #   -r requirements/quality.in
+edx-opaque-keys==2.1.1
+    # via
+    #   -r requirements/base.in
+    #   edx-drf-extensions
+edx-rbac==1.3.3
+    # via -r requirements/base.in
+edx-rest-api-client==5.2.2
+    # via -r requirements/base.in
+english==2020.7.0
+    # via py2neo
+factory-boy==3.2.0
+    # via -r requirements/test.in
+faker==5.3.0
+    # via factory-boy
+filelock==3.0.12
+    # via
+    #   tox
+    #   virtualenv
+flaky==3.7.0
+    # via -r requirements/test.in
+freezegun==1.0.0
+    # via -r requirements/test.in
+future==0.18.2
+    # via pyjwkest
+idna==2.10
+    # via requests
+inflect==5.0.2
+    # via jinja2-pluralize
+iniconfig==1.1.1
+    # via pytest
+isodate==0.6.0
+    # via msrest
+isort==5.7.0
+    # via
+    #   -r requirements/quality.in
+    #   pylint
+jinja2-pluralize==0.3.0
+    # via diff-cover
+jinja2==2.11.2
+    # via
+    #   diff-cover
+    #   jinja2-pluralize
+jmespath==0.10.0
+    # via
+    #   boto3
+    #   botocore
+keyring==21.8.0
+    # via twine
+kombu==3.0.37
+    # via celery
+lazy-object-proxy==1.4.3
+    # via astroid
+markupsafe==1.1.1
+    # via jinja2
+mccabe==0.6.1
+    # via pylint
+mock==4.0.3
+    # via -r requirements/test.in
+monotonic==1.5
+    # via py2neo
+msrest==0.6.19
+    # via azure-storage-blob
+neotime==1.7.4
+    # via py2neo
+newrelic==5.24.0.153
+    # via edx-django-utils
+oauthlib==3.1.0
+    # via requests-oauthlib
+oscrypto==1.2.1
+    # via snowflake-connector-python
+packaging==20.8
+    # via
+    #   bleach
+    #   py2neo
+    #   pytest
+    #   tox
+pansi==2020.7.3
+    # via py2neo
+paramiko==2.7.2
+    # via -r requirements/reporting.in
+path.py==12.5.0
+    # via edx-i18n-tools
+path==15.0.1
+    # via path.py
+pbr==5.5.1
+    # via stevedore
+pgpy==0.5.3
+    # via -r requirements/reporting.in
+pip-tools==5.5.0
+    # via -r requirements/dev-enterprise_data.in
+pkginfo==1.6.1
+    # via twine
+pluggy==0.13.1
+    # via
+    #   diff-cover
+    #   pytest
+    #   tox
+polib==1.1.0
+    # via edx-i18n-tools
+prompt-toolkit==2.0.10
+    # via py2neo
+psutil==5.8.0
+    # via edx-django-utils
+py2neo==2020.1.1
+    # via -r requirements/reporting.in
+py==1.10.0
+    # via
+    #   pytest
+    #   tox
+pyasn1==0.4.8
+    # via
+    #   pgpy
+    #   rsa
+pycodestyle==2.6.0
+    # via -r requirements/quality.in
+pycparser==2.20
+    # via cffi
+pycryptodomex==3.9.9
+    # via
+    #   pyjwkest
+    #   snowflake-connector-python
+pydocstyle==5.1.1
+    # via -r requirements/quality.in
+pygments==2.7.3
+    # via
+    #   diff-cover
+    #   py2neo
+    #   readme-renderer
+pyjwkest==1.4.2
+    # via edx-drf-extensions
+pyjwt[crypto]==1.7.1
+    # via
+    #   drf-jwt
+    #   edx-rest-api-client
+    #   snowflake-connector-python
+pylint-celery==0.3
+    # via edx-lint
+pylint-django==2.3.0
+    # via edx-lint
+pylint-plugin-utils==0.6
+    # via
+    #   pylint-celery
+    #   pylint-django
+pylint==2.6.0
+    # via
+    #   edx-lint
+    #   pylint-celery
+    #   pylint-django
+    #   pylint-plugin-utils
+pyminizip==0.2.4
+    # via -r requirements/reporting.in
+pymongo==3.11.2
+    # via edx-opaque-keys
+pynacl==1.4.0
+    # via paramiko
+pyopenssl==19.1.0
+    # via snowflake-connector-python
+pyparsing==2.4.7
+    # via packaging
+pytest-cov==2.10.1
+    # via -r requirements/test.in
+pytest-django==4.1.0
+    # via -r requirements/test.in
+pytest==6.2.1
+    # via
+    #   pytest-cov
+    #   pytest-django
+python-dateutil==2.8.1
+    # via
+    #   botocore
+    #   edx-drf-extensions
+    #   faker
+    #   freezegun
+    #   vertica-python
+pytz==2020.5
+    # via
+    #   celery
+    #   django
+    #   neotime
+    #   py2neo
+    #   snowflake-connector-python
+pyyaml==5.3.1
+    # via
+    #   awscli
+    #   edx-i18n-tools
+readme-renderer==24.0
+    # via
+    #   -c requirements/constraints.txt
+    #   twine
+requests-oauthlib==1.3.0
+    # via msrest
+requests-toolbelt==0.9.1
+    # via twine
+requests==2.23.0
+    # via
+    #   -r requirements/base.in
+    #   azure-core
+    #   docker
+    #   edx-drf-extensions
+    #   edx-rest-api-client
+    #   msrest
+    #   pyjwkest
+    #   requests-oauthlib
+    #   requests-toolbelt
+    #   responses
+    #   slumber
+    #   snowflake-connector-python
+    #   twine
+responses==0.12.1
+    # via -r requirements/test.in
+rest-condition==1.0.3
+    # via edx-drf-extensions
+rfc3986==1.4.0
+    # via twine
+rsa==4.5
+    # via awscli
+rules==2.2
+    # via -r requirements/base.in
+s3transfer==0.3.3
+    # via
+    #   awscli
+    #   boto3
+semantic-version==2.8.5
+    # via edx-drf-extensions
+six==1.15.0
+    # via
+    #   astroid
+    #   azure-core
+    #   bcrypt
+    #   bleach
+    #   cryptography
+    #   docker
+    #   edx-drf-extensions
+    #   edx-i18n-tools
+    #   edx-lint
+    #   edx-opaque-keys
+    #   edx-rbac
+    #   english
+    #   isodate
+    #   neotime
+    #   pansi
+    #   pgpy
+    #   prompt-toolkit
+    #   py2neo
+    #   pyjwkest
+    #   pynacl
+    #   pyopenssl
+    #   python-dateutil
+    #   readme-renderer
+    #   responses
+    #   tox
+    #   vertica-python
+    #   virtualenv
+    #   websocket-client
+slumber==0.7.1
+    # via edx-rest-api-client
+snowballstemmer==2.0.0
+    # via pydocstyle
+snowflake-connector-python==2.3.7
+    # via -r requirements/reporting.in
+sqlparse==0.4.1
+    # via django
+stevedore==3.3.0
+    # via
+    #   edx-django-utils
+    #   edx-opaque-keys
+testfixtures==6.17.0
+    # via
+    #   -r requirements/quality.in
+    #   -r requirements/test.in
+text-unidecode==1.3
+    # via faker
+toml==0.10.2
+    # via
+    #   pylint
+    #   pytest
+    #   tox
+tox-battery==0.5.2
+    # via
+    #   -c requirements/constraints.txt
+    #   -r requirements/dev-enterprise_data.in
+tox==3.20.1
+    # via
+    #   -r requirements/dev-enterprise_data.in
+    #   tox-battery
+tqdm==4.55.0
+    # via twine
+twine==3.3.0
+    # via -r requirements/dev-enterprise_data.in
+unicodecsv==0.14.1
+    # via -r requirements/reporting.in
+urllib3==1.25.11
+    # via
+    #   botocore
+    #   py2neo
+    #   requests
+    #   responses
+    #   snowflake-connector-python
+vertica-python==1.0.1
+    # via -r requirements/reporting.in
+virtualenv==20.2.2
+    # via tox
+wcwidth==0.2.5
+    # via prompt-toolkit
+webencodings==0.5.1
+    # via bleach
+websocket-client==0.57.0
+    # via docker
+wheel==0.36.2
+    # via -r requirements/dev-enterprise_data.in
+wrapt==1.12.1
+    # via astroid
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip

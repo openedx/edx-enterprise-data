@@ -4,7 +4,6 @@ Test reporter.
 import unittest
 import datetime
 import pytest
-import six
 import ddt
 
 from enterprise_reporting import reporter
@@ -12,7 +11,6 @@ from enterprise_reporting.reporter import EnterpriseReportSender
 from enterprise_reporting.utils import encrypt_string
 
 
-@pytest.mark.skipif(six.PY2, reason="Not compatible with Python 2")
 @ddt.ddt
 class TestReporter(unittest.TestCase):
 	""""

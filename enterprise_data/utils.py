@@ -5,8 +5,6 @@ Utility functions for Enterprise Data app.
 
 import hashlib
 
-import six
-
 
 def update_session_with_enterprise_data(request, enterprise_id, **kwargs):
     """
