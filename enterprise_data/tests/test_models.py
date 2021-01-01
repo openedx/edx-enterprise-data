@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tests for the `enterprise-data` models module.
 """
@@ -27,7 +26,7 @@ class TestEnterpriseEnrollment(unittest.TestCase):
             enterprise_user=enterprise_user,
             course_id=course_id
         )
-        super(TestEnterpriseEnrollment, self).setUp()
+        super().setUp()
 
     @ddt.data(str, repr)
     def test_string_conversion(self, method):
@@ -48,7 +47,7 @@ class TestEnterpriseUser(unittest.TestCase):
         enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
         lms_user_id = 1234
         self.user = EnterpriseUserFactory(lms_user_id=lms_user_id, enterprise_id=enterprise_id)
-        super(TestEnterpriseUser, self).setUp()
+        super().setUp()
 
     @ddt.data(str, repr)
     def test_string_conversion(self, method):

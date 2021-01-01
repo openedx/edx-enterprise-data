@@ -1,11 +1,8 @@
 """
 Tests for create_enterprise_user management command
 """
+from unittest import TestCase, mock
 
-
-from unittest import TestCase
-
-from mock import mock
 from pytest import mark
 
 from django.core.management import call_command
@@ -19,7 +16,7 @@ class TestCreateEnterpriseUserCommand(TestCase):
     """ test class here """
 
     def setUp(self):
-        super(TestCreateEnterpriseUserCommand, self).setUp()
+        super().setUp()
         self.uuid = 'a'*32
 
     def test_create_enterpriseuser(self):

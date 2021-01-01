@@ -28,7 +28,7 @@ def send_data(config):
         config
     """
     enterprise_customer_name = config['enterprise_customer']['name']
-    LOGGER.info('Kicking off job to send report for {}'.format(enterprise_customer_name))
+    LOGGER.info(f'Kicking off job to send report for {enterprise_customer_name}')
 
     error_raised = False
     try:
@@ -36,10 +36,10 @@ def send_data(config):
         reporter.send_enterprise_report()
     except Exception:  # pylint: disable=broad-except
         error_raised = True
-        LOGGER.exception('Data report failed to send for {}'.format(enterprise_customer_name,))
+        LOGGER.exception(f'Data report failed to send for {enterprise_customer_name}')
 
     cleanup_files(config['enterprise_customer']['uuid'])
-    LOGGER.info('Finished job to send report for {}'.format(enterprise_customer_name))
+    LOGGER.info(f'Finished job to send report for {enterprise_customer_name}')
 
     return error_raised
 
@@ -49,7 +49,7 @@ def cleanup_files(enterprise_id):
     Clean up any files created by sending the enterprise report.
     """
     directory = EnterpriseReportSender.FILE_WRITE_DIRECTORY
-    pattern = r'{}'.format(enterprise_id)
+    pattern = fr'{enterprise_id}'
     for f in os.listdir(directory):
         if re.search(pattern, f):
             os.remove(os.path.join(directory, f))
@@ -91,7 +91,7 @@ def process_reports():
         reporting_configs = enterprise_api_client.get_all_enterprise_reporting_configs()
 
     if args.enterprise_customer and not (reporting_configs and reporting_configs['results']):
-        LOGGER.error('The enterprise {} does not have a reporting configuration.'.format(args.enterprise_customer))
+        LOGGER.error(f'The enterprise {args.enterprise_customer} does not have a reporting configuration.')
         sys.exit(1)
 
     error_raised = False

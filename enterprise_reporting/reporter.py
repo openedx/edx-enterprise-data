@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Classes that handle sending reports for EnterpriseCustomers.
 """
@@ -9,7 +8,6 @@ import datetime
 import json
 import logging
 from collections import OrderedDict
-from io import open  # pylint: disable=redefined-builtin
 from uuid import UUID
 
 from enterprise_reporting.clients.enterprise import (
@@ -26,7 +24,7 @@ LOGGER = logging.getLogger(__name__)
 NOW = datetime.datetime.now().strftime("%Y-%m-%d")
 
 
-class EnterpriseReportSender(object):
+class EnterpriseReportSender:
     """
     Class that handles the process of sending a data report to an Enterprise Customer.
     """
@@ -94,14 +92,14 @@ class EnterpriseReportSender(object):
                 decrypt_string(reporting_config['encrypted_sftp_password']),
             )
         else:
-            raise ValueError('Invalid delivery method: {}'.format(delivery_method_str))
+            raise ValueError(f'Invalid delivery method: {delivery_method_str}')
 
         return EnterpriseReportSender(reporting_config, delivery_method)
 
     @property
     def data_report_file_name(self):
         """Get the full path to the report file."""
-        date_str = "_{}".format(NOW) if self.reporting_config.get('include_date') else ""
+        date_str = f"_{NOW}" if self.reporting_config.get('include_date') else ""
         return "{dir}/{enterprise_id}_{data}_{ext}{date_str}.{ext}".format(
             dir=self.FILE_WRITE_DIRECTORY,
             enterprise_id=self.enterprise_customer_uuid,
@@ -117,7 +115,7 @@ class EnterpriseReportSender(object):
 
     def send_enterprise_report(self):
         """Generate the report file of the appropriate type and send it through the configured delivery method."""
-        LOGGER.info('Starting process to send report to {}'.format(self.enterprise_customer_name))
+        LOGGER.info(f'Starting process to send report to {self.enterprise_customer_name}')
         files = self._generate_enterprise_report()
         if files:
             self.delivery_method.send(files)
@@ -130,7 +128,7 @@ class EnterpriseReportSender(object):
 
     def _generate_enterprise_report(self):
         """Calls the appropriate method for generating the report, e.g. the method for a CSV report of Catalog data."""
-        LOGGER.info('Generating {} report in {} format...'.format(self.data_type, self.report_type))
+        LOGGER.info(f'Generating {self.data_type} report in {self.report_type} format...')
         return getattr(self, '_generate_enterprise_report_{type}_{ext}'.format(
             type=self.data_type,
             ext=self.report_type
@@ -147,7 +145,7 @@ class EnterpriseReportSender(object):
                 fields=','.join(self.VERTICA_QUERY_FIELDS),
                 enterprise_id=UUID(self.enterprise_customer_uuid).hex
             )
-            LOGGER.debug('Executing this Vertica query: {}'.format(query))
+            LOGGER.debug(f'Executing this Vertica query: {query}')
             data_report_file_writer.writerows(vertica_client.stream_results(query))
         vertica_client.close_connection()
         return [data_report_file]
@@ -262,5 +260,5 @@ class EnterpriseReportSender(object):
             self.enterprise_customer_uuid,
             self.reporting_config,
         )
-        LOGGER.debug('Gathered this content metadata: {}'.format(content_metadata))
+        LOGGER.debug(f'Gathered this content metadata: {content_metadata}')
         return content_metadata

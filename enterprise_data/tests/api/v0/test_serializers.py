@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tests for the `edx-enterprise` serializer module.
 """
@@ -23,7 +22,7 @@ class TestEnterpriseEnrollmentSerializer(APITransactionTestCase):
     """
 
     def setUp(self):
-        super(TestEnterpriseEnrollmentSerializer, self).setUp()
+        super().setUp()
 
         EnterpriseUserFactory(enterprise_user_id=1)
         self.enrollment_data = {

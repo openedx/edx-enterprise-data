@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Test utils for external link reports.
 """
@@ -81,10 +80,10 @@ class TestUtilsCoursegraph(unittest.TestCase):
             'course-v1:I+am+a+test1': {
                 'course_title': 'course1',
                 'organization': 'edx',
-                'external_links': set([
+                'external_links': {
                     'http://www.google.com',
                     'http://www.facebook.com/'
-                ]),
+                },
                 'domain_count': {
                     'http://www.google.com': 3,
                     'http://www.facebook.com': 1,
@@ -93,11 +92,11 @@ class TestUtilsCoursegraph(unittest.TestCase):
             'course-v1:I+am+a+test2': {
                 'course_title': 'course2',
                 'organization': 'edx',
-                'external_links': set([
+                'external_links': {
                     'http://www.google2.com/',
                     'http://www.google2.com',
                     'http://www.google2.com/someextension/',
-                ]),
+                },
                 'domain_count': {
                     'http://www.google2.com': 4,
                 },
@@ -105,7 +104,7 @@ class TestUtilsCoursegraph(unittest.TestCase):
             'course-v1:I+am+a+test3': {
                 'course_title': 'course3',
                 'organization': 'edx2',
-                'external_links': set(['http://www.google3.com']),
+                'external_links': {'http://www.google3.com'},
                 'domain_count': {
                     'http://www.google3.com': 1,
                 },

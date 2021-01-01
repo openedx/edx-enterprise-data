@@ -1,14 +1,22 @@
 language: python
 python:
-  - 3.5
-  - 3.8
+  - '3.8'
 env:
-  - TOXENV=django22-data
-  - TOXENV=django22-reporting
   - TOXENV=quality
+  - TOXENV=django22-data
+  - TOXENV=django30-data
+  - TOXENV=django31-data
+  - TOXENV=django22-reporting
+matrix:
+  allow_failures:
+    - python: 3.8
+      env: TOXENV=django30-data
+    - python: 3.8
+      env: TOXENV=django31-data
 cache:
   - pip
 install:
+  - pip install pip==20.0.2
   - pip install -r requirements/travis.txt
 script:
   - tox
@@ -19,8 +27,8 @@ deploy:
   user: edx
   distributions: sdist bdist_wheel
   on:
-    python: 3.5
+    python: 3.8
     tags: true
-    condition: "$TOXENV = quality"
+    condition: $TOXENV = quality
   password:
     secure: vWQHEuSdKajVDfw6C3BQ+hEiGm8RIhjE6bu13URaHAHNYnxaxlyUEaw0HX8dKPeQ5O4WIwL1XutClKAb/hyL8VP3u7Pj9ZyiQX05Ift2mN0TDn4xWV/IgaBHAU/o4MIzDyZPriogHfp0i+GtD35ByfqOj6MTB3ntrDc7twDMkgYYPTVfMElKNtY3X1C5N6Lx/vprzdd+JFf/NuuMz8mPBe/rqBCIQNZRE3IXfyHAQwERY833LHrCWrEGhkR5zlirHQPd9enQ/1WRxMaICptnSaNwNnDib+h3XzKmM2l9uGXJV+vUQ+PK7C5fyiqr99DPKlQ9vyOINyxKDH+RS28umLeGMWxTrf30h5u24VcKtnq3JmP5jzduy2dAoQohgdqlBb132j79hlUC7W/fES3wDnKYxEpniCTQHOpZLTMt170cyKxHJmdC9NVw3ZmiKXh7bAYbS9Ul/Yv46SV3PHt0ls6tqP3HzKj5TFNwWj9wqNWbIh3b5jtdjngeN6ibiYZ2IirEesW4PCtUX6SC1nAY3diiET+z/NVsUwVLIZ4Evz0MB+DtCM4x69ubN5B9TVVd0oAR9wfvBup3TgnqeePNF8HM4z+ru9JWxoAHmucR0mX3FzXvAxLT0IF7csm+KMAjuEoPMkSKRRCbcKov5lAjaIjjXnivrIvtWXCjWndpfZ0=

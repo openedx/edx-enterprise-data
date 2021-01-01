@@ -33,4 +33,4 @@ class Command(BaseCommand):
                 'Error trying to create Enrollments for enterprise '
                 '{}: {}'.format(enterprise_id, exc)
             )
-            raise CommandError(info)
+            raise CommandError(info) from exc

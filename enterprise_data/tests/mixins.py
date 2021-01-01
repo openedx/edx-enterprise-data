@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Mixins for enterprise data tests.
 """
@@ -17,9 +16,9 @@ class JWTTestMixin:
         """
         Set jwt token in cookies
         """
-        role_data = '{system_wide_role}'.format(system_wide_role=system_wide_role)
+        role_data = f'{system_wide_role}'
         if context is not None:
-            role_data += ':{context}'.format(context=context)
+            role_data += f':{context}'
 
         payload = generate_unversioned_payload(self.user)
         payload.update({

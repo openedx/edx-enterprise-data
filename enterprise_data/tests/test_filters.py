@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 """
 Tests for filters in enterprise_data.
 """
 
+from unittest import mock
 
-import mock
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -21,7 +20,7 @@ class TestConsentGrantedFilterBackend(JWTTestMixin, APITestCase):
     fixtures = ('enterprise_enrollment', 'enterprise_user', )
 
     def setUp(self):
-        super(TestConsentGrantedFilterBackend, self).setUp()
+        super().setUp()
         self.user = UserFactory(is_staff=True)
         self.client.force_authenticate(user=self.user)  # pylint: disable=no-member
         self.enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'

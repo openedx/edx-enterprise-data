@@ -32,7 +32,7 @@ class Command(BaseCommand):
                 'Error trying to create EnterpriseUser with uuid '
                 '{}: {}'.format(enterprise_id, exc)
             )
-            raise CommandError(info)
+            raise CommandError(info) from exc
 
         info = '\n\nCreated EnterpriseUser with id {} for enterprise with uuid {}\n'.format(
             ent_user.enterprise_user_id,

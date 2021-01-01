@@ -1,19 +1,16 @@
-# -*- coding: utf-8 -*-
 """
 Clients used to access third party systems.
 """
 
-
-
 import os
 from datetime import datetime
 from functools import wraps
-from six.moves import urllib
+from urllib.parse import parse_qs, urlparse
 
 from edx_rest_api_client.client import EdxRestApiClient
 
 
-class EdxOAuth2APIClient(object):
+class EdxOAuth2APIClient:
     """
     Base API Client for accessing edX IDA API endpoints.
     """
@@ -131,7 +128,7 @@ def traverse_pagination(response, endpoint):
 
     next_page = response.get('next')
     while next_page:
-        querystring = urllib.parse.parse_qs(urllib.parse.urlparse(next_page).query, True)
+        querystring = parse_qs(urlparse(next_page).query, True)
         response = endpoint.get(**querystring)
         results += response.get('results', [])
         next_page = response.get('next')

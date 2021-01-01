@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Views for enterprise api version 0 endpoint.
 """
@@ -57,7 +56,7 @@ class EnterpriseViewSet(PermissionRequiredMixin, viewsets.ViewSet):
         """
         if 'no_page' in self.request.query_params:
             return None
-        return super(EnterpriseViewSet, self).paginate_queryset(queryset)  # pylint: disable=no-member
+        return super().paginate_queryset(queryset)  # pylint: disable=no-member
 
 
 class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
@@ -200,7 +199,7 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         return created_max['created__max']
 
     @action(detail=False)
-    def overview(self, request, **kwargs):
+    def overview(self, request, **kwargs):  # pylint: disable=unused-argument
         """
         Returns the following data:
             - # of enrolled learners;
@@ -242,7 +241,7 @@ class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
     ordering = ('user_email',)
 
     def get_queryset(self):
-        queryset = super(EnterpriseUsersViewSet, self).get_queryset()
+        queryset = super().get_queryset()
 
         queryset = queryset.filter(CONSENT_TRUE_OR_NOENROLL_Q).distinct()
 
