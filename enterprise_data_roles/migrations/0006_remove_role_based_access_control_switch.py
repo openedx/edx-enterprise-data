@@ -1,3 +1,7 @@
+
+# -*- coding: utf-8 -*-
+
+
 from django.db import migrations
 
 ROLE_BASED_ACCESS_CONTROL_SWITCH = 'role_based_access_control'

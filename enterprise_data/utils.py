@@ -1,9 +1,12 @@
+# -*- coding: utf-8 -*-
 """
 Utility functions for Enterprise Data app.
 """
 
 
 import hashlib
+
+import six
 
 
 def update_session_with_enterprise_data(request, enterprise_id, **kwargs):
@@ -24,7 +27,7 @@ def update_session_with_enterprise_data(request, enterprise_id, **kwargs):
         **kwargs: Keyword arguments that need to be present in request session
 
     """
-    for item, value in kwargs.items():
+    for item, value in six.iteritems(kwargs):
         session_key_data = request.session.get(item, {})
         session_key_data.update({str(enterprise_id): value})
         request.session.update({
@@ -51,6 +54,6 @@ def get_cache_key(**kwargs):
     Returns:
          An MD5 encoded key uniquely identified by the key word arguments.
     """
-    key = '__'.join([f'{item}:{value}' for item, value in kwargs.items()])
+    key = '__'.join(['{}:{}'.format(item, value) for item, value in six.iteritems(kwargs)])
 
     return hashlib.md5(key.encode('utf-8')).hexdigest()

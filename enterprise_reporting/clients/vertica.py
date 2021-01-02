@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Client for connecting to a Vertica database.
 """
@@ -12,7 +13,7 @@ import vertica_python
 LOGGER = getLogger(__name__)
 
 
-class VerticaClient:
+class VerticaClient(object):
     """
     Client for connecting to Vertica.
     """

@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+
 from django.db import migrations
 
 from enterprise_data_roles.constants import ENTERPRISE_DATA_ADMIN_ROLE

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Test factories.
 """
@@ -23,7 +24,7 @@ class EnterpriseDataFeatureRoleFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = EnterpriseDataFeatureRole
 
-    name = factory.Sequence('User Role-{}'.format)
+    name = factory.Sequence('User Role-{0}'.format)
     description = factory.lazy_attribute(lambda x: FAKER.text(max_nb_chars=255))  # pylint: disable=no-member
 
 

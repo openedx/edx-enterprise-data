@@ -8,5 +8,6 @@ edx-opaque-keys
 Django
 django-fernet-fields
 django-model-utils
+six
 edx-rbac
 rules

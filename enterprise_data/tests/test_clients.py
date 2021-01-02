@@ -1,10 +1,11 @@
+# -*- coding: utf-8 -*-
 """
 Tests for clients in enterprise_data.
 """
-from unittest import mock
-from unittest.mock import ANY, Mock
+
 
 from edx_rest_api_client.exceptions import HttpClientError
+from mock import ANY, Mock, mock
 from rest_framework.exceptions import NotFound, ParseError
 
 from django.test import TestCase
@@ -29,7 +30,7 @@ class TestEnterpriseApiClient(TestCase):
             }]
         }
         self.mocked_get_endpoint = Mock(return_value=self.api_response)
-        super().setUp()
+        super(TestEnterpriseApiClient, self).setUp()
 
     def mock_client(self):
         """

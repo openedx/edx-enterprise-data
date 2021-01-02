@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Test Enterprise client.
 """
@@ -6,6 +7,7 @@ import os
 import unittest
 
 import json
+import mock
 
 from enterprise_reporting.clients.enterprise import (
     extract_catalog_uuids_from_reporting_config,
@@ -18,10 +20,10 @@ FIXTURE_DIR = os.path.join(REPO_DIR, 'enterprise_reporting/fixtures')
 class TestEnterpriseClient(unittest.TestCase):
 
     def setUp(self):
-        super().setUp()
+        super(TestEnterpriseClient, self).setUp()
 
         json_path = os.path.join(FIXTURE_DIR, 'enterprise_customer_reporting.json')
-        with open(json_path) as fh:
+        with open(json_path, 'r') as fh:
             self.reporting_response = json.load(fh)
 
     def test_extract_catalog_uuids_from_reporting_config(self):

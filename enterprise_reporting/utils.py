@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Utility functions for Enterprise Reporting.
 """
@@ -11,6 +12,7 @@ from collections import OrderedDict
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from io import open  # pylint: disable=redefined-builtin
 
 import boto3
 import pgpy
@@ -51,7 +53,7 @@ def _get_encrypted_file(zipfile, pgp_key):
     """
     rsa_pub, _ = pgpy.PGPKey.from_blob(pgp_key)
     message = pgpy.PGPMessage.new(zipfile, file=True)
-    pgpfile = f'{zipfile}.pgp'
+    pgpfile = '{}.pgp'.format(zipfile)
     encrypted_message = rsa_pub.encrypt(message)
     with open(pgpfile, 'wb') as encrypted_file:
         encrypted_file.write(encrypted_message.__bytes__())
@@ -222,7 +224,7 @@ def flatten_dict(d, target='key' or 'value'):
     def format_nested(nested, _key=None):
         if _key is None:
             _key = key
-        return f'{_key}_{nested}'
+        return '{}_{}'.format(_key, nested)
 
     flattened = []
     target_is_key = target == 'key'

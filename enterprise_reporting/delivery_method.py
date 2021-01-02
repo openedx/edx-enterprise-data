@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Classes that handle sending reports for enterprise customers with specific delivery methods.
 """
@@ -15,7 +16,7 @@ from enterprise_reporting.utils import compress_and_encrypt, decrypt_string, sen
 LOGGER = logging.getLogger(__name__)
 
 
-class DeliveryMethod:
+class DeliveryMethod(object):
     """
     Base class for different types of Enterprise report delivery methods.
     """
@@ -31,7 +32,7 @@ class DeliveryMethod:
 
     def send(self, files):
         """Base method for sending files, to perform common sending logic."""
-        LOGGER.info(f'Encrypting data report for {self.enterprise_customer_name}')
+        LOGGER.info('Encrypting data report for {}'.format(self.enterprise_customer_name))
         zip_password = decrypt_string(self.encrypted_password) if self.encrypted_password else self.encrypted_password
         return compress_and_encrypt(files, zip_password, self.pgp_encryption_key)
 
@@ -52,7 +53,7 @@ class SMTPDeliveryMethod(DeliveryMethod):
 
     def __init__(self, reporting_config, password):
         """Initialize the SMTP Delivery Method."""
-        super().__init__(reporting_config, password)
+        super(SMTPDeliveryMethod, self).__init__(reporting_config, password)
         self._email = reporting_config['email']
 
     @property
@@ -67,7 +68,7 @@ class SMTPDeliveryMethod(DeliveryMethod):
     def send(self, files):
         """Send the given files in zip format through SMTP."""
         attachment_data = {super().send(files): None}
-        LOGGER.info(f'Emailing encrypted data as a ZIP to {self.enterprise_customer_name}')
+        LOGGER.info('Emailing encrypted data as a ZIP to {}'.format(self.enterprise_customer_name))
         try:
             send_email_with_attachment(
                 self.REPORT_EMAIL_SUBJECT.format(enterprise_name=self.enterprise_customer_name),
@@ -95,7 +96,7 @@ class SFTPDeliveryMethod(DeliveryMethod):
 
     def __init__(self, reporting_config, password):
         """Initialize the SFTP Delivery Method."""
-        super().__init__(reporting_config, password)
+        super(SFTPDeliveryMethod, self).__init__(reporting_config, password)
         self.hostname = reporting_config['sftp_hostname']
         self.port = reporting_config['sftp_port']
         self.username = reporting_config['sftp_username']
@@ -123,4 +124,4 @@ class SFTPDeliveryMethod(DeliveryMethod):
         )
         sftp.close()
         ssh.close()
-        LOGGER.info(f'Successfully sent report via sftp for {self.enterprise_customer_name}')
+        LOGGER.info('Successfully sent report via sftp for {}'.format(self.enterprise_customer_name))

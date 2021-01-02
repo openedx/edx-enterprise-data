@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 URL definitions for enterprise data api version 1 endpoint.
 """
@@ -9,7 +10,7 @@ from enterprise_data.api.v0 import views
 
 app_name = 'enterprise_data_api_v0'
 
-router = DefaultRouter()
+router = DefaultRouter()  # pylint: disable=invalid-name
 router.register(
     r'enterprise/(?P<enterprise_id>.+)/enrollments',
     views.EnterpriseEnrollmentsViewSet,

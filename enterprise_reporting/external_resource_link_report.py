@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 External Resource Link Report Generation Code.
 """
@@ -57,7 +58,7 @@ def create_columns_for_aggregate_report(data):
         reverse=True
     )
     stringified_urls_and_counts = [
-        f'{url},{count}'
+        '{},{}'.format(url, count)
         for url, count in urls_sorted_by_counts
     ]
     return '\n,,,'.join(stringified_urls_and_counts)

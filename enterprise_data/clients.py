@@ -34,7 +34,7 @@ class EnterpriseApiClient(EdxRestApiClient):
         """
         # If jwt token in request is already encoded into bytes decode it to avoid double encoding downstream
         jwt = jwt.decode() if isinstance(jwt, bytes) else jwt
-        super().__init__(self.API_BASE_URL, jwt=jwt)
+        super(EnterpriseApiClient, self).__init__(self.API_BASE_URL, jwt=jwt)
 
     def get_enterprise_learner(self, user):
         """
@@ -47,31 +47,31 @@ class EnterpriseApiClient(EdxRestApiClient):
             endpoint = getattr(self, 'enterprise-learner')
             response = endpoint.get(**querystring)
         except (HttpClientError, HttpServerError) as exc:
-            LOGGER.warning(
+            LOGGER.warning((
                 "[Data Overview Failure] Unable to retrieve Enterprise Customer Learner details. "
                 "User: {user}, Exception: {exc}".format(
                     user=user.username,
                     exc=exc
                 )
-            )
+            ))
             raise exc
 
         if response.get('results', None) is None:
-            LOGGER.warning(
+            LOGGER.warning((
                 "[Data Overview Failure] Enterprise Customer Learner details could not be found. User: {user}".format(
                     user=user.username
                 )
-            )
+            ))
             raise NotFound('Unable to process Enterprise Customer Learner details for user {}: No Results Found'
                            .format(user.username))
 
         if response['count'] > 1:
-            LOGGER.warning(
+            LOGGER.warning((
                 "[Data Overview Failure] Multiple Enterprise Customer Learners found. User: {user}".format(
                     user=user.username
                 )
-            )
-            raise ParseError(f'Multiple Enterprise Customer Learners found for user {user.username}')
+            ))
+            raise ParseError('Multiple Enterprise Customer Learners found for user {}'.format(user.username))
 
         if response['count'] == 0:
             return None
@@ -96,14 +96,14 @@ class EnterpriseApiClient(EdxRestApiClient):
             endpoint = endpoint(enterprise_id)
             response = endpoint.get()
         except (HttpClientError, HttpServerError) as exc:
-            LOGGER.warning(
+            LOGGER.warning((
                 "[Data Overview Failure] Unable to retrieve Enterprise Customer details. "
                 "User: {user}, Enterprise: {enteprise_id}, Exception: {exc}".format(
                     user=user.username,
                     enteprise_id=enterprise_id,
                     exc=exc
                 )
-            )
+            ))
             raise exc
 
         TieredCache.set_all_tiers(cache_key, response, DEFAULT_REPORTING_CACHE_TIMEOUT)

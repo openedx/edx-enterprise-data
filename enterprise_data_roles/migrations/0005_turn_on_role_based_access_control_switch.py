@@ -1,3 +1,7 @@
+
+# -*- coding: utf-8 -*-
+
+
 from django.db import migrations
 
 from enterprise_data_roles.constants import ROLE_BASED_ACCESS_CONTROL_SWITCH

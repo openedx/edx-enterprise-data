@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Client for connecting to the LMS Enterprise endpoints.
 """
