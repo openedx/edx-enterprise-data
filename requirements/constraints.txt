@@ -21,3 +21,6 @@ tox-battery==0.5.2
 
 # Constrain until https://github.com/datadriventests/ddt/issues/83 is fixed.
 ddt<1.4.0
+
+# bcrypt>=3.2.0 dropped support for python35 which is still required in enterprise-data-reporting jobs.
+bcrypt<3.2
