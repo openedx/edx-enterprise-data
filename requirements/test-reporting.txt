@@ -151,7 +151,7 @@ pyminizip==0.2.4
     # via -r requirements/reporting.in
 pynacl==1.4.0
     # via paramiko
-pyopenssl==19.1.0
+pyopenssl==20.0.1
     # via snowflake-connector-python
 pyparsing==2.4.7
     # via packaging
@@ -210,8 +210,10 @@ six==1.15.0
     #   vertica-python
     #   virtualenv
     #   websocket-client
-snowflake-connector-python==2.3.7
-    # via -r requirements/reporting.in
+snowflake-connector-python==2.3.6
+    # via
+    #   -c requirements/constraints.txt
+    #   -r requirements/reporting.in
 toml==0.10.2
     # via tox
 tox-battery==0.5.2

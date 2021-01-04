@@ -27,3 +27,5 @@ ddt<1.4.0
 bcrypt<3.2
 # cryptography>=3.3
 cryptography<3.3
+# snowflake-connector-python>=2.3.7
+snowflake-connector-python<2.3.7
