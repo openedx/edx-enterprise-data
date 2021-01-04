@@ -57,8 +57,9 @@ colorama==0.4.3
     # via awscli
 coverage==5.3.1
     # via pytest-cov
-cryptography==3.3.1
+cryptography==3.2.1
     # via
+    #   -c requirements/constraints.txt
     #   -r requirements/reporting.in
     #   azure-storage-blob
     #   django-fernet-fields
