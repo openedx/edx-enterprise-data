@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[2.1.4] - 2021-01-07
+--------------------
+* added `engagement` in DATA_TYPES.
+
 [2.1.3] - 2020-10-09
 --------------------
 * Removed ``python_2_unicode_compatible`` decorator.
