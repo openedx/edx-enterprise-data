@@ -20,5 +20,5 @@ class S3Client:
         file_handler <file>: file object opened in binary mode
         """
         bucket_name = 'edx-enterprise-reporting'
-        s3 = boto3.resource('s3')
+        s3 = boto3.client('s3')
         s3.download_fileobj(bucket_name, report_name, file_handler)

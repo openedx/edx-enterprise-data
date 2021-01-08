@@ -156,7 +156,10 @@ class EnterpriseReportSender:
         with open(self.data_report_file_name, 'wb') as data_report_file:
             LOGGER.debug('Fetching enterprise grade report from S3')
             # temporarily adding file path for PEARSON
-            s3_client.get_enterprise_report('/PEARSON/ENT_REPORT_PEARSON_GRADE.csv', data_report_file)
+            s3_client.get_enterprise_report(
+                '/PEARSON/ENT_REPORT_PEARSON_PERSISTENTSUBSECTIONGRADE.csv',
+                data_report_file
+            )
         return [data_report_file]
 
     def _generate_enterprise_report_course_structure_csv(self):
@@ -165,7 +168,7 @@ class EnterpriseReportSender:
         with open(self.data_report_file_name, 'wb') as data_report_file:
             LOGGER.debug('Fetching enterprise course structure report from S3')
             # temporarily adding file path for PEARSON
-            s3_client.get_enterprise_report('/PEARSON/ENT_REPORT_PEARSON_COURSE_STRUCTURE.csv', data_report_file)
+            s3_client.get_enterprise_report('/PEARSON/ENT_REPORT_PEARSON_COURSE_METRICS.csv', data_report_file)
         return [data_report_file]
 
     def _generate_enterprise_report_completion_csv(self):
