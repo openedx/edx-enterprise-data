@@ -30,7 +30,7 @@ bcrypt==3.2.0
     # via paramiko
 billiard==3.3.0.23
     # via celery
-bleach==3.2.1
+bleach==3.3.0
     # via readme-renderer
 boto3==1.15.18
     # via
