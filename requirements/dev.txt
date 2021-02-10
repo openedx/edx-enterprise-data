@@ -68,7 +68,7 @@ colorama==0.4.3
     # via
     #   awscli
     #   twine
-cryptography==3.3.1
+cryptography==3.3.2
     # via
     #   -r requirements/reporting.in
     #   azure-storage-blob
