@@ -157,7 +157,7 @@ class EnterpriseReportSender:
             LOGGER.debug('Fetching enterprise grade report from S3')
             # temporarily adding file path for PEARSON
             s3_client.get_enterprise_report(
-                'PEARSON/ENT_REPORT_PEARSON_PERSISTENTSUBSECTIONGRADE.csv',
+                'PEARSON/ENT_REPORT_PEARSON_PERSISTENTSUBSECTIONGRADE/ENT_REPORT_PEARSON_PERSISTENTSUBSECTIONGRADE.csv',
                 data_report_file
             )
         return [data_report_file]
@@ -168,7 +168,10 @@ class EnterpriseReportSender:
         with open(self.data_report_file_name, 'wb') as data_report_file:
             LOGGER.debug('Fetching enterprise course structure report from S3')
             # temporarily adding file path for PEARSON
-            s3_client.get_enterprise_report('PEARSON/ENT_REPORT_PEARSON_COURSE_METRICS.csv', data_report_file)
+            s3_client.get_enterprise_report(
+                'PEARSON/ENT_REPORT_PEARSON_COURSE_METRICS/ENT_REPORT_PEARSON_COURSE_METRICS.csv',
+                data_report_file
+            )
         return [data_report_file]
 
     def _generate_enterprise_report_completion_csv(self):
@@ -177,7 +180,10 @@ class EnterpriseReportSender:
         with open(self.data_report_file_name, 'wb') as data_report_file:
             LOGGER.debug('Fetching enterprise completion report from S3')
             # temporarily adding file path for PEARSON
-            s3_client.get_enterprise_report('PEARSON/ENT_REPORT_PEARSON_BLOCK_COMPLETION.csv', data_report_file)
+            s3_client.get_enterprise_report(
+                'PEARSON/ENT_REPORT_PEARSON_BLOCK_COMPLETION/ENT_REPORT_PEARSON_BLOCK_COMPLETION.csv',
+                data_report_file
+            )
         return [data_report_file]
 
     def _generate_enterprise_report_progress_v2_csv(self):
