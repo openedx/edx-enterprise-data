@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[2.1.5] - 2021-03-10
+--------------------
+* Updated S3 Object locations for Pearson reports.
+
 [2.1.4] - 2021-01-07
 --------------------
 * added `engagement` in DATA_TYPES.
