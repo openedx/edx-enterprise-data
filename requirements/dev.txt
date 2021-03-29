@@ -246,7 +246,7 @@ pycryptodomex==3.9.9
     #   snowflake-connector-python
 pydocstyle==5.1.1
     # via -r requirements/quality.in
-pygments==2.7.3
+pygments==2.7.4
     # via
     #   diff-cover
     #   py2neo
