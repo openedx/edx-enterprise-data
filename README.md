@@ -51,7 +51,7 @@ $ ./manage.py create_enterprise_enrollment <YOUR_UUID_HERE> <YOUR_ENTERPRISE_USE
 
 To create 10 users, each with 5 enrollments, using faked data. Running multiple times will create more users and enrollments.
 ```
-./manage.py create_dummy_data <YOUR ENTERPRISE_USER_ID_HERE>
+./manage.py create_dummy_data <YOUR ENTERPRISE_UUID>
 ```
 
 ## enterprise_reporting scripts
