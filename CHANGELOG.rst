@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[2.2.0] - 2021-05-26
+--------------------
+* New v1 API to leverage Snowflake powered analytics
+
 [2.1.5] - 2021-03-10
 --------------------
 * Updated S3 Object locations for Pearson reports.

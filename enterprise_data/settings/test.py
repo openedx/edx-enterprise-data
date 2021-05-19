@@ -99,6 +99,8 @@ TIME_ZONE = 'UTC'
 
 SITE_NAME = 'analytics-data-api'
 
+ENTERPRISE_REPORTING_DB = 'default'
+
 # Required for use with edx-drf-extensions JWT functionality:
 # USER_SETTINGS overrides for djangorestframework-jwt APISettings class
 # See https://github.com/GetBlimp/django-rest-framework-jwt/blob/master/rest_framework_jwt/settings.py
