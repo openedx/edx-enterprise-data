@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[2.2.1] - 2021-05-28
+--------------------
+* Fix model field in query
+
 [2.2.0] - 2021-05-26
 --------------------
 * New v1 API to leverage Snowflake powered analytics
