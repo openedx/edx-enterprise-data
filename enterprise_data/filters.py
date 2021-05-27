@@ -13,6 +13,7 @@ from enterprise_data.clients import EnterpriseApiClient
 # forces the ORM to use a LEFT OUTER JOIN, which is needed to return a user
 # that has multiple enrollments where at least one has consent_granted=True
 CONSENT_TRUE_OR_NOENROLL_Q = Q(enrollments__consent_granted=True) | Q(enrollments__isnull=True)
+ENROLLMENTS_CONSENT_TRUE_OR_NOENROLL_Q = Q(enrollments__is_consent_granted=True) | Q(enrollments__isnull=True)
 
 
 class FiltersMixin:

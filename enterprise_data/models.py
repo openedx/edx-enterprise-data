@@ -5,10 +5,131 @@ Database models for enterprise data.
 
 from logging import getLogger
 
+from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 LOGGER = getLogger(__name__)
+
+
+class EnterpriseReportingModelManager(models.Manager):
+    """
+    Custom ModelManager for every model that wants to use `enterprise_reporting` database.
+    """
+
+    def get_queryset(self):
+        """
+        Override to use the `enterprise_reporting` database instead of default.
+        """
+        qs = super().get_queryset()
+        qs = qs.using(settings.ENTERPRISE_REPORTING_DB)
+
+        return qs
+
+
+class EnterpriseReportingLinkedUserModelManager(EnterpriseReportingModelManager):
+    """
+    Custom ModelManager to exclude enterprise learners who are not linked to an enterprise.
+    """
+
+    def get_queryset(self):
+        """
+        Override to include only linked learners.
+        """
+        qs = super().get_queryset()
+        return qs.filter(is_linked=True)
+
+
+class EnterpriseLearner(models.Model):
+    """
+    Information related to Enterprise Learner.
+    """
+
+    objects = EnterpriseReportingLinkedUserModelManager()
+
+    class Meta:
+        app_label = 'enterprise_data'
+        db_table = 'enterprise_learner'
+        verbose_name = _("Enterprise Learner")
+        verbose_name_plural = _("Enterprise Learner")
+
+    enterprise_user_id = models.PositiveIntegerField(unique=True, db_index=True)
+    enterprise_customer_uuid = models.UUIDField(db_index=True)
+    enterprise_user_created = models.DateTimeField(null=True)
+    enterprise_user_modified = models.DateTimeField(null=True)
+    enterprise_user_active = models.BooleanField(default=False)
+    lms_user_id = models.PositiveIntegerField()
+    is_linked = models.BooleanField(default=False)
+    user_username = models.CharField(max_length=255, null=True)
+    user_email = models.CharField(max_length=255, null=True, db_index=True)
+    lms_user_created = models.DateTimeField(null=True)
+    lms_last_login = models.DateTimeField(null=True)
+    lms_user_country = models.CharField(max_length=2, null=True)
+    enterprise_sso_uid = models.CharField(max_length=255, null=True)
+    last_activity_date = models.DateField(null=True, db_index=True)
+    created_at = models.DateTimeField(null=True, db_index=True)
+
+
+class EnterpriseLearnerEnrollment(models.Model):
+    """
+    Information related to Enterprise Learner Enrollments.
+    """
+
+    objects = EnterpriseReportingModelManager()
+
+    class Meta:
+        app_label = 'enterprise_data'
+        db_table = 'enterprise_learner_enrollment'
+        verbose_name = _("Enterprise Learner Enrollment")
+        verbose_name_plural = _("Enterprise Learner Enrollments")
+
+    enrollment_id = models.PositiveIntegerField(unique=True)
+    is_consent_granted = models.NullBooleanField(default=None)
+    paid_by = models.CharField(max_length=128, null=True)
+    user_current_enrollment_mode = models.CharField(max_length=32)
+    enrollment_date = models.DateTimeField()
+    unenrollment_date = models.DateTimeField(null=True)
+    unenrollment_end_within_date = models.DateTimeField(null=True)
+    is_refunded = models.BooleanField(default=None)
+    seat_delivery_method = models.CharField(max_length=128, null=True)
+    offer_name = models.CharField(max_length=255, null=True)
+    offer_type = models.CharField(max_length=128, null=True)
+    coupon_code = models.CharField(max_length=128, null=True)
+    coupon_name = models.CharField(max_length=128, null=True)
+    contract_id = models.CharField(max_length=128, null=True)
+    course_list_price = models.DecimalField(decimal_places=2, max_digits=12, null=True)
+    amount_learner_paid = models.DecimalField(decimal_places=2, max_digits=12, null=True)
+    course_key = models.CharField(max_length=255, null=True, db_index=True)
+    courserun_key = models.CharField(max_length=255, null=True, db_index=True)
+    course_title = models.CharField(max_length=255, null=True, db_index=True)
+    course_pacing_type = models.CharField(max_length=32, null=True)
+    course_start_date = models.DateTimeField(null=True, db_index=True)
+    course_end_date = models.DateTimeField(null=True)
+    course_duration_weeks = models.PositiveIntegerField()
+    course_max_effort = models.PositiveIntegerField(null=True)
+    course_min_effort = models.PositiveIntegerField(null=True)
+    course_primary_program = models.CharField(max_length=128, null=True)
+    course_primary_subject = models.CharField(max_length=128, null=True)
+    has_passed = models.BooleanField(default=False)
+    last_activity_date = models.DateField(null=True, db_index=True)
+    progress_status = models.CharField(max_length=128, null=True)
+    passed_date = models.DateTimeField(null=True)
+    current_grade = models.FloatField(null=True)
+    letter_grade = models.CharField(max_length=32, null=True)
+    enterprise_user = models.ForeignKey(
+        'EnterpriseLearner',
+        related_name='enrollments',
+        to_field='enterprise_user_id',
+        on_delete=models.CASCADE,
+    )
+    user_email = models.CharField(max_length=255, null=True, db_index=True)
+    user_account_creation_date = models.DateTimeField(null=True)
+    user_country_code = models.CharField(max_length=2, null=True)
+    user_username = models.CharField(max_length=255, null=True)
+    enterprise_name = models.CharField(max_length=255, db_index=True)
+    enterprise_customer_uuid = models.UUIDField(db_index=True)
+    enterprise_sso_uid = models.CharField(max_length=255, null=True)
+    created = models.DateTimeField(null=True, db_index=True)
 
 
 class EnterpriseEnrollment(models.Model):
