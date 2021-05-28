@@ -22,7 +22,7 @@ class EnterpriseReportingModelManager(models.Manager):
         Override to use the `enterprise_reporting` database instead of default.
         """
         qs = super().get_queryset()
-        qs = qs.using(settings.ENTERPRISE_REPORTING_DB)
+        qs = qs.using(settings.ENTERPRISE_REPORTING_DB_ALIAS)
 
         return qs
 
@@ -53,8 +53,8 @@ class EnterpriseLearner(models.Model):
         verbose_name = _("Enterprise Learner")
         verbose_name_plural = _("Enterprise Learner")
 
-    enterprise_user_id = models.PositiveIntegerField(unique=True, db_index=True)
-    enterprise_customer_uuid = models.UUIDField(db_index=True)
+    enterprise_user_id = models.PositiveIntegerField(unique=True, db_index=True, null=False)
+    enterprise_customer_uuid = models.UUIDField(db_index=True, null=False)
     enterprise_user_created = models.DateTimeField(null=True)
     enterprise_user_modified = models.DateTimeField(null=True)
     enterprise_user_active = models.BooleanField(default=False)
@@ -99,8 +99,8 @@ class EnterpriseLearnerEnrollment(models.Model):
     contract_id = models.CharField(max_length=128, null=True)
     course_list_price = models.DecimalField(decimal_places=2, max_digits=12, null=True)
     amount_learner_paid = models.DecimalField(decimal_places=2, max_digits=12, null=True)
-    course_key = models.CharField(max_length=255, null=True, db_index=True)
-    courserun_key = models.CharField(max_length=255, null=True, db_index=True)
+    course_key = models.CharField(max_length=255, null=False, db_index=True)
+    courserun_key = models.CharField(max_length=255, null=False, db_index=True)
     course_title = models.CharField(max_length=255, null=True, db_index=True)
     course_pacing_type = models.CharField(max_length=32, null=True)
     course_start_date = models.DateTimeField(null=True, db_index=True)
@@ -126,8 +126,8 @@ class EnterpriseLearnerEnrollment(models.Model):
     user_account_creation_date = models.DateTimeField(null=True)
     user_country_code = models.CharField(max_length=2, null=True)
     user_username = models.CharField(max_length=255, null=True)
-    enterprise_name = models.CharField(max_length=255, db_index=True)
-    enterprise_customer_uuid = models.UUIDField(db_index=True)
+    enterprise_name = models.CharField(max_length=255, db_index=True, null=False)
+    enterprise_customer_uuid = models.UUIDField(db_index=True, null=False)
     enterprise_sso_uid = models.CharField(max_length=255, null=True)
     created = models.DateTimeField(null=True, db_index=True)
 
