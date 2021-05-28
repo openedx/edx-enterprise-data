@@ -99,7 +99,7 @@ TIME_ZONE = 'UTC'
 
 SITE_NAME = 'analytics-data-api'
 
-ENTERPRISE_REPORTING_DB = 'default'
+ENTERPRISE_REPORTING_DB_ALIAS = 'default'
 
 # Required for use with edx-drf-extensions JWT functionality:
 # USER_SETTINGS overrides for djangorestframework-jwt APISettings class
