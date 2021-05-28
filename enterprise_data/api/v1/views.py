@@ -349,5 +349,5 @@ class EnterpriseLearnerCompletedCoursesViewSet(EnterpriseViewSet, viewsets.Model
             enterprise_customer_uuid=self.kwargs['enterprise_id'],
             has_passed=True,
             is_consent_granted=True,  # DSC check required
-        ).values('user_email').annotate(completed_courses=Count('course_id')).order_by('user_email')
+        ).values('user_email').annotate(completed_courses=Count('courserun_key')).order_by('user_email')
         return enrollments
