@@ -20,8 +20,8 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
 
     def get_course_api_url(self, obj):
         """Constructs course api url"""
-        return '/enterprise/v1/enterprise-catalogs/{enterprise_customer_uuid}/courses/{course_run_key}'.format(
-            enterprise_customer_uuid=obj.enterprise_customer_uuid, course_run_key=obj.course_run_key
+        return '/enterprise/v1/enterprise-catalogs/{enterprise_customer_uuid}/courses/{courserun_key}'.format(
+            enterprise_customer_uuid=obj.enterprise_customer_uuid, courserun_key=obj.courserun_key
         )
 
     def get_progress_status(self, obj):
