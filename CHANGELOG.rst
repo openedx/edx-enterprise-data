@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[2.2.4] - 2021-05-31
+--------------------
+* Fix incorrect model field name
+
 [2.2.3] - 2021-05-31
 --------------------
 * Update API V1 model constraints
