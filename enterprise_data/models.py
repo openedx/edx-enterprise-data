@@ -53,7 +53,7 @@ class EnterpriseLearner(models.Model):
         verbose_name = _("Enterprise Learner")
         verbose_name_plural = _("Enterprise Learner")
 
-    enterprise_user_id = models.PositiveIntegerField(unique=True, db_index=True, null=False)
+    enterprise_user_id = models.PositiveIntegerField(primary_key=True)
     enterprise_customer_uuid = models.UUIDField(db_index=True, null=False)
     enterprise_user_created = models.DateTimeField(null=True)
     enterprise_user_modified = models.DateTimeField(null=True)
@@ -83,14 +83,14 @@ class EnterpriseLearnerEnrollment(models.Model):
         verbose_name = _("Enterprise Learner Enrollment")
         verbose_name_plural = _("Enterprise Learner Enrollments")
 
-    enrollment_id = models.PositiveIntegerField(unique=True)
-    is_consent_granted = models.NullBooleanField(default=None)
+    enrollment_id = models.PositiveIntegerField(primary_key=True)
+    is_consent_granted = models.BooleanField(default=False)
     paid_by = models.CharField(max_length=128, null=True)
     user_current_enrollment_mode = models.CharField(max_length=32)
     enrollment_date = models.DateTimeField()
     unenrollment_date = models.DateTimeField(null=True)
     unenrollment_end_within_date = models.DateTimeField(null=True)
-    is_refunded = models.BooleanField(default=None)
+    is_refunded = models.BooleanField(default=None, null=True)
     seat_delivery_method = models.CharField(max_length=128, null=True)
     offer_name = models.CharField(max_length=255, null=True)
     offer_type = models.CharField(max_length=128, null=True)
@@ -105,7 +105,7 @@ class EnterpriseLearnerEnrollment(models.Model):
     course_pacing_type = models.CharField(max_length=32, null=True)
     course_start_date = models.DateTimeField(null=True, db_index=True)
     course_end_date = models.DateTimeField(null=True)
-    course_duration_weeks = models.PositiveIntegerField()
+    course_duration_weeks = models.PositiveIntegerField(null=True)
     course_max_effort = models.PositiveIntegerField(null=True)
     course_min_effort = models.PositiveIntegerField(null=True)
     course_primary_program = models.CharField(max_length=128, null=True)
@@ -121,6 +121,7 @@ class EnterpriseLearnerEnrollment(models.Model):
         related_name='enrollments',
         to_field='enterprise_user_id',
         on_delete=models.CASCADE,
+        null=True,
     )
     user_email = models.CharField(max_length=255, null=True, db_index=True)
     user_account_creation_date = models.DateTimeField(null=True)

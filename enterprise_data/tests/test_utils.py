@@ -127,9 +127,12 @@ class EnterpriseLearnerFactory(factory.django.DjangoModelFactory):
     lms_user_country = factory.lazy_attribute(lambda x: FAKER.country_code())  # pylint: disable=no-member
     enterprise_sso_uid = factory.lazy_attribute(lambda x: FAKER.text(max_nb_chars=255))  # pylint: disable=no-member
     last_activity_date = datetime(2012, 1, 1).date()
+    lms_user_id = factory.lazy_attribute(
+        lambda x: FAKER.random_int(min=1, max=999999)  # pylint: disable=no-member
+    )
 
 
-class EnterpriseLearnerProgressFactory(factory.django.DjangoModelFactory):
+class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
     """
     EnterpriseLearnerEnrollment model factory.
     """
@@ -137,13 +140,15 @@ class EnterpriseLearnerProgressFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = EnterpriseLearnerEnrollment
 
-    id = factory.lazy_attribute(lambda x: FAKER.random_int(min=1, max=999999))  # pylint: disable=no-member,invalid-name
+    enrollment_id = factory.lazy_attribute(
+        lambda x: FAKER.random_int(min=1, max=999999)  # pylint: disable=no-member
+    )
     enterprise_customer_uuid = str(FAKER.uuid4())  # pylint: disable=no-member
-    course_run_key = factory.lazy_attribute(lambda x: FAKER.slug())  # pylint: disable=no-member
+    courserun_key = factory.lazy_attribute(lambda x: FAKER.slug())  # pylint: disable=no-member
     enrollment_date = factory.lazy_attribute(lambda x: '2018-01-01T00:00:00Z')
     user_current_enrollment_mode = factory.lazy_attribute(lambda x: 'verified')
     has_passed = factory.lazy_attribute(lambda x: FAKER.boolean())  # pylint: disable=no-member
-    is_consent_granted = True
+    is_consent_granted = factory.lazy_attribute(lambda x: FAKER.boolean())  # pylint: disable=no-member
     course_title = factory.lazy_attribute(lambda x: ' '.join(FAKER.words(nb=2)).title())  # pylint: disable=no-member
     course_start_date = factory.lazy_attribute(lambda x: FAKER.date_time_between(  # pylint: disable=no-member
         start_date='-2M',
