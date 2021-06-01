@@ -16,6 +16,12 @@ Unreleased
 
 =========================
 
+[2.2.5] - 2021-06-01
+--------------------
+* Update API V1
+* Updated API V1 Serializers
+* Updated API V1 Model Field Types
+
 [2.2.4] - 2021-05-31
 --------------------
 * Fix incorrect model field name
