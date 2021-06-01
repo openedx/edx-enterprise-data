@@ -229,7 +229,7 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSet, viewsets.ModelViewSe
         return Response(content)
 
 
-class EnterpriseLearnerViewSet(viewsets.ModelViewSet):
+class EnterpriseLearnerViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
     """
     Viewset for routes related to Enterprise Learners.
     """

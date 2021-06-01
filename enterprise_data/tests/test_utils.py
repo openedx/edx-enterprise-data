@@ -145,7 +145,7 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
     )
     enterprise_customer_uuid = str(FAKER.uuid4())  # pylint: disable=no-member
     courserun_key = factory.lazy_attribute(lambda x: FAKER.slug())  # pylint: disable=no-member
-    enrollment_date = factory.lazy_attribute(lambda x: '2018-01-01T00:00:00Z')
+    enrollment_date = factory.lazy_attribute(lambda x: '2018-01-01')
     user_current_enrollment_mode = factory.lazy_attribute(lambda x: 'verified')
     has_passed = factory.lazy_attribute(lambda x: FAKER.boolean())  # pylint: disable=no-member
     is_consent_granted = factory.lazy_attribute(lambda x: FAKER.boolean())  # pylint: disable=no-member
