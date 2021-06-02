@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[2.2.6] - 2021-06-02
+--------------------
+* Add enterprise_enrollment_id as primary key on EnterpriseLearnerEnrollment model
+
 [2.2.5] - 2021-06-01
 --------------------
 * Update API V1
