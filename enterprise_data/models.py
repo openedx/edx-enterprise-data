@@ -83,7 +83,8 @@ class EnterpriseLearnerEnrollment(models.Model):
         verbose_name = _("Enterprise Learner Enrollment")
         verbose_name_plural = _("Enterprise Learner Enrollments")
 
-    enrollment_id = models.PositiveIntegerField(primary_key=True)
+    enterprise_enrollment_id = models.PositiveIntegerField(primary_key=True)
+    enrollment_id = models.PositiveIntegerField(null=True)
     is_consent_granted = models.BooleanField(default=False)
     paid_by = models.CharField(max_length=128, null=True)
     user_current_enrollment_mode = models.CharField(max_length=32)

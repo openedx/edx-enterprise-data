@@ -10,7 +10,7 @@ from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollmen
 
 class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
     """
-    Serializer for EnterpriseEnrollment model.
+    Serializer for EnterpriseLearnerEnrollment model.
     """
     course_api_url = serializers.SerializerMethodField()
     has_passed = serializers.BooleanField(default=False, write_only=True)
@@ -31,7 +31,7 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
         model = EnterpriseLearnerEnrollment
         fields = (
             'course_api_url', 'has_passed', 'consent_granted', 'enrollment_created_timestamp',
-            'unenrollment_timestamp', 'offer', 'course_price', 'discount_price', 'discount_price', 'course_id',
+            'unenrollment_timestamp', 'offer', 'course_price', 'discount_price', 'course_id',
             'course_start', 'course_end', 'passed_timestamp', 'enterprise_id', 'user_account_creation_timestamp',
             'user_current_enrollment_mode', 'coupon_code', 'coupon_name', 'course_key', 'course_title',
             'course_pacing_type', 'course_duration_weeks', 'course_max_effort', 'course_min_effort',
