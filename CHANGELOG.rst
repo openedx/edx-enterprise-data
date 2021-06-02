@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[2.2.7] - 2021-06-02
+--------------------
+* Alter model field type from Decimal to Float
+
 [2.2.6] - 2021-06-02
 --------------------
 * Add enterprise_enrollment_id as primary key on EnterpriseLearnerEnrollment model

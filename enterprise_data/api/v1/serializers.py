@@ -18,7 +18,7 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
     enrollment_created_timestamp = serializers.DateField(source='enrollment_date')
     unenrollment_timestamp = serializers.DateField(source='unenrollment_date')
     offer = serializers.CharField(source='offer_type')
-    course_price = serializers.DecimalField(source='course_list_price', decimal_places=2, max_digits=12)
+    course_price = serializers.FloatField(source='course_list_price')
     discount_price = serializers.CharField(source='amount_learner_paid')
     course_id = serializers.CharField(source='courserun_key')
     course_start = serializers.DateField(source='course_start_date')
