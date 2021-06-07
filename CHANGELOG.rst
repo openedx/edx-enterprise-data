@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[2.2.8] - 2021-06-07
+--------------------
+* Rename API V1 endpoint name from `learners` to `users`
+
 [2.2.7] - 2021-06-02
 --------------------
 * Alter model field type from Decimal to Float
