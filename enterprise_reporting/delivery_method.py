@@ -28,12 +28,17 @@ class DeliveryMethod:
         self.password = password
         self.encrypted_password = reporting_config['encrypted_password']
         self.pgp_encryption_key = reporting_config.get('pgp_encryption_key')
+        self.enable_compression = reporting_config.get('enable_compression')
 
     def send(self, files):
         """Base method for sending files, to perform common sending logic."""
-        LOGGER.info(f'Encrypting data report for {self.enterprise_customer_name}')
-        zip_password = decrypt_string(self.encrypted_password) if self.encrypted_password else self.encrypted_password
-        return compress_and_encrypt(files, zip_password, self.pgp_encryption_key)
+        if self.enable_compression:
+            LOGGER.info(f'Encrypting data report for {self.enterprise_customer_name}')
+            zip_password = decrypt_string(
+                self.encrypted_password) if self.encrypted_password else self.encrypted_password
+            zip_file = compress_and_encrypt(files, zip_password, self.pgp_encryption_key)
+            return [zip_file]
+        return [file.name for file in files]
 
 
 class SMTPDeliveryMethod(DeliveryMethod):
@@ -66,7 +71,7 @@ class SMTPDeliveryMethod(DeliveryMethod):
 
     def send(self, files):
         """Send the given files in zip format through SMTP."""
-        attachment_data = {super().send(files): None}
+        attachment_data = {file: None for file in super().send(files)}
         LOGGER.info(f'Emailing encrypted data as a ZIP to {self.enterprise_customer_name}')
         try:
             send_email_with_attachment(
@@ -103,7 +108,7 @@ class SFTPDeliveryMethod(DeliveryMethod):
 
     def send(self, files):
         """Send the given files in zip format through SFTP."""
-        data_report_zipped = super().send(files)
+        data_reports = super().send(files)
         LOGGER.info('Connecting via SFTP to remote host {} for {}'.format(
             self.hostname,
             self.enterprise_customer_name
@@ -117,10 +122,11 @@ class SFTPDeliveryMethod(DeliveryMethod):
             password=self.password,
         )
         sftp = ssh.open_sftp()
-        sftp.put(
-            data_report_zipped,
-            os.path.join(self.file_path, os.path.basename(data_report_zipped))
-        )
+        for report in data_reports:
+            sftp.put(
+                report,
+                os.path.join(self.file_path, os.path.basename(report))
+            )
         sftp.close()
         ssh.close()
         LOGGER.info(f'Successfully sent report via sftp for {self.enterprise_customer_name}')
