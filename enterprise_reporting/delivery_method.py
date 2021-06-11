@@ -43,7 +43,7 @@ class DeliveryMethod:
 
 class SMTPDeliveryMethod(DeliveryMethod):
     """
-    Class that handles sending an enterprise report file via email as an encrypted zip file.
+    Class that handles sending an enterprise report file via email.
     """
 
     REPORT_EMAIL_FROM_EMAIL = os.environ.get('SEND_EMAIL_FROM')
@@ -70,9 +70,9 @@ class SMTPDeliveryMethod(DeliveryMethod):
         self._email = value if isinstance(value, list) else [value]
 
     def send(self, files):
-        """Send the given files in zip format through SMTP."""
+        """Send the given files through SMTP."""
         attachment_data = {file: None for file in super().send(files)}
-        LOGGER.info(f'Emailing encrypted data as a ZIP to {self.enterprise_customer_name}')
+        LOGGER.info(f'Emailing encrypted data to {self.enterprise_customer_name}')
         try:
             send_email_with_attachment(
                 self.REPORT_EMAIL_SUBJECT.format(enterprise_name=self.enterprise_customer_name),
@@ -87,7 +87,7 @@ class SMTPDeliveryMethod(DeliveryMethod):
                 self.enterprise_customer_name
             ))
         else:
-            LOGGER.info('Email report with encrypted zip successfully sent to {} for {}'.format(
+            LOGGER.info('Email report successfully sent to {} for {}'.format(
                 self.email,
                 self.enterprise_customer_name
             ))
@@ -107,7 +107,7 @@ class SFTPDeliveryMethod(DeliveryMethod):
         self.file_path = reporting_config['sftp_file_path']
 
     def send(self, files):
-        """Send the given files in zip format through SFTP."""
+        """Send the given files through SFTP."""
         data_reports = super().send(files)
         LOGGER.info('Connecting via SFTP to remote host {} for {}'.format(
             self.hostname,
