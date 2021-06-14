@@ -195,7 +195,7 @@ class TestCompressEncrypt(unittest.TestCase):
         """
         files, total_original_size = create_files(files_data)
 
-        password = b'frodo-baggins'
+        password = 'frodo-baggins'
         compressed_file = utils.compress_and_encrypt(
             [file['file'] for file in files],
             password
