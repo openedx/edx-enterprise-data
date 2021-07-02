@@ -27,25 +27,12 @@ class EnterpriseReportingModelManager(models.Manager):
         return qs
 
 
-class EnterpriseReportingLinkedUserModelManager(EnterpriseReportingModelManager):
-    """
-    Custom ModelManager to exclude enterprise learners who are not linked to an enterprise.
-    """
-
-    def get_queryset(self):
-        """
-        Override to include only linked learners.
-        """
-        qs = super().get_queryset()
-        return qs.filter(is_linked=True)
-
-
 class EnterpriseLearner(models.Model):
     """
     Information related to Enterprise Learner.
     """
 
-    objects = EnterpriseReportingLinkedUserModelManager()
+    objects = EnterpriseReportingModelManager()
 
     class Meta:
         app_label = 'enterprise_data'

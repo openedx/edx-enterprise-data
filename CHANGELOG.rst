@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[2.2.9] - 2021-07-01
+--------------------
+* Remove `EnterpriseReportingLinkedUserModelManager`
+
 [2.2.8] - 2021-06-07
 --------------------
 * Rename API V1 endpoint name from `learners` to `users`
