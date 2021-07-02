@@ -19,11 +19,7 @@ from django.db.models.functions import Coalesce
 from django.utils import timezone
 
 from enterprise_data.api.v1 import serializers
-from enterprise_data.filters import (
-    ENROLLMENTS_CONSENT_TRUE_OR_NOENROLL_Q,
-    AuditEnrollmentsFilterBackend,
-    AuditUsersEnrollmentFilterBackend,
-)
+from enterprise_data.filters import ENROLLMENTS_CONSENT_TRUE_OR_NOENROLL_Q, AuditEnrollmentsFilterBackend
 from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment
 from enterprise_data.paginators import EnterpriseEnrollmentsPagination
 
@@ -234,7 +230,7 @@ class EnterpriseLearnerViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
     Viewset for routes related to Enterprise Learners.
     """
     serializer_class = serializers.EnterpriseLearnerSerializer
-    filter_backends = (filters.OrderingFilter, AuditUsersEnrollmentFilterBackend,)
+    filter_backends = (filters.OrderingFilter,)
     ordering_fields = '__all__'
     ordering = ('user_email',)
 
@@ -317,15 +313,20 @@ class EnterpriseLearnerViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         """
         users = self.get_queryset()
 
+        LOGGER.info("[ELV_ANALYTICS_API_V1] Filtering QuerySet")
         # do the sorting
         users = self.filter_queryset(users)
 
+        LOGGER.info("[ELV_ANALYTICS_API_V1] Paginating QuerySet")
         # Bit to account for pagination
         page = self.paginate_queryset(users)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
+            LOGGER.info("[ELV_ANALYTICS_API_V1] Returning Paginated Serialized Response")
             return self.get_paginated_response(serializer.data)
+        LOGGER.info("[ELV_ANALYTICS_API_V1] Serializing Response")
         serializer = self.get_serializer(users, many=True)
+        LOGGER.info("[ELV_ANALYTICS_API_V1] Returning Serialized Response")
         return Response(serializer.data)
 
 

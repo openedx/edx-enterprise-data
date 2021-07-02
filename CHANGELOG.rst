@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[2.2.11] - 2021-07-02
+--------------------
+* Add more logging and remove filter backend
+
 [2.2.10] - 2021-07-02
 --------------------
 * Add logging and update queryset logic
