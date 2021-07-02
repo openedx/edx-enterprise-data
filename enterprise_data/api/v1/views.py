@@ -233,15 +233,15 @@ class EnterpriseLearnerViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
     """
     Viewset for routes related to Enterprise Learners.
     """
-    queryset = EnterpriseLearner.objects.all()
     serializer_class = serializers.EnterpriseLearnerSerializer
     filter_backends = (filters.OrderingFilter, AuditUsersEnrollmentFilterBackend,)
     ordering_fields = '__all__'
     ordering = ('user_email',)
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        LOGGER.info("[ELV_ANALYTICS_API_V1] QueryParams: [%s]", self.request.query_params)
 
+        queryset = EnterpriseLearner.objects.filter(enterprise_customer_uuid=self.kwargs['enterprise_id'])
         queryset = queryset.filter(ENROLLMENTS_CONSENT_TRUE_OR_NOENROLL_Q).distinct()
 
         has_enrollments = self.request.query_params.get('has_enrollments')
@@ -306,13 +306,16 @@ class EnterpriseLearnerViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
                     Value(0),
                 )
             )
+
+        LOGGER.info("[ELV_ANALYTICS_API_V1] QuerySet.Query: [%s]", queryset.query)
+
         return queryset
 
-    def list(self, request, **kwargs):
+    def list(self, request, **kwargs):  # pylint: disable=unused-argument
         """
         List view for learner records for a given enterprise.
         """
-        users = self.get_queryset().filter(enterprise_customer_uuid=kwargs['enterprise_id'])
+        users = self.get_queryset()
 
         # do the sorting
         users = self.filter_queryset(users)

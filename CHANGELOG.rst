@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[2.2.10] - 2021-07-02
+--------------------
+* Add logging and update queryset logic
+
 [2.2.9] - 2021-07-01
 --------------------
 * Remove `EnterpriseReportingLinkedUserModelManager`
