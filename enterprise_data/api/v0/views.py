@@ -19,6 +19,7 @@ from django.db.models.functions import Coalesce
 from django.utils import timezone
 
 from enterprise_data.api.v0 import serializers
+from enterprise_data.constants import ANALYTICS_API_VERSION_0
 from enterprise_data.filters import (
     CONSENT_TRUE_OR_NOENROLL_Q,
     AuditEnrollmentsFilterBackend,
@@ -49,6 +50,7 @@ class EnterpriseViewSet(PermissionRequiredMixin, viewsets.ViewSet):
     authentication_classes = (JwtAuthentication,)
     pagination_class = DefaultPagination
     permission_required = 'can_access_enterprise'
+    API_VERSION = ANALYTICS_API_VERSION_0
 
     def paginate_queryset(self, queryset):
         """
