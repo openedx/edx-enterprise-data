@@ -39,6 +39,7 @@ class EnterpriseLearner(models.Model):
         db_table = 'enterprise_learner'
         verbose_name = _("Enterprise Learner")
         verbose_name_plural = _("Enterprise Learner")
+        ordering = ['-user_email']
 
     enterprise_user_id = models.PositiveIntegerField(primary_key=True)
     enterprise_customer_uuid = models.UUIDField(db_index=True, null=False)

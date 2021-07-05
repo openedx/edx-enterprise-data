@@ -8,6 +8,7 @@ from rest_framework import filters
 from django.db.models import Q
 
 from enterprise_data.clients import EnterpriseApiClient
+from enterprise_data.constants import ANALYTICS_API_VERSION_0, ANALYTICS_API_VERSION_1, ANALYTICS_API_VERSION_ATTR
 
 # Admittedly this is sort of hacky because the use of "|" with 2 Q objects
 # forces the ORM to use a LEFT OUTER JOIN, which is needed to return a user
@@ -105,6 +106,13 @@ class AuditUsersEnrollmentFilterBackend(filters.BaseFilterBackend, FiltersMixin)
 
         enable_audit_data_reporting = request.session['enable_audit_data_reporting'].get(enterprise_id, False)
 
-        return queryset if enable_audit_data_reporting else queryset.filter(
-            ~Q(enrollments__user_current_enrollment_mode='audit')
-        )
+        version = getattr(view, ANALYTICS_API_VERSION_ATTR)
+
+        if version == ANALYTICS_API_VERSION_0:
+            queryset = queryset if enable_audit_data_reporting else queryset.filter(
+                ~Q(enrollments__user_current_enrollment_mode='audit')
+            )
+        elif version == ANALYTICS_API_VERSION_1:
+            queryset = queryset if enable_audit_data_reporting else queryset.exclude(enrollment_mode='audit')
+
+        return queryset

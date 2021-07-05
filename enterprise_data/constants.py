@@ -1,0 +1,7 @@
+"""
+Constants for enterprise data app.
+"""
+
+ANALYTICS_API_VERSION_ATTR = 'API_VERSION'
+ANALYTICS_API_VERSION_0 = 'V0'
+ANALYTICS_API_VERSION_1 = 'V1'

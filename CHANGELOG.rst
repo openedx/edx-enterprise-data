@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[2.2.12] - 2021-07-04
+--------------------
+* Database query optimizations for API V1
+
 [2.2.11] - 2021-07-02
 --------------------
 * Add more logging and remove filter backend

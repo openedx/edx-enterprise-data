@@ -13,13 +13,18 @@ from rest_framework import filters, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from django.db.models import Count, Max, OuterRef, Q, Subquery, Value
+from django.db.models import Count, F, Max, OuterRef, Q, Subquery, Value
 from django.db.models.fields import IntegerField
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 
 from enterprise_data.api.v1 import serializers
-from enterprise_data.filters import ENROLLMENTS_CONSENT_TRUE_OR_NOENROLL_Q, AuditEnrollmentsFilterBackend
+from enterprise_data.constants import ANALYTICS_API_VERSION_1
+from enterprise_data.filters import (
+    ENROLLMENTS_CONSENT_TRUE_OR_NOENROLL_Q,
+    AuditEnrollmentsFilterBackend,
+    AuditUsersEnrollmentFilterBackend,
+)
 from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment
 from enterprise_data.paginators import EnterpriseEnrollmentsPagination
 
@@ -44,6 +49,7 @@ class EnterpriseViewSet(PermissionRequiredMixin, viewsets.ViewSet):
     authentication_classes = (JwtAuthentication,)
     pagination_class = DefaultPagination
     permission_required = 'can_access_enterprise'
+    API_VERSION = ANALYTICS_API_VERSION_1
 
     def paginate_queryset(self, queryset):
         """
@@ -230,14 +236,20 @@ class EnterpriseLearnerViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
     Viewset for routes related to Enterprise Learners.
     """
     serializer_class = serializers.EnterpriseLearnerSerializer
-    filter_backends = (filters.OrderingFilter,)
+    filter_backends = (filters.OrderingFilter, AuditUsersEnrollmentFilterBackend,)
     ordering_fields = '__all__'
     ordering = ('user_email',)
 
     def get_queryset(self):
         LOGGER.info("[ELV_ANALYTICS_API_V1] QueryParams: [%s]", self.request.query_params)
 
-        queryset = EnterpriseLearner.objects.filter(enterprise_customer_uuid=self.kwargs['enterprise_id'])
+        queryset = EnterpriseLearner.objects.prefetch_related(
+            'enrollments'
+        ).filter(
+            enterprise_customer_uuid=self.kwargs['enterprise_id']
+        ).annotate(
+            enrollment_mode=F('enrollments__user_current_enrollment_mode')
+        )
         queryset = queryset.filter(ENROLLMENTS_CONSENT_TRUE_OR_NOENROLL_Q).distinct()
 
         has_enrollments = self.request.query_params.get('has_enrollments')
@@ -313,20 +325,16 @@ class EnterpriseLearnerViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         """
         users = self.get_queryset()
 
-        LOGGER.info("[ELV_ANALYTICS_API_V1] Filtering QuerySet")
         # do the sorting
         users = self.filter_queryset(users)
+        LOGGER.info("[ELV_ANALYTICS_API_V1] Filtered QuerySet.Query: [%s]", users.query)
 
-        LOGGER.info("[ELV_ANALYTICS_API_V1] Paginating QuerySet")
         # Bit to account for pagination
         page = self.paginate_queryset(users)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
-            LOGGER.info("[ELV_ANALYTICS_API_V1] Returning Paginated Serialized Response")
             return self.get_paginated_response(serializer.data)
-        LOGGER.info("[ELV_ANALYTICS_API_V1] Serializing Response")
         serializer = self.get_serializer(users, many=True)
-        LOGGER.info("[ELV_ANALYTICS_API_V1] Returning Serialized Response")
         return Response(serializer.data)
 
 
