@@ -9,6 +9,7 @@ from django.db.models import Q
 
 from enterprise_data.clients import EnterpriseApiClient
 from enterprise_data.constants import ANALYTICS_API_VERSION_0, ANALYTICS_API_VERSION_1, ANALYTICS_API_VERSION_ATTR
+from enterprise_data.models import EnterpriseLearnerEnrollment
 
 # Admittedly this is sort of hacky because the use of "|" with 2 Q objects
 # forces the ORM to use a LEFT OUTER JOIN, which is needed to return a user
@@ -113,6 +114,14 @@ class AuditUsersEnrollmentFilterBackend(filters.BaseFilterBackend, FiltersMixin)
                 ~Q(enrollments__user_current_enrollment_mode='audit')
             )
         elif version == ANALYTICS_API_VERSION_1:
-            queryset = queryset if enable_audit_data_reporting else queryset.exclude(enrollment_mode='audit')
+            if not enable_audit_data_reporting:
+                audit_enrollments_enterprise_user_ids = EnterpriseLearnerEnrollment.objects.filter(
+                    enterprise_customer_uuid=view.kwargs['enterprise_id'],
+                    user_current_enrollment_mode="audit"
+                ).values_list(
+                    'enterprise_user_id',
+                    flat=True
+                )
+                queryset = queryset.exclude(enterprise_user_id__in=list(audit_enrollments_enterprise_user_ids))
 
         return queryset

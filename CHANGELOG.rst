@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[2.2.13] - 2021-07-06
+--------------------
+* Database query updates
+
 [2.2.12] - 2021-07-04
 --------------------
 * Database query optimizations for API V1
