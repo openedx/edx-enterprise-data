@@ -13,18 +13,14 @@ from rest_framework import filters, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from django.db.models import Count, F, Max, OuterRef, Q, Subquery, Value
+from django.db.models import Count, Max, OuterRef, Prefetch, Q, Subquery, Value
 from django.db.models.fields import IntegerField
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 
 from enterprise_data.api.v1 import serializers
 from enterprise_data.constants import ANALYTICS_API_VERSION_1
-from enterprise_data.filters import (
-    ENROLLMENTS_CONSENT_TRUE_OR_NOENROLL_Q,
-    AuditEnrollmentsFilterBackend,
-    AuditUsersEnrollmentFilterBackend,
-)
+from enterprise_data.filters import AuditEnrollmentsFilterBackend, AuditUsersEnrollmentFilterBackend
 from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment
 from enterprise_data.paginators import EnterpriseEnrollmentsPagination
 
@@ -235,6 +231,7 @@ class EnterpriseLearnerViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
     """
     Viewset for routes related to Enterprise Learners.
     """
+    queryset = EnterpriseLearner.objects.all()
     serializer_class = serializers.EnterpriseLearnerSerializer
     filter_backends = (filters.OrderingFilter, AuditUsersEnrollmentFilterBackend,)
     ordering_fields = '__all__'
@@ -242,15 +239,14 @@ class EnterpriseLearnerViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
 
     def get_queryset(self):
         LOGGER.info("[ELV_ANALYTICS_API_V1] QueryParams: [%s]", self.request.query_params)
-
-        queryset = EnterpriseLearner.objects.prefetch_related(
-            'enrollments'
-        ).filter(
-            enterprise_customer_uuid=self.kwargs['enterprise_id']
-        ).annotate(
-            enrollment_mode=F('enrollments__user_current_enrollment_mode')
+        queryset = super().get_queryset().prefetch_related(
+            Prefetch(
+                'enrollments',
+                queryset=EnterpriseLearnerEnrollment.objects.filter(
+                    enterprise_customer_uuid=self.kwargs['enterprise_id']
+                )
+            ),
         )
-        queryset = queryset.filter(ENROLLMENTS_CONSENT_TRUE_OR_NOENROLL_Q).distinct()
 
         has_enrollments = self.request.query_params.get('has_enrollments')
         if has_enrollments == 'true':
@@ -272,7 +268,7 @@ class EnterpriseLearnerViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
 
         all_enrollments_passed = self.request.query_params.get('all_enrollments_passed')
         if all_enrollments_passed == 'true':
-            queryset = queryset.exclude(enrollments__has_passed=False)
+            queryset = queryset.filter(enrollments__has_passed=True)
         elif all_enrollments_passed == 'false':
             queryset = queryset.filter(enrollments__has_passed=False)
 
@@ -316,14 +312,13 @@ class EnterpriseLearnerViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
             )
 
         LOGGER.info("[ELV_ANALYTICS_API_V1] QuerySet.Query: [%s]", queryset.query)
-
         return queryset
 
-    def list(self, request, **kwargs):  # pylint: disable=unused-argument
+    def list(self, request, **kwargs):
         """
         List view for learner records for a given enterprise.
         """
-        users = self.get_queryset()
+        users = self.get_queryset().filter(enterprise_customer_uuid=kwargs['enterprise_id'])
 
         # do the sorting
         users = self.filter_queryset(users)
