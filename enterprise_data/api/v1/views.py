@@ -311,7 +311,6 @@ class EnterpriseLearnerViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
                 )
             )
 
-        LOGGER.info("[ELV_ANALYTICS_API_V1] QuerySet.Query: [%s]", queryset.query)
         return queryset
 
     def list(self, request, **kwargs):
@@ -322,7 +321,7 @@ class EnterpriseLearnerViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
 
         # do the sorting
         users = self.filter_queryset(users)
-        LOGGER.info("[ELV_ANALYTICS_API_V1] Filtered QuerySet.Query: [%s]", users.query)
+        LOGGER.info("[ELV_ANALYTICS_API_V1] QuerySet.Query: [%s]", users.query)
 
         # Bit to account for pagination
         page = self.paginate_queryset(users)

@@ -2,6 +2,7 @@
 Filters for enterprise data views.
 """
 
+from logging import getLogger
 
 from rest_framework import filters
 
@@ -16,6 +17,8 @@ from enterprise_data.models import EnterpriseLearnerEnrollment
 # that has multiple enrollments where at least one has consent_granted=True
 CONSENT_TRUE_OR_NOENROLL_Q = Q(enrollments__consent_granted=True) | Q(enrollments__isnull=True)
 ENROLLMENTS_CONSENT_TRUE_OR_NOENROLL_Q = Q(enrollments__is_consent_granted=True) | Q(enrollments__isnull=True)
+
+LOGGER = getLogger(__name__)
 
 
 class FiltersMixin:
@@ -122,6 +125,13 @@ class AuditUsersEnrollmentFilterBackend(filters.BaseFilterBackend, FiltersMixin)
                     'enterprise_user_id',
                     flat=True
                 )
-                queryset = queryset.exclude(enterprise_user_id__in=list(audit_enrollments_enterprise_user_ids))
+                audit_enrollments_enterprise_user_ids = list(audit_enrollments_enterprise_user_ids)
+                LOGGER.info(
+                    "[ELV_ANALYTICS_API_V1] Enterprise: [%s], AuditDataReporting: [%s], AuditEnrollments: [%s]",
+                    enterprise_id,
+                    enable_audit_data_reporting,
+                    len(audit_enrollments_enterprise_user_ids)
+                )
+                queryset = queryset.exclude(enterprise_user_id__in=audit_enrollments_enterprise_user_ids)
 
         return queryset
