@@ -17,14 +17,11 @@ class EnterpriseReportingModelManager(models.Manager):
     Custom ModelManager for every model that wants to use `enterprise_reporting` database.
     """
 
-    def get_queryset(self):
+    def db_manager(self, using=None, hints=None):  # pylint: disable=unused-argument
         """
         Override to use the `enterprise_reporting` database instead of default.
         """
-        qs = super().get_queryset()
-        qs = qs.using(settings.ENTERPRISE_REPORTING_DB_ALIAS)
-
-        return qs
+        return super().db_manager(using=settings.ENTERPRISE_REPORTING_DB_ALIAS, hints=hints)
 
 
 class EnterpriseLearner(models.Model):

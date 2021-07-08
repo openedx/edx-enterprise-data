@@ -120,17 +120,11 @@ class AuditUsersEnrollmentFilterBackend(filters.BaseFilterBackend, FiltersMixin)
             if not enable_audit_data_reporting:
                 audit_enrollments_enterprise_user_ids = EnterpriseLearnerEnrollment.objects.filter(
                     enterprise_customer_uuid=view.kwargs['enterprise_id'],
-                    user_current_enrollment_mode="audit"
+                    enterprise_user_id__isnull=False,
+                    user_current_enrollment_mode="audit",
                 ).values_list(
                     'enterprise_user_id',
                     flat=True
-                )
-                audit_enrollments_enterprise_user_ids = list(audit_enrollments_enterprise_user_ids)
-                LOGGER.info(
-                    "[ELV_ANALYTICS_API_V1] Enterprise: [%s], AuditDataReporting: [%s], AuditEnrollments: [%s]",
-                    enterprise_id,
-                    enable_audit_data_reporting,
-                    len(audit_enrollments_enterprise_user_ids)
                 )
                 queryset = queryset.exclude(enterprise_user_id__in=audit_enrollments_enterprise_user_ids)
 
