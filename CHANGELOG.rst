@@ -16,11 +16,6 @@ Unreleased
 
 =========================
 
-[2.2.15] - 2021-07-08
---------------------
-* Update default database selection for Analytics API V1
-* Update filter backend queryset for Audit enrollments
-
 [2.2.14] - 2021-07-07
 --------------------
 * Update logs
