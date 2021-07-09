@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[2.2.16] - 2021-07-09
+--------------------
+* Revert changes made in 2.2.15
+
 [2.2.15] - 2021-07-08
 --------------------
 * Update default database selection for Analytics API V1
