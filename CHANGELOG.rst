@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[2.2.18] - 2021-07-27
+---------------------
+* Include all fields in Analytics API V1 response
+
 [2.2.17] - 2021-07-15
 ---------------------
 * Update the edx-rbac from 1.3.3 to 1.5.0

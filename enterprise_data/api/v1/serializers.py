@@ -14,6 +14,9 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
     """
     course_api_url = serializers.SerializerMethodField()
     has_passed = serializers.BooleanField(default=False, write_only=True)
+    enterprise_user_id = serializers.SerializerMethodField()
+    # TODO: below fields should be removed once admin-portal is switched to V1
+    # and code has been updated to handle fields with new names
     consent_granted = serializers.BooleanField(source='is_consent_granted')
     enrollment_created_timestamp = serializers.DateField(source='enrollment_date')
     unenrollment_timestamp = serializers.DateField(source='unenrollment_date')
@@ -29,14 +32,13 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EnterpriseLearnerEnrollment
-        fields = (
-            'course_api_url', 'has_passed', 'consent_granted', 'enrollment_created_timestamp',
-            'unenrollment_timestamp', 'offer', 'course_price', 'discount_price', 'course_id',
-            'course_start', 'course_end', 'passed_timestamp', 'enterprise_id', 'user_account_creation_timestamp',
-            'user_current_enrollment_mode', 'coupon_code', 'coupon_name', 'course_key', 'course_title',
-            'course_pacing_type', 'course_duration_weeks', 'course_max_effort', 'course_min_effort',
-            'last_activity_date', 'progress_status', 'current_grade', 'letter_grade', 'user_country_code',
-            'user_email', 'user_username', 'enterprise_name', 'enterprise_sso_uid', 'enterprise_user_id',
+        exclude = (
+            'enterprise_user', 'created',
+            # TODO: below fields should be removed once admin-portal is switched to V1
+            # and code has been updated to handle fields with new names
+            'is_consent_granted', 'enrollment_date', 'unenrollment_date', 'offer_type',
+            'course_list_price', 'amount_learner_paid', 'courserun_key', 'course_start_date',
+            'course_end_date', 'passed_date', 'enterprise_customer_uuid', 'user_account_creation_date',
         )
 
     def get_course_api_url(self, obj):
@@ -44,6 +46,10 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
         return '/enterprise/v1/enterprise-catalogs/{enterprise_customer_uuid}/courses/{courserun_key}'.format(
             enterprise_customer_uuid=obj.enterprise_customer_uuid, courserun_key=obj.courserun_key
         )
+
+    def get_enterprise_user_id(self, obj):
+        """Returns enterprise user id of a learner's enrollment"""
+        return obj.enterprise_user_id
 
 
 class EnterpriseLearnerSerializer(serializers.ModelSerializer):
