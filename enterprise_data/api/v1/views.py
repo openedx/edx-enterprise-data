@@ -68,6 +68,46 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSet, viewsets.ModelViewSe
     ENROLLMENT_MODE_FILTER = 'user_current_enrollment_mode'
     COUPON_CODE_FILTER = 'coupon_code'
     OFFER_FILTER = 'offer_type'
+    # This will be used as CSV header. We are using a custom header to output csv columns in desired order.
+    # By default, csv renderer will output fields in sorted order.
+    header = [
+        'enrollment_id', 'enterprise_enrollment_id', 'consent_granted', 'paid_by',
+        'user_current_enrollment_mode', 'enrollment_created_timestamp', 'unenrollment_timestamp',
+        'unenrollment_end_within_date', 'is_refunded', 'seat_delivery_method',
+        'offer_name', 'offer', 'coupon_code', 'coupon_name', 'contract_id',
+        'course_price', 'discount_price', 'course_key', 'course_id',
+        'course_title', 'course_pacing_type', 'course_start', 'course_end',
+        'course_duration_weeks', 'course_max_effort', 'course_min_effort',
+        'course_primary_program', 'course_primary_subject', 'has_passed',
+        'last_activity_date', 'progress_status', 'passed_timestamp', 'current_grade',
+        'letter_grade', 'enterprise_user_id', 'user_email', 'user_account_creation_timestamp',
+        'user_country_code', 'user_username', 'enterprise_name', 'enterprise_id',
+        'enterprise_sso_uid', 'created', 'course_api_url',
+    ]
+    # TODO: below labels dict should be removed once admin-portal is switched to V1
+    # and code has been updated to handle fields with new names. For each key, the
+    # corresponding header in header list above should be update with key value
+    # Custom labels. Each key corresponds to the header and the value corresponds to the custom label for that header
+    labels = {
+        'consent_granted': 'is_consent_granted',
+        'enrollment_created_timestamp': 'enrollment_date',
+        'unenrollment_timestamp': 'unenrollment_date',
+        'offer': 'offer_type',
+        'course_price': 'course_list_price',
+        'discount_price': 'amount_learner_paid',
+        'course_id': 'courserun_key',
+        'course_start': 'course_start_date',
+        'course_end': 'course_end_date',
+        'passed_timestamp': 'passed_date',
+        'enterprise_id': 'enterprise_customer_uuid',
+        'user_account_creation_timestamp': 'user_account_creation_date',
+    }
+
+    def get_renderer_context(self):
+        renderer_context = super().get_renderer_context()
+        renderer_context['header'] = self.header
+        renderer_context['labels'] = self.labels
+        return renderer_context
 
     def get_queryset(self):
         """
