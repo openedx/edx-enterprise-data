@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[2.2.19] - 2021-08-04
+---------------------
+* Include `has_passed` field in API V1 response
+
 [2.2.18] - 2021-07-27
 ---------------------
 * Include all fields in Analytics API V1 response
