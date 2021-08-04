@@ -13,7 +13,6 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
     Serializer for EnterpriseLearnerEnrollment model.
     """
     course_api_url = serializers.SerializerMethodField()
-    has_passed = serializers.BooleanField(default=False, write_only=True)
     enterprise_user_id = serializers.SerializerMethodField()
     # TODO: below fields should be removed once admin-portal is switched to V1
     # and code has been updated to handle fields with new names
@@ -33,7 +32,7 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = EnterpriseLearnerEnrollment
         exclude = (
-            'enterprise_user', 'created',
+            'enterprise_user',
             # TODO: below fields should be removed once admin-portal is switched to V1
             # and code has been updated to handle fields with new names
             'is_consent_granted', 'enrollment_date', 'unenrollment_date', 'offer_type',
