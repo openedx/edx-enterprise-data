@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[2.2.20] - 2021-08-13
+---------------------
+* Add ref_name to the same named serializers in v0 and v1 of enterprise data
+
 [2.2.19] - 2021-08-04
 ---------------------
 * Include `has_passed` field in API V1 response
