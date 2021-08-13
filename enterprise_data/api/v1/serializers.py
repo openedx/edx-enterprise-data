@@ -82,5 +82,8 @@ class LearnerCompletedCoursesSerializer(serializers.Serializer):    # pylint: di
     """
     Serializer for learner's completed courses.
     """
+    class Meta:
+        ref_name = 'v1.LearnerCompletedCoursesSerializer'
+
     user_email = serializers.EmailField()
     completed_courses = serializers.IntegerField()
