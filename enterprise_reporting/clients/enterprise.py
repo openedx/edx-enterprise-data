@@ -114,6 +114,14 @@ class EnterpriseDataApiClient(EdxOAuth2APIClient):
         )
 
 
+class EnterpriseDataV1ApiClient(EnterpriseDataApiClient):
+    """
+    Client for connecting to the Enterprise Data V1 API.
+    """
+
+    API_BASE_URL = os.getenv('ANALYTICS_API_URL', default='') + '/enterprise/api/v1'
+
+
 class AnalyticsDataApiClient(EdxOAuth2APIClient):
     """
     Client for connecting to the Analytics Data API.

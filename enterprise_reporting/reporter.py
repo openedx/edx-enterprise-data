@@ -13,7 +13,8 @@ from uuid import UUID
 from enterprise_reporting.clients.enterprise import (
     AnalyticsDataApiClient,
     EnterpriseAPIClient,
-    EnterpriseDataApiClient
+    EnterpriseDataApiClient,
+    EnterpriseDataV1ApiClient
 )
 from enterprise_reporting.clients.s3 import S3Client
 from enterprise_reporting.clients.vertica import VerticaClient
@@ -198,6 +199,18 @@ class EnterpriseReportSender:
                 writer.writerow(list(OrderedDict(sorted(enrollment.items())).values()))
         return [data_report_file]
 
+    def _generate_enterprise_report_progress_v3_csv(self):
+        """Query the Enterprise Data V1 API to get progress data to be turned into a CSV."""
+        enrollments = EnterpriseDataV1ApiClient().get_enterprise_enrollments(self.enterprise_customer_uuid)['results']
+        if not enrollments:
+            return []
+        with open(self.data_report_file_name, 'w') as data_report_file:
+            writer = csv.writer(data_report_file)
+            writer.writerow(list(OrderedDict(sorted(enrollments[0].items())).keys()))
+            for enrollment in enrollments:
+                writer.writerow(list(OrderedDict(sorted(enrollment.items())).values()))
+        return [data_report_file]
+
     def _generate_enterprise_report_engagement_csv(self):
         """Query the Analytics Data API to get engagement data to be turned into a CSV."""
         engagements = AnalyticsDataApiClient().get_enterprise_engagements(self.enterprise_customer_uuid)['results']
@@ -215,6 +228,18 @@ class EnterpriseReportSender:
         Query the Enterprise Data API to get progress data to be turned into json.
         """
         enrollments = EnterpriseDataApiClient().get_enterprise_enrollments(self.enterprise_customer_uuid)['results']
+        report_data = enrollments if enrollments else []
+
+        with open(self.data_report_file_name, 'w') as data_report_file:
+            json.dump(report_data, data_report_file, indent=4)
+
+        return [data_report_file]
+
+    def _generate_enterprise_report_progress_v3_json(self):
+        """
+        Query the Enterprise Data V1 API to get progress data to be turned into json.
+        """
+        enrollments = EnterpriseDataV1ApiClient().get_enterprise_enrollments(self.enterprise_customer_uuid)['results']
         report_data = enrollments if enrollments else []
 
         with open(self.data_report_file_name, 'w') as data_report_file:

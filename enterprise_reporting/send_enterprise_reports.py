@@ -17,7 +17,7 @@ from enterprise_reporting.utils import is_current_time_in_schedule
 
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
-DATA_TYPES = ['progress', 'progress_v2', 'catalog', 'grade', 'course_structure', 'completion', 'engagement']
+DATA_TYPES = ['progress', 'progress_v2', 'progress_v3', 'catalog', 'grade', 'course_structure', 'completion', 'engagement']
 
 
 def send_data(config):
