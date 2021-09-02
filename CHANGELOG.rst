@@ -15,6 +15,12 @@ Unreleased
 ----------
 
 =========================
+[2.2.21] - 2021-08-31
+---------------------
+* Pass old and new fields in LPR API V1 response for EnterpriseLearnerViewSet and EnterpriseLearnerEnrollmentViewSet
+* Update csv header for EnterpriseLearnerViewSet and EnterpriseLearnerEnrollmentViewSet APIs
+* Add support for `progress_v3` enterprise report
+
 [2.2.20] - 2021-08-13
 ---------------------
 * Add ref_name to the same named serializers in v0 and v1 of enterprise data

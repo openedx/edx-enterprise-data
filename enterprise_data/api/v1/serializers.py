@@ -31,14 +31,7 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EnterpriseLearnerEnrollment
-        exclude = (
-            'enterprise_user',
-            # TODO: below fields should be removed once admin-portal is switched to V1
-            # and code has been updated to handle fields with new names
-            'is_consent_granted', 'enrollment_date', 'unenrollment_date', 'offer_type',
-            'course_list_price', 'amount_learner_paid', 'courserun_key', 'course_start_date',
-            'course_end_date', 'passed_date', 'enterprise_customer_uuid', 'user_account_creation_date',
-        )
+        exclude = ('enterprise_user',)
 
     def get_course_api_url(self, obj):
         """Constructs course api url"""
@@ -61,11 +54,7 @@ class EnterpriseLearnerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EnterpriseLearner
-        fields = (
-            'enterprise_id', 'enterprise_user_id', 'user_account_creation_timestamp',
-            'lms_user_id', 'user_username', 'user_email', 'enterprise_sso_uid',
-            'last_activity_date', 'user_country_code',
-        )
+        fields = '__all__'
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
