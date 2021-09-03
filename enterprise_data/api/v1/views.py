@@ -68,8 +68,10 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSet, viewsets.ModelViewSe
     ENROLLMENT_MODE_FILTER = 'user_current_enrollment_mode'
     COUPON_CODE_FILTER = 'coupon_code'
     OFFER_FILTER = 'offer_type'
-    # This will be used as CSV header. We are using a custom header to output csv columns in desired order.
-    # By default, csv renderer will output fields in sorted order.
+    # This will be used as CSV header for csv generated from `admin-portal`.
+    # Do not change the order of fields below. Ordering is important because csv generated
+    # on `admin-portal` should match `progress_v3` csv generated in `enterprise_reporting`
+    # Order and field names below should match with `EnterpriseLearnerEnrollmentSerializer.fields`
     header = [
         'enrollment_id', 'enterprise_enrollment_id', 'is_consent_granted', 'paid_by',
         'user_current_enrollment_mode', 'enrollment_date', 'unenrollment_date',
@@ -257,25 +259,6 @@ class EnterpriseLearnerViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
     filter_backends = (filters.OrderingFilter, AuditUsersEnrollmentFilterBackend,)
     ordering_fields = '__all__'
     ordering = ('user_email',)
-    header = [
-        'enterprise_customer_uuid', 'user_username', 'user_email',
-        'lms_user_country', 'enterprise_sso_uid', 'last_activity_date',
-    ]
-
-    def get_renderer_context(self):
-        csv_header = []
-        renderer_context = super().get_renderer_context()
-
-        extra_fields = self.request.query_params.getlist('extra_fields')
-        if 'enrollment_count' in extra_fields:
-            csv_header.append('enrollment_count')
-
-        if 'course_completion_count' in extra_fields:
-            csv_header.append('enrollment_count')
-
-        renderer_context['header'] = csv_header + self.header
-
-        return renderer_context
 
     def get_queryset(self):
         LOGGER.info("[ELV_ANALYTICS_API_V1] QueryParams: [%s]", self.request.query_params)

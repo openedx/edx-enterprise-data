@@ -14,24 +14,26 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
     """
     course_api_url = serializers.SerializerMethodField()
     enterprise_user_id = serializers.SerializerMethodField()
-    # TODO: below fields should be removed once admin-portal is switched to V1
-    # and code has been updated to handle fields with new names
-    consent_granted = serializers.BooleanField(source='is_consent_granted')
-    enrollment_created_timestamp = serializers.DateField(source='enrollment_date')
-    unenrollment_timestamp = serializers.DateField(source='unenrollment_date')
-    offer = serializers.CharField(source='offer_type')
-    course_price = serializers.FloatField(source='course_list_price')
-    discount_price = serializers.CharField(source='amount_learner_paid')
-    course_id = serializers.CharField(source='courserun_key')
-    course_start = serializers.DateField(source='course_start_date')
-    course_end = serializers.DateField(source='course_end_date')
-    passed_timestamp = serializers.DateField(source='passed_date')
-    enterprise_id = serializers.UUIDField(source='enterprise_customer_uuid')
-    user_account_creation_timestamp = serializers.DateTimeField(source='user_account_creation_date')
 
     class Meta:
         model = EnterpriseLearnerEnrollment
-        exclude = ('enterprise_user',)
+        # Do not change the order of fields below. Ordering is important becuase `progress_v3`
+        # csv generated in `enterprise_reporting` should be same as csv generated on `admin-portal`
+        # Order and field names below should match with `EnterpriseLearnerEnrollmentViewSet.header`
+        fields = (
+            'enrollment_id', 'enterprise_enrollment_id', 'is_consent_granted', 'paid_by',
+            'user_current_enrollment_mode', 'enrollment_date', 'unenrollment_date',
+            'unenrollment_end_within_date', 'is_refunded', 'seat_delivery_method',
+            'offer_name', 'offer_type', 'coupon_code', 'coupon_name', 'contract_id',
+            'course_list_price', 'amount_learner_paid', 'course_key', 'courserun_key',
+            'course_title', 'course_pacing_type', 'course_start_date', 'course_end_date',
+            'course_duration_weeks', 'course_max_effort', 'course_min_effort',
+            'course_primary_program', 'course_primary_subject', 'has_passed',
+            'last_activity_date', 'progress_status', 'passed_date', 'current_grade',
+            'letter_grade', 'enterprise_user_id', 'user_email', 'user_account_creation_date',
+            'user_country_code', 'user_username', 'enterprise_name', 'enterprise_customer_uuid',
+            'enterprise_sso_uid', 'created', 'course_api_url',
+        )
 
     def get_course_api_url(self, obj):
         """Constructs course api url"""
@@ -48,9 +50,6 @@ class EnterpriseLearnerSerializer(serializers.ModelSerializer):
     """
     Serializer for EnterpriseLearner model.
     """
-    user_country_code = serializers.CharField(source='lms_user_country')
-    enterprise_id = serializers.UUIDField(source='enterprise_customer_uuid')
-    user_account_creation_timestamp = serializers.DateTimeField(source='lms_user_created')
 
     class Meta:
         model = EnterpriseLearner
