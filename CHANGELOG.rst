@@ -15,6 +15,11 @@ Unreleased
 ----------
 
 =========================
+[3.0.0] - 2021-09-07
+---------------------
+* Remove old field names from LPR API V1
+* Maintain same field order for `progress_v3` csv generated from `admin-portal` and `enterprise_reporting`
+
 [2.2.21] - 2021-08-31
 ---------------------
 * Pass old and new fields in LPR API V1 response for EnterpriseLearnerViewSet and EnterpriseLearnerEnrollmentViewSet

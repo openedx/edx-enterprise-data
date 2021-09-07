@@ -206,9 +206,10 @@ class EnterpriseReportSender:
             return []
         with open(self.data_report_file_name, 'w') as data_report_file:
             writer = csv.writer(data_report_file)
-            writer.writerow(list(OrderedDict(sorted(enrollments[0].items())).keys()))
+            csv_header = list(enrollments[0].keys())
+            writer.writerow(csv_header)
             for enrollment in enrollments:
-                writer.writerow(list(OrderedDict(sorted(enrollment.items())).values()))
+                writer.writerow(list(enrollment.values()))
         return [data_report_file]
 
     def _generate_enterprise_report_engagement_csv(self):
