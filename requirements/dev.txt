@@ -369,7 +369,7 @@ snowballstemmer==2.0.0
     # via pydocstyle
 snowflake-connector-python==2.3.7
     # via -r requirements/reporting.in
-sqlparse==0.4.1
+sqlparse==0.4.2
     # via django
 stevedore==3.3.0
     # via
