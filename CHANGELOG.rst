@@ -15,6 +15,11 @@ Unreleased
 ----------
 
 =========================
+[3.1.0] - 2021-09-16
+---------------------
+  * add `primary_program_type` field in EnterpriseLearnerEnrollment
+  * update max_length value for existing fields in EnterpriseLearnerEnrollment
+
 [3.0.0] - 2021-09-07
 ---------------------
 * Remove old field names from LPR API V1
