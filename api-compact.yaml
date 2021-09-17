@@ -8,6 +8,7 @@
 #
 # Available service endpoints -- note that alternate endpoints may be presented at the API Gateway tier:
 # GET /v1/enterprise-customer/{uuid}/learner-summary/
+# GET /v2/enterprise-customer/{uuid}/learner-summary/
 
 apigateway_responses_with_mapping_template_for_uuid: &apigateway_responses_with_mapping_template_for_uuid
   default:
@@ -116,3 +117,18 @@ endpoints:
           x-amazon-apigateway-integration:
             <<: *apigateway_integration_enterprise_customer_learner_summary
             uri: "https://${stageVariables.analytics_api_host}/enterprise/api/v0/enterprise/{uuid}/enrollments/"
+  v2:
+    # GET /v3/enterprise-customer/{uuid}/learner-summary/
+    enterpriseCustomerLearnerSummary:
+        get:
+          produces: *produces
+          parameters:
+            - *auth_header
+            - *uuid_parameter
+            - *page_qs_parameter
+            - *page_size_qs_parameter
+          operationId: "get_enterprise_customer_learner_summary"
+          responses: *responses
+          x-amazon-apigateway-integration:
+            <<: *apigateway_integration_enterprise_customer_learner_summary
+            uri: "https://${stageVariables.analytics_api_host}/enterprise/api/v1/enterprise/{uuid}/enrollments/"
