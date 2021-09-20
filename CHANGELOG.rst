@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[3.2.0] - 2021-09-17
+---------------------
+  * Add api gateway spec for LPR V1 API
+
 [3.1.0] - 2021-09-16
 ---------------------
   * add `primary_program_type` field in EnterpriseLearnerEnrollment
