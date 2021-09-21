@@ -6,7 +6,11 @@ env:
   - TOXENV=django22-data
   - TOXENV=django30-data
   - TOXENV=django31-data
+  - TOXENV=django32-data
   - TOXENV=django22-reporting
+  - TOXENV=django30-reporting
+  - TOXENV=django31-reporting
+  - TOXENV=django32-reporting
 matrix:
   allow_failures:
     - python: 3.8
