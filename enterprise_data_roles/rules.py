@@ -16,7 +16,7 @@ from enterprise_data_roles.models import EnterpriseDataRoleAssignment
 
 
 @rules.predicate
-def request_user_has_implicit_access(*args, **kwargs):  # pylint: disable=unused-argument
+def request_user_has_implicit_access(*args, **kwargs):
     """
     Check that if request user has implicit access to `ENTERPRISE_DATA_ADMIN_ROLE` feature role.
 
@@ -36,7 +36,7 @@ def request_user_has_implicit_access(*args, **kwargs):  # pylint: disable=unused
 
 
 @rules.predicate
-def request_user_has_explicit_access(*args, **kwargs):  # pylint: disable=unused-argument
+def request_user_has_explicit_access(*args, **kwargs):
     """
     Check that if request user has explicit access to `ENTERPRISE_DATA_ADMIN_ROLE` feature role.
 

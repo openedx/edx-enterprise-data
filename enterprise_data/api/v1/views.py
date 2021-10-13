@@ -219,7 +219,7 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSet, viewsets.ModelViewSe
         return created_max['created__max']
 
     @action(detail=False)
-    def overview(self, request, **kwargs):  # pylint: disable=unused-argument
+    def overview(self, request, **kwargs):
         """
         Returns the following data:
             - # of enrolled learners;
@@ -336,7 +336,7 @@ class EnterpriseLearnerViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
 
         return queryset
 
-    def list(self, request, **kwargs):
+    def list(self, request, **kwargs):  # pylint: disable=arguments-differ
         """
         List view for learner records for a given enterprise.
         """
