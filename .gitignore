@@ -78,3 +78,5 @@ geckodriver/
 
 # Visual Studio Code
 .vscode
+
+venv/
