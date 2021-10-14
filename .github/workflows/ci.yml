@@ -31,6 +31,12 @@ jobs:
     - name: Set env variable
       run: export AWS_CONFIG_FILE=/dev/null
 
+    - name: check pip version
+      run: pip --version
+
+    - name: check pip-tools version
+      run: pip freeze | grep pip-tools
+
     - name: Install Dependencies
       run: pip install -r requirements/ci.txt
 
