@@ -35,7 +35,7 @@ jobs:
       run: pip --version
 
     - name: check pip-tools version
-      run: pip freeze | grep pip-tools
+      run: pip freeze
 
     - name: Install Dependencies
       run: pip install -r requirements/ci.txt
