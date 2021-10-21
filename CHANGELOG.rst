@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[3.4.0] - 2021-10-22
+---------------------
+  * Advertise constraints when packaging
+
 [3.3.0] - 2021-09-21
 ---------------------
   * Added support for Django32
