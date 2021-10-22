@@ -12,7 +12,7 @@ asn1crypto==1.4.0
     # via
     #   oscrypto
     #   snowflake-connector-python
-astroid==2.8.2
+astroid==2.8.3
     # via
     #   pylint
     #   pylint-celery
@@ -84,6 +84,7 @@ cryptography==3.4.8
     #   pgpy
     #   pyjwt
     #   pyopenssl
+    #   secretstorage
     #   snowflake-connector-python
 diff-cover==6.4.2
     # via -r requirements/dev-enterprise_data.in
@@ -108,7 +109,7 @@ django-crum==0.7.9
     #   edx-rbac
 django-fernet-fields==0.6
     # via -r requirements/base.in
-django-model-utils==4.1.1
+django-model-utils==4.2.0
     # via
     #   -r requirements/base.in
     #   edx-rbac
@@ -149,7 +150,7 @@ edx-rbac==1.5.0
     # via -r requirements/base.in
 edx-rest-api-client==5.4.0
     # via -r requirements/base.in
-filelock==3.3.0
+filelock==3.3.1
     # via
     #   tox
     #   virtualenv
@@ -165,7 +166,7 @@ importlib-metadata==4.8.1
     #   twine
 inflect==5.3.0
     # via jinja2-pluralize
-interchange==2021.0.3
+interchange==2021.0.4
     # via py2neo
 isodate==0.6.0
     # via msrest
@@ -173,6 +174,10 @@ isort==5.9.3
     # via
     #   -r requirements/quality.in
     #   pylint
+jeepney==0.7.1
+    # via
+    #   keyring
+    #   secretstorage
 jinja2==3.0.2
     # via
     #   code-annotations
@@ -198,7 +203,7 @@ monotonic==1.6
     # via py2neo
 msrest==0.6.21
     # via azure-storage-blob
-newrelic==7.2.1.168
+newrelic==7.2.2.169
     # via edx-django-utils
 oauthlib==3.1.1
     # via requests-oauthlib
@@ -217,7 +222,7 @@ path==16.2.0
     # via edx-i18n-tools
 pbr==5.6.0
     # via stevedore
-pep517==0.11.0
+pep517==0.12.0
     # via pip-tools
 pgpy==0.5.4
     # via -r requirements/reporting.in
@@ -239,7 +244,7 @@ psutil==5.8.0
     # via edx-django-utils
 py==1.10.0
     # via tox
-py2neo==2021.2.1
+py2neo==2021.2.3
     # via -r requirements/reporting.in
 pyasn1==0.4.8
     # via
@@ -262,7 +267,7 @@ pygments==2.10.0
     #   readme-renderer
 pyjwkest==1.4.2
     # via edx-drf-extensions
-pyjwt[crypto]==2.2.0
+pyjwt[crypto]==2.3.0
     # via
     #   drf-jwt
     #   edx-drf-extensions
@@ -284,7 +289,7 @@ pylint-plugin-utils==0.6
     #   pylint-django
 pyminizip==0.2.4
     # via -r requirements/reporting.in
-pymongo==3.12.0
+pymongo==3.12.1
     # via edx-opaque-keys
 pynacl==1.4.0
     # via paramiko
@@ -341,6 +346,8 @@ s3transfer==0.3.7
     # via
     #   awscli
     #   boto3
+secretstorage==3.3.1
+    # via keyring
 semantic-version==2.8.5
     # via edx-drf-extensions
 six==1.16.0
@@ -372,7 +379,7 @@ snowflake-connector-python==2.6.2
     # via -r requirements/reporting.in
 sqlparse==0.4.2
     # via django
-stevedore==3.4.0
+stevedore==3.5.0
     # via
     #   code-annotations
     #   edx-django-utils
@@ -420,7 +427,7 @@ wheel==0.37.0
     # via
     #   -r requirements/dev-enterprise_data.in
     #   pip-tools
-wrapt==1.12.1
+wrapt==1.13.2
     # via astroid
 zipp==3.6.0
     # via importlib-metadata

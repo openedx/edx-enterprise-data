@@ -77,7 +77,7 @@ distlib==0.3.3
     # via virtualenv
 docutils==0.15.2
     # via awscli
-filelock==3.3.0
+filelock==3.3.1
     # via
     #   tox
     #   virtualenv
@@ -85,7 +85,7 @@ idna==3.3
     # via
     #   requests
     #   snowflake-connector-python
-interchange==2021.0.3
+interchange==2021.0.4
     # via py2neo
 isodate==0.6.0
     # via msrest
@@ -129,7 +129,7 @@ py==1.10.0
     # via
     #   pytest
     #   tox
-py2neo==2021.2.1
+py2neo==2021.2.3
     # via -r requirements/reporting.in
 pyasn1==0.4.8
     # via
@@ -141,7 +141,7 @@ pycryptodomex==3.11.0
     # via snowflake-connector-python
 pygments==2.10.0
     # via py2neo
-pyjwt==2.2.0
+pyjwt==2.3.0
     # via snowflake-connector-python
 pyminizip==0.2.4
     # via -r requirements/reporting.in
