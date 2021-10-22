@@ -4,27 +4,25 @@
 #
 #    make upgrade
 #
-amqp==1.4.9
-    # via kombu
-anyjson==0.3.3
+amqp==5.0.6
     # via kombu
 asn1crypto==1.4.0
     # via
     #   oscrypto
     #   snowflake-connector-python
-attrs==20.3.0
+attrs==21.2.0
     # via pytest
 awscli==1.18.159
     # via -r requirements/reporting.in
-azure-common==1.1.26
+azure-common==1.1.27
     # via snowflake-connector-python
-azure-core==1.9.0
+azure-core==1.19.0
     # via azure-storage-blob
-azure-storage-blob==12.6.0
+azure-storage-blob==12.9.0
     # via snowflake-connector-python
 bcrypt==3.2.0
     # via paramiko
-billiard==3.3.0.23
+billiard==3.6.4.0
     # via celery
 boto3==1.15.18
     # via
@@ -35,34 +33,47 @@ botocore==1.18.18
     #   awscli
     #   boto3
     #   s3transfer
-celery==3.1.18
+celery==5.1.2
     # via -r requirements/reporting.in
-certifi==2020.12.5
+certifi==2021.10.8
     # via
     #   msrest
     #   py2neo
     #   requests
     #   snowflake-connector-python
-cffi==1.14.4
+cffi==1.15.0
     # via
     #   bcrypt
     #   cryptography
     #   pynacl
     #   snowflake-connector-python
-chardet==3.0.4
-    # via requests
+charset-normalizer==2.0.7
+    # via
+    #   requests
+    #   snowflake-connector-python
+click-didyoumean==0.3.0
+    # via celery
+click-plugins==1.1.1
+    # via celery
+click-repl==0.2.0
+    # via celery
+click==7.1.2
+    # via
+    #   celery
+    #   click-didyoumean
+    #   click-plugins
+    #   click-repl
 colorama==0.4.3
     # via awscli
-coverage==5.3.1
+coverage[toml]==6.0.2
     # via pytest-cov
-cryptography==3.3.1
+cryptography==3.4.8
     # via
     #   -r requirements/reporting.in
     #   azure-storage-blob
     #   django-fernet-fields
     #   paramiko
     #   pgpy
-    #   py2neo
     #   pyjwt
     #   pyopenssl
     #   snowflake-connector-python
@@ -76,16 +87,16 @@ django-crum==0.7.9
     #   edx-rbac
 django-fernet-fields==0.6
     # via -r requirements/base.in
-django-model-utils==4.1.1
+django-model-utils==4.2.0
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
     #   edx-rbac
-django-waffle==2.0.0
+django-waffle==2.2.1
     # via
     #   edx-django-utils
     #   edx-drf-extensions
-django==2.2.17
+django==2.2.24
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/base.in
@@ -97,92 +108,88 @@ django==2.2.17
     #   edx-django-utils
     #   edx-drf-extensions
     #   edx-rbac
-    #   rest-condition
-djangorestframework==3.12.2
+djangorestframework==3.12.4
     # via
     #   drf-jwt
     #   edx-drf-extensions
-    #   rest-condition
-docker==4.4.1
-    # via py2neo
 docutils==0.15.2
     # via awscli
-drf-jwt==1.17.3
+drf-jwt==1.19.1
     # via edx-drf-extensions
-edx-django-utils==3.13.0
+edx-django-utils==4.4.0
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
     #   edx-rest-api-client
-edx-drf-extensions==6.2.0
+edx-drf-extensions==8.0.0
     # via
     #   -r requirements/base.in
     #   edx-rbac
-edx-opaque-keys==2.1.1
+edx-opaque-keys==2.2.2
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
 edx-rbac==1.5.0
     # via -r requirements/base.in
-edx-rest-api-client==5.2.2
+edx-rest-api-client==5.4.0
     # via -r requirements/base.in
-english==2020.7.0
-    # via py2neo
 factory-boy==3.2.0
     # via -r requirements/test.in
-faker==5.3.0
+faker==9.5.2
     # via factory-boy
 flaky==3.7.0
     # via -r requirements/test.in
-freezegun==1.0.0
+freezegun==1.1.0
     # via -r requirements/test.in
 future==0.18.2
     # via pyjwkest
-idna==2.10
-    # via requests
+idna==3.3
+    # via
+    #   requests
+    #   snowflake-connector-python
 iniconfig==1.1.1
     # via pytest
+interchange==2021.0.4
+    # via py2neo
 isodate==0.6.0
     # via msrest
 jmespath==0.10.0
     # via
     #   boto3
     #   botocore
-kombu==3.0.37
+kombu==5.1.0
     # via celery
 mock==4.0.3
     # via -r requirements/test.in
-monotonic==1.5
+monotonic==1.6
     # via py2neo
-msrest==0.6.19
+msrest==0.6.21
     # via azure-storage-blob
-neotime==1.7.4
-    # via py2neo
-newrelic==5.24.0.153
+newrelic==7.2.2.169
     # via edx-django-utils
-oauthlib==3.1.0
+oauthlib==3.1.1
     # via requests-oauthlib
 oscrypto==1.2.1
     # via snowflake-connector-python
-packaging==20.8
+packaging==21.0
     # via
     #   py2neo
     #   pytest
 pansi==2020.7.3
     # via py2neo
-paramiko==2.7.2
+paramiko==2.8.0
     # via -r requirements/reporting.in
-pbr==5.5.1
+pbr==5.6.0
     # via stevedore
-pgpy==0.5.3
+pgpy==0.5.4
     # via -r requirements/reporting.in
-pluggy==0.13.1
+pluggy==1.0.0
     # via pytest
-prompt-toolkit==2.0.10
-    # via py2neo
+prompt-toolkit==3.0.21
+    # via click-repl
 psutil==5.8.0
     # via edx-django-utils
-py2neo==2020.1.1
+py2neo==2021.2.3
     # via -r requirements/reporting.in
 py==1.10.0
     # via pytest
@@ -192,60 +199,59 @@ pyasn1==0.4.8
     #   rsa
 pycparser==2.20
     # via cffi
-pycryptodomex==3.9.9
+pycryptodomex==3.11.0
     # via
     #   pyjwkest
     #   snowflake-connector-python
-pygments==2.7.3
+pygments==2.10.0
     # via py2neo
 pyjwkest==1.4.2
     # via edx-drf-extensions
-pyjwt[crypto]==1.7.1
+pyjwt[crypto]==2.3.0
     # via
     #   drf-jwt
+    #   edx-drf-extensions
     #   edx-rest-api-client
     #   snowflake-connector-python
 pyminizip==0.2.4
     # via -r requirements/reporting.in
-pymongo==3.11.2
+pymongo==3.12.1
     # via edx-opaque-keys
 pynacl==1.4.0
     # via paramiko
-pyopenssl==19.1.0
+pyopenssl==20.0.1
     # via snowflake-connector-python
 pyparsing==2.4.7
     # via packaging
-pytest-cov==2.10.1
+pytest-cov==3.0.0
     # via -r requirements/test.in
-pytest-django==4.1.0
+pytest-django==4.4.0
     # via -r requirements/test.in
-pytest==6.2.1
+pytest==6.2.5
     # via
     #   pytest-cov
     #   pytest-django
-python-dateutil==2.8.1
+python-dateutil==2.8.2
     # via
     #   botocore
     #   edx-drf-extensions
     #   faker
     #   freezegun
     #   vertica-python
-pytz==2020.5
+pytz==2021.3
     # via
     #   celery
     #   django
-    #   neotime
-    #   py2neo
+    #   interchange
     #   snowflake-connector-python
 pyyaml==5.3.1
     # via awscli
 requests-oauthlib==1.3.0
     # via msrest
-requests==2.23.0
+requests==2.26.0
     # via
     #   -r requirements/base.in
     #   azure-core
-    #   docker
     #   edx-drf-extensions
     #   edx-rest-api-client
     #   msrest
@@ -254,35 +260,29 @@ requests==2.23.0
     #   responses
     #   slumber
     #   snowflake-connector-python
-responses==0.12.1
+responses==0.14.0
     # via -r requirements/test.in
-rest-condition==1.0.3
-    # via edx-drf-extensions
 rsa==4.5
     # via awscli
-rules==2.2
+rules==3.0
     # via -r requirements/base.in
-s3transfer==0.3.3
+s3transfer==0.3.7
     # via
     #   awscli
     #   boto3
 semantic-version==2.8.5
     # via edx-drf-extensions
-six==1.15.0
+six==1.16.0
     # via
     #   azure-core
     #   bcrypt
-    #   cryptography
-    #   docker
+    #   click-repl
     #   edx-drf-extensions
-    #   edx-opaque-keys
     #   edx-rbac
-    #   english
+    #   interchange
     #   isodate
-    #   neotime
     #   pansi
     #   pgpy
-    #   prompt-toolkit
     #   py2neo
     #   pyjwkest
     #   pynacl
@@ -290,23 +290,24 @@ six==1.15.0
     #   python-dateutil
     #   responses
     #   vertica-python
-    #   websocket-client
 slumber==0.7.1
     # via edx-rest-api-client
-snowflake-connector-python==2.3.7
+snowflake-connector-python==2.6.2
     # via -r requirements/reporting.in
-sqlparse==0.4.1
+sqlparse==0.4.2
     # via django
-stevedore==3.3.0
+stevedore==3.5.0
     # via
     #   edx-django-utils
     #   edx-opaque-keys
-testfixtures==6.17.0
+testfixtures==6.18.3
     # via -r requirements/test.in
 text-unidecode==1.3
     # via faker
 toml==0.10.2
     # via pytest
+tomli==1.2.1
+    # via coverage
 unicodecsv==0.14.1
     # via -r requirements/reporting.in
 urllib3==1.25.11
@@ -315,10 +316,15 @@ urllib3==1.25.11
     #   py2neo
     #   requests
     #   responses
-    #   snowflake-connector-python
-vertica-python==1.0.1
+vertica-python==1.0.2
     # via -r requirements/reporting.in
+vine==5.0.0
+    # via
+    #   amqp
+    #   celery
+    #   kombu
 wcwidth==0.2.5
     # via prompt-toolkit
-websocket-client==0.57.0
-    # via docker
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools
