@@ -403,7 +403,7 @@ typing-extensions==3.10.0.2
     #   pylint
 unicodecsv==0.14.1
     # via -r requirements/reporting.in
-urllib3==1.25.11
+urllib3==1.26.5
     # via
     #   botocore
     #   py2neo
