@@ -331,7 +331,7 @@ requests-toolbelt==0.9.1
     # via twine
 rfc3986==1.5.0
     # via twine
-rsa==4.5
+rsa==4.7
     # via awscli
 rules==3.0
     # via -r requirements/base.in
