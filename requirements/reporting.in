@@ -3,7 +3,7 @@
 
 awscli==1.18.159                        # for assuming aws roles for sending email via SES
 boto3==1.15.18
-celery==3.1.18                          # Run task workers in other locations
+celery==4.4.7                           # Run task workers in other locations
 cryptography
 paramiko
 PGPy                                    # Required for Enterprise Reporting

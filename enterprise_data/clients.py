@@ -49,27 +49,20 @@ class EnterpriseApiClient(EdxRestApiClient):
         except (HttpClientError, HttpServerError) as exc:
             LOGGER.warning(
                 "[Data Overview Failure] Unable to retrieve Enterprise Customer Learner details. "
-                "User: {user}, Exception: {exc}".format(
-                    user=user.username,
-                    exc=exc
-                )
+                f"User: {user.username}, Exception: {exc}"
             )
             raise exc
 
         if response.get('results', None) is None:
             LOGGER.warning(
-                "[Data Overview Failure] Enterprise Customer Learner details could not be found. User: {user}".format(
-                    user=user.username
-                )
+                f"[Data Overview Failure] Enterprise Customer Learner details could not be found. User: {user.username}"
             )
             raise NotFound('Unable to process Enterprise Customer Learner details for user {}: No Results Found'
                            .format(user.username))
 
         if response['count'] > 1:
             LOGGER.warning(
-                "[Data Overview Failure] Multiple Enterprise Customer Learners found. User: {user}".format(
-                    user=user.username
-                )
+                f"[Data Overview Failure] Multiple Enterprise Customer Learners found. User: {user.username}"
             )
             raise ParseError(f'Multiple Enterprise Customer Learners found for user {user.username}')
 
@@ -98,11 +91,7 @@ class EnterpriseApiClient(EdxRestApiClient):
         except (HttpClientError, HttpServerError) as exc:
             LOGGER.warning(
                 "[Data Overview Failure] Unable to retrieve Enterprise Customer details. "
-                "User: {user}, Enterprise: {enteprise_id}, Exception: {exc}".format(
-                    user=user.username,
-                    enteprise_id=enterprise_id,
-                    exc=exc
-                )
+                f"User: {user.username}, Enterprise: {enterprise_id}, Exception: {exc}"
             )
             raise exc
 

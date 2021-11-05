@@ -22,7 +22,7 @@ class TestConsentGrantedFilterBackend(JWTTestMixin, APITestCase):
     def setUp(self):
         super().setUp()
         self.user = UserFactory(is_staff=True)
-        self.client.force_authenticate(user=self.user)  # pylint: disable=no-member
+        self.client.force_authenticate(user=self.user)
         self.enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
         self.url = reverse('v0:enterprise-enrollments-list',
                            kwargs={'enterprise_id': self.enterprise_id})

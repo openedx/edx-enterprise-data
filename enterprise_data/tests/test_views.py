@@ -49,7 +49,7 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
             role=role,
             user=self.user
         )
-        self.client.force_authenticate(user=self.user)  # pylint: disable=no-member
+        self.client.force_authenticate(user=self.user)
 
         mocked_get_enterprise_customer = mock.patch(
             'enterprise_data.filters.EnterpriseApiClient.get_enterprise_customer',
@@ -671,7 +671,7 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
             role=role,
             user=self.user
         )
-        self.client.force_authenticate(user=self.user)  # pylint: disable=no-member
+        self.client.force_authenticate(user=self.user)
         mocked_get_enterprise_customer = mock.patch(
             'enterprise_data.filters.EnterpriseApiClient.get_enterprise_customer',
             return_value=get_dummy_enterprise_api_data()
@@ -1385,7 +1385,7 @@ class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, APITransactionTestCase
             role=role,
             user=self.user
         )
-        self.client.force_authenticate(user=self.user)  # pylint: disable=no-member
+        self.client.force_authenticate(user=self.user)
         enterprise_api_client = mock.patch(
             'enterprise_data.filters.EnterpriseApiClient',
             mock.Mock(
@@ -1670,7 +1670,7 @@ class TestEnterpriseEnrollmentsViewSetFilters(JWTTestMixin, APITransactionTestCa
             role=role,
             user=self.user
         )
-        self.client.force_authenticate(user=self.user)  # pylint: disable=no-member
+        self.client.force_authenticate(user=self.user)
 
         mocked_get_enterprise_customer = mock.patch(
             'enterprise_data.filters.EnterpriseApiClient.get_enterprise_customer',
@@ -1813,7 +1813,7 @@ class TestEnterpriseEnrollmentsViewSetFilters(JWTTestMixin, APITransactionTestCa
 
         expected_titles = [title for title in self.all_course_titles if search_course.lower() in title.lower()]
         expected_emails = [email for email in self.all_emails if search_email.lower() in email.lower()]
-        data_dict = dict()
+        data_dict = {}
         if search_date:
             data_dict["search_start_date"] = search_date
         if search_course:
