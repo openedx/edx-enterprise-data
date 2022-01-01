@@ -12,20 +12,12 @@ asn1crypto==1.4.0
     #   snowflake-connector-python
 awscli==1.18.159
     # via -r requirements/reporting.in
-azure-common==1.1.27
-    # via snowflake-connector-python
-azure-core==1.19.0
-    # via azure-storage-blob
-azure-storage-blob==12.9.0
-    # via snowflake-connector-python
 bcrypt==3.2.0
     # via paramiko
 billiard==3.6.4.0
     # via celery
 boto3==1.15.18
-    # via
-    #   -r requirements/reporting.in
-    #   snowflake-connector-python
+    # via -r requirements/reporting.in
 botocore==1.18.18
     # via
     #   awscli
@@ -35,7 +27,6 @@ celery==4.4.7
     # via -r requirements/reporting.in
 certifi==2021.10.8
     # via
-    #   msrest
     #   py2neo
     #   requests
     #   snowflake-connector-python
@@ -45,23 +36,22 @@ cffi==1.15.0
     #   cryptography
     #   pynacl
     #   snowflake-connector-python
-charset-normalizer==2.0.7
+charset-normalizer==2.0.9
     # via
     #   requests
     #   snowflake-connector-python
 colorama==0.4.3
     # via awscli
-cryptography==3.4.8
+cryptography==35.0.0
     # via
     #   -r requirements/reporting.in
-    #   azure-storage-blob
     #   django-fernet-fields
     #   paramiko
     #   pgpy
     #   pyjwt
     #   pyopenssl
     #   snowflake-connector-python
-django==2.2.24
+django==2.2.25
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/base.in
@@ -87,7 +77,7 @@ django-waffle==2.2.1
     # via
     #   edx-django-utils
     #   edx-drf-extensions
-djangorestframework==3.12.4
+djangorestframework==3.13.1
     # via
     #   drf-jwt
     #   edx-drf-extensions
@@ -95,12 +85,12 @@ docutils==0.15.2
     # via awscli
 drf-jwt==1.19.1
     # via edx-drf-extensions
-edx-django-utils==4.4.0
+edx-django-utils==4.4.1
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
     #   edx-rest-api-client
-edx-drf-extensions==8.0.0
+edx-drf-extensions==8.0.1
     # via
     #   -r requirements/base.in
     #   edx-rbac
@@ -108,9 +98,9 @@ edx-opaque-keys==2.2.2
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
-edx-rbac==1.5.0
+edx-rbac==1.5.1
     # via -r requirements/base.in
-edx-rest-api-client==5.4.0
+edx-rest-api-client==5.4.1
     # via -r requirements/base.in
 future==0.18.2
     # via pyjwkest
@@ -120,8 +110,6 @@ idna==3.3
     #   snowflake-connector-python
 interchange==2021.0.4
     # via py2neo
-isodate==0.6.0
-    # via msrest
 jmespath==0.10.0
     # via
     #   boto3
@@ -130,25 +118,21 @@ kombu==4.6.11
     # via celery
 monotonic==1.6
     # via py2neo
-msrest==0.6.21
-    # via azure-storage-blob
-newrelic==7.2.2.169
+newrelic==7.2.4.171
     # via edx-django-utils
-oauthlib==3.1.1
-    # via requests-oauthlib
 oscrypto==1.2.1
     # via snowflake-connector-python
-packaging==21.0
+packaging==21.3
     # via py2neo
 pansi==2020.7.3
     # via py2neo
-paramiko==2.8.0
+paramiko==2.9.1
     # via -r requirements/reporting.in
-pbr==5.6.0
+pbr==5.8.0
     # via stevedore
 pgpy==0.5.4
     # via -r requirements/reporting.in
-psutil==5.8.0
+psutil==5.9.0
     # via edx-django-utils
 py2neo==2021.2.3
     # via -r requirements/reporting.in
@@ -156,13 +140,13 @@ pyasn1==0.4.8
     # via
     #   pgpy
     #   rsa
-pycparser==2.20
+pycparser==2.21
     # via cffi
-pycryptodomex==3.11.0
+pycryptodomex==3.12.0
     # via
     #   pyjwkest
     #   snowflake-connector-python
-pygments==2.10.0
+pygments==2.11.1
     # via py2neo
 pyjwkest==1.4.2
     # via edx-drf-extensions
@@ -172,15 +156,15 @@ pyjwt[crypto]==2.3.0
     #   edx-drf-extensions
     #   edx-rest-api-client
     #   snowflake-connector-python
-pyminizip==0.2.4
+pyminizip==0.2.6
     # via -r requirements/reporting.in
-pymongo==3.12.1
+pymongo==4.0.1
     # via edx-opaque-keys
 pynacl==1.4.0
     # via paramiko
-pyopenssl==20.0.1
+pyopenssl==21.0.0
     # via snowflake-connector-python
-pyparsing==3.0.1
+pyparsing==3.0.6
     # via packaging
 python-dateutil==2.8.2
     # via
@@ -191,6 +175,7 @@ pytz==2021.3
     # via
     #   celery
     #   django
+    #   djangorestframework
     #   interchange
     #   snowflake-connector-python
 pyyaml==5.3.1
@@ -198,19 +183,14 @@ pyyaml==5.3.1
 requests==2.26.0
     # via
     #   -r requirements/base.in
-    #   azure-core
     #   edx-drf-extensions
     #   edx-rest-api-client
-    #   msrest
     #   pyjwkest
-    #   requests-oauthlib
     #   slumber
     #   snowflake-connector-python
-requests-oauthlib==1.3.0
-    # via msrest
 rsa==4.5
     # via awscli
-rules==3.0
+rules==3.1
     # via -r requirements/base.in
 s3transfer==0.3.7
     # via
@@ -220,12 +200,10 @@ semantic-version==2.8.5
     # via edx-drf-extensions
 six==1.16.0
     # via
-    #   azure-core
     #   bcrypt
     #   edx-drf-extensions
     #   edx-rbac
     #   interchange
-    #   isodate
     #   pansi
     #   pgpy
     #   py2neo
@@ -236,7 +214,7 @@ six==1.16.0
     #   vertica-python
 slumber==0.7.1
     # via edx-rest-api-client
-snowflake-connector-python==2.6.2
+snowflake-connector-python==2.7.2
     # via -r requirements/reporting.in
 sqlparse==0.4.2
     # via django
