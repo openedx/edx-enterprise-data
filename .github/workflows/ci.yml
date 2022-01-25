@@ -16,7 +16,7 @@ jobs:
         os: [ubuntu-20.04]
         python-version: ['3.8']
         toxenv: [django22-data, django30-data, django31-data, django32-data, django22-reporting,
-                 django30-reporting, django31-reporting, django32-reporting, quality]
+                 django30-reporting, django31-reporting, django32-reporting, quality, check_keywords]
 
     steps:
     - uses: actions/checkout@v2

@@ -63,4 +63,7 @@ validate: test ## run tests and quality checks
 isort: ## call isort on packages/files that are checked in quality tests
 	isort --recursive tests enterprise_reporting enterprise_data enterprise_data_roles manage.py setup.py
 
-.PHONY: requirements upgrade help
+check_keywords: ## Scan the Django models in all installed apps in this project for restricted field names
+	python manage.py check_reserved_keywords --override_file db_keyword_overrides.yml
+
+.PHONY: requirements upgrade help check_keywords
