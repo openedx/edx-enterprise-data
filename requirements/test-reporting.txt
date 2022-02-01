@@ -12,26 +12,16 @@ asn1crypto==1.4.0
     #   snowflake-connector-python
 atomicwrites==1.4.0
     # via pytest
-attrs==21.2.0
+attrs==21.4.0
     # via pytest
 awscli==1.18.159
     # via -r requirements/reporting.in
-azure-common==1.1.27
-    # via snowflake-connector-python
-azure-core==1.19.0
-    # via azure-storage-blob
-azure-storage-blob==12.9.0
-    # via snowflake-connector-python
-backports.entry-points-selectable==1.1.0
-    # via virtualenv
 bcrypt==3.2.0
     # via paramiko
 billiard==3.6.4.0
     # via celery
 boto3==1.15.18
-    # via
-    #   -r requirements/reporting.in
-    #   snowflake-connector-python
+    # via -r requirements/reporting.in
 botocore==1.18.18
     # via
     #   awscli
@@ -41,7 +31,6 @@ celery==4.4.7
     # via -r requirements/reporting.in
 certifi==2021.10.8
     # via
-    #   msrest
     #   py2neo
     #   requests
     #   snowflake-connector-python
@@ -51,18 +40,17 @@ cffi==1.15.0
     #   cryptography
     #   pynacl
     #   snowflake-connector-python
-charset-normalizer==2.0.7
+charset-normalizer==2.0.11
     # via
     #   requests
     #   snowflake-connector-python
 colorama==0.4.3
     # via awscli
-coverage==6.0.2
+coverage==6.3
     # via pytest-cov
-cryptography==3.4.8
+cryptography==36.0.1
     # via
     #   -r requirements/reporting.in
-    #   azure-storage-blob
     #   paramiko
     #   pgpy
     #   pyopenssl
@@ -71,11 +59,11 @@ ddt==1.1.2
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/test-reporting.in
-distlib==0.3.3
+distlib==0.3.4
     # via virtualenv
 docutils==0.15.2
     # via awscli
-filelock==3.3.1
+filelock==3.4.2
     # via
     #   tox
     #   virtualenv
@@ -85,8 +73,6 @@ idna==3.3
     #   snowflake-connector-python
 interchange==2021.0.4
     # via py2neo
-isodate==0.6.0
-    # via msrest
 jmespath==0.10.0
     # via
     #   boto3
@@ -97,33 +83,29 @@ mock==2.0.0
     # via -r requirements/test-reporting.in
 monotonic==1.6
     # via py2neo
-more-itertools==8.10.0
+more-itertools==8.12.0
     # via pytest
-msrest==0.6.21
-    # via azure-storage-blob
-oauthlib==3.1.1
-    # via requests-oauthlib
 oscrypto==1.2.1
     # via snowflake-connector-python
-packaging==21.0
+packaging==21.3
     # via
     #   py2neo
     #   tox
 pansi==2020.7.3
     # via py2neo
-paramiko==2.8.0
+paramiko==2.9.2
     # via -r requirements/reporting.in
-pbr==5.6.0
+pbr==5.8.0
     # via mock
 pgpy==0.5.4
     # via -r requirements/reporting.in
-platformdirs==2.4.0
+platformdirs==2.4.1
     # via virtualenv
 pluggy==1.0.0
     # via
     #   pytest
     #   tox
-py==1.10.0
+py==1.11.0
     # via
     #   pytest
     #   tox
@@ -133,21 +115,21 @@ pyasn1==0.4.8
     # via
     #   pgpy
     #   rsa
-pycparser==2.20
+pycparser==2.21
     # via cffi
-pycryptodomex==3.11.0
+pycryptodomex==3.14.0
     # via snowflake-connector-python
-pygments==2.10.0
+pygments==2.11.2
     # via py2neo
 pyjwt==2.3.0
     # via snowflake-connector-python
-pyminizip==0.2.4
+pyminizip==0.2.6
     # via -r requirements/reporting.in
-pynacl==1.4.0
+pynacl==1.5.0
     # via paramiko
-pyopenssl==20.0.1
+pyopenssl==21.0.0
     # via snowflake-connector-python
-pyparsing==3.0.1
+pyparsing==3.0.7
     # via packaging
 pytest==3.7.1
     # via
@@ -166,14 +148,8 @@ pytz==2021.3
     #   snowflake-connector-python
 pyyaml==5.3.1
     # via awscli
-requests==2.26.0
-    # via
-    #   azure-core
-    #   msrest
-    #   requests-oauthlib
-    #   snowflake-connector-python
-requests-oauthlib==1.3.0
-    # via msrest
+requests==2.27.1
+    # via snowflake-connector-python
 rsa==4.5
     # via awscli
 s3transfer==0.3.7
@@ -182,26 +158,23 @@ s3transfer==0.3.7
     #   boto3
 six==1.16.0
     # via
-    #   azure-core
     #   bcrypt
     #   interchange
-    #   isodate
     #   mock
     #   pansi
     #   pgpy
     #   py2neo
-    #   pynacl
     #   pyopenssl
     #   pytest
     #   python-dateutil
     #   tox
     #   vertica-python
     #   virtualenv
-snowflake-connector-python==2.6.2
+snowflake-connector-python==2.7.3
     # via -r requirements/reporting.in
 toml==0.10.2
     # via tox
-tox==3.24.4
+tox==3.24.5
     # via
     #   -r requirements/test-reporting.in
     #   tox-battery
@@ -216,13 +189,13 @@ urllib3==1.25.11
     #   botocore
     #   py2neo
     #   requests
-vertica-python==1.0.2
+vertica-python==1.0.3
     # via -r requirements/reporting.in
 vine==1.3.0
     # via
     #   amqp
     #   celery
-virtualenv==20.9.0
+virtualenv==20.13.0
     # via tox
 
 # The following packages are considered to be unsafe in a requirements file:
