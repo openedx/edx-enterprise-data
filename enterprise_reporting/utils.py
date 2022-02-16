@@ -19,7 +19,7 @@ import pytz
 from cryptography.fernet import Fernet
 from fernet_fields.hkdf import derive_fernet_key
 
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 
 LOGGER = logging.getLogger(__name__)
 
@@ -172,6 +172,7 @@ def is_current_time_in_schedule(frequency, hour_of_day, day_of_month=None, day_o
 
     return False
 
+
 def encrypt_string(string):
     """
     Encrypts a string using Fernet symmetric encryption.
@@ -182,7 +183,8 @@ def encrypt_string(string):
         )
     )
 
-    return force_text(fernet.encrypt(bytes(string, 'utf-8')))
+    return force_str(fernet.encrypt(bytes(string, 'utf-8')))
+
 
 def decrypt_string(string):
     """
@@ -194,7 +196,7 @@ def decrypt_string(string):
         )
     )
 
-    return force_text(fernet.decrypt(bytes(string, 'utf-8')))
+    return force_str(fernet.decrypt(bytes(string, 'utf-8')))
 
 
 def flatten_dict(d, target='key' or 'value'):
