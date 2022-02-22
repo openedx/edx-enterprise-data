@@ -10,8 +10,8 @@
 
 # TODO: Many pinned dependencies should be unpinned and/or moved to this constraints file.
 
-# Django version 2.0.0 dropped support to python2.7
-Django>=2.2,<2.3
+# Stick to the latest LTS version of Django
+Django>=3.2,<4.0
 
 # readme-renderer requires Pygments>=2.5.1 which is not compatible with py2neo==4.3.0
 readme-renderer<25.0
