@@ -14,15 +14,15 @@ asn1crypto==1.4.0
     #   snowflake-connector-python
 attrs==21.4.0
     # via pytest
-awscli==1.22.55
+awscli==1.22.64
     # via -r requirements/reporting.in
 bcrypt==3.2.0
     # via paramiko
 billiard==3.6.4.0
     # via celery
-boto3==1.21.0
+boto3==1.21.9
     # via -r requirements/reporting.in
-botocore==1.24.0
+botocore==1.24.9
     # via
     #   awscli
     #   boto3
@@ -46,7 +46,7 @@ charset-normalizer==2.0.12
     #   snowflake-connector-python
 colorama==0.4.3
     # via awscli
-coverage[toml]==6.3.1
+coverage[toml]==6.3.2
     # via pytest-cov
 cryptography==36.0.1
     # via
@@ -115,7 +115,7 @@ edx-rest-api-client==5.5.0
     # via -r requirements/base.in
 factory-boy==3.2.1
     # via -r requirements/test.in
-faker==13.0.0
+faker==13.3.0
     # via factory-boy
 flaky==3.7.0
     # via -r requirements/test.in
@@ -141,7 +141,7 @@ mock==4.0.3
     # via -r requirements/test.in
 monotonic==1.6
     # via py2neo
-newrelic==7.4.0.172
+newrelic==7.6.0.173
     # via edx-django-utils
 oscrypto==1.2.1
     # via snowflake-connector-python
@@ -234,7 +234,7 @@ rsa==4.7.2
     # via awscli
 rules==3.1
     # via -r requirements/base.in
-s3transfer==0.5.1
+s3transfer==0.5.2
     # via
     #   awscli
     #   boto3
@@ -263,7 +263,7 @@ stevedore==3.5.0
     # via
     #   edx-django-utils
     #   edx-opaque-keys
-testfixtures==6.18.3
+testfixtures==6.18.4
     # via -r requirements/test.in
 tomli==2.0.1
     # via
