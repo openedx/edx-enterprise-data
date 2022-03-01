@@ -10,3 +10,4 @@ django-fernet-fields
 django-model-utils
 edx-rbac
 rules
+factory_boy

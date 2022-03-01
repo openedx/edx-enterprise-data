@@ -16,7 +16,7 @@ astroid==2.9.3
     # via
     #   pylint
     #   pylint-celery
-awscli==1.22.55
+awscli==1.22.64
     # via -r requirements/reporting.in
 bcrypt==3.2.0
     # via paramiko
@@ -24,9 +24,9 @@ billiard==3.6.4.0
     # via celery
 bleach==4.1.0
     # via readme-renderer
-boto3==1.21.0
+boto3==1.21.9
     # via -r requirements/reporting.in
-botocore==1.24.0
+botocore==1.24.9
     # via
     #   awscli
     #   boto3
@@ -50,7 +50,7 @@ charset-normalizer==2.0.12
     # via
     #   requests
     #   snowflake-connector-python
-click==8.0.3
+click==8.0.4
     # via
     #   click-log
     #   code-annotations
@@ -137,7 +137,11 @@ edx-rbac==1.6.0
     # via -r requirements/base.in
 edx-rest-api-client==5.5.0
     # via -r requirements/base.in
-filelock==3.5.0
+factory-boy==3.2.1
+    # via -r requirements/base.in
+faker==13.3.0
+    # via factory-boy
+filelock==3.6.0
     # via
     #   tox
     #   virtualenv
@@ -147,7 +151,7 @@ idna==3.3
     # via
     #   requests
     #   snowflake-connector-python
-importlib-metadata==4.11.1
+importlib-metadata==4.11.2
     # via
     #   keyring
     #   twine
@@ -171,13 +175,13 @@ kombu==4.6.11
     # via celery
 lazy-object-proxy==1.7.1
     # via astroid
-markupsafe==2.0.1
+markupsafe==2.1.0
     # via jinja2
 mccabe==0.6.1
     # via pylint
 monotonic==1.6
     # via py2neo
-newrelic==7.4.0.172
+newrelic==7.6.0.173
     # via edx-django-utils
 oscrypto==1.2.1
     # via snowflake-connector-python
@@ -190,7 +194,7 @@ pansi==2020.7.3
     # via py2neo
 paramiko==2.9.2
     # via -r requirements/reporting.in
-path==16.3.0
+path==16.4.0
     # via edx-i18n-tools
 pbr==5.8.1
     # via stevedore
@@ -202,7 +206,7 @@ pip-tools==6.5.1
     # via -r requirements/dev-enterprise_data.in
 pkginfo==1.8.2
     # via twine
-platformdirs==2.5.0
+platformdirs==2.5.1
     # via
     #   pylint
     #   virtualenv
@@ -253,7 +257,7 @@ pylint==2.12.2
     #   pylint-plugin-utils
 pylint-celery==0.3
     # via edx-lint
-pylint-django==2.5.0
+pylint-django==2.5.2
     # via edx-lint
 pylint-plugin-utils==0.7
     # via
@@ -273,8 +277,9 @@ python-dateutil==2.8.2
     # via
     #   botocore
     #   edx-drf-extensions
+    #   faker
     #   vertica-python
-python-slugify==5.0.2
+python-slugify==6.1.1
     # via code-annotations
 pytz==2021.3
     # via
@@ -310,7 +315,7 @@ rsa==4.7.2
     # via awscli
 rules==3.1
     # via -r requirements/base.in
-s3transfer==0.5.1
+s3transfer==0.5.2
     # via
     #   awscli
     #   boto3
@@ -347,7 +352,7 @@ stevedore==3.5.0
     #   code-annotations
     #   edx-django-utils
     #   edx-opaque-keys
-testfixtures==6.18.3
+testfixtures==6.18.4
     # via -r requirements/quality.in
 text-unidecode==1.3
     # via python-slugify
@@ -365,7 +370,7 @@ tox-battery==0.5.2
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/dev-enterprise_data.in
-tqdm==4.62.3
+tqdm==4.63.0
     # via twine
 twine==3.8.0
     # via -r requirements/dev-enterprise_data.in
@@ -387,7 +392,7 @@ vine==1.3.0
     # via
     #   amqp
     #   celery
-virtualenv==20.13.1
+virtualenv==20.13.2
     # via tox
 webencodings==0.5.1
     # via bleach

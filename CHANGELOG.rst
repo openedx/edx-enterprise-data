@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[4.1.0] - 2022-03-01
+---------------------
+  * Created a new management command for adding dummy data for learner progress report v1.
+
 [4.0.0] - 2022-02-14
 ---------------------
   * Dropped support for Django 2.2, 3.0 and 3.1

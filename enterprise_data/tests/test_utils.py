@@ -121,15 +121,21 @@ class EnterpriseLearnerFactory(factory.django.DjangoModelFactory):
 
     enterprise_user_id = factory.lazy_attribute(lambda x: FAKER.random_int(min=1))  # pylint: disable=no-member
     enterprise_customer_uuid = str(FAKER.uuid4())  # pylint: disable=no-member
-    lms_user_created = datetime(2011, 1, 1, tzinfo=pytz.utc)
-    user_username = factory.Sequence('robot{}'.format)
-    user_email = factory.lazy_attribute(lambda x: FAKER.email())  # pylint: disable=no-member
-    lms_user_country = factory.lazy_attribute(lambda x: FAKER.country_code())  # pylint: disable=no-member
-    enterprise_sso_uid = factory.lazy_attribute(lambda x: FAKER.text(max_nb_chars=255))  # pylint: disable=no-member
-    last_activity_date = datetime(2012, 1, 1).date()
+    enterprise_user_created = FAKER.past_datetime(start_date='-30d')
+    enterprise_user_modified = FAKER.past_datetime(start_date='-30d')
+    enterprise_user_active = FAKER.pybool()
     lms_user_id = factory.lazy_attribute(
         lambda x: FAKER.random_int(min=1, max=999999)  # pylint: disable=no-member
     )
+    is_linked = FAKER.pybool()
+    user_username = factory.Sequence('robot{}'.format)
+    user_email = factory.lazy_attribute(lambda x: FAKER.email())  # pylint: disable=no-member
+    lms_user_created = FAKER.past_datetime(start_date='-60d')
+    lms_last_login = FAKER.past_datetime(start_date='-10d')
+    lms_user_country = factory.lazy_attribute(lambda x: FAKER.country_code())  # pylint: disable=no-member
+    enterprise_sso_uid = factory.lazy_attribute(lambda x: FAKER.text(max_nb_chars=255))  # pylint: disable=no-member
+    last_activity_date = datetime(2012, 1, 1).date()
+    created_at = FAKER.past_datetime(start_date='-30d')
 
 
 class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
