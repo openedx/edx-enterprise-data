@@ -29,6 +29,7 @@ if sys.argv[-1] == "tag":
     os.system("git push --tags")
     sys.exit()
 
+
 def load_requirements(*requirements_paths):
     """
     Load all requirements from the specified requirements files.
