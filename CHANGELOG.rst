@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[4.1.1] - 2022-03-01
+---------------------
+  * Created a new management command for adding EnterpriseLearnerEnrollment dummy data for learner progress report v1.
+
 [4.1.0] - 2022-03-01
 ---------------------
   * Created a new management command for adding dummy data for learner progress report v1.

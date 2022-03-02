@@ -61,7 +61,7 @@ class EnterpriseEnrollmentFactory(factory.django.DjangoModelFactory):
     def passed_timestamp(self):
         """ Create a passed timestamp if a course has been passed """
         if self.has_passed:
-            return FAKER.date_time_between(  # pylint: disable=no-member
+            return FAKER.date_time_between(   # pylint: disable=no-member
                 start_date=self.course_start,
                 end_date=self.course_end,
                 tzinfo=pytz.utc)
@@ -149,22 +149,32 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
     enrollment_id = factory.lazy_attribute(
         lambda x: FAKER.random_int(min=1, max=999999)  # pylint: disable=no-member
     )
+    enterprise_enrollment_id = factory.lazy_attribute(
+        lambda x: FAKER.random_int(min=1, max=999999)  # pylint: disable=no-member,invalid-name
+    )
     enterprise_customer_uuid = str(FAKER.uuid4())  # pylint: disable=no-member
     courserun_key = factory.lazy_attribute(lambda x: FAKER.slug())  # pylint: disable=no-member
     enrollment_date = factory.lazy_attribute(lambda x: '2018-01-01')
     user_current_enrollment_mode = factory.lazy_attribute(lambda x: 'verified')
     has_passed = factory.lazy_attribute(lambda x: FAKER.boolean())  # pylint: disable=no-member
-    is_consent_granted = factory.lazy_attribute(lambda x: FAKER.boolean())  # pylint: disable=no-member
     course_title = factory.lazy_attribute(lambda x: ' '.join(FAKER.words(nb=2)).title())  # pylint: disable=no-member
     course_start_date = factory.lazy_attribute(lambda x: FAKER.date_time_between(  # pylint: disable=no-member
         start_date='-2M',
         end_date='+2M',
         tzinfo=pytz.utc)
     )
-    user_email = factory.lazy_attribute(lambda x: FAKER.email())  # pylint: disable=no-member
     current_grade = factory.lazy_attribute(
         lambda x: FAKER.pyfloat(right_digits=2, min_value=0, max_value=1)  # pylint: disable=no-member
     )
+    letter_grade = factory.lazy_attribute(lambda x: ' '.join(FAKER.words(nb=2)).title())
+    progress_status = factory.lazy_attribute(lambda x: ' '.join(FAKER.words(nb=2)).title())
+    enterprise_user_id = factory.lazy_attribute(
+        lambda x: FAKER.random_int(min=1, max=999999)  # pylint: disable=no-member,invalid-name
+    )
+    user_email = factory.lazy_attribute(lambda x: FAKER.email())  # pylint: disable=no-member
+    user_username = factory.Sequence('robot{}'.format)  # pylint: disable=no-member
+    user_account_creation_date = factory.lazy_attribute(lambda x: '2018-01-01')  # pylint: disable=no-member
+    user_country_code = factory.lazy_attribute(lambda x: FAKER.country_code())
 
     @factory.lazy_attribute
     def course_end_date(self):
@@ -177,13 +187,48 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
     @factory.lazy_attribute
     def passed_date(self):
         """ Create a passed timestamp if a course has been passed """
-        if self.has_passed:
+        if self.has_passed and self.is_consent_granted:
             return FAKER.date_time_between(  # pylint: disable=no-member
                 start_date=self.course_start_date,
                 end_date=self.course_end_date,
                 tzinfo=pytz.utc
             )
         return None
+
+    @factory.lazy_attribute
+    def last_activity_date(self):
+        """ Create a date in between course start and end timestamp"""
+        if self.is_consent_granted:
+            return FAKER.date_time_between(  # pylint: disable=no-member
+                start_date=self.course_start_date,
+                end_date=self.course_end_date,
+                tzinfo=pytz.utc
+            )
+        return None
+
+    @factory.post_generation
+    def set_fields_according_to_consent(
+            obj,
+            create,
+            extracted,
+            **kwargs
+    ):  # pylint: disable=unused-argument, missing-function-docstring
+        dsc_dependent_fields = [
+            'last_activity_date',
+            'progress_status',
+            'passed_date',
+            'current_grade',
+            'letter_grade',
+            'enterprise_user_id',
+            'user_email',
+            'user_account_creation_date',
+            'user_country_code',
+            'user_username',
+        ]
+        if create and obj.is_consent_granted:
+            for field in dsc_dependent_fields:
+                setattr(obj, field, None)
+            obj.save()
 
 
 def get_dummy_enterprise_api_data(**kwargs):
