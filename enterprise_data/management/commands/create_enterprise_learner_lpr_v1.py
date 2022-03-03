@@ -45,7 +45,7 @@ class Command(BaseCommand):
         # TODO: Need to update this to the correct comment for LPR V1 once that is added.
         info = (
             'You can create some enrollments for this user by running the following '
-            'command:\n\n    ./manage.py create_enterprise_enrollment {} {}\n\n'.format(
+            'command:\n\n    ./manage.py create_enterprise_learner_enrollment_lpr_v1 {} {}\n\n'.format(
                 ent_user.enterprise_customer_uuid,
                 ent_user.enterprise_user_id,
             )
