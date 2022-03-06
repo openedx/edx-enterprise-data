@@ -1,7 +1,8 @@
 """
 Tests for create_dummy_data_lpr_v1 management command
 """
-from unittest import TestCase, mock
+import uuid
+from unittest import TestCase
 
 from pytest import mark
 
@@ -18,7 +19,7 @@ class TestCreateEnterpriseLearnerCommand(TestCase):
 
     def setUp(self):
         super().setUp()
-        self.uuid = 'a'*32
+        self.uuid = uuid.uuid4()
 
     def test_create_enterprise_learners_with_enrollments(self):
         """

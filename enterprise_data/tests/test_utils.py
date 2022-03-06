@@ -150,7 +150,7 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
         lambda x: FAKER.random_int(min=1, max=999999)  # pylint: disable=no-member
     )
     enterprise_enrollment_id = factory.lazy_attribute(
-        lambda x: FAKER.random_int(min=1, max=999999)  # pylint: disable=no-member,invalid-name
+        lambda x: FAKER.random_int(min=1, max=999999)  # pylint: disable=no-member
     )
     enterprise_customer_uuid = str(FAKER.uuid4())  # pylint: disable=no-member
     courserun_key = factory.lazy_attribute(lambda x: FAKER.slug())  # pylint: disable=no-member
@@ -169,7 +169,7 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
     letter_grade = factory.lazy_attribute(lambda x: ' '.join(FAKER.words(nb=2)).title())
     progress_status = factory.lazy_attribute(lambda x: ' '.join(FAKER.words(nb=2)).title())
     enterprise_user_id = factory.lazy_attribute(
-        lambda x: FAKER.random_int(min=1, max=999999)  # pylint: disable=no-member,invalid-name
+        lambda x: FAKER.random_int(min=1, max=999999)  # pylint: disable=no-member
     )
     user_email = factory.lazy_attribute(lambda x: FAKER.email())  # pylint: disable=no-member
     user_username = factory.Sequence('robot{}'.format)  # pylint: disable=no-member
