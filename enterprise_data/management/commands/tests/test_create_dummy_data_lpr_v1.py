@@ -19,7 +19,7 @@ class TestCreateEnterpriseLearnerCommand(TestCase):
 
     def setUp(self):
         super().setUp()
-        self.uuid = uuid.uuid4()
+        self.enterprise_customer_uuid = uuid.uuid4()
 
     def test_create_enterprise_learners_with_enrollments(self):
         """
@@ -28,7 +28,7 @@ class TestCreateEnterpriseLearnerCommand(TestCase):
         assert EnterpriseLearner.objects.count() == 0
         assert EnterpriseLearnerEnrollment.objects.count() == 0
 
-        args = [self.uuid]
+        args = [self.enterprise_customer_uuid]
         call_command('create_dummy_data_lpr_v1', *args)
 
         assert EnterpriseLearner.objects.count() == 10
