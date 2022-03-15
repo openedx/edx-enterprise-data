@@ -8,21 +8,21 @@ amqp==2.6.1
     # via kombu
 asgiref==3.5.0
     # via django
-asn1crypto==1.4.0
+asn1crypto==1.5.0
     # via
     #   oscrypto
     #   snowflake-connector-python
 attrs==21.4.0
     # via pytest
-awscli==1.22.64
+awscli==1.22.74
     # via -r requirements/reporting.in
 bcrypt==3.2.0
     # via paramiko
 billiard==3.6.4.0
     # via celery
-boto3==1.21.9
+boto3==1.21.19
     # via -r requirements/reporting.in
-botocore==1.24.9
+botocore==1.24.19
     # via
     #   awscli
     #   boto3
@@ -117,11 +117,11 @@ factory-boy==3.2.1
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==13.3.0
+faker==13.3.2
     # via factory-boy
 flaky==3.7.0
     # via -r requirements/test.in
-freezegun==1.1.0
+freezegun==1.2.0
     # via -r requirements/test.in
 future==0.18.2
     # via pyjwkest
@@ -153,7 +153,7 @@ packaging==21.3
     #   pytest
 pansi==2020.7.3
     # via py2neo
-paramiko==2.9.2
+paramiko==2.10.2
     # via -r requirements/reporting.in
 pbr==5.8.1
     # via stevedore
@@ -197,7 +197,7 @@ pyopenssl==21.0.0
     # via snowflake-connector-python
 pyparsing==3.0.7
     # via packaging
-pytest==7.0.1
+pytest==7.1.0
     # via
     #   pytest-cov
     #   pytest-django
@@ -230,11 +230,11 @@ requests==2.27.1
     #   responses
     #   slumber
     #   snowflake-connector-python
-responses==0.18.0
+responses==0.19.0
     # via -r requirements/test.in
 rsa==4.7.2
     # via awscli
-rules==3.1
+rules==3.2.1
     # via -r requirements/base.in
 s3transfer==0.5.2
     # via
@@ -249,6 +249,7 @@ six==1.16.0
     #   edx-rbac
     #   interchange
     #   pansi
+    #   paramiko
     #   pgpy
     #   py2neo
     #   pyjwkest
@@ -265,7 +266,7 @@ stevedore==3.5.0
     # via
     #   edx-django-utils
     #   edx-opaque-keys
-testfixtures==6.18.4
+testfixtures==6.18.5
     # via -r requirements/test.in
 tomli==2.0.1
     # via
