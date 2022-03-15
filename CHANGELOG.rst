@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[4.2.1] - 2022-03-15
+---------------------
+  * Added error handling for rate limit exceptions
+
 [4.2.0] - 2022-03-15
 ---------------------
   * Removed currently broken admin url inclusion from enterprise-data.
