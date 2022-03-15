@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[4.2.0] - 2022-03-15
+---------------------
+  * Removed currently broken admin url inclusion from enterprise-data.
+
 [4.1.2] - 2022-03-06
 ---------------------
   * Created a new management command for adding dummy EnterpriseLearner and EnterpriseLearnerEnrollment data for learner progress report v1.
