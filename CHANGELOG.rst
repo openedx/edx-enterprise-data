@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[4.2.2] - 2022-03-16
+---------------------
+  * Update error handling for rate limit exceptions. Moved handling to source of errors.
+
 [4.2.1] - 2022-03-15
 ---------------------
   * Added error handling for rate limit exceptions

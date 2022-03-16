@@ -6,10 +6,8 @@ import os
 from datetime import datetime
 from functools import wraps
 from urllib.parse import parse_qs, urlparse
-import time
 
 from edx_rest_api_client.client import EdxRestApiClient
-from edx_rest_api_client.exceptions import HttpClientError
 
 
 class EdxOAuth2APIClient:
@@ -131,16 +129,7 @@ def traverse_pagination(response, endpoint):
     next_page = response.get('next')
     while next_page:
         querystring = parse_qs(urlparse(next_page).query, True)
-        try:
-            response = endpoint.get(**querystring)
-        except HttpClientError as exc:
-            # If we get HTTP429, we should pause for a period of time before re-requesting one more time.
-            # This status code is expected because of rate limiting on the endpoint
-            if exc.response.status_code == 429:
-                time.sleep(5)
-                response = endpoint.get(**querystring)
-            else:
-                raise exc
+        response = endpoint.get(**querystring)
         results += response.get('results', [])
         next_page = response.get('next')
 
