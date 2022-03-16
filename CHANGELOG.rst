@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[4.2.3] - 2022-03-16
+---------------------
+  * Remove error handling for rate limit exceptions for data API calls
+
 [4.2.2] - 2022-03-16
 ---------------------
   * Update error handling for rate limit exceptions. Moved handling to source of errors.
