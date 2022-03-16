@@ -4,6 +4,7 @@ Clients used to connect to other systems.
 
 
 import logging
+import time
 
 from edx_django_utils.cache import TieredCache
 from edx_rest_api_client.client import EdxRestApiClient
@@ -84,16 +85,25 @@ class EnterpriseApiClient(EdxRestApiClient):
         if cached_response.is_found:
             return cached_response.value
 
+        endpoint = getattr(self, 'enterprise-customer')
+        endpoint = endpoint(enterprise_id)
+
         try:
-            endpoint = getattr(self, 'enterprise-customer')
-            endpoint = endpoint(enterprise_id)
             response = endpoint.get()
         except (HttpClientError, HttpServerError) as exc:
-            LOGGER.warning(
-                "[Data Overview Failure] Unable to retrieve Enterprise Customer details. "
-                f"User: {user.username}, Enterprise: {enterprise_id}, Exception: {exc}"
-            )
-            raise exc
+            if exc.response.status_code == 429:
+                LOGGER.info(
+                    "[Data Overview Info] Rate limiting encountered while retrieving Enterprise Customer details, "
+                    "will try again in 10 seconds."
+                )
+                time.sleep(10)
+                response = endpoint.get()
+            else:
+                LOGGER.warning(
+                    "[Data Overview Failure] Unable to retrieve Enterprise Customer details. "
+                    f"User: {user.username}, Enterprise: {enterprise_id}, Exception: {exc}"
+                )
+                raise exc
 
         TieredCache.set_all_tiers(cache_key, response, DEFAULT_REPORTING_CACHE_TIMEOUT)
 
