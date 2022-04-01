@@ -8,15 +8,15 @@ amqp==2.6.1
     # via kombu
 asgiref==3.5.0
     # via django
-asn1crypto==1.4.0
+asn1crypto==1.5.1
     # via
     #   oscrypto
     #   snowflake-connector-python
-astroid==2.9.3
+astroid==2.11.2
     # via
     #   pylint
     #   pylint-celery
-awscli==1.22.64
+awscli==1.22.86
     # via -r requirements/reporting.in
 bcrypt==3.2.0
     # via paramiko
@@ -24,9 +24,9 @@ billiard==3.6.4.0
     # via celery
 bleach==4.1.0
     # via readme-renderer
-boto3==1.21.9
+boto3==1.21.31
     # via -r requirements/reporting.in
-botocore==1.24.9
+botocore==1.24.31
     # via
     #   awscli
     #   boto3
@@ -50,21 +50,21 @@ charset-normalizer==2.0.12
     # via
     #   requests
     #   snowflake-connector-python
-click==8.0.4
+click==8.1.2
     # via
     #   click-log
     #   code-annotations
     #   edx-lint
     #   pip-tools
-click-log==0.3.2
+click-log==0.4.0
     # via edx-lint
 code-annotations==1.3.0
     # via edx-lint
 colorama==0.4.3
-    # via
-    #   awscli
-    #   twine
-cryptography==36.0.1
+    # via awscli
+commonmark==0.9.1
+    # via rich
+cryptography==36.0.2
     # via
     #   -r requirements/reporting.in
     #   django-fernet-fields
@@ -72,9 +72,12 @@ cryptography==36.0.1
     #   pgpy
     #   pyjwt
     #   pyopenssl
+    #   secretstorage
     #   snowflake-connector-python
-diff-cover==6.4.4
+diff-cover==6.4.5
     # via -r requirements/dev-enterprise_data.in
+dill==0.3.4
+    # via pylint
 distlib==0.3.4
     # via virtualenv
 django==3.2.12
@@ -100,7 +103,7 @@ django-model-utils==4.2.0
     # via
     #   -r requirements/base.in
     #   edx-rbac
-django-waffle==2.3.0
+django-waffle==2.4.1
     # via
     #   edx-django-utils
     #   edx-drf-extensions
@@ -114,7 +117,7 @@ docutils==0.15.2
     #   readme-renderer
 drf-jwt==1.19.2
     # via edx-drf-extensions
-edx-django-utils==4.5.0
+edx-django-utils==4.6.0
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
@@ -125,7 +128,7 @@ edx-drf-extensions==8.0.1
     #   edx-rbac
 edx-i18n-tools==0.9.1
     # via -r requirements/dev-enterprise_data.in
-edx-lint==5.2.1
+edx-lint==5.2.2
     # via
     #   -r requirements/dev-enterprise_data.in
     #   -r requirements/quality.in
@@ -139,7 +142,7 @@ edx-rest-api-client==5.5.0
     # via -r requirements/base.in
 factory-boy==3.2.1
     # via -r requirements/base.in
-faker==13.3.0
+faker==13.3.4
     # via factory-boy
 filelock==3.6.0
     # via
@@ -151,7 +154,7 @@ idna==3.3
     # via
     #   requests
     #   snowflake-connector-python
-importlib-metadata==4.11.2
+importlib-metadata==4.11.3
     # via
     #   keyring
     #   twine
@@ -161,11 +164,15 @@ isort==5.10.1
     # via
     #   -r requirements/quality.in
     #   pylint
-jinja2==3.0.3
+jeepney==0.7.1
+    # via
+    #   keyring
+    #   secretstorage
+jinja2==3.1.1
     # via
     #   code-annotations
     #   diff-cover
-jmespath==0.10.0
+jmespath==1.0.0
     # via
     #   boto3
     #   botocore
@@ -175,15 +182,15 @@ kombu==4.6.11
     # via celery
 lazy-object-proxy==1.7.1
     # via astroid
-markupsafe==2.1.0
+markupsafe==2.1.1
     # via jinja2
-mccabe==0.6.1
+mccabe==0.7.0
     # via pylint
 monotonic==1.6
     # via py2neo
-newrelic==7.6.0.173
+newrelic==7.8.0.174
     # via edx-django-utils
-oscrypto==1.2.1
+oscrypto==1.3.0
     # via snowflake-connector-python
 packaging==21.3
     # via
@@ -192,7 +199,7 @@ packaging==21.3
     #   tox
 pansi==2020.7.3
     # via py2neo
-paramiko==2.9.2
+paramiko==2.10.3
     # via -r requirements/reporting.in
 path==16.4.0
     # via edx-i18n-tools
@@ -241,6 +248,7 @@ pygments==2.11.2
     #   diff-cover
     #   py2neo
     #   readme-renderer
+    #   rich
 pyjwkest==1.4.2
     # via edx-drf-extensions
 pyjwt[crypto]==2.3.0
@@ -249,7 +257,7 @@ pyjwt[crypto]==2.3.0
     #   edx-drf-extensions
     #   edx-rest-api-client
     #   snowflake-connector-python
-pylint==2.12.2
+pylint==2.13.4
     # via
     #   edx-lint
     #   pylint-celery
@@ -257,7 +265,7 @@ pylint==2.12.2
     #   pylint-plugin-utils
 pylint-celery==0.3
     # via edx-lint
-pylint-django==2.5.2
+pylint-django==2.5.3
     # via edx-lint
 pylint-plugin-utils==0.7
     # via
@@ -281,7 +289,7 @@ python-dateutil==2.8.2
     #   vertica-python
 python-slugify==6.1.1
     # via code-annotations
-pytz==2021.3
+pytz==2022.1
     # via
     #   celery
     #   django
@@ -311,14 +319,18 @@ requests-toolbelt==0.9.1
     # via twine
 rfc3986==2.0.0
     # via twine
+rich==12.0.1
+    # via twine
 rsa==4.7.2
     # via awscli
-rules==3.1
+rules==3.3
     # via -r requirements/base.in
 s3transfer==0.5.2
     # via
     #   awscli
     #   boto3
+secretstorage==3.3.1
+    # via keyring
 semantic-version==2.9.0
     # via edx-drf-extensions
 six==1.16.0
@@ -330,6 +342,7 @@ six==1.16.0
     #   edx-rbac
     #   interchange
     #   pansi
+    #   paramiko
     #   pgpy
     #   py2neo
     #   pyjwkest
@@ -343,7 +356,7 @@ slumber==0.7.1
     # via edx-rest-api-client
 snowballstemmer==2.2.0
     # via pydocstyle
-snowflake-connector-python==2.7.4
+snowflake-connector-python==2.7.6
     # via -r requirements/reporting.in
 sqlparse==0.4.2
     # via django
@@ -352,16 +365,16 @@ stevedore==3.5.0
     #   code-annotations
     #   edx-django-utils
     #   edx-opaque-keys
-testfixtures==6.18.4
+testfixtures==6.18.5
     # via -r requirements/quality.in
 text-unidecode==1.3
     # via python-slugify
 toml==0.10.2
-    # via
-    #   pylint
-    #   tox
+    # via tox
 tomli==2.0.1
-    # via pep517
+    # via
+    #   pep517
+    #   pylint
 tox==3.24.5
     # via
     #   -r requirements/dev-enterprise_data.in
@@ -370,9 +383,7 @@ tox-battery==0.5.2
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/dev-enterprise_data.in
-tqdm==4.63.0
-    # via twine
-twine==3.8.0
+twine==4.0.0
     # via -r requirements/dev-enterprise_data.in
 typing-extensions==4.1.1
     # via
@@ -380,19 +391,19 @@ typing-extensions==4.1.1
     #   pylint
 unicodecsv==0.14.1
     # via -r requirements/reporting.in
-urllib3==1.26.8
+urllib3==1.26.9
     # via
     #   botocore
     #   py2neo
     #   requests
     #   twine
-vertica-python==1.0.3
+vertica-python==1.0.4
     # via -r requirements/reporting.in
 vine==1.3.0
     # via
     #   amqp
     #   celery
-virtualenv==20.13.2
+virtualenv==20.14.0
     # via tox
 webencodings==0.5.1
     # via bleach
@@ -400,7 +411,7 @@ wheel==0.37.1
     # via
     #   -r requirements/dev-enterprise_data.in
     #   pip-tools
-wrapt==1.13.3
+wrapt==1.14.0
     # via astroid
 zipp==3.7.0
     # via importlib-metadata

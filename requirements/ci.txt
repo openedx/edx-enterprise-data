@@ -46,7 +46,7 @@ tox-battery==0.5.2
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/ci.in
-urllib3==1.26.8
+urllib3==1.26.9
     # via requests
-virtualenv==20.13.2
+virtualenv==20.14.0
     # via tox
