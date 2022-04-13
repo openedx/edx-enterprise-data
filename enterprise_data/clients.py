@@ -4,10 +4,11 @@ Clients used to connect to other systems.
 
 
 import logging
+from urllib.parse import urljoin
 
 from edx_django_utils.cache import TieredCache
-from edx_rest_api_client.client import EdxRestApiClient
-from edx_rest_api_client.exceptions import HttpClientError, HttpServerError
+from edx_rest_api_client.client import OAuthAPIClient
+from requests.exceptions import RequestException
 from rest_framework.exceptions import NotFound, ParseError
 
 from django.conf import settings
@@ -18,7 +19,7 @@ DEFAULT_REPORTING_CACHE_TIMEOUT = 60 * 60 * 6  # 6 hours (Value is in seconds)
 LOGGER = logging.getLogger('enterprise_data')
 
 
-class EnterpriseApiClient(EdxRestApiClient):
+class EnterpriseApiClient(OAuthAPIClient):
     """
     The EnterpriseApiClient is used to communicate with the enterprise API endpoints in the LMS.
 
@@ -26,15 +27,7 @@ class EnterpriseApiClient(EdxRestApiClient):
     (https://github.com/edx/edx-rest-api-client).
     """
 
-    API_BASE_URL = settings.LMS_BASE_URL + 'enterprise/api/v1/'
-
-    def __init__(self, jwt):
-        """
-        Initialize client with given jwt.
-        """
-        # If jwt token in request is already encoded into bytes decode it to avoid double encoding downstream
-        jwt = jwt.decode() if isinstance(jwt, bytes) else jwt
-        super().__init__(self.API_BASE_URL, jwt=jwt)
+    API_BASE_URL = urljoin(settings.LMS_BASE_URL + '/', 'enterprise/api/v1/')
 
     def get_enterprise_learner(self, user):
         """
@@ -44,32 +37,34 @@ class EnterpriseApiClient(EdxRestApiClient):
         """
         try:
             querystring = {'username': user.username}
-            endpoint = getattr(self, 'enterprise-learner')
-            response = endpoint.get(**querystring)
-        except (HttpClientError, HttpServerError) as exc:
+            url = urljoin(self.API_BASE_URL, 'enterprise-learner')
+            response = self.get(url, params=querystring)
+            response.raise_for_status()
+            data = response.json()
+        except (RequestException) as exc:
             LOGGER.warning(
                 "[Data Overview Failure] Unable to retrieve Enterprise Customer Learner details. "
                 f"User: {user.username}, Exception: {exc}"
             )
-            raise exc
+            raise
 
-        if response.get('results', None) is None:
+        if data.get('results', None) is None:
             LOGGER.warning(
                 f"[Data Overview Failure] Enterprise Customer Learner details could not be found. User: {user.username}"
             )
             raise NotFound('Unable to process Enterprise Customer Learner details for user {}: No Results Found'
                            .format(user.username))
 
-        if response['count'] > 1:
+        if data['count'] > 1:
             LOGGER.warning(
                 f"[Data Overview Failure] Multiple Enterprise Customer Learners found. User: {user.username}"
             )
             raise ParseError(f'Multiple Enterprise Customer Learners found for user {user.username}')
 
-        if response['count'] == 0:
+        if data['count'] == 0:
             return None
 
-        return response['results'][0]
+        return data['results'][0]
 
     def get_enterprise_customer(self, user, enterprise_id):
         """
@@ -84,21 +79,22 @@ class EnterpriseApiClient(EdxRestApiClient):
         if cached_response.is_found:
             return cached_response.value
 
-        endpoint = getattr(self, 'enterprise-customer')
-        endpoint = endpoint(enterprise_id)
+        url = urljoin(self.API_BASE_URL, 'enterprise-customer')
 
         try:
-            response = endpoint.get()
-        except (HttpClientError, HttpServerError) as exc:
+            response = self.get(url)
+            response.raise_for_status()
+            data = response.json()
+        except (RequestException) as exc:
             LOGGER.warning(
                 "[Data Overview Failure] Unable to retrieve Enterprise Customer details. "
                 f"User: {user.username}, Enterprise: {enterprise_id}, Exception: {exc}"
             )
-            raise exc
+            raise
 
-        TieredCache.set_all_tiers(cache_key, response, DEFAULT_REPORTING_CACHE_TIMEOUT)
+        TieredCache.set_all_tiers(cache_key, data, DEFAULT_REPORTING_CACHE_TIMEOUT)
 
-        return response
+        return data
 
     def get_enterprise_and_update_session(self, request):
         """

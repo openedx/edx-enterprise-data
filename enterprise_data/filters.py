@@ -6,6 +6,7 @@ from logging import getLogger
 
 from rest_framework import filters
 
+from django.conf import settings
 from django.db.models import Q
 
 from enterprise_data.clients import EnterpriseApiClient
@@ -30,7 +31,11 @@ class FiltersMixin:
         """
         Make cached call to lms to get an enterprise data and update request session.
         """
-        enterprise_client = EnterpriseApiClient(request.auth)
+        enterprise_client = EnterpriseApiClient(
+            settings.BACKEND_SERVICE_EDX_OAUTH2_PROVIDER_URL,
+            settings.BACKEND_SERVICE_EDX_OAUTH2_KEY,
+            settings.BACKEND_SERVICE_EDX_OAUTH2_SECRET,
+        )
         __ = enterprise_client.get_enterprise_and_update_session(request)
 
 

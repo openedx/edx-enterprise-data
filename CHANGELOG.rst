@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[4.4.0] - 2022-06-23
+---------------------
+  * Replace EdxRestApiClient with OAuthAPIClient.
+
 [4.3.2] - 2022-06-23
 --------------------
   * fix: use EnterpriseReportingModelManager for EnterpriseOffer

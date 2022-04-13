@@ -5,9 +5,9 @@ Clients used to access third party systems.
 import os
 from datetime import datetime
 from functools import wraps
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, urljoin, urlparse
 
-from edx_rest_api_client.client import EdxRestApiClient
+import requests
 
 
 class EdxOAuth2APIClient:
@@ -30,22 +30,27 @@ class EdxOAuth2APIClient:
         self.client_id = client_id or os.environ.get('LMS_OAUTH_KEY')
         self.client_secret = client_secret or os.environ.get('LMS_OAUTH_SECRET')
         self.expires_at = datetime.utcnow()
-        self.client = None
 
     def connect(self):
         """
         Connect to the REST API, authenticating with an access token retrieved with our client credentials.
         """
-        access_token, expires_at = EdxRestApiClient.get_oauth_access_token(
-            self.LMS_OAUTH_HOST + '/oauth2/access_token',
-            self.client_id,
-            self.client_secret,
-            'jwt'
+        response = requests.post(
+            urljoin(f'{self.LMS_OAUTH_HOST}/', 'oauth2/access_token'),
+            data={
+                'grant_type': 'client_credentials',
+                'client_id': self.client_id,
+                'client_secret': self.client_secret,
+                'token_type': 'jwt',
+            },
+            headers={
+                'User-Agent': 'enterprise_reporting',
+            },
+            timeout=(3.1, 5)
         )
-        self.client = EdxRestApiClient(
-            self.API_BASE_URL, append_slash=self.APPEND_SLASH, jwt=access_token,
-        )
-        self.expires_at = expires_at
+        data = response.json()
+        self.access_token = data['access_token']
+        self.expires_at = data['expires_in']
 
     def token_expired(self):
         """
@@ -93,24 +98,30 @@ class EdxOAuth2APIClient:
         """
         default_val = default if default is not self.DEFAULT_VALUE_SAFEGUARD else {}
         querystring = querystring or {}
+        path = f"{resource}{'/' + resource_id if resource_id else ''}{'/' + detail_resource if detail_resource else ''}"
+        url = urljoin(f'{self.API_BASE_URL}/', path)
+        headers = {'Authorization': "JWT {}".format(self.access_token)}
+        response = requests.get(
+            url,
+            headers=headers,
+            params=querystring
+        )
+        response.raise_for_status()
+        data = response.json()
 
-        endpoint = getattr(self.client, resource)
-        endpoint = getattr(self.client, resource)(resource_id) if resource_id else endpoint
-        endpoint = getattr(endpoint, detail_resource) if detail_resource else endpoint
-        response = endpoint.get(**querystring)
         if should_traverse_pagination:
-            results = traverse_pagination(response, endpoint)
-            response = {
+            results = traverse_pagination(data, self.access_token, url)
+            data = {
                 'count': len(results),
                 'next': None,
                 'previous': None,
                 'results': results,
             }
 
-        return response or default_val
+        return data or default_val
 
 
-def traverse_pagination(response, endpoint):
+def traverse_pagination(response, access_token, url):
     """
     Traverse a paginated API response.
 
@@ -119,7 +130,8 @@ def traverse_pagination(response, endpoint):
 
     Arguments:
         response (Dict): Current response dict from service API
-        endpoint (slumber Resource object): slumber Resource object from edx-rest-api-client
+        access_token (str): jwt token
+        url (str): API endpoint path
 
     Returns:
         list of dict.
@@ -130,8 +142,15 @@ def traverse_pagination(response, endpoint):
     next_page = response.get('next')
     while next_page:
         querystring = parse_qs(urlparse(next_page).query, True)
-        response = endpoint.get(**querystring)
-        results += response.get('results', [])
-        next_page = response.get('next')
+        headers = {'Authorization': "JWT {}".format(access_token)}
+        response = requests.get(
+            url,
+            headers=headers,
+            params=querystring
+        ).json
+        response.raise_for_status()
+        data = response.json()
+        results += data.get('results', [])
+        next_page = data.get('next')
 
     return results
