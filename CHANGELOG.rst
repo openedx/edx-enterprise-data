@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[4.2.4] - 2022-04-18
+---------------------
+  * Make API endpoints readonly.
+
 [4.2.3] - 2022-03-16
 ---------------------
   * Remove error handling for rate limit exceptions for data API calls

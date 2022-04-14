@@ -66,6 +66,11 @@ class TestEnterpriseEnrollmentsViewSet(JWTTestMixin, APITransactionTestCase):
         EnterpriseUser.objects.all().delete()
         EnterpriseEnrollment.objects.all().delete()
 
+    def test_options_request(self):
+        url = reverse('v0:enterprise-enrollments-list', kwargs={'enterprise_id': self.enterprise_id})
+        response = self.client.options(url)
+        assert response.headers['Allow'] == 'GET, HEAD, OPTIONS'
+
     @staticmethod
     def _get_enrollments_expected_data(enrollments):
         """
@@ -881,6 +886,11 @@ class TestEnterpriseUsersViewSet(JWTTestMixin, APITransactionTestCase):
         EnterpriseUser.objects.all().delete()
         EnterpriseEnrollment.objects.all().delete()
 
+    def test_options_request(self):
+        url = reverse('v0:enterprise-users-list', kwargs={'enterprise_id': self.enterprise_id})
+        response = self.client.options(url)
+        assert response.headers['Allow'] == 'GET, HEAD, OPTIONS'
+
     def test_viewset_no_query_params(self):
         """
         EnterpriseUserViewset should return all users if no filtering query
@@ -1408,6 +1418,11 @@ class TestEnterpriseLearnerCompletedCourses(JWTTestMixin, APITransactionTestCase
         super().tearDown()
         EnterpriseUser.objects.all().delete()
         EnterpriseEnrollment.objects.all().delete()
+
+    def test_options_request(self):
+        url = reverse('v0:enterprise-learner-completed-courses-list', kwargs={'enterprise_id': self.enterprise_id})
+        response = self.client.options(url)
+        assert response.headers['Allow'] == 'GET, HEAD, OPTIONS'
 
     def test_get_learner_completed_courses(self):
         """
