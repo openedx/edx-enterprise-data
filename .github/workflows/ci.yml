@@ -48,7 +48,7 @@ jobs:
       run: tox
 
     - name: Run Coverage
-      if: matrix.python-version == '3.8' && matrix.toxenv=='django32-reporting'
+      if: matrix.python-version == '3.8' && matrix.toxenv=='django32-data'
       uses: codecov/codecov-action@v2
       with:
         flags: unittests
