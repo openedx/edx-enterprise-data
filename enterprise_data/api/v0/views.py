@@ -61,7 +61,7 @@ class EnterpriseViewSet(PermissionRequiredMixin, viewsets.ViewSet):
         return super().paginate_queryset(queryset)  # pylint: disable=no-member
 
 
-class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
+class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ReadOnlyModelViewSet):
     """
     Viewset for routes related to Enterprise course enrollments.
     """
@@ -232,7 +232,7 @@ class EnterpriseEnrollmentsViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         return Response(content)
 
 
-class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
+class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ReadOnlyModelViewSet):
     """
     Viewset for routes related to Enterprise users.
     """
@@ -330,7 +330,7 @@ class EnterpriseUsersViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class EnterpriseLearnerCompletedCoursesViewSet(EnterpriseViewSet, viewsets.ModelViewSet):
+class EnterpriseLearnerCompletedCoursesViewSet(EnterpriseViewSet, viewsets.ReadOnlyModelViewSet):
     """
     View to manage enterprise learner completed course enrollments.
     """
