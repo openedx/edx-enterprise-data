@@ -38,7 +38,7 @@ def subtract_one_month(original_date):
     return one_month_earlier
 
 
-class EnterpriseViewSet(PermissionRequiredMixin, viewsets.ViewSet):
+class EnterpriseViewSetMixin(PermissionRequiredMixin):
     """
     Base class for all Enterprise view sets.
     """
@@ -56,7 +56,7 @@ class EnterpriseViewSet(PermissionRequiredMixin, viewsets.ViewSet):
         return super().paginate_queryset(queryset)  # pylint: disable=no-member
 
 
-class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSet, viewsets.ReadOnlyModelViewSet):
+class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOnlyModelViewSet):
     """
     Viewset for routes related to Enterprise course enrollments.
     """
@@ -250,7 +250,7 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSet, viewsets.ReadOnlyMod
         return Response(content)
 
 
-class EnterpriseLearnerViewSet(EnterpriseViewSet, viewsets.ReadOnlyModelViewSet):
+class EnterpriseLearnerViewSet(EnterpriseViewSetMixin, viewsets.ReadOnlyModelViewSet):
     """
     Viewset for routes related to Enterprise Learners.
     """
@@ -355,7 +355,7 @@ class EnterpriseLearnerViewSet(EnterpriseViewSet, viewsets.ReadOnlyModelViewSet)
         return Response(serializer.data)
 
 
-class EnterpriseLearnerCompletedCoursesViewSet(EnterpriseViewSet, viewsets.ReadOnlyModelViewSet):
+class EnterpriseLearnerCompletedCoursesViewSet(EnterpriseViewSetMixin, viewsets.ReadOnlyModelViewSet):
     """
     View to manage enterprise learner completed course enrollments.
     """

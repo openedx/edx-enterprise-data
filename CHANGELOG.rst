@@ -15,6 +15,11 @@ Unreleased
 ----------
 
 =========================
+[4.2.5] - 2022-04-22
+---------------------
+  * Rename base class to a more appropriate name
+  * Remove `viewsets.ViewSet` from base class
+
 [4.2.4] - 2022-04-18
 ---------------------
   * Make API endpoints readonly.
