@@ -14,7 +14,8 @@ from enterprise_reporting.clients.enterprise import (
     AnalyticsDataApiClient,
     EnterpriseAPIClient,
     EnterpriseDataApiClient,
-    EnterpriseDataV1ApiClient
+    EnterpriseDataV1ApiClient,
+    EnterpriseCatalogAPIClient,
 )
 from enterprise_reporting.clients.s3 import S3Client
 from enterprise_reporting.clients.vertica import VerticaClient
@@ -289,11 +290,9 @@ class EnterpriseReportSender:
 
     def __get_content_metadata(self):
         """Get content metadata from the Enterprise Customer Catalog API."""
-        enterprise_api_client = EnterpriseAPIClient()
-        LOGGER.info('Gathering all catalog content metadata...')
-        content_metadata = enterprise_api_client.get_content_metadata(
+        enterprise_catalog_api_client = EnterpriseCatalogAPIClient()
+        content_metadata = enterprise_catalog_api_client.get_content_metadata(
             self.enterprise_customer_uuid,
             self.reporting_config,
         )
-        LOGGER.debug(f'Gathered this content metadata: {content_metadata}')
         return content_metadata
