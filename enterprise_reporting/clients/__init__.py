@@ -16,6 +16,7 @@ class EdxOAuth2APIClient:
     """
 
     LMS_ROOT_URL = os.getenv('LMS_ROOT_URL', default='')
+    ENTERPRISE_CATALOG_ROOT_URL = os.getenv('ENTERPRISE_CATALOG_ROOT_URL', default='https://enterprise-catalog.edx.org')
     LMS_OAUTH_HOST = os.getenv('LMS_OAUTH_HOST', default='')
     API_BASE_URL = LMS_ROOT_URL + '/api/'
     APPEND_SLASH = False

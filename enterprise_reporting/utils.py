@@ -18,6 +18,7 @@ import pyminizip
 import pytz
 from cryptography.fernet import Fernet
 from fernet_fields.hkdf import derive_fernet_key
+from urllib.parse import parse_qs, urlparse
 
 from django.utils.encoding import force_str
 
@@ -294,3 +295,39 @@ def generate_data(item, target='key' or 'value'):
         data.append(value)
 
     return data
+
+
+def get_content_metadata_item_id(content_metadata_item):
+    """
+    Return the unique identifier given a content metadata item dictionary.
+    """
+    if content_metadata_item['content_type'] == 'program':
+        return content_metadata_item['uuid']
+    return content_metadata_item['key']
+
+
+def traverse_pagination(response, endpoint):
+    """
+    Traverse a paginated API response.
+
+    Extracts and concatenates "results" (list of dict) returned by DRF-powered
+    APIs.
+
+    Arguments:
+        response (Dict): Current response dict from service API
+        endpoint (slumber Resource object): slumber Resource object from edx-rest-api-client
+
+    Returns:
+        list of dict.
+
+    """
+    results = response.get('results', [])
+
+    next_page = response.get('next')
+    while next_page:
+        querystring = parse_qs(urlparse(next_page).query, keep_blank_values=True)
+        response = endpoint.get(**querystring)
+        results += response.get('results', [])
+        next_page = response.get('next')
+
+    return results
