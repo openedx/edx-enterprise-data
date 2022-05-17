@@ -48,6 +48,7 @@ class EnterpriseCatalogAPIClient(EdxOAuth2APIClient):
                     formatted_course_run = {
                         'key': cr.get('key'),
                         'enrollment_start': cr.get('enrollment_start'),
+                        'enrollment_end': cr.get('enrollment_end'),
                         'go_live_date': cr.get('go_live_date'),
                         'start': cr.get('start'),
                         'end': cr.get('end'),
@@ -65,6 +66,14 @@ class EnterpriseCatalogAPIClient(EdxOAuth2APIClient):
                         'is_enrollable': cr.get('is_enrollable'),
                     }
                     formatted_course_runs.append(formatted_course_run)
+
+                subjects = item.get('subjects', [])
+                formatted_subjects = []
+                for subject in subjects:
+                    subject_name = subject.get('name')
+                    if subject_name:
+                        formatted_subjects.append(subject_name)
+
                 formatted_metadata = {
                     'active': item.get('active'),
                     'aggregation_key': item.get('aggregation_key'),
@@ -83,7 +92,7 @@ class EnterpriseCatalogAPIClient(EdxOAuth2APIClient):
                     'short_description': item.get('short_description'),
                     'skill_names': item.get('skill_names'),
                     'skills': item.get('skills'),
-                    'subjects': item.get('subjects'),
+                    'subjects': formatted_subjects,
                     'title': item.get('title'),
                     'uuid': item.get('uuid'),
                 }
