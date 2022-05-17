@@ -7,7 +7,7 @@ import unittest
 
 import json
 
-from enterprise_reporting.clients.enterprise import (
+from enterprise_reporting.utils import (
     extract_catalog_uuids_from_reporting_config,
 )
 

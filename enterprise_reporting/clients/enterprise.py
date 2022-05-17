@@ -98,11 +98,9 @@ class EnterpriseCatalogAPIClient(EdxOAuth2APIClient):
         return content_metadata
 
     @EdxOAuth2APIClient.refresh_token
-    def get_content_metadata(self, enterprise_customer_uuid, reporting_config):
+    def get_content_metadata(self, enterprise_customer_catalogs):
         """Return all content metadata contained in the catalogs associated with a reporting config."""
         content_metadata = OrderedDict()
-
-        enterprise_customer_catalogs = extract_catalog_uuids_from_reporting_config(reporting_config)
         for catalog in enterprise_customer_catalogs.get('results', []):
             endpoint = getattr(self.client, self.GET_CONTENT_METADATA_ENDPOINT.format(catalog['uuid']))
             query = {'page_size': self.PAGE_SIZE}
@@ -154,7 +152,7 @@ class EnterpriseAPIClient(EdxOAuth2APIClient):
         """Return all content metadata contained in the catalogs associated with an Enterprise Customer."""
         content_metadata = OrderedDict()
 
-        enterprise_customer_catalogs = extract_catalog_uuids_from_reporting_config(reporting_config)
+        enterprise_customer_catalogs = utils.extract_catalog_uuids_from_reporting_config(reporting_config)
         if not enterprise_customer_catalogs.get('results'):
             enterprise_customer_catalogs = self._load_data(
                 self.ENTERPRISE_CUSTOMER_CATALOGS_ENDPOINT,
@@ -180,20 +178,17 @@ class EnterpriseAPIClient(EdxOAuth2APIClient):
         # We only made this a dictionary to help filter out duplicates by a common key. We just want values now.
         return list(content_metadata.values())
 
-
-def extract_catalog_uuids_from_reporting_config(reporting_config):
-    """
-    Helper method to extract uuids from reporting config
-
-    Returns a dict with 1 key, 'results', whose value is a list of
-    dicts containing a key-value pair of 'uuid' and some uuid
-    """
-    enterprise_customer_catalogs = {'results': [
-        {'uuid': catalog['uuid']}
-        for catalog in reporting_config.get('enterprise_customer_catalogs', [])
-        ]
-    }
-    return enterprise_customer_catalogs
+    @EdxOAuth2APIClient.refresh_token
+    def get_customer_catalogs(self, enterprise_customer_uuid):
+        """Return all catalog uuids owned by an Enterprise Customer."""
+        return self._load_data(
+            self.ENTERPRISE_CUSTOMER_CATALOGS_ENDPOINT,
+            should_traverse_pagination=True,
+            querystring={
+                'enterprise_customer': enterprise_customer_uuid,
+                'page_size': self.PAGE_SIZE,
+            },
+        )
 
 
 class EnterpriseDataApiClient(EdxOAuth2APIClient):
