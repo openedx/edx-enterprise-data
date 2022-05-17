@@ -331,3 +331,18 @@ def traverse_pagination(response, endpoint):
         next_page = response.get('next')
 
     return results
+
+
+def extract_catalog_uuids_from_reporting_config(reporting_config):
+    """
+    Helper method to extract uuids from reporting config
+
+    Returns a dict with 1 key, 'results', whose value is a list of
+    dicts containing a key-value pair of 'uuid' and some uuid
+    """
+    enterprise_customer_catalogs = {'results': [
+        {'uuid': catalog['uuid']}
+        for catalog in reporting_config.get('enterprise_customer_catalogs', [])
+        ]
+    }
+    return enterprise_customer_catalogs

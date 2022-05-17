@@ -20,7 +20,7 @@ from enterprise_reporting.clients.enterprise import (
 from enterprise_reporting.clients.s3 import S3Client
 from enterprise_reporting.clients.vertica import VerticaClient
 from enterprise_reporting.delivery_method import SFTPDeliveryMethod, SMTPDeliveryMethod
-from enterprise_reporting.utils import decrypt_string, generate_data
+from enterprise_reporting.utils import decrypt_string, generate_data, extract_catalog_uuids_from_reporting_config
 
 LOGGER = logging.getLogger(__name__)
 NOW = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -290,9 +290,11 @@ class EnterpriseReportSender:
 
     def __get_content_metadata(self):
         """Get content metadata from the Enterprise Customer Catalog API."""
+        customer_catalogs = extract_catalog_uuids_from_reporting_config(self.reporting_config)
+        if not customer_catalogs.get('results'):
+            platform_api_client = EnterpriseAPIClient()
+            customer_catalogs = platform_api_client.get_customer_catalogs(self.enterprise_customer_uuid)
+
         enterprise_catalog_api_client = EnterpriseCatalogAPIClient()
-        content_metadata = enterprise_catalog_api_client.get_content_metadata(
-            self.enterprise_customer_uuid,
-            self.reporting_config,
-        )
+        content_metadata = enterprise_catalog_api_client.get_content_metadata(customer_catalogs)
         return content_metadata
