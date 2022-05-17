@@ -42,7 +42,7 @@ class EnterpriseCatalogAPIClient(EdxOAuth2APIClient):
                 # This code used to rely on the LMS enterprise API endpoints who's responses contained less data than
                 # the enterprise catalog services, so we need to massage the response ie filter out new, not expected
                 # fields
-                item_crs = item.get('course_runs')
+                item_crs = item.get('course_runs', [])
                 formatted_course_runs = []
                 for cr in item_crs:
                     formatted_course_run = {
