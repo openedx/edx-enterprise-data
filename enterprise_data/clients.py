@@ -23,8 +23,8 @@ class EnterpriseApiClient(OAuthAPIClient):
     """
     The EnterpriseApiClient is used to communicate with the enterprise API endpoints in the LMS.
 
-    This class is a sub-class of the edX Rest API Client
-    (https://github.com/edx/edx-rest-api-client).
+    This class is a sub-class of the OAuthAPIClient
+    (https://github.com/openedx/edx-rest-api-client).
     """
 
     API_BASE_URL = urljoin(settings.LMS_BASE_URL + '/', 'enterprise/api/v1/')

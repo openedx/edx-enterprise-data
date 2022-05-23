@@ -6,6 +6,7 @@ import os
 from datetime import datetime
 from functools import wraps
 from urllib.parse import parse_qs, urljoin, urlparse
+from edx_rest_api_client.client import get_oauth_access_token
 
 import requests
 
@@ -35,22 +36,8 @@ class EdxOAuth2APIClient:
         """
         Connect to the REST API, authenticating with an access token retrieved with our client credentials.
         """
-        response = requests.post(
-            urljoin(f'{self.LMS_OAUTH_HOST}/', 'oauth2/access_token'),
-            data={
-                'grant_type': 'client_credentials',
-                'client_id': self.client_id,
-                'client_secret': self.client_secret,
-                'token_type': 'jwt',
-            },
-            headers={
-                'User-Agent': 'enterprise_reporting',
-            },
-            timeout=(3.1, 5)
-        )
-        data = response.json()
-        self.access_token = data['access_token']
-        self.expires_at = data['expires_in']
+        url = urljoin(f'{self.LMS_OAUTH_HOST}/', 'oauth2/access_token')
+        self.access_token, self.expires_at = get_oauth_access_token(url, self.client_id, self.client_secret)
 
     def token_expired(self):
         """
@@ -72,6 +59,17 @@ class EdxOAuth2APIClient:
                 self.connect()
             return func(self, *args, **kwargs)
         return inner
+
+    def _requests(self, url, querystring):
+        headers = {'Authorization': "JWT {}".format(self.access_token)}
+        response = requests.get(
+            url,
+            headers=headers,
+            params=querystring
+        )
+        response.raise_for_status()
+        data = response.json()
+        return data
 
     def _load_data(
             self,
@@ -98,19 +96,17 @@ class EdxOAuth2APIClient:
         """
         default_val = default if default is not self.DEFAULT_VALUE_SAFEGUARD else {}
         querystring = querystring or {}
-        path = f"{resource}{'/' + resource_id if resource_id else ''}{'/' + detail_resource if detail_resource else ''}"
+        path = resource
+        if resource_id:
+            path += '/' + resource_id
+        if detail_resource:
+            path += '/' + detail_resource
+
         url = urljoin(f'{self.API_BASE_URL}/', path)
-        headers = {'Authorization': "JWT {}".format(self.access_token)}
-        response = requests.get(
-            url,
-            headers=headers,
-            params=querystring
-        )
-        response.raise_for_status()
-        data = response.json()
+        data = self._requests(url, querystring)
 
         if should_traverse_pagination:
-            results = traverse_pagination(data, self.access_token, url)
+            results = self.traverse_pagination(data, url)
             data = {
                 'count': len(results),
                 'next': None,
@@ -120,37 +116,29 @@ class EdxOAuth2APIClient:
 
         return data or default_val
 
+    def traverse_pagination(self, response, url):
+        """
+        Traverse a paginated API response.
 
-def traverse_pagination(response, access_token, url):
-    """
-    Traverse a paginated API response.
+        Extracts and concatenates "results" (list of dict) returned by DRF-powered
+        APIs.
 
-    Extracts and concatenates "results" (list of dict) returned by DRF-powered
-    APIs.
+        Arguments:
+            response (Dict): Current response dict from service API
+            access_token (str): jwt token
+            url (str): API endpoint path
 
-    Arguments:
-        response (Dict): Current response dict from service API
-        access_token (str): jwt token
-        url (str): API endpoint path
+        Returns:
+            list of dict.
+        """
+        results = response.get('results', [])
 
-    Returns:
-        list of dict.
+        next_page = response.get('next')
+        while next_page:
+            querystring = parse_qs(urlparse(next_page).query, True)
+            data = self._requests(url, querystring)
 
-    """
-    results = response.get('results', [])
+            results += data.get('results', [])
+            next_page = data.get('next')
 
-    next_page = response.get('next')
-    while next_page:
-        querystring = parse_qs(urlparse(next_page).query, True)
-        headers = {'Authorization': "JWT {}".format(access_token)}
-        response = requests.get(
-            url,
-            headers=headers,
-            params=querystring
-        ).json
-        response.raise_for_status()
-        data = response.json()
-        results += data.get('results', [])
-        next_page = data.get('next')
-
-    return results
+        return results
