@@ -12,10 +12,9 @@ from uuid import UUID
 
 from enterprise_reporting.clients.enterprise import (
     AnalyticsDataApiClient,
-    EnterpriseAPIClient,
+    EnterpriseCatalogAPIClient,
     EnterpriseDataApiClient,
     EnterpriseDataV1ApiClient,
-    EnterpriseCatalogAPIClient,
 )
 from enterprise_reporting.clients.s3 import S3Client
 from enterprise_reporting.clients.vertica import VerticaClient
@@ -282,19 +281,19 @@ class EnterpriseReportSender:
         return files
 
     def _generate_enterprise_report_catalog_json(self):
-        """Query the Enterprise Customer Catalog API and transfer the results into a JSON file."""
+        """Query the Enterprise Catalog API and transfer the results into a JSON file."""
         content_metadata = self.__get_content_metadata()
         with open(self.data_report_file_name, 'w') as data_report_file:
             json.dump(list(content_metadata), data_report_file, indent=4)
         return [data_report_file]
 
     def __get_content_metadata(self):
-        """Get content metadata from the Enterprise Customer Catalog API."""
+        """Get content metadata from the Enterprise Catalog API."""
         customer_catalogs = extract_catalog_uuids_from_reporting_config(self.reporting_config)
-        if not customer_catalogs.get('results'):
-            platform_api_client = EnterpriseAPIClient()
-            customer_catalogs = platform_api_client.get_customer_catalogs(self.enterprise_customer_uuid)
-
         enterprise_catalog_api_client = EnterpriseCatalogAPIClient()
+
+        if not customer_catalogs.get('results'):
+            customer_catalogs = enterprise_catalog_api_client.get_customer_catalogs(self.enterprise_customer_uuid)
+
         content_metadata = enterprise_catalog_api_client.get_content_metadata(customer_catalogs)
         return content_metadata

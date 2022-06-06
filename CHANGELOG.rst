@@ -16,6 +16,10 @@ Unreleased
 
 =========================
  
+[4.6.0] - 2022-07-29
+---------------------
+  * Removed `enterprise_catalogs` Enterprise API usages.
+
 [4.5.1] - 2022-07-12
 --------------------
   * Replace `self.client` in `EnterpriseCatalogAPIClient` with `self._load_data` to account for OAuth client changes in enterprise_reporting.

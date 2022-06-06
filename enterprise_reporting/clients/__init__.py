@@ -19,7 +19,7 @@ class EdxOAuth2APIClient:
     LMS_ROOT_URL = os.getenv('LMS_ROOT_URL', default='')
     ENTERPRISE_CATALOG_ROOT_URL = os.getenv('ENTERPRISE_CATALOG_ROOT_URL', default='https://enterprise-catalog.edx.org')
     LMS_OAUTH_HOST = os.getenv('LMS_OAUTH_HOST', default='')
-    API_BASE_URL = LMS_ROOT_URL + '/api/'
+    API_BASE_URL = urljoin(LMS_ROOT_URL, '/api')
     APPEND_SLASH = False
 
     DEFAULT_VALUE_SAFEGUARD = object()
@@ -44,6 +44,18 @@ class EdxOAuth2APIClient:
         Return True if the JWT token has expired, False if not.
         """
         return datetime.utcnow() > self.expires_at
+
+    def get_api_url(self, path):
+        """
+        Construct the full API URL using the API_BASE_URL and path.
+        Args:
+            path (str): API endpoint path.
+        """
+        path = path.strip('/')
+        if self.APPEND_SLASH:
+            path += '/'
+
+        return urljoin(f"{self.API_BASE_URL}/", path)
 
     @staticmethod
     def refresh_token(func):
@@ -102,7 +114,7 @@ class EdxOAuth2APIClient:
         if detail_resource:
             path += '/' + detail_resource
 
-        url = urljoin(f'{self.API_BASE_URL}/', path)
+        url = self.get_api_url(path)
         data = self._requests(url, querystring)
 
         if should_traverse_pagination:
