@@ -21,6 +21,10 @@ This app is meant to be installed as an app in [edx-analytics-data-api](https://
 1. Run `pip install -e ./src/edx-enterprise-data`
 1. Run `./manage.py runserver`
 
+## Running migrations locally
+The default database configured by devstack is `analytics-api`. If you wish to run migrations on other databases,
+run `./manage.py migrate --database analytics_v1` or `./manage.py migrate --database analytics` in the `edx-analytics-data-api` container.
+
 ## Frontend
 Much of the data from this app is consumed by [frontend-app-admin-portal](https://github.com/edx/frontend-app-admin-portal/).
 Follow the instructions in that README to set it up.
