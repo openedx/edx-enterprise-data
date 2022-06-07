@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[4.2.9] - 2022-06-15
+---------------------
+  * Add `offer_id` to `EnterpriseLearnerEnrollment`
+
 [4.2.8] - 2022-06-15
 ---------------------
   * Added tests for `EnterpriseLearnerEnrollment.total_learning_time_seconds` field.

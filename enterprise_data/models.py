@@ -81,6 +81,7 @@ class EnterpriseLearnerEnrollment(models.Model):
     unenrollment_end_within_date = models.DateField(null=True)
     is_refunded = models.BooleanField(default=None, null=True)
     seat_delivery_method = models.CharField(max_length=255, null=True)
+    offer_id = models.PositiveIntegerField(null=True)
     offer_name = models.CharField(max_length=255, null=True)
     offer_type = models.CharField(max_length=255, null=True)
     coupon_code = models.CharField(max_length=255, null=True)

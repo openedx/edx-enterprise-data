@@ -76,7 +76,7 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         'enrollment_id', 'enterprise_enrollment_id', 'is_consent_granted', 'paid_by',
         'user_current_enrollment_mode', 'enrollment_date', 'unenrollment_date',
         'unenrollment_end_within_date', 'is_refunded', 'seat_delivery_method',
-        'offer_name', 'offer_type', 'coupon_code', 'coupon_name', 'contract_id',
+        'offer_id', 'offer_name', 'offer_type', 'coupon_code', 'coupon_name', 'contract_id',
         'course_list_price', 'amount_learner_paid', 'course_key', 'courserun_key',
         'course_title', 'course_pacing_type', 'course_start_date', 'course_end_date',
         'course_duration_weeks', 'course_max_effort', 'course_min_effort',
@@ -150,6 +150,10 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         search_start_date = query_filters.get('search_start_date')
         if search_start_date:
             queryset = queryset.filter(course_start_date=search_start_date)
+
+        offer_id = query_filters.get('offer_id')
+        if offer_id:
+            queryset = queryset.filter(offer_id=offer_id)
 
         return queryset
 
