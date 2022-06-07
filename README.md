@@ -10,9 +10,9 @@ and uses OAuth JWT authentication from [edx-drf-extensions](https://github.com/e
 
 ## Prerequisites for develpment
 * [LMS](https://github.com/edx/devstack)
-* [edx-analytics-data-api](https://github.com/edx/edx-analytics-data-api/)
+* [edx-analytics-data-api](https://github.com/edx/edx-analytics-data-api/) - Follow devstack setup instructions in here.
 
-## Setup for local development
+## Setup for local development (Deprecated, prefer running in devstack)
 This app is meant to be installed as an app in [edx-analytics-data-api](https://github.com/edx/edx-analytics-data-api/).
 1. Create a directory in your filesystem that has the `edx-analytics-data-api` repo in it. Create a folder `src`, and clone this repo into the `src` directory.
 1. Complete the setup in the README of `edx-analytics-data-api`
@@ -22,7 +22,7 @@ This app is meant to be installed as an app in [edx-analytics-data-api](https://
 1. Run `./manage.py runserver`
 
 ## Frontend
-Much of the data from this app is consumed by [frontend-app-learner-portal](https://github.com/edx/frontend-app-admin-portal/).
+Much of the data from this app is consumed by [frontend-app-admin-portal](https://github.com/edx/frontend-app-admin-portal/).
 Follow the instructions in that README to set it up.
 
 Management commands for creating development data are below.
@@ -34,6 +34,16 @@ To create a test enterprise, go into the [lms shell][LMS](https://github.com/edx
 You can then use the test enterprise's UUID for the following commands.
 
 These commands can be run from this repo or from `edx-analytics-data-api`.
+The simplest way to start is to create dummy learner progress data for your test enterprise:
+
+To create 10 users, each with 5 enrollments, using faked data. Running multiple times will create more users and enrollments.
+```
+./manage.py create_dummy_data_lpr_v1 <YOUR ENTERPRISE_UUID>
+```
+
+Now visit http://localhost:1991/pied-piper/admin/learners to see this dummy data in the learner progress report.
+
+#### Additional commands
 
 To create an EnterpriseUser with a EnterpriseCustomer UUID of your choice, you can run the following:
 
@@ -49,10 +59,6 @@ To create an EnterpriseEnrollment for an EnterpriseUser with a certain `enterpri
 $ ./manage.py create_enterprise_enrollment <YOUR_UUID_HERE> <YOUR_ENTERPRISE_USER_ID_HERE>
 ```
 
-To create 10 users, each with 5 enrollments, using faked data. Running multiple times will create more users and enrollments.
-```
-./manage.py create_dummy_data <YOUR ENTERPRISE_UUID>
-```
 
 ## enterprise_reporting scripts
 This folder contains a set of scripts used to push enterprise data reports.
