@@ -1,7 +1,7 @@
 """
 Tests for clients in enterprise_data.
 """
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 from urllib.parse import urljoin
 
 import responses
@@ -12,7 +12,7 @@ from django.conf import settings
 from django.test import TestCase
 
 from enterprise_data.clients import EnterpriseApiClient
-from enterprise_data.tests.test_utils import UserFactory
+from enterprise_data.tests.test_utils import UserFactory, get_dummy_enterprise_api_data
 
 
 class TestEnterpriseApiClient(TestCase):
@@ -128,3 +128,44 @@ class TestEnterpriseApiClient(TestCase):
         )
         with self.assertRaises(ParseError):
             _ = self.client.get_enterprise_learner(self.user)
+
+    @responses.activate
+    def test_get_enterprise_customer_returns_results_for_user(self):
+        self.mocked_get_endpoint = Mock(return_value=get_dummy_enterprise_api_data())
+        self.mock_client()
+        responses.add(
+            responses.GET,
+            urljoin(settings.LMS_BASE_URL + '/', 'enterprise/api/v1/enterprise-customer'),
+            json=self.mocked_get_endpoint(),
+            status=200,
+            content_type='application/json'
+        )
+        results = self.client.get_enterprise_customer(self.user, self.enterprise_id)
+        assert results == self.mocked_get_endpoint()
+
+    @responses.activate
+    def test_get_enterprise_customer_raises_exception_on_error(self):
+        self.mocked_get_endpoint = Mock(return_value=get_dummy_enterprise_api_data())
+        self.mock_client()
+        responses.add(
+            responses.GET,
+            urljoin(settings.LMS_BASE_URL + '/', 'enterprise/api/v1/enterprise-customer'),
+            json=self.mocked_get_endpoint(),
+            status=404,
+            content_type='application/json'
+        )
+        with self.assertRaises(HTTPError):
+            _ = self.client.get_enterprise_customer(self.user, self.enterprise_id)
+
+    @responses.activate
+    @patch('enterprise_data.clients.TieredCache')
+    def test_get_enterprise_customer_returns_results_from_cashe(self, tired_cache_mock):
+        mocked_value = get_dummy_enterprise_api_data()
+        self.mock_client()
+        tired_cache_mock.get_cached_response.return_value = Mock(
+            value=mocked_value,
+            is_found=True
+        )
+        results = self.client.get_enterprise_customer(self.user, self.enterprise_id)
+        tired_cache_mock.get_cached_response.assert_called_once()
+        assert results == mocked_value
