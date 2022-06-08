@@ -24,8 +24,10 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install pip
-      run: pip install -r requirements/pip.txt
+    - name: Install pip & pip-tools
+      run: |
+        pip install -r requirements/pip.txt
+        pip install -r requirements/pip_tools.txt
 
     - name: Set env variable
       run: export AWS_CONFIG_FILE=/dev/null
