@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[4.2.6] - 2022-06-09
+---------------------
+  * Add `total_learning_time_seconds` field in EnterpriseLearnerEnrollment
+
 [4.2.5] - 2022-04-22
 ---------------------
   * Rename base class to a more appropriate name
