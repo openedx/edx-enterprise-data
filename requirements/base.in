@@ -7,6 +7,7 @@ edx-drf-extensions
 edx-opaque-keys
 Django
 django-fernet-fields
+django-filter
 django-model-utils
 edx-rbac
 rules

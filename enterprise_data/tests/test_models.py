@@ -8,7 +8,7 @@ import unittest
 import ddt
 from pytest import mark
 
-from enterprise_data.tests.test_utils import EnterpriseEnrollmentFactory, EnterpriseUserFactory
+from enterprise_data.tests.test_utils import EnterpriseEnrollmentFactory, EnterpriseOfferFactory, EnterpriseUserFactory
 
 
 @mark.django_db
@@ -35,6 +35,30 @@ class TestEnterpriseEnrollment(unittest.TestCase):
         """
         expected_str = '<Enterprise Enrollment for user 1234 in course-v1:edX+DemoX+DemoCourse>'
         assert expected_str == method(self.enrollment)
+
+
+@mark.django_db
+@ddt.ddt
+class TestEnterpriseOffer(unittest.TestCase):
+    """
+    Tests for Enterprise Offer model
+    """
+
+    def setUp(self):
+        self.enterprise_offer = EnterpriseOfferFactory(
+            enterprise_customer_uuid='ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
+            enterprise_name='test-enterprise'
+        )
+        super().setUp()
+
+    @ddt.data(str, repr)
+    def test_string_conversion(self, method):
+        """
+        Test conversion to string.
+        """
+        expected_str = (f'<Enterprise Offer {self.enterprise_offer.offer_id} '
+                        f'for {self.enterprise_offer.enterprise_name}>')
+        assert expected_str == method(self.enterprise_offer)
 
 
 @mark.django_db

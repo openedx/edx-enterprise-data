@@ -4,7 +4,7 @@ Serializers for enterprise api v1.
 
 from rest_framework import serializers
 
-from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment
+from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment, EnterpriseOffer
 
 
 class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
@@ -48,6 +48,16 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
     def get_total_learning_time_hours(self, obj):
         """Returns the learners total learning time in hours"""
         return round((obj.total_learning_time_seconds or 0.0)/3600.0, 2)
+
+
+class EnterpriseOfferSerializer(serializers.ModelSerializer):
+    """
+    Serializer for EnterpriseOfferSerializer model.
+    """
+
+    class Meta:
+        model = EnterpriseOffer
+        fields = '__all__'
 
 
 class EnterpriseLearnerSerializer(serializers.ModelSerializer):

@@ -6,6 +6,7 @@ Views for enterprise api v1.
 from datetime import date, timedelta
 from logging import getLogger
 
+from django_filters.rest_framework import DjangoFilterBackend
 from edx_rbac.mixins import PermissionRequiredMixin
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
 from edx_rest_framework_extensions.paginators import DefaultPagination
@@ -21,7 +22,7 @@ from django.utils import timezone
 from enterprise_data.api.v1 import serializers
 from enterprise_data.constants import ANALYTICS_API_VERSION_1
 from enterprise_data.filters import AuditEnrollmentsFilterBackend, AuditUsersEnrollmentFilterBackend
-from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment
+from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment, EnterpriseOffer
 from enterprise_data.paginators import EnterpriseEnrollmentsPagination
 
 LOGGER = getLogger(__name__)
@@ -252,6 +253,26 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
             'number_of_users': enterprise_users.count(),
         }
         return Response(content)
+
+
+class EnterpriseOfferViewSet(EnterpriseViewSetMixin, viewsets.ReadOnlyModelViewSet):
+    """
+    Viewset for enterprise offers.
+    """
+    serializer_class = serializers.EnterpriseOfferSerializer
+    filter_backends = (filters.OrderingFilter, DjangoFilterBackend,)
+    ordering_fields = '__all__'
+
+    filterset_fields = (
+        'offer_id',
+        'status'
+    )
+
+    def get_queryset(self):
+        enterprise_customer_uuid = self.kwargs['enterprise_id']
+        return EnterpriseOffer.objects.filter(
+            enterprise_customer_uuid=enterprise_customer_uuid,
+        )
 
 
 class EnterpriseLearnerViewSet(EnterpriseViewSetMixin, viewsets.ReadOnlyModelViewSet):

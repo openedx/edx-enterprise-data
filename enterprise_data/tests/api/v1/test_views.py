@@ -3,17 +3,21 @@ Tests for views in the `enterprise_data` module.
 """
 
 from unittest import mock
+from uuid import uuid4
 
 import ddt
 from pytest import mark
+from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITransactionTestCase
 
-from enterprise_data.models import EnterpriseLearnerEnrollment
+from enterprise_data.api.v1.serializers import EnterpriseOfferSerializer
+from enterprise_data.models import EnterpriseLearnerEnrollment, EnterpriseOffer
 from enterprise_data.tests.mixins import JWTTestMixin
 from enterprise_data.tests.test_utils import (
     EnterpriseLearnerEnrollmentFactory,
     EnterpriseLearnerFactory,
+    EnterpriseOfferFactory,
     UserFactory,
     get_dummy_enterprise_api_data,
 )
@@ -25,7 +29,7 @@ from enterprise_data_roles.models import EnterpriseDataFeatureRole, EnterpriseDa
 @mark.django_db
 class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCase):
     """
-    Tests for EnterpriseLearnerEnrollmentViewSet
+    Tests for EnterpriseLearnerEnrollmentViewSet.
     """
 
     def setUp(self):
@@ -78,3 +82,52 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
         results = response.json()['results']
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]['enrollment_id'], learner_enrollment_1.enrollment_id)
+
+
+@ddt.ddt
+@mark.django_db
+class TestEnterpriseOffersViewSet(JWTTestMixin, APITransactionTestCase):
+    """
+    Tests for EnterpriseOfferViewSet.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.user = UserFactory(is_staff=True)
+        role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
+        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
+            role=role,
+            user=self.user
+        )
+        self.client.force_authenticate(user=self.user)
+
+        self.enterprise_customer_uuid_1 = uuid4()
+        self.enterprise_offer_1 = EnterpriseOfferFactory(
+            enterprise_customer_uuid=self.enterprise_customer_uuid_1
+        )
+
+        self.enterprise_customer_2_uuid = uuid4()
+        self.enterprise_offer_2 = EnterpriseOfferFactory(
+            enterprise_customer_uuid=self.enterprise_customer_2_uuid
+        )
+
+        self.set_jwt_cookie()
+
+    def tearDown(self):
+        super().tearDown()
+        EnterpriseOffer.objects.all().delete()
+
+    def test_list_offers(self):
+        enterprise_id = self.enterprise_offer_1.enterprise_customer_uuid
+        url = reverse(
+            'v1:enterprise-offers-list',
+            kwargs={'enterprise_id': enterprise_id}
+        )
+
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+
+        expected_results = [EnterpriseOfferSerializer(self.enterprise_offer_1).data]
+        response_json = response.json()
+        results = response_json['results']
+        assert results == expected_results

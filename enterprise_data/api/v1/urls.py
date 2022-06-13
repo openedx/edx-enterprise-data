@@ -16,6 +16,11 @@ router.register(
     'enterprise-learner-enrollment',
 )
 router.register(
+    r'enterprise/(?P<enterprise_id>.+)/offers',
+    views.EnterpriseOfferViewSet,
+    'enterprise-offers',
+)
+router.register(
     r'enterprise/(?P<enterprise_id>.+)/users',
     views.EnterpriseLearnerViewSet,
     'enterprise-learner',
