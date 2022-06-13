@@ -2,7 +2,6 @@
 Serializers for enterprise api v1.
 """
 
-
 from rest_framework import serializers
 
 from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment
@@ -14,6 +13,7 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
     """
     course_api_url = serializers.SerializerMethodField()
     enterprise_user_id = serializers.SerializerMethodField()
+    total_learning_time_hours = serializers.SerializerMethodField()
 
     class Meta:
         model = EnterpriseLearnerEnrollment
@@ -32,7 +32,7 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
             'last_activity_date', 'progress_status', 'passed_date', 'current_grade',
             'letter_grade', 'enterprise_user_id', 'user_email', 'user_account_creation_date',
             'user_country_code', 'user_username', 'enterprise_name', 'enterprise_customer_uuid',
-            'enterprise_sso_uid', 'created', 'course_api_url',
+            'enterprise_sso_uid', 'created', 'course_api_url', 'total_learning_time_hours',
         )
 
     def get_course_api_url(self, obj):
@@ -44,6 +44,10 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
     def get_enterprise_user_id(self, obj):
         """Returns enterprise user id of a learner's enrollment"""
         return obj.enterprise_user_id
+
+    def get_total_learning_time_hours(self, obj):
+        """Returns the learners total learning time in hours"""
+        return round(obj.total_learning_time_seconds/3600.0, 2)
 
 
 class EnterpriseLearnerSerializer(serializers.ModelSerializer):
