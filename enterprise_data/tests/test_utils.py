@@ -12,7 +12,13 @@ from faker.providers import misc
 
 from django.contrib.auth import get_user_model
 
-from enterprise_data.models import EnterpriseEnrollment, EnterpriseLearner, EnterpriseLearnerEnrollment, EnterpriseUser
+from enterprise_data.models import (
+    EnterpriseEnrollment,
+    EnterpriseLearner,
+    EnterpriseLearnerEnrollment,
+    EnterpriseOffer,
+    EnterpriseUser,
+)
 
 FAKER = FakerFactory.create()
 FAKER.add_provider(misc)
@@ -226,6 +232,42 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
             for field in dsc_dependent_fields:
                 setattr(obj, field, None)
             obj.save()
+
+
+class EnterpriseOfferFactory(factory.django.DjangoModelFactory):
+    """
+    EnterpriseLearner model Factory.
+    """
+    class Meta:
+        model = EnterpriseOffer
+
+    offer_id = factory.LazyAttribute(lambda x: FAKER.pyint())
+    enterprise_customer_uuid = factory.LazyAttribute(lambda x: FAKER.uuid4().replace('-', ''))
+    enterprise_name = factory.LazyAttribute(lambda x: ' '.join(FAKER.words(nb=2)).title())
+    max_discount = factory.LazyAttribute(lambda x: FAKER.pyfloat(right_digits=2, min_value=10000, max_value=100000))
+    sum_course_price = factory.lazy_attribute(
+        lambda x: FAKER.pyfloat(right_digits=2, min_value=1, max_value=x.max_discount)
+    )
+    status = 'Open'
+    offer_type = 'Site'
+    date_created = factory.LazyAttribute(lambda _: datetime(2012, 1, 1, tzinfo=pytz.utc))
+    discount_type = 'Percentage'
+    discount_value = factory.LazyAttribute(lambda _: FAKER.pyfloat(right_digits=2, min_value=1, max_value=100))
+    total_discount_ecommerce = factory.lazy_attribute(
+        lambda x: round(x.sum_course_price * (x.discount_value / 100), 2)
+    )
+    amount_of_offer_spent = factory.lazy_attribute(
+        lambda x: x.total_discount_ecommerce
+    )
+    sum_amount_learner_paid = factory.lazy_attribute(
+        lambda x: x.sum_course_price - x.amount_of_offer_spent
+    )
+    percent_of_offer_spent = factory.lazy_attribute(
+        lambda x: round(x.amount_of_offer_spent / x.max_discount, 2)
+    )
+    remaining_balance = factory.lazy_attribute(
+        lambda x: round(x.max_discount - x.amount_of_offer_spent, 2)
+    )
 
 
 def get_dummy_enterprise_api_data(**kwargs):

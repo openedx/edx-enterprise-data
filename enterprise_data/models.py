@@ -198,6 +198,48 @@ class EnterpriseEnrollment(models.Model):
         return self.__str__()
 
 
+class EnterpriseOffer(models.Model):
+    """
+    Details for an enterprise offer.
+
+    """
+
+    class Meta:
+        app_label = 'enterprise_data'
+        db_table = 'enterprise_offer_aggregates'
+        verbose_name = _("Enterprise Offer")
+        verbose_name_plural = _("Enterprise Offers")
+
+    offer_id = models.PositiveIntegerField(primary_key=True)
+    enterprise_customer_uuid = models.UUIDField()
+    enterprise_name = models.CharField(max_length=255, null=True)
+    sum_amount_learner_paid = models.FloatField(null=True)
+    sum_course_price = models.FloatField(null=True)
+    status = models.CharField(max_length=255, null=True)
+    offer_type = models.CharField(max_length=255, null=True)
+    date_created = models.DateTimeField(null=True)
+    emails_for_usage_alert = models.CharField(max_length=1023, null=True)
+    discount_type = models.CharField(max_length=64, null=True)
+    discount_value = models.FloatField(null=True)
+    max_discount = models.FloatField(null=True)
+    total_discount_ecommerce = models.FloatField(null=True)
+    amount_of_offer_spent = models.FloatField(null=True)
+    percent_of_offer_spent = models.FloatField(null=True)
+    remaining_balance = models.FloatField(null=True)
+
+    def __str__(self):
+        """
+        Return a human-readable string representation of the object.
+        """
+        return f'<Enterprise Offer {self.offer_id} for {self.enterprise_name}>'
+
+    def __repr__(self):
+        """
+        Return uniquely identifying string representation.
+        """
+        return self.__str__()
+
+
 class EnterpriseUser(models.Model):
     """Information includes a mix of the user's meta data.
 
