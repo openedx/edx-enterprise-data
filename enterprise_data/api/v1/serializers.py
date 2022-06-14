@@ -47,7 +47,7 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
 
     def get_total_learning_time_hours(self, obj):
         """Returns the learners total learning time in hours"""
-        return round(obj.total_learning_time_seconds/3600.0, 2)
+        return round((obj.total_learning_time_seconds or 0.0)/3600.0, 2)
 
 
 class EnterpriseLearnerSerializer(serializers.ModelSerializer):

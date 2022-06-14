@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[4.2.7] - 2022-06-14
+---------------------
+  * Fixed issue with `total_learning_time_seconds` field in EnterpriseLearnerEnrollment
+
 [4.2.6] - 2022-06-09
 ---------------------
   * Add `total_learning_time_seconds` field in EnterpriseLearnerEnrollment
