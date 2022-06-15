@@ -5,7 +5,7 @@ Tests for the `edx-enterprise` serializer module.
 from datetime import timedelta
 
 import ddt
-from pytest import mark, raises
+from pytest import mark
 from rest_framework.test import APITransactionTestCase
 
 from django.utils import timezone
