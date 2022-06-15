@@ -158,11 +158,10 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
     user_current_enrollment_mode = factory.lazy_attribute(lambda x: 'verified')
     has_passed = factory.lazy_attribute(lambda x: FAKER.boolean())  # pylint: disable=no-member
     course_title = factory.lazy_attribute(lambda x: ' '.join(FAKER.words(nb=2)).title())  # pylint: disable=no-member
-    course_start_date = factory.lazy_attribute(lambda x: FAKER.date_time_between(  # pylint: disable=no-member
+    course_start_date = factory.lazy_attribute(lambda x: FAKER.date_between(  # pylint: disable=no-member
         start_date='-2M',
         end_date='+2M',
-        tzinfo=pytz.utc)
-    )
+    ))
     current_grade = factory.lazy_attribute(
         lambda x: FAKER.pyfloat(right_digits=2, min_value=0, max_value=1)  # pylint: disable=no-member
     )
@@ -172,26 +171,24 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
         lambda x: FAKER.random_int(min=1, max=999999)  # pylint: disable=no-member
     )
     user_email = factory.lazy_attribute(lambda x: FAKER.email())  # pylint: disable=no-member
-    user_username = factory.Sequence('robot{}'.format)  # pylint: disable=no-member
-    user_account_creation_date = factory.lazy_attribute(lambda x: '2018-01-01')  # pylint: disable=no-member
+    user_username = factory.Sequence('robot{}'.format)
+    user_account_creation_date = factory.lazy_attribute(lambda x: '2018-01-01')
     user_country_code = factory.lazy_attribute(lambda x: FAKER.country_code())
 
     @factory.lazy_attribute
     def course_end_date(self):
-        return FAKER.date_time_between(   # pylint: disable=no-member
+        return FAKER.date_between(   # pylint: disable=no-member
             start_date=self.course_start_date,
-            end_date="+8M",
-            tzinfo=pytz.utc
+            end_date="+8M"
         )
 
     @factory.lazy_attribute
     def passed_date(self):
         """ Create a passed timestamp if a course has been passed """
         if self.has_passed and self.is_consent_granted:
-            return FAKER.date_time_between(  # pylint: disable=no-member
+            return FAKER.date_between(  # pylint: disable=no-member
                 start_date=self.course_start_date,
                 end_date=self.course_end_date,
-                tzinfo=pytz.utc
             )
         return None
 
