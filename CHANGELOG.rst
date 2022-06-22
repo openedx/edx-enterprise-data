@@ -16,8 +16,12 @@ Unreleased
 
 =========================
 
+[4.3.1] - 2022-06-22
+--------------------
+  * Bump version
+
 [4.3.0] - 2022-06-22
----------------------
+--------------------
   * Add `EnterpriseOffer` and `EnterpriseOfferViewSet` for offers aggregation data
 
 [4.2.9] - 2022-06-15
