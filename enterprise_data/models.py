@@ -204,6 +204,8 @@ class EnterpriseOffer(models.Model):
 
     """
 
+    objects = EnterpriseReportingModelManager()
+
     class Meta:
         app_label = 'enterprise_data'
         db_table = 'enterprise_offer_aggregates'

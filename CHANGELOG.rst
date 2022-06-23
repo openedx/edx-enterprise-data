@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[4.3.2] - 2022-06-23
+--------------------
+  * fix: use EnterpriseReportingModelManager for EnterpriseOffer
+
 [4.3.1] - 2022-06-22
 --------------------
   * Bump version
