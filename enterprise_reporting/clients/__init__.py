@@ -116,7 +116,7 @@ class EdxOAuth2APIClient:
 
         return data or default_val
 
-    def traverse_pagination(self, response, url):
+    def traverse_pagination(self, data, url):
         """
         Traverse a paginated API response.
 
@@ -124,21 +124,20 @@ class EdxOAuth2APIClient:
         APIs.
 
         Arguments:
-            response (Dict): Current response dict from service API
-            access_token (str): jwt token
+            data (Dict): Current response dict from service API
             url (str): API endpoint path
 
         Returns:
             list of dict.
         """
-        results = response.get('results', [])
+        results = data.get('results', [])
 
-        next_page = response.get('next')
+        next_page = data.get('next')
         while next_page:
             querystring = parse_qs(urlparse(next_page).query, True)
-            data = self._requests(url, querystring)
+            request_data = self._requests(url, querystring)
 
-            results += data.get('results', [])
-            next_page = data.get('next')
+            results += request_data.get('results', [])
+            next_page = request_data.get('next')
 
         return results
