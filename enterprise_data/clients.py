@@ -8,7 +8,7 @@ from urllib.parse import urljoin
 
 from edx_django_utils.cache import TieredCache
 from edx_rest_api_client.client import OAuthAPIClient
-from requests.exceptions import RequestException
+from requests.exceptions import HTTPError, RequestException
 from rest_framework.exceptions import NotFound, ParseError
 
 from django.conf import settings
@@ -41,7 +41,7 @@ class EnterpriseApiClient(OAuthAPIClient):
             response = self.get(url, params=querystring)
             response.raise_for_status()
             data = response.json()
-        except (RequestException) as exc:
+        except (HTTPError, RequestException) as exc:
             LOGGER.warning(
                 "[Data Overview Failure] Unable to retrieve Enterprise Customer Learner details. "
                 f"User: {user.username}, Exception: {exc}"
@@ -85,7 +85,7 @@ class EnterpriseApiClient(OAuthAPIClient):
             response = self.get(url)
             response.raise_for_status()
             data = response.json()
-        except (RequestException) as exc:
+        except (HTTPError, RequestException) as exc:
             LOGGER.warning(
                 "[Data Overview Failure] Unable to retrieve Enterprise Customer details. "
                 f"User: {user.username}, Enterprise: {enterprise_id}, Exception: {exc}"
