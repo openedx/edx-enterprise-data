@@ -33,69 +33,83 @@ class EnterpriseCatalogAPIClient(EdxOAuth2APIClient):
         """
         Helper method to traverse over a paginated response from the enterprise-catalog service's `get_content_metadata`
         endpoint.
+
+        Note: as of June 2022 the data source for content metadata changed from edx platform to the enterprise catalog
+        service. As such, content metadata coming from the enterprise catalog service needs to be formatted to match
+        the old endpoints data structure.
         """
         content_metadata = OrderedDict()
         try:
             response = endpoint.get(**query)
             for item in utils.traverse_pagination(response, endpoint):
                 content_id = utils.get_content_metadata_item_id(item)
-                # This code used to rely on the LMS enterprise API endpoints who's responses contained less data than
-                # the enterprise catalog services, so we need to massage the response ie filter out new, not expected
-                # fields
-                item_crs = item.get('course_runs', [])
-                formatted_course_runs = []
-                for cr in item_crs:
-                    formatted_course_run = {
-                        'key': cr.get('key'),
-                        'enrollment_start': cr.get('enrollment_start'),
-                        'enrollment_end': cr.get('enrollment_end'),
-                        'go_live_date': cr.get('go_live_date'),
-                        'start': cr.get('start'),
-                        'end': cr.get('end'),
-                        'modified': cr.get('modified'),
-                        'availability': cr.get('availability'),
-                        'status': cr.get('status'),
-                        'pacing_type': cr.get('pacing_type'),
-                        # New endpoint uses `type` instead of enrollment mode
-                        'enrollment_mode': cr.get('type'),
-                        'min_effort': cr.get('min_effort'),
-                        'max_effort': cr.get('max_effort'),
-                        'weeks_to_complete': cr.get('weeks_to_complete'),
-                        'estimated_hours': cr.get('estimated_hours'),
-                        'first_enrollable_paid_seat_price': cr.get('first_enrollable_paid_seat_price'),
-                        'is_enrollable': cr.get('is_enrollable'),
+
+                # Check if the item is a courserun
+                if item.get('content_type') == 'courserun':
+                    # Courserun content metadata needs no massaging as it's the same in platform as it is in the
+                    # enterprise catalog service
+                    formatted_metadata = item
+                else:
+                    # Course content metadata differs slightly between platform and the catalog service, so we need to
+                    # massage the response ie filter out new, not expected fields
+                    item_crs = item.get('course_runs', [])
+                    formatted_course_runs = []
+                    for cr in item_crs:
+                        # While courseruns as a content metadata item did not change between old and new api endpoints,
+                        # the courserun attribute of a course did, so we need to do some formatting.
+                        formatted_course_run = {
+                            'key': cr.get('key'),
+                            'enrollment_start': cr.get('enrollment_start'),
+                            'enrollment_end': cr.get('enrollment_end'),
+                            'go_live_date': cr.get('go_live_date'),
+                            'start': cr.get('start'),
+                            'end': cr.get('end'),
+                            'modified': cr.get('modified'),
+                            'availability': cr.get('availability'),
+                            'status': cr.get('status'),
+                            'pacing_type': cr.get('pacing_type'),
+                            # New endpoint uses `type` instead of enrollment mode
+                            'enrollment_mode': cr.get('type'),
+                            'min_effort': cr.get('min_effort'),
+                            'max_effort': cr.get('max_effort'),
+                            'weeks_to_complete': cr.get('weeks_to_complete'),
+                            'estimated_hours': cr.get('estimated_hours'),
+                            'first_enrollable_paid_seat_price': cr.get('first_enrollable_paid_seat_price'),
+                            'is_enrollable': cr.get('is_enrollable'),
+                        }
+                        formatted_course_runs.append(formatted_course_run)
+
+                    # Subject attributes also need reformatting
+                    subjects = item.get('subjects', [])
+                    formatted_subjects = []
+                    for subject in subjects:
+                        subject_name = subject.get('name')
+                        if subject_name:
+                            formatted_subjects.append(subject_name)
+
+                    formatted_metadata = {
+                        'active': item.get('active'),
+                        'aggregation_key': item.get('aggregation_key'),
+                        'card_image_url': item.get('card_image_url'),
+                        'content_type': item.get('content_type'),
+                        'course_ends': item.get('course_ends'),
+                        'course_runs': formatted_course_runs,
+                        'end_date': item.get('end_date'),
+                        'enrollment_url': item.get('enrollment_url'),
+                        'full_description': item.get('full_description'),
+                        'image_url': item.get('image_url'),
+                        'key': item.get('key'),
+                        'languages': item.get('languages'),
+                        'organizations': item.get('organizations'),
+                        'seat_types': item.get('seat_types'),
+                        'short_description': item.get('short_description'),
+                        'skill_names': item.get('skill_names'),
+                        'skills': item.get('skills'),
+                        'subjects': formatted_subjects,
+                        'title': item.get('title'),
+                        'uuid': item.get('uuid'),
                     }
-                    formatted_course_runs.append(formatted_course_run)
 
-                subjects = item.get('subjects', [])
-                formatted_subjects = []
-                for subject in subjects:
-                    subject_name = subject.get('name')
-                    if subject_name:
-                        formatted_subjects.append(subject_name)
-
-                formatted_metadata = {
-                    'active': item.get('active'),
-                    'aggregation_key': item.get('aggregation_key'),
-                    'card_image_url': item.get('card_image_url'),
-                    'content_type': item.get('content_type'),
-                    'course_ends': item.get('course_ends'),
-                    'course_runs': formatted_course_runs,
-                    'end_date': item.get('end_date'),
-                    'enrollment_url': item.get('enrollment_url'),
-                    'full_description': item.get('full_description'),
-                    'image_url': item.get('image_url'),
-                    'key': item.get('key'),
-                    'languages': item.get('languages'),
-                    'organizations': item.get('organizations'),
-                    'seat_types': item.get('seat_types'),
-                    'short_description': item.get('short_description'),
-                    'skill_names': item.get('skill_names'),
-                    'skills': item.get('skills'),
-                    'subjects': formatted_subjects,
-                    'title': item.get('title'),
-                    'uuid': item.get('uuid'),
-                }
                 content_metadata[content_id] = formatted_metadata
         except (ConnectionError, Timeout):
             LOGGER.exception(
