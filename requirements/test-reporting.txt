@@ -149,7 +149,11 @@ pytz==2022.1
 pyyaml==5.4.1
     # via awscli
 requests==2.28.0
-    # via snowflake-connector-python
+    # via
+    #   responses
+    #   snowflake-connector-python
+responses==0.21.0
+    # via -r requirements/test-reporting.in
 rsa==4.7.2
     # via awscli
 s3transfer==0.6.0
@@ -188,6 +192,7 @@ urllib3==1.26.9
     #   botocore
     #   py2neo
     #   requests
+    #   responses
 vertica-python==1.1.0
     # via -r requirements/reporting.in
 vine==1.3.0
