@@ -83,6 +83,29 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]['enrollment_id'], learner_enrollment_1.enrollment_id)
 
+    def test_filter_by_ignore_null_course_list_price(self):
+        enterprise_learner = EnterpriseLearnerFactory(
+            enterprise_customer_uuid=self.enterprise_id
+        )
+
+        EnterpriseLearnerEnrollmentFactory(
+            course_list_price=None,
+            enterprise_customer_uuid=self.enterprise_id,
+            is_consent_granted=True,
+            enterprise_user_id=enterprise_learner.enterprise_user_id
+        )
+        learner_enrollment_with_price = EnterpriseLearnerEnrollmentFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            is_consent_granted=True,
+            enterprise_user_id=enterprise_learner.enterprise_user_id
+        )
+
+        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
+        response = self.client.get(url, data={'ignore_null_course_list_price': True})
+        results = response.json()['results']
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]['enrollment_id'], learner_enrollment_with_price.enrollment_id)
+
 
 @ddt.ddt
 @mark.django_db

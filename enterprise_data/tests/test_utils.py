@@ -168,14 +168,15 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
         start_date='-2M',
         end_date='+2M',
     ))
+    course_list_price = factory.lazy_attribute(
+        lambda x: FAKER.pyfloat(min_value=25.0, max_value=1000.0, right_digits=2)
+    )
     current_grade = factory.lazy_attribute(
         lambda x: FAKER.pyfloat(right_digits=2, min_value=0, max_value=1)  # pylint: disable=no-member
     )
     letter_grade = factory.lazy_attribute(lambda x: ' '.join(FAKER.words(nb=2)).title())
     progress_status = factory.lazy_attribute(lambda x: ' '.join(FAKER.words(nb=2)).title())
-    enterprise_user_id = factory.lazy_attribute(
-        lambda x: FAKER.random_int(min=1, max=999999)  # pylint: disable=no-member
-    )
+    enterprise_user_id = factory.Sequence(lambda n: n)
     user_email = factory.lazy_attribute(lambda x: FAKER.email())  # pylint: disable=no-member
     user_username = factory.Sequence('robot{}'.format)
     user_account_creation_date = factory.lazy_attribute(lambda x: '2018-01-01')
