@@ -156,6 +156,10 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         if offer_id:
             queryset = queryset.filter(offer_id=offer_id)
 
+        ignore_null_course_list_price = query_filters.get('ignore_null_course_list_price')
+        if ignore_null_course_list_price:
+            queryset = queryset.filter(course_list_price__isnull=False)
+
         return queryset
 
     def filter_active_enrollments(self, queryset):

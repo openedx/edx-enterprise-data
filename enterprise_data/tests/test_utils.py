@@ -168,6 +168,7 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
         start_date='-2M',
         end_date='+2M',
     ))
+    course_list_price = factory.lazy_attribute(lambda x: FAKER.pyfloat(min_value=25.0, max_value=1000.0, right_digits=2, positive=True))
     current_grade = factory.lazy_attribute(
         lambda x: FAKER.pyfloat(right_digits=2, min_value=0, max_value=1)  # pylint: disable=no-member
     )
