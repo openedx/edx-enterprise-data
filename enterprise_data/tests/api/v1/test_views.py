@@ -88,13 +88,13 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
             enterprise_customer_uuid=self.enterprise_id
         )
 
-        learner_enrollment_1 = EnterpriseLearnerEnrollmentFactory(
+        EnterpriseLearnerEnrollmentFactory(
             course_list_price=None,
             enterprise_customer_uuid=self.enterprise_id,
             is_consent_granted=True,
             enterprise_user_id=enterprise_learner.enterprise_user_id
         )
-        EnterpriseLearnerEnrollmentFactory(
+        learner_enrollment_with_price = EnterpriseLearnerEnrollmentFactory(
             enterprise_customer_uuid=self.enterprise_id,
             is_consent_granted=True,
             enterprise_user_id=enterprise_learner.enterprise_user_id
@@ -104,7 +104,7 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
         response = self.client.get(url, data={'ignore_null_course_list_price': True})
         results = response.json()['results']
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0]['enrollment_id'], learner_enrollment_1.enrollment_id)
+        self.assertEqual(results[0]['enrollment_id'], learner_enrollment_with_price.enrollment_id)
 
 
 @ddt.ddt
