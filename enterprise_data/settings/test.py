@@ -90,6 +90,10 @@ TEMPLATES = [
 
 LMS_BASE_URL = "http://localhost:8000/"
 
+BACKEND_SERVICE_EDX_OAUTH2_KEY = "analytics_api-backend-service-key"
+BACKEND_SERVICE_EDX_OAUTH2_SECRET = "analytics_api-backend-service-secret"
+BACKEND_SERVICE_EDX_OAUTH2_PROVIDER_URL = "http://127.0.0.1:8000/oauth2"
+
 ROOT_URLCONF = "enterprise_data.urls"
 
 SECRET_KEY = "insecure-secret-key"

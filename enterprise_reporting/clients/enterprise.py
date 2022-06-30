@@ -6,10 +6,12 @@ Client for connecting to the LMS Enterprise endpoints.
 import logging
 import os
 from collections import OrderedDict
+from urllib.parse import urljoin
+
 from requests.exceptions import ConnectionError, Timeout  # pylint: disable=redefined-builtin
 
-from enterprise_reporting.clients import EdxOAuth2APIClient
 from enterprise_reporting import utils
+from enterprise_reporting.clients import EdxOAuth2APIClient
 
 LOGGER = logging.getLogger(__name__)
 
@@ -138,9 +140,7 @@ class EnterpriseAPIClient(EdxOAuth2APIClient):
     """
     Client for connecting to the Enterprise API.
     """
-
-    API_BASE_URL = EdxOAuth2APIClient.LMS_ROOT_URL + '/enterprise/api/v1/'
-    APPEND_SLASH = True
+    API_BASE_URL = urljoin(EdxOAuth2APIClient.LMS_ROOT_URL + '/', 'enterprise/api/v1/')
 
     ENTERPRISE_REPORTING_ENDPOINT = 'enterprise_customer_reporting'
     ENTERPRISE_CUSTOMER_CATALOGS_ENDPOINT = 'enterprise_catalogs'
@@ -219,9 +219,7 @@ class EnterpriseDataApiClient(EdxOAuth2APIClient):
     Client for connecting to the Enterprise Data API.
     """
 
-    API_BASE_URL = os.getenv('ANALYTICS_API_URL', default='') + '/enterprise/api/v0'
-    APPEND_SLASH = True
-
+    API_BASE_URL = urljoin(os.getenv('ANALYTICS_API_URL', default='') + '/', 'enterprise/api/v0')
     PAGE_SIZE = os.getenv('PAGE_SIZE', default=1000)
 
     @EdxOAuth2APIClient.refresh_token
@@ -240,7 +238,7 @@ class EnterpriseDataV1ApiClient(EnterpriseDataApiClient):
     Client for connecting to the Enterprise Data V1 API.
     """
 
-    API_BASE_URL = os.getenv('ANALYTICS_API_URL', default='') + '/enterprise/api/v1'
+    API_BASE_URL = urljoin(os.getenv('ANALYTICS_API_URL', default='') + '/', 'enterprise/api/v1')
 
 
 class AnalyticsDataApiClient(EdxOAuth2APIClient):
@@ -248,9 +246,7 @@ class AnalyticsDataApiClient(EdxOAuth2APIClient):
     Client for connecting to the Analytics Data API.
     """
 
-    API_BASE_URL = os.getenv('ANALYTICS_API_URL', default='') + '/api/v0'
-    APPEND_SLASH = True
-
+    API_BASE_URL = urljoin(os.getenv('ANALYTICS_API_URL', default='') + '/', 'api/v0')
     PAGE_SIZE = os.getenv('PAGE_SIZE', default=1000)
 
     @EdxOAuth2APIClient.refresh_token

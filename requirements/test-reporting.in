@@ -1,6 +1,7 @@
 -c constraints.txt
 -r reporting.in
 
+responses                           # utility library for mocking out the requests library
 tox
 tox-battery                         # Makes tox aware of requirements file changes
 pytest==3.7.1
