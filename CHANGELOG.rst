@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[4.5.0] - 2022-06-30
+--------------------
+  * Add optional `ignore_null_course_list_price` query parameter to filter out enrollment records that have been refunded.
+
 [4.4.0] - 2022-06-23
 ---------------------
   * Replace EdxRestApiClient with OAuthAPIClient.
