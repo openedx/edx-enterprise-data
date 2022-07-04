@@ -104,6 +104,7 @@ class EnterpriseLearnerEnrollment(models.Model):
     has_passed = models.BooleanField(default=False)
     last_activity_date = models.DateField(null=True, db_index=True)
     total_learning_time_seconds = models.PositiveIntegerField(default=0)
+    completion_percentage = models.FloatField(null=True)
     progress_status = models.CharField(max_length=255, null=True)
     passed_date = models.DateField(null=True)
     current_grade = models.FloatField(null=True)

@@ -14,6 +14,7 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
     course_api_url = serializers.SerializerMethodField()
     enterprise_user_id = serializers.SerializerMethodField()
     total_learning_time_hours = serializers.SerializerMethodField()
+    completion_percentage = serializers.SerializerMethodField()
 
     class Meta:
         model = EnterpriseLearnerEnrollment
@@ -32,7 +33,7 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
             'last_activity_date', 'progress_status', 'passed_date', 'current_grade',
             'letter_grade', 'enterprise_user_id', 'user_email', 'user_account_creation_date',
             'user_country_code', 'user_username', 'enterprise_name', 'enterprise_customer_uuid',
-            'enterprise_sso_uid', 'created', 'course_api_url', 'total_learning_time_hours',
+            'enterprise_sso_uid', 'created', 'course_api_url', 'total_learning_time_hours', 'completion_percentage',
         )
 
     def get_course_api_url(self, obj):
@@ -48,6 +49,10 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
     def get_total_learning_time_hours(self, obj):
         """Returns the learners total learning time in hours"""
         return round((obj.total_learning_time_seconds or 0.0)/3600.0, 2)
+
+    def get_completion_percentage(self, obj):
+        """Returns the completion percentage of a course"""
+        return round(obj.completion_percentage or 0.0, 1)
 
 
 class EnterpriseOfferSerializer(serializers.ModelSerializer):

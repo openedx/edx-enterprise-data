@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[4.5.1] - 2022-07-05
+--------------------
+  * Add `completion_percentage` field in EnterpriseLearnerEnrollment
+
 [4.5.0] - 2022-06-30
 --------------------
   * Add optional `ignore_null_course_list_price` query parameter to filter out enrollment records that have been refunded.
