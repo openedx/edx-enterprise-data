@@ -33,7 +33,7 @@ class EnterpriseCatalogAPIClient(EdxOAuth2APIClient):
 
     def transform_get_content_metadata(self, traversed_metadata):
         """
-        Helper method to traverse over a paginated response from the enterprise-catalog service's `get_content_metadata`
+        Helper method to transform a response (already traversed pagination) from the enterprise-catalog service's `get_content_metadata`.
         endpoint.
 
         Note: as of June 2022 the data source for content metadata changed from edx platform to the enterprise catalog
@@ -42,6 +42,9 @@ class EnterpriseCatalogAPIClient(EdxOAuth2APIClient):
         """
         content_metadata = OrderedDict()
         for item in traversed_metadata:
+            print("transform_get_content_metadata")
+            print(dir(item))
+            print(item)
             content_id = utils.get_content_metadata_item_id(item)
 
             # Check if the item is a courserun
