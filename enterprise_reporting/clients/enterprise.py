@@ -128,6 +128,7 @@ class EnterpriseCatalogAPIClient(EdxOAuth2APIClient):
                 should_traverse_pagination=True,
                 querystring={'page_size': self.PAGE_SIZE},
             )
+            LOGGER.info('get_content_metadata', dir(traversed_metadata), type(traversed_metadata), traversed_metadata)
             transformed_metadata = self.transform_get_content_metadata(traversed_metadata)
             content_metadata.update(transformed_metadata)
 
