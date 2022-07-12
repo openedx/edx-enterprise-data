@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+ 
+[4.5.1] - 2022-07-12
+--------------------
+  * Replace `self.client` in `EnterpriseCatalogAPIClient` with `self._load_data` to account for OAuth client changes in enterprise_reporting.
 
 [4.5.0] - 2022-06-30
 --------------------

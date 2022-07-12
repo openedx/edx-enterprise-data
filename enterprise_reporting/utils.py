@@ -303,6 +303,8 @@ def get_content_metadata_item_id(content_metadata_item):
     """
     if content_metadata_item['content_type'] == 'program':
         return content_metadata_item['uuid']
+    if content_metadata_item['content_type'] == 'learnerpathway':
+        return content_metadata_item['uuid']
     return content_metadata_item['key']
 
 
