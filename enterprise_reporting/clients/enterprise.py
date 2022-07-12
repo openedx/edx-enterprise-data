@@ -31,7 +31,7 @@ class EnterpriseCatalogAPIClient(EdxOAuth2APIClient):
 
     PAGE_SIZE = os.getenv('PAGE_SIZE', default=1000)
 
-    def traverse_get_content_metadata(self, endpoint, query, catalog_uuid):
+    def transform_get_content_metadata(self, traversed_metadata, catalog_uuid):
         """
         Helper method to traverse over a paginated response from the enterprise-catalog service's `get_content_metadata`
         endpoint.
@@ -42,8 +42,7 @@ class EnterpriseCatalogAPIClient(EdxOAuth2APIClient):
         """
         content_metadata = OrderedDict()
         try:
-            response = endpoint.get(**query)
-            for item in utils.traverse_pagination(response, endpoint):
+            for item in traversed_metadata:
                 content_id = utils.get_content_metadata_item_id(item)
 
                 # Check if the item is a courserun
@@ -127,10 +126,16 @@ class EnterpriseCatalogAPIClient(EdxOAuth2APIClient):
         """Return all content metadata contained in the catalogs associated with a reporting config."""
         content_metadata = OrderedDict()
         for catalog in enterprise_customer_catalogs.get('results', []):
-            endpoint = getattr(self.client, self.GET_CONTENT_METADATA_ENDPOINT.format(catalog['uuid']))
-            query = {'page_size': self.PAGE_SIZE}
-            traversed_metadata = self.traverse_get_content_metadata(endpoint, query, catalog['uuid'])
-            content_metadata.update(traversed_metadata)
+            traversed_metadata = self._load_data(
+                self.GET_CONTENT_METADATA_ENDPOINT.format(catalog['uuid']),
+                should_traverse_pagination=True,
+                querystring={'page_size': self.PAGE_SIZE},
+            )
+            transformed_metadata = self.transform_get_content_metadata(
+                traversed_metadata=traversed_metadata,
+                catalog_uuid=catalog['uuid'],
+            )
+            content_metadata.update(transformed_metadata)
 
         # We only made this a dictionary to help filter out duplicates by a common key. We just want values now.
         return list(content_metadata.values())
