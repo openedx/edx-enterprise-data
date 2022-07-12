@@ -31,7 +31,7 @@ class EnterpriseCatalogAPIClient(EdxOAuth2APIClient):
 
     PAGE_SIZE = os.getenv('PAGE_SIZE', default=1000)
 
-    def transform_get_content_metadata(self, traversed_metadata, catalog_uuid):
+    def transform_get_content_metadata(self, traversed_metadata):
         """
         Helper method to traverse over a paginated response from the enterprise-catalog service's `get_content_metadata`
         endpoint.
@@ -124,10 +124,7 @@ class EnterpriseCatalogAPIClient(EdxOAuth2APIClient):
                 should_traverse_pagination=True,
                 querystring={'page_size': self.PAGE_SIZE},
             )
-            transformed_metadata = self.transform_get_content_metadata(
-                traversed_metadata=traversed_metadata,
-                catalog_uuid=catalog['uuid'],
-            )
+            transformed_metadata = self.transform_get_content_metadata(traversed_metadata)
             content_metadata.update(transformed_metadata)
 
         # We only made this a dictionary to help filter out duplicates by a common key. We just want values now.
