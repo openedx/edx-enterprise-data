@@ -152,6 +152,7 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = EnterpriseLearnerEnrollment
 
+    primary_key = factory.Sequence(lambda n: n)
     enrollment_id = factory.lazy_attribute(
         lambda x: FAKER.random_int(min=1, max=999999)  # pylint: disable=no-member
     )
@@ -181,6 +182,7 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
     user_username = factory.Sequence('robot{}'.format)
     user_account_creation_date = factory.lazy_attribute(lambda x: '2018-01-01')
     user_country_code = factory.lazy_attribute(lambda x: FAKER.country_code())
+    total_learning_time_seconds = 0
 
     @factory.lazy_attribute
     def course_end_date(self):
