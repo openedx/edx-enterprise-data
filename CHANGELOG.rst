@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[4.6.1] - 2022-08-11
+--------------------
+  * Switch to using enterprise_learner_enrollment_2 table temporarily.
+
 [4.6.0] - 2022-08-11
 --------------------
   * Update primary key field in `EnterpriseLearnerEnrollment` to be `primary_key` from `enterprise_enrollment_id`.

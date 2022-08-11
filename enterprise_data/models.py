@@ -67,7 +67,7 @@ class EnterpriseLearnerEnrollment(models.Model):
 
     class Meta:
         app_label = 'enterprise_data'
-        db_table = 'enterprise_learner_enrollment'
+        db_table = 'enterprise_learner_enrollment_2'
         verbose_name = _("Enterprise Learner Enrollment")
         verbose_name_plural = _("Enterprise Learner Enrollments")
 
