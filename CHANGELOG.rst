@@ -15,11 +15,7 @@ Unreleased
 ----------
 
 =========================
-
-[4.6.0] - 2022-08-11
---------------------
-  * Update primary key field in `EnterpriseLearnerEnrollment` to be `primary_key` from `enterprise_enrollment_id`.
-
+ 
 [4.5.1] - 2022-07-12
 --------------------
   * Replace `self.client` in `EnterpriseCatalogAPIClient` with `self._load_data` to account for OAuth client changes in enterprise_reporting.
