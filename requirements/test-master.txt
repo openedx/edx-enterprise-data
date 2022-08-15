@@ -14,15 +14,15 @@ asn1crypto==1.5.1
     #   snowflake-connector-python
 attrs==22.1.0
     # via pytest
-awscli==1.25.44
+awscli==1.25.51
     # via -r requirements/reporting.in
 bcrypt==3.2.2
     # via paramiko
 billiard==3.6.4.0
     # via celery
-boto3==1.24.44
+boto3==1.24.51
     # via -r requirements/reporting.in
-botocore==1.27.44
+botocore==1.27.51
     # via
     #   awscli
     #   boto3
@@ -48,7 +48,7 @@ click==8.1.3
     # via edx-django-utils
 colorama==0.4.4
     # via awscli
-coverage[toml]==6.4.2
+coverage[toml]==6.4.3
     # via pytest-cov
 cryptography==36.0.2
     # via
@@ -124,11 +124,11 @@ factory-boy==3.2.1
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==13.15.1
+faker==14.0.0
     # via factory-boy
 flaky==3.7.0
     # via -r requirements/test.in
-freezegun==1.2.1
+freezegun==1.2.2
     # via -r requirements/test.in
 future==0.18.2
     # via pyjwkest
@@ -162,7 +162,7 @@ pansi==2020.7.3
     # via py2neo
 paramiko==2.11.0
     # via -r requirements/reporting.in
-pbr==5.9.0
+pbr==5.10.0
     # via stevedore
 pgpy==0.5.4
     # via -r requirements/reporting.in
@@ -221,7 +221,7 @@ python-dateutil==2.8.2
     #   faker
     #   freezegun
     #   vertica-python
-pytz==2022.1
+pytz==2022.2.1
     # via
     #   celery
     #   django
