@@ -135,7 +135,7 @@ class TestEnterpriseApiClient(TestCase):
         self.mock_client()
         responses.add(
             responses.GET,
-            urljoin(settings.LMS_BASE_URL + '/', 'enterprise/api/v1/enterprise-customer'),
+            urljoin(settings.LMS_BASE_URL + '/', f'enterprise/api/v1/enterprise-customer/{self.enterprise_id}'),
             json=self.mocked_get_endpoint(),
             status=200,
             content_type='application/json'
@@ -149,7 +149,7 @@ class TestEnterpriseApiClient(TestCase):
         self.mock_client()
         responses.add(
             responses.GET,
-            urljoin(settings.LMS_BASE_URL + '/', 'enterprise/api/v1/enterprise-customer'),
+            urljoin(settings.LMS_BASE_URL + '/', f'enterprise/api/v1/enterprise-customer/{self.enterprise_id}'),
             json=self.mocked_get_endpoint(),
             status=404,
             content_type='application/json'
