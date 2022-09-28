@@ -79,13 +79,13 @@ class EnterpriseApiClient(OAuthAPIClient):
         cached_response = TieredCache.get_cached_response(cache_key)
         if cached_response.is_found:
             LOGGER.info(
-                f'[EnterpriseApiClient] cached info found for enterprise customer:{enterprise_id}'
+                f'[EnterpriseApiClient] cache info found for enterprise customer:{enterprise_id}'
                 f' with {cached_response.value}'
             )
             return cached_response.value
 
         LOGGER.info(f'[EnterpriseApiClient] No cached info found for enterprise customer:{enterprise_id}')
-        url = urljoin(self.API_BASE_URL, 'enterprise-customer')
+        url = urljoin(self.API_BASE_URL, f'enterprise-customer/{enterprise_id}')
 
         try:
             response = self.get(url)

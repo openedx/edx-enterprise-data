@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[4.6.3] - 2022-09-28
+--------------------
+  * Fixed get_enterprise_customer URL.
+
 [4.6.2] - 2022-09-28
 --------------------
   * Added logging for Enterprise API client for better debugging.
