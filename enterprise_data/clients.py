@@ -70,6 +70,7 @@ class EnterpriseApiClient(OAuthAPIClient):
         """
         Get the enterprises that this user has access to.
         """
+        LOGGER.info(f'[EnterpriseApiClient] getting latest info for enterprise customer:{enterprise_id}')
         cache_key = get_cache_key(
             resource='enterprise-customer',
             user=user.username,
@@ -77,8 +78,13 @@ class EnterpriseApiClient(OAuthAPIClient):
         )
         cached_response = TieredCache.get_cached_response(cache_key)
         if cached_response.is_found:
+            LOGGER.info(
+                f'[EnterpriseApiClient] cached info found for enterprise customer:{enterprise_id}'
+                f' with {cached_response.value}'
+            )
             return cached_response.value
 
+        LOGGER.info(f'[EnterpriseApiClient] No cached info found for enterprise customer:{enterprise_id}')
         url = urljoin(self.API_BASE_URL, 'enterprise-customer')
 
         try:
@@ -92,6 +98,7 @@ class EnterpriseApiClient(OAuthAPIClient):
             )
             raise
 
+        LOGGER.info(f'[EnterpriseApiClient] Setting cached for enterprise customer:{enterprise_id} with {data}')
         TieredCache.set_all_tiers(cache_key, data, DEFAULT_REPORTING_CACHE_TIMEOUT)
 
         return data
@@ -106,11 +113,13 @@ class EnterpriseApiClient(OAuthAPIClient):
         enterprise_id = request.parser_context.get('kwargs', {}).get('enterprise_id', '')
         session = request.session
         enterprise_data = None
+        LOGGER.info(f'[EnterpriseApiClient] Start updating session for enterprise customer: {enterprise_id}')
 
         audit_enrollment_check = enterprise_id not in session.get('enable_audit_data_reporting', {})
         data_sharing_consent_check = enterprise_id not in session.get('enforce_data_sharing_consent', {})
 
         if audit_enrollment_check or data_sharing_consent_check:
+            LOGGER.info(f'[EnterpriseApiClient] getting latest info for enterprise customer: {enterprise_id}')
             enterprise_data = self.get_enterprise_customer(request.user, enterprise_id)
             enable_audit_data_reporting = False
             enforce_data_sharing_consent = False
@@ -119,11 +128,11 @@ class EnterpriseApiClient(OAuthAPIClient):
                 enable_audit_data_reporting = enterprise_data.get('enable_audit_data_reporting', False)
                 enforce_data_sharing_consent = enterprise_data.get('enforce_data_sharing_consent', '')
 
-            update_session_with_enterprise_data(
-                request,
-                enterprise_id,
-                enable_audit_data_reporting=enable_audit_data_reporting,
-                enforce_data_sharing_consent=enforce_data_sharing_consent,
-            )
+            updated_values = {
+                'enable_audit_data_reporting': enable_audit_data_reporting,
+                'enforce_data_sharing_consent': enforce_data_sharing_consent,
+            }
+            LOGGER.info(f'[EnterpriseApiClient] updating session for enterprise: {enterprise_id} with {updated_values}')
+            update_session_with_enterprise_data(request, enterprise_id, **updated_values)
 
         return enterprise_data

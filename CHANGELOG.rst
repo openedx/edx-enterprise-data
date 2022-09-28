@@ -16,6 +16,11 @@ Unreleased
 
 =========================
 
+[4.6.2] - 2022-09-28
+--------------------
+  * Added logging for Enterprise API client for better debugging.
+
+
 [4.6.1] - 2022-07-12
 --------------------
   * Revert 4.6.0.

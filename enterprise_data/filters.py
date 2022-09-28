@@ -87,6 +87,7 @@ class AuditEnrollmentsFilterBackend(filters.BaseFilterBackend, FiltersMixin):
         enable_audit_data_reporting = request.session['enable_audit_data_reporting'].get(enterprise_id, False)
 
         if not enable_audit_data_reporting:
+            LOGGER.info(f'[AuditEnrollmentsFilterBackend] excluding audit enrollments for: {enterprise_id}')
             # Filter out enrollments that have audit mode and do not have a coupon code or an offer.
             filter_query = {
                 view.ENROLLMENT_MODE_FILTER: 'audit',
