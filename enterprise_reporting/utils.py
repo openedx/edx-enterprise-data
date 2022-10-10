@@ -159,6 +159,9 @@ def is_current_time_in_schedule(frequency, hour_of_day, day_of_month=None, day_o
     current_day_of_week = current_est_time.weekday()
     current_day_of_month = current_est_time.day
 
+    LOGGER.info(f'Job Current EST: [{current_hour_of_day}-{current_day_of_week}-{current_day_of_month}]')
+    LOGGER.info(f'Enterprise Report Schedule: [{frequency}-{hour_of_day}-{day_of_week}-{day_of_month}]')
+
     # All configurations have an hour of the day, so the hour must always match in order to send a report.
     if hour_of_day == current_hour_of_day:
         # If reports should be sent monthly and today is the same as the day configured, return True

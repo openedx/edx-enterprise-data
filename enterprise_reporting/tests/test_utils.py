@@ -16,6 +16,9 @@ from enterprise_reporting import utils
 
 from .utils import create_files, verify_compressed
 
+import pytz
+import datetime
+
 
 @ddt.ddt
 class TestUtilities(unittest.TestCase):
@@ -154,6 +157,19 @@ class TestUtilities(unittest.TestCase):
         """The dictionary, when weird, raises an error."""
         with self.assertRaises(NotImplementedError):
             utils.flatten_dict(dictionary)
+
+    def test_is_current_time_in_schedule(self):
+        """
+        Verify that is_current_time_in_schedule works as expected for daily frequency.
+        """
+        est_timezone = pytz.timezone('US/Eastern')
+        current_est_time = datetime.datetime.now(est_timezone)
+        assert utils.is_current_time_in_schedule(
+            utils.FREQUENCY_TYPE_DAILY,
+            current_est_time.hour,
+            current_est_time.day,
+            current_est_time.weekday()
+        )
 
 
 @ddt.ddt
