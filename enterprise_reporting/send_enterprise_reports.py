@@ -65,6 +65,13 @@ def should_deliver_report(args, reporting_config):
         reporting_config['day_of_month'],
         reporting_config['day_of_week']
     )
+    LOGGER.info("Report Delivery Logic. Active: [%s], ValidDataType: [%s], MeetSchedule: [%s], EnterpriseInArgs: [%s]",
+        reporting_config['active'],
+        valid_data_type,
+        meets_schedule_requirement,
+        enterprise_customer_specified,
+    )
+
     return reporting_config['active'] and \
            valid_data_type and \
            (enterprise_customer_specified or meets_schedule_requirement)
