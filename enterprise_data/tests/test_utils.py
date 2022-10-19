@@ -203,10 +203,9 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
     def last_activity_date(self):
         """ Create a date in between course start and end timestamp"""
         if self.is_consent_granted:
-            return FAKER.date_time_between(  # pylint: disable=no-member
+            return FAKER.date_between(  # pylint: disable=no-member
                 start_date=self.course_start_date,
                 end_date=self.course_end_date,
-                tzinfo=pytz.utc
             )
         return None
 
@@ -229,7 +228,7 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
             'user_country_code',
             'user_username',
         ]
-        if create and obj.is_consent_granted:
+        if create and not obj.is_consent_granted:
             for field in dsc_dependent_fields:
                 setattr(obj, field, None)
             obj.save()

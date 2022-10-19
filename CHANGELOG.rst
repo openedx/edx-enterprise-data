@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[4.6.4] - 2022-10-19
+--------------------
+  * Refactor enterprise api client and view filters to use cache key without user and remove dependency on session.
+
 [4.6.3] - 2022-09-28
 --------------------
   * Fixed get_enterprise_customer URL.

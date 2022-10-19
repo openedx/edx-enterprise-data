@@ -140,7 +140,7 @@ class TestEnterpriseApiClient(TestCase):
             status=200,
             content_type='application/json'
         )
-        results = self.client.get_enterprise_customer(self.user, self.enterprise_id)
+        results = self.client.get_enterprise_customer(self.enterprise_id)
         assert results == self.mocked_get_endpoint()
 
     @responses.activate
@@ -155,7 +155,7 @@ class TestEnterpriseApiClient(TestCase):
             content_type='application/json'
         )
         with self.assertRaises(HTTPError):
-            _ = self.client.get_enterprise_customer(self.user, self.enterprise_id)
+            _ = self.client.get_enterprise_customer(self.enterprise_id)
 
     @responses.activate
     @patch('enterprise_data.clients.TieredCache')
@@ -166,6 +166,6 @@ class TestEnterpriseApiClient(TestCase):
             value=mocked_value,
             is_found=True
         )
-        results = self.client.get_enterprise_customer(self.user, self.enterprise_id)
+        results = self.client.get_enterprise_customer(self.enterprise_id)
         tired_cache_mock.get_cached_response.assert_called_once()
         assert results == mocked_value

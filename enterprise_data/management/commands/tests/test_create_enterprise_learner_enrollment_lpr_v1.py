@@ -35,12 +35,12 @@ class TestCreateEnterpriseLearnerEnrollmentCommand(TestCase):
             enterprise_customer_uuid=args[0]
         )
         assert enterprise_learner_enrollment.count() == 1
-        assert enterprise_learner_enrollment[0].progress_status is not None
-        assert enterprise_learner_enrollment[0].letter_grade is not None
-        assert enterprise_learner_enrollment[0].enterprise_user_id is not None
-        assert enterprise_learner_enrollment[0].user_username is not None
-        assert enterprise_learner_enrollment[0].user_email is not None
-        assert enterprise_learner_enrollment[0].enterprise_user is not None
+        assert enterprise_learner_enrollment[0].progress_status is None
+        assert enterprise_learner_enrollment[0].letter_grade is None
+        assert enterprise_learner_enrollment[0].enterprise_user_id is None
+        assert enterprise_learner_enrollment[0].user_username is None
+        assert enterprise_learner_enrollment[0].user_email is None
+        assert enterprise_learner_enrollment[0].enterprise_user is None
 
     def test_create_enterprise_learner_enrollment_lpr_v1_with_dsc_enabled(self):
         """
@@ -57,13 +57,13 @@ class TestCreateEnterpriseLearnerEnrollmentCommand(TestCase):
             enterprise_customer_uuid=args[0]
         )
         assert enterprise_learner_enrollment.count() == 1
-        assert enterprise_learner_enrollment[0].letter_grade is None
-        assert enterprise_learner_enrollment[0].last_activity_date is None
-        assert enterprise_learner_enrollment[0].progress_status is None
-        assert enterprise_learner_enrollment[0].enterprise_user_id is None
-        assert enterprise_learner_enrollment[0].user_username is None
-        assert enterprise_learner_enrollment[0].enterprise_user is None
-        assert enterprise_learner_enrollment[0].user_email is None
+        assert enterprise_learner_enrollment[0].letter_grade is not None
+        assert enterprise_learner_enrollment[0].last_activity_date is not None
+        assert enterprise_learner_enrollment[0].progress_status is not None
+        assert enterprise_learner_enrollment[0].enterprise_user_id is not None
+        assert enterprise_learner_enrollment[0].user_username is not None
+        assert enterprise_learner_enrollment[0].enterprise_user is not None
+        assert enterprise_learner_enrollment[0].user_email is not None
         assert EnterpriseLearner.objects.count() == 1
 
     def test_create_enterprise_learner_enrollment_lpr_v1_error(self):

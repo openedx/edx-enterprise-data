@@ -27,16 +27,16 @@ class FiltersMixin:
     Util mixin for enterprise_data filters.
     """
 
-    def update_session_with_enterprise_data(self, request):
+    def get_enterprise_customer(self, enterprise_uuid):
         """
-        Make cached call to lms to get an enterprise data and update request session.
+        Return enterprise customer for `enterprise_uuid`.
         """
         enterprise_client = EnterpriseApiClient(
             settings.BACKEND_SERVICE_EDX_OAUTH2_PROVIDER_URL,
             settings.BACKEND_SERVICE_EDX_OAUTH2_KEY,
             settings.BACKEND_SERVICE_EDX_OAUTH2_SECRET,
         )
-        __ = enterprise_client.get_enterprise_and_update_session(request)
+        return enterprise_client.get_enterprise_customer(enterprise_uuid)
 
 
 class ConsentGrantedFilterBackend(filters.BaseFilterBackend, FiltersMixin):
@@ -54,14 +54,11 @@ class ConsentGrantedFilterBackend(filters.BaseFilterBackend, FiltersMixin):
         """
         Filter a queryset for results where consent has been granted.
         """
-        current_enterprise = view.kwargs.get('enterprise_id', None)
-
-        self.update_session_with_enterprise_data(request)
-
-        data_sharing_enforce = request.session.get('enforce_data_sharing_consent', {})
+        enterprise_uuid = view.kwargs['enterprise_id']
+        enterprise_customer = self.get_enterprise_customer(enterprise_uuid)
         # if the enterprise is configured for "externally managed" data sharing consent,
         # ignore the consent_granted column.
-        if data_sharing_enforce.get(current_enterprise, '') != 'externally_managed':
+        if enterprise_customer.get('enforce_data_sharing_consent') != 'externally_managed':
             filter_kwargs = {view.CONSENT_GRANTED_FILTER: True}
             queryset = queryset.filter(**filter_kwargs)
         return queryset
@@ -80,14 +77,11 @@ class AuditEnrollmentsFilterBackend(filters.BaseFilterBackend, FiltersMixin):
         """
         Filter out queryset for results where enrollment mode is `audit`.
         """
-        enterprise_id = view.kwargs['enterprise_id']
+        enterprise_uuid = view.kwargs['enterprise_id']
+        enterprise_customer = self.get_enterprise_customer(enterprise_uuid)
 
-        self.update_session_with_enterprise_data(request)
-
-        enable_audit_data_reporting = request.session['enable_audit_data_reporting'].get(enterprise_id, False)
-
-        if not enable_audit_data_reporting:
-            LOGGER.info(f'[AuditEnrollmentsFilterBackend] excluding audit enrollments for: {enterprise_id}')
+        if not enterprise_customer.get('enable_audit_data_reporting'):
+            LOGGER.info(f'[AuditEnrollmentsFilterBackend] excluding audit enrollments for: {enterprise_uuid}')
             # Filter out enrollments that have audit mode and do not have a coupon code or an offer.
             filter_query = {
                 view.ENROLLMENT_MODE_FILTER: 'audit',
@@ -110,11 +104,10 @@ class AuditUsersEnrollmentFilterBackend(filters.BaseFilterBackend, FiltersMixin)
 
         If `enable_audit_data_reporting` is not enabled then it will exclude the Users with 'audit' mode enrollment.
         """
-        enterprise_id = view.kwargs['enterprise_id']
+        enterprise_uuid = view.kwargs['enterprise_id']
+        enterprise_customer = self.get_enterprise_customer(enterprise_uuid)
 
-        self.update_session_with_enterprise_data(request)
-
-        enable_audit_data_reporting = request.session['enable_audit_data_reporting'].get(enterprise_id, False)
+        enable_audit_data_reporting = enterprise_customer.get('enable_audit_data_reporting')
 
         version = getattr(view, ANALYTICS_API_VERSION_ATTR)
 
@@ -125,7 +118,7 @@ class AuditUsersEnrollmentFilterBackend(filters.BaseFilterBackend, FiltersMixin)
         elif version == ANALYTICS_API_VERSION_1:
             if not enable_audit_data_reporting:
                 audit_enrollments_enterprise_user_ids = EnterpriseLearnerEnrollment.objects.filter(
-                    enterprise_customer_uuid=view.kwargs['enterprise_id'],
+                    enterprise_customer_uuid=enterprise_uuid,
                     enterprise_user_id__isnull=False,
                     user_current_enrollment_mode="audit",
                 ).values_list(
@@ -135,7 +128,7 @@ class AuditUsersEnrollmentFilterBackend(filters.BaseFilterBackend, FiltersMixin)
                 audit_enrollments_enterprise_user_ids = list(audit_enrollments_enterprise_user_ids)
                 LOGGER.info(
                     "[ELV_ANALYTICS_API_V1] Enterprise: [%s], AuditDataReporting: [%s], AuditEnrollments: [%s]",
-                    enterprise_id,
+                    enterprise_uuid,
                     enable_audit_data_reporting,
                     len(audit_enrollments_enterprise_user_ids)
                 )

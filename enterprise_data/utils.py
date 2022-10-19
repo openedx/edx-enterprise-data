@@ -6,32 +6,6 @@ Utility functions for Enterprise Data app.
 import hashlib
 
 
-def update_session_with_enterprise_data(request, enterprise_id, **kwargs):
-    """
-    DRY method to set provided parameters on the request session.
-
-    Set provided parameters against the provided enterprise id.
-
-    The values will be set in session in the following format:
-    {
-        'enterprises_with_access': {'ee5e6b3a-069a-4947-bb8d-d2dbc323396c': True},
-        'enable_audit_data_reporting': {'ee5e6b3a-069a-4947-bb8d-d2dbc323396c': False}
-    }
-
-    Arguments:
-        request: Http request
-        enterprise_id: UUID of enterprise
-        **kwargs: Keyword arguments that need to be present in request session
-
-    """
-    for item, value in kwargs.items():
-        session_key_data = request.session.get(item, {})
-        session_key_data.update({str(enterprise_id): value})
-        request.session.update({
-            item: session_key_data
-        })
-
-
 def get_cache_key(**kwargs):
     """
     Get MD5 encoded cache key for given arguments.
