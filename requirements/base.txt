@@ -12,33 +12,32 @@ asn1crypto==1.5.1
     # via
     #   oscrypto
     #   snowflake-connector-python
-awscli==1.25.44
+awscli==1.25.74
     # via -r requirements/reporting.in
-bcrypt==3.2.2
+bcrypt==4.0.0
     # via paramiko
 billiard==3.6.4.0
     # via celery
-boto3==1.24.44
+boto3==1.24.73
     # via -r requirements/reporting.in
-botocore==1.27.44
+botocore==1.27.73
     # via
     #   awscli
     #   boto3
     #   s3transfer
 celery==4.4.7
     # via -r requirements/reporting.in
-certifi==2022.6.15
+certifi==2022.9.14
     # via
     #   py2neo
     #   requests
     #   snowflake-connector-python
 cffi==1.15.1
     # via
-    #   bcrypt
     #   cryptography
     #   pynacl
     #   snowflake-connector-python
-charset-normalizer==2.1.0
+charset-normalizer==2.1.1
     # via
     #   requests
     #   snowflake-connector-python
@@ -80,7 +79,7 @@ django-model-utils==4.2.0
     # via
     #   -r requirements/base.in
     #   edx-rbac
-django-waffle==2.6.0
+django-waffle==3.0.0
     # via
     #   edx-django-utils
     #   edx-drf-extensions
@@ -92,12 +91,12 @@ docutils==0.16
     # via awscli
 drf-jwt==1.19.2
     # via edx-drf-extensions
-edx-django-utils==5.0.0
+edx-django-utils==5.0.1
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
     #   edx-rest-api-client
-edx-drf-extensions==8.0.1
+edx-drf-extensions==8.3.1
     # via
     #   -r requirements/base.in
     #   edx-rbac
@@ -111,11 +110,13 @@ edx-rest-api-client==5.5.0
     # via -r requirements/base.in
 factory-boy==3.2.1
     # via -r requirements/base.in
-faker==13.15.1
+faker==14.2.0
     # via factory-boy
+filelock==3.8.0
+    # via snowflake-connector-python
 future==0.18.2
     # via pyjwkest
-idna==3.3
+idna==3.4
     # via
     #   requests
     #   snowflake-connector-python
@@ -129,7 +130,7 @@ kombu==4.6.11
     # via celery
 monotonic==1.6
     # via py2neo
-newrelic==7.16.0.178
+newrelic==8.1.0.180
     # via edx-django-utils
 oscrypto==1.3.0
     # via snowflake-connector-python
@@ -139,11 +140,11 @@ pansi==2020.7.3
     # via py2neo
 paramiko==2.11.0
     # via -r requirements/reporting.in
-pbr==5.9.0
+pbr==5.10.0
     # via stevedore
 pgpy==0.5.4
     # via -r requirements/reporting.in
-psutil==5.9.1
+psutil==5.9.2
     # via edx-django-utils
 py2neo==2021.2.3
     # via -r requirements/reporting.in
@@ -157,7 +158,7 @@ pycryptodomex==3.15.0
     # via
     #   pyjwkest
     #   snowflake-connector-python
-pygments==2.12.0
+pygments==2.13.0
     # via py2neo
 pyjwkest==1.4.2
     # via edx-drf-extensions
@@ -185,7 +186,7 @@ python-dateutil==2.8.2
     #   edx-drf-extensions
     #   faker
     #   vertica-python
-pytz==2022.1
+pytz==2022.2.1
     # via
     #   celery
     #   django
@@ -226,7 +227,7 @@ six==1.16.0
     #   vertica-python
 slumber==0.7.1
     # via edx-rest-api-client
-snowflake-connector-python==2.7.11
+snowflake-connector-python==2.7.12
     # via -r requirements/reporting.in
 sqlparse==0.4.2
     # via django
@@ -238,7 +239,7 @@ typing-extensions==4.3.0
     # via snowflake-connector-python
 unicodecsv==0.14.1
     # via -r requirements/reporting.in
-urllib3==1.26.11
+urllib3==1.26.12
     # via
     #   botocore
     #   py2neo
