@@ -57,5 +57,5 @@ def request_user_has_explicit_access(*args, **kwargs):
 
 rules.add_perm(
     'can_access_enterprise',
-    request_user_has_implicit_access | request_user_has_explicit_access
+    request_user_has_implicit_access | request_user_has_explicit_access  # pylint: disable=unsupported-binary-operation
 )
