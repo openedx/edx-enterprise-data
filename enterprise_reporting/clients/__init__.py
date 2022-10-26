@@ -3,7 +3,7 @@ Clients used to access third party systems.
 """
 
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import wraps
 from urllib.parse import parse_qs, urljoin, urlparse
 from edx_rest_api_client.client import get_oauth_access_token
@@ -21,6 +21,7 @@ class EdxOAuth2APIClient:
     LMS_OAUTH_HOST = os.getenv('LMS_OAUTH_HOST', default='')
     API_BASE_URL = LMS_ROOT_URL + '/api/'
     APPEND_SLASH = False
+    ACCESS_TOKEN_EXPIRY_THRESHOLD_IN_SECONDS = 60
 
     DEFAULT_VALUE_SAFEGUARD = object()
 
@@ -43,7 +44,7 @@ class EdxOAuth2APIClient:
         """
         Return True if the JWT token has expired, False if not.
         """
-        return datetime.utcnow() > self.expires_at
+        return datetime.utcnow() > (self.expires_at - timedelta(seconds=self.ACCESS_TOKEN_EXPIRY_THRESHOLD_IN_SECONDS))
 
     @staticmethod
     def refresh_token(func):
