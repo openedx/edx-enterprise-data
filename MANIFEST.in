@@ -8,3 +8,4 @@ recursive-include enterprise_data_roles *.html *.png *.gif *js *.css *jpg *jpeg 
 recursive-include requirements *.txt
 include requirements/base.in
 include requirements/reporting.in
+include requirements/constraints.txt
