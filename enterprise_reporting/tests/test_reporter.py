@@ -1,10 +1,14 @@
 """
 Test reporter.
 """
-import unittest
 import datetime
-import pytest
+import os
+import unittest
+from unittest import mock
+from unittest.mock import MagicMock
+
 import ddt
+import pytest
 
 from enterprise_reporting import reporter
 from enterprise_reporting.reporter import EnterpriseReportSender
@@ -21,7 +25,7 @@ class TestReporter(unittest.TestCase):
 		self.date = datetime.datetime.now().strftime("%Y-%m-%d")
 		self.reporting_config = {
 			'enterprise_customer': {
-				'uuid': '4815162242', 'name': 'John'
+				'uuid': '12aacfee8ffa4cb3bed1059565a57f05', 'name': 'John'
 			},
 			'delivery_method': 'sftp',
 			'data_type': 'catalog',
@@ -58,3 +62,54 @@ class TestReporter(unittest.TestCase):
 			report_type=self.reporting_config['report_type']
 		)
 		assert actual_file_name == expected_file_name
+
+	@ddt.data(
+		'grade',
+		'course_structure',
+		'completion',
+	)
+	@mock.patch("enterprise_reporting.reporter.S3Client")
+	def test_manual_reports(self, data_type, mock_s3_client):
+		"""
+		Verify that `get_enterprise_report` has been called with correct S3 CSV path.
+		"""
+		# mock S3Client get_enterprise_report to verify if it has called with correct arguments
+		mock_s3_client.return_value.get_enterprise_report.return_value = MagicMock()
+
+		report_config = dict(self.reporting_config, data_type=data_type, report_type="csv")
+		enterprise_uuid = report_config['enterprise_customer']['uuid']
+
+		# set environment variable
+		s3_csv_path = f"BATMAN/REPORTS/{data_type}.csv"
+		os.environ[f"{data_type}-{enterprise_uuid}"] = s3_csv_path
+
+		enterprise_report_sender = EnterpriseReportSender.create(report_config)
+		data_report_file = getattr(enterprise_report_sender, f'_generate_enterprise_report_{data_type}_csv')()
+
+		mock_s3_client.return_value.get_enterprise_report.assert_called_with(s3_csv_path, data_report_file[0])
+
+	@ddt.data(
+		'grade',
+		'course_structure',
+		'completion',
+	)
+	@mock.patch("enterprise_reporting.reporter.S3Client")
+	def test_manual_reports_without_env_var(self, data_type, mock_s3_client):
+		"""
+		Verify that `get_enterprise_report` raises correct exception if S3 csv path is not present as an env variable.
+		"""
+		# mock S3Client get_enterprise_report to verify if it has not called
+		mock_s3_client.return_value.get_enterprise_report.return_value = MagicMock()
+
+		report_config = dict(self.reporting_config, data_type=data_type, report_type="csv")
+		enterprise_uuid = report_config['enterprise_customer']['uuid']
+
+		# remove environment variable
+		del os.environ[f"{data_type}-{enterprise_uuid}"]
+
+		enterprise_report_sender = EnterpriseReportSender.create(report_config)
+		with pytest.raises(ValueError) as ve:
+			getattr(enterprise_report_sender, f'_generate_enterprise_report_{data_type}_csv')()
+
+		assert ve.value.args[0] == 'Invalid S3 CSV path. Path: [None]'
+		mock_s3_client.return_value.get_enterprise_report.assert_not_called()

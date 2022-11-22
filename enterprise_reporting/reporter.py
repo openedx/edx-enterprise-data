@@ -2,25 +2,25 @@
 Classes that handle sending reports for EnterpriseCustomers.
 """
 
-
 import csv
 import datetime
 import json
 import logging
+import os
 from collections import OrderedDict
 from uuid import UUID
 
 from enterprise_reporting.clients.enterprise import (
     AnalyticsDataApiClient,
     EnterpriseAPIClient,
+    EnterpriseCatalogAPIClient,
     EnterpriseDataApiClient,
     EnterpriseDataV1ApiClient,
-    EnterpriseCatalogAPIClient,
 )
 from enterprise_reporting.clients.s3 import S3Client
 from enterprise_reporting.clients.vertica import VerticaClient
 from enterprise_reporting.delivery_method import SFTPDeliveryMethod, SMTPDeliveryMethod
-from enterprise_reporting.utils import decrypt_string, generate_data, extract_catalog_uuids_from_reporting_config
+from enterprise_reporting.utils import decrypt_string, extract_catalog_uuids_from_reporting_config, generate_data
 
 LOGGER = logging.getLogger(__name__)
 NOW = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -152,16 +152,31 @@ class EnterpriseReportSender:
         vertica_client.close_connection()
         return [data_report_file]
 
+    def get_s3_csv_path(self):
+        """Return S3 CSV path for a manual report else raise an exception if path doesn't exist"""
+        # <data_type>-<enterprise uuid>
+        env_variable_name = f"{self.data_type}-{self.enterprise_customer_uuid.replace('-', '')}"
+        s3_csv_path = os.environ.get(env_variable_name)
+
+        if not s3_csv_path:
+            raise ValueError(f'Invalid S3 CSV path. Path: [{s3_csv_path}]')
+
+        LOGGER.info(
+            'Enterprise UUID: [%s], Enterprise Name: [%s], Data Type: [%s], S3 CSV Path: [%s]',
+            self.enterprise_customer_uuid,
+            self.enterprise_customer_name,
+            self.data_type,
+            s3_csv_path,
+        )
+
+        return s3_csv_path
+
     def _generate_enterprise_report_grade_csv(self):
         """Query S3 and write output to csv file."""
         s3_client = S3Client()
         with open(self.data_report_file_name, 'wb') as data_report_file:
             LOGGER.debug('Fetching enterprise grade report from S3')
-            # temporarily adding file path for PEARSON
-            s3_client.get_enterprise_report(
-                'PEARSON/ENT_REPORT_PEARSON_PERSISTENTSUBSECTIONGRADE/ENT_REPORT_PEARSON_PERSISTENTSUBSECTIONGRADE.csv',
-                data_report_file
-            )
+            s3_client.get_enterprise_report(self.get_s3_csv_path(), data_report_file)
         return [data_report_file]
 
     def _generate_enterprise_report_course_structure_csv(self):
@@ -169,11 +184,7 @@ class EnterpriseReportSender:
         s3_client = S3Client()
         with open(self.data_report_file_name, 'wb') as data_report_file:
             LOGGER.debug('Fetching enterprise course structure report from S3')
-            # temporarily adding file path for PEARSON
-            s3_client.get_enterprise_report(
-                'PEARSON/ENT_REPORT_PEARSON_COURSE_METRICS/ENT_REPORT_PEARSON_COURSE_METRICS.csv',
-                data_report_file
-            )
+            s3_client.get_enterprise_report(self.get_s3_csv_path(), data_report_file)
         return [data_report_file]
 
     def _generate_enterprise_report_completion_csv(self):
@@ -181,11 +192,7 @@ class EnterpriseReportSender:
         s3_client = S3Client()
         with open(self.data_report_file_name, 'wb') as data_report_file:
             LOGGER.debug('Fetching enterprise completion report from S3')
-            # temporarily adding file path for PEARSON
-            s3_client.get_enterprise_report(
-                'PEARSON/ENT_REPORT_PEARSON_BLOCK_COMPLETION/ENT_REPORT_PEARSON_BLOCK_COMPLETION.csv',
-                data_report_file
-            )
+            s3_client.get_enterprise_report(self.get_s3_csv_path(), data_report_file)
         return [data_report_file]
 
     def _generate_enterprise_report_progress_v2_csv(self):
