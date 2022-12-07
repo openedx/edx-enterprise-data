@@ -3,6 +3,7 @@ Tests for clients in enterprise_reporting.
 """
 from unittest.mock import Mock, patch
 from urllib.parse import urljoin
+from datetime import datetime, timedelta
 
 import responses
 
@@ -37,10 +38,7 @@ class TestEnterpriseAPIClient(TestCase):
     @responses.activate
     @patch('enterprise_reporting.clients.get_oauth_access_token')
     def test_get_all_enterprise_reporting_configs(self, mock_get_oauth_access_token):
-        mock_get_oauth_access_token.return_value = {
-            'access_token': 'test_access_token',
-            'expires_in': 10,
-        }
+        mock_get_oauth_access_token.return_value = ['test_access_token', datetime.now() + timedelta(minutes=60)]
         url = urljoin(self.client.API_BASE_URL + '/', self.client.ENTERPRISE_REPORTING_ENDPOINT)
         responses.add(
             responses.GET,
@@ -55,10 +53,7 @@ class TestEnterpriseAPIClient(TestCase):
     @responses.activate
     @patch('enterprise_reporting.clients.get_oauth_access_token')
     def test_get_enterprise_reporting_configs(self, mock_get_oauth_access_token):
-        mock_get_oauth_access_token.return_value = {
-            'access_token': 'test_access_token',
-            'expires_in': 10,
-        }
+        mock_get_oauth_access_token.return_value = ['test_access_token', datetime.now() + timedelta(minutes=60)]
         url = urljoin(self.client.API_BASE_URL + '/', self.client.ENTERPRISE_REPORTING_ENDPOINT)
         responses.add(
             responses.GET,
@@ -73,10 +68,7 @@ class TestEnterpriseAPIClient(TestCase):
     @responses.activate
     @patch('enterprise_reporting.clients.get_oauth_access_token')
     def test_get_customer_catalogs(self, mock_get_oauth_access_token):
-        mock_get_oauth_access_token.return_value = {
-            'access_token': 'test_access_token',
-            'expires_in': 10,
-        }
+        mock_get_oauth_access_token.return_value = ['test_access_token', datetime.now() + timedelta(minutes=60)]
         url = urljoin(self.client.API_BASE_URL + '/', self.client.ENTERPRISE_CUSTOMER_CATALOGS_ENDPOINT)
         responses.add(
             responses.GET,
@@ -91,10 +83,7 @@ class TestEnterpriseAPIClient(TestCase):
     @responses.activate
     @patch('enterprise_reporting.clients.get_oauth_access_token')
     def test_get_content_metadata(self, mock_get_oauth_access_token):
-        mock_get_oauth_access_token.return_value = {
-            'access_token': 'test_access_token',
-            'expires_in': 10,
-        }
+        mock_get_oauth_access_token.return_value = ['test_access_token', datetime.now() + timedelta(minutes=60)]
         mocked_get_endpoint = Mock(return_value={
             'results': [{
                 'uuid': self.enterprise_customer_uuid

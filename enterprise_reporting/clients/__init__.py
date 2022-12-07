@@ -11,7 +11,27 @@ from edx_rest_api_client.client import get_oauth_access_token
 import requests
 
 
-class EdxOAuth2APIClient:
+class EdxOAuth2APIMixin:
+    """
+    Base API Client Mixin for accessing edX IDA API endpoints.
+    """
+    @staticmethod
+    def refresh_token(func):
+        """
+        Use this method decorator to ensure the JWT token is refreshed when needed.
+        """
+        @wraps(func)
+        def inner(self, *args, **kwargs):
+            """
+            Before calling the wrapped function, we check if the JWT token is expired, and if so, re-connect.
+            """
+            if self.token_expired():
+                self.connect()
+            return func(self, *args, **kwargs)
+        return inner
+
+
+class EdxOAuth2APIClient(EdxOAuth2APIMixin):
     """
     Base API Client for accessing edX IDA API endpoints.
     """
@@ -32,12 +52,13 @@ class EdxOAuth2APIClient:
         self.client_id = client_id or os.environ.get('LMS_OAUTH_KEY')
         self.client_secret = client_secret or os.environ.get('LMS_OAUTH_SECRET')
         self.expires_at = datetime.utcnow()
+        self.access_token = None
 
     def connect(self):
         """
         Connect to the REST API, authenticating with an access token retrieved with our client credentials.
         """
-        url = urljoin(f'{self.LMS_OAUTH_HOST}/', 'oauth2/access_token')
+        url = urljoin(self.LMS_OAUTH_HOST, 'oauth2/access_token')
         self.access_token, self.expires_at = get_oauth_access_token(url, self.client_id, self.client_secret)
 
     def token_expired(self):
@@ -46,21 +67,7 @@ class EdxOAuth2APIClient:
         """
         return datetime.utcnow() > (self.expires_at - timedelta(seconds=self.ACCESS_TOKEN_EXPIRY_THRESHOLD_IN_SECONDS))
 
-    @staticmethod
-    def refresh_token(func):
-        """
-        Use this method decorator to ensure the JWT token is refreshed when needed.
-        """
-        @wraps(func)
-        def inner(self, *args, **kwargs):
-            """
-            Before calling the wrapped function, we check if the JWT token is expired, and if so, re-connect.
-            """
-            if self.token_expired():
-                self.connect()
-            return func(self, *args, **kwargs)
-        return inner
-
+    @EdxOAuth2APIMixin.refresh_token
     def _requests(self, url, querystring):
         headers = {'Authorization': "JWT {}".format(self.access_token)}
         response = requests.get(
@@ -103,7 +110,7 @@ class EdxOAuth2APIClient:
         if detail_resource:
             path += '/' + detail_resource
 
-        url = urljoin(f'{self.API_BASE_URL}/', path)
+        url = urljoin(self.API_BASE_URL, path)
         data = self._requests(url, querystring)
 
         if should_traverse_pagination:

@@ -114,7 +114,6 @@ class EnterpriseCatalogAPIClient(EdxOAuth2APIClient):
 
         return content_metadata
 
-    @EdxOAuth2APIClient.refresh_token
     def get_content_metadata(self, enterprise_customer_catalogs):
         """Return all content metadata contained in the catalogs associated with a reporting config."""
         content_metadata = OrderedDict()
@@ -142,7 +141,6 @@ class EnterpriseAPIClient(EdxOAuth2APIClient):
 
     PAGE_SIZE = os.getenv('PAGE_SIZE', default=1000)
 
-    @EdxOAuth2APIClient.refresh_token
     def get_all_enterprise_reporting_configs(self, **kwargs):
         """
         Query the enterprise customer reporting endpoint for all available configs.
@@ -153,7 +151,6 @@ class EnterpriseAPIClient(EdxOAuth2APIClient):
             **kwargs
         )
 
-    @EdxOAuth2APIClient.refresh_token
     def get_enterprise_reporting_configs(self, enterprise_customer_uuid, **kwargs):
         """
         Query the enterprise customer reporting endpoint for a given enterprise customer.
@@ -165,7 +162,6 @@ class EnterpriseAPIClient(EdxOAuth2APIClient):
             **kwargs
         )
 
-    @EdxOAuth2APIClient.refresh_token
     def get_content_metadata(self, enterprise_customer_uuid, reporting_config):
         """Return all content metadata contained in the catalogs associated with an Enterprise Customer."""
         content_metadata = OrderedDict()
@@ -196,7 +192,6 @@ class EnterpriseAPIClient(EdxOAuth2APIClient):
         # We only made this a dictionary to help filter out duplicates by a common key. We just want values now.
         return list(content_metadata.values())
 
-    @EdxOAuth2APIClient.refresh_token
     def get_customer_catalogs(self, enterprise_customer_uuid):
         """Return all catalog uuids owned by an Enterprise Customer."""
         return self._load_data(
@@ -217,7 +212,6 @@ class EnterpriseDataApiClient(EdxOAuth2APIClient):
     API_BASE_URL = urljoin(os.getenv('ANALYTICS_API_URL', default='') + '/', 'enterprise/api/v0')
     PAGE_SIZE = os.getenv('PAGE_SIZE', default=1000)
 
-    @EdxOAuth2APIClient.refresh_token
     def get_enterprise_enrollments(self, enterprise_customer_uuid):
         return self._load_data(
             'enterprise',
@@ -244,7 +238,6 @@ class AnalyticsDataApiClient(EdxOAuth2APIClient):
     API_BASE_URL = urljoin(os.getenv('ANALYTICS_API_URL', default='') + '/', 'api/v0')
     PAGE_SIZE = os.getenv('PAGE_SIZE', default=1000)
 
-    @EdxOAuth2APIClient.refresh_token
     def get_enterprise_engagements(self, enterprise_customer_uuid):
         return self._load_data(
             'enterprise',
