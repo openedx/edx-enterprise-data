@@ -58,7 +58,7 @@ class EdxOAuth2APIClient(EdxOAuth2APIMixin):
         """
         Connect to the REST API, authenticating with an access token retrieved with our client credentials.
         """
-        url = urljoin(self.LMS_OAUTH_HOST, 'oauth2/access_token')
+        url = urljoin(f'{self.LMS_OAUTH_HOST}/', 'oauth2/access_token')
         self.access_token, self.expires_at = get_oauth_access_token(url, self.client_id, self.client_secret)
 
     def token_expired(self):
@@ -110,7 +110,7 @@ class EdxOAuth2APIClient(EdxOAuth2APIMixin):
         if detail_resource:
             path += '/' + detail_resource
 
-        url = urljoin(self.API_BASE_URL, path)
+        url = urljoin(f'{self.API_BASE_URL}/', path)
         data = self._requests(url, querystring)
 
         if should_traverse_pagination:
