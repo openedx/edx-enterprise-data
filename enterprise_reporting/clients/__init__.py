@@ -40,6 +40,7 @@ class EdxOAuth2APIClient(EdxOAuth2APIMixin):
     ENTERPRISE_CATALOG_ROOT_URL = os.getenv('ENTERPRISE_CATALOG_ROOT_URL', default='https://enterprise-catalog.edx.org')
     LMS_OAUTH_HOST = os.getenv('LMS_OAUTH_HOST', default='')
     API_BASE_URL = LMS_ROOT_URL + '/api/'
+    APPEND_SLASH = False
     ACCESS_TOKEN_EXPIRY_THRESHOLD_IN_SECONDS = 60
 
     DEFAULT_VALUE_SAFEGUARD = object()
