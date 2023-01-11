@@ -80,10 +80,10 @@ class EnterpriseReportSender:
                 enterprise_customer_name,
                 reporting_config['email'],
             ))
-            delivery_method = SMTPDeliveryMethod(
-                reporting_config,
-                decrypt_string(reporting_config['encrypted_password']),
-            )
+            decrypted_password = None
+            if reporting_config['encrypted_password']:
+                decrypted_password = decrypt_string(reporting_config['encrypted_password'])
+            delivery_method = SMTPDeliveryMethod(reporting_config, decrypted_password)
         elif delivery_method_str == 'sftp':
             LOGGER.debug('{} is configured to send the report via SFTP to {}'.format(
                 enterprise_customer_name,
