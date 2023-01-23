@@ -29,6 +29,23 @@ class EnterpriseCatalogAPIClient(EdxOAuth2APIClient):
 
     PAGE_SIZE = os.getenv('PAGE_SIZE', default=1000)
 
+    @staticmethod
+    def _get_formatted_subjects(item):
+        """
+        Returns formatted subject for course and programs
+        """
+        subjects = item.get('subjects', [])
+        formatted_subjects = []
+        for subject in subjects:
+            try:
+                subject_name = subject.get('name')
+                if subject_name:
+                    formatted_subjects.append(subject_name)
+            except AttributeError as error:
+                LOGGER.exception("[Enterprise Reporting]. Item: %s", item)
+                raise error
+        return formatted_subjects
+
     def transform_get_content_metadata(self, traversed_metadata):
         """
         Helper method to transform a response (already traversed pagination) from the enterprise-catalog service's `get_content_metadata`.
@@ -77,14 +94,7 @@ class EnterpriseCatalogAPIClient(EdxOAuth2APIClient):
                     }
                     formatted_course_runs.append(formatted_course_run)
 
-                # Subject attributes also need reformatting
-                subjects = item.get('subjects', [])
-                formatted_subjects = []
-                for subject in subjects:
-                    subject_name = subject.get('name')
-                    if subject_name:
-                        formatted_subjects.append(subject_name)
-
+                formatted_subjects = self._get_formatted_subjects(item)
                 formatted_metadata = {
                     'active': item.get('active'),
                     'aggregation_key': item.get('aggregation_key'),
