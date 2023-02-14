@@ -38,9 +38,16 @@ class EnterpriseCatalogAPIClient(EdxOAuth2APIClient):
         formatted_subjects = []
         for subject in subjects:
             try:
-                subject_name = subject.get('name')
-                if subject_name:
-                    formatted_subjects.append(subject_name)
+                if isinstance(subject, str):
+                    formatted_subjects.append(subject)
+                elif isinstance(subject, dict):
+                    subject_name = subject.get('name')
+                    if subject_name:
+                        formatted_subjects.append(subject_name)
+                else:
+                    error_msg = "Subject is not a string or a dictionary: {}".format(subject)
+                    LOGGER.error("[Enterprise Reporting]. %s", error_msg)
+                    raise TypeError(error_msg)
             except AttributeError as error:
                 LOGGER.exception("[Enterprise Reporting]. Item: %s", item)
                 raise error
