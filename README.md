@@ -5,15 +5,15 @@ This repository is currently split into 2 folders: enterprise_reporting and ente
 
 ## enterprise_data app
 This django app exposes a REST api endpoint to access enterprise learner activity. The enterprise-data app is published
-to pypi as a library and installed into the [edx-analytics-data-api](https://github.com/edx/edx-analytics-data-api/) project
-and uses OAuth JWT authentication from [edx-drf-extensions](https://github.com/edx/edx-drf-extensions/blob/4569b9bf7e54a917d4acdd545b10c058c960dd1a/edx_rest_framework_extensions/auth/jwt/authentication.py#L17).
+to pypi as a library and installed into the [edx-analytics-data-api](https://github.com/openedx/edx-analytics-data-api/) project
+and uses OAuth JWT authentication from [edx-drf-extensions](https://github.com/openedx/edx-drf-extensions/blob/4569b9bf7e54a917d4acdd545b10c058c960dd1a/edx_rest_framework_extensions/auth/jwt/authentication.py#L17).
 
 ## Prerequisites for develpment
-* [LMS](https://github.com/edx/devstack)
-* [edx-analytics-data-api](https://github.com/edx/edx-analytics-data-api/) - Follow devstack setup instructions in here.
+* [LMS](https://github.com/openedx/devstack)
+* [edx-analytics-data-api](https://github.com/openedx/edx-analytics-data-api/) - Follow devstack setup instructions in here.
 
 ## Setup for local development (Deprecated, prefer running in devstack)
-This app is meant to be installed as an app in [edx-analytics-data-api](https://github.com/edx/edx-analytics-data-api/).
+This app is meant to be installed as an app in [edx-analytics-data-api](https://github.com/openedx/edx-analytics-data-api/).
 1. Create a directory in your filesystem that has the `edx-analytics-data-api` repo in it. Create a folder `src`, and clone this repo into the `src` directory.
 1. Complete the setup in the README of `edx-analytics-data-api`
 1. Navigate to `edx-analytics-data-api` and activate your virtualenv.
@@ -26,7 +26,7 @@ The default database configured by devstack is `analytics-api`. If you wish to r
 run `./manage.py migrate --database analytics_v1` or `./manage.py migrate --database analytics` in the `edx-analytics-data-api` container.
 
 ## Frontend
-Much of the data from this app is consumed by [frontend-app-admin-portal](https://github.com/edx/frontend-app-admin-portal/).
+Much of the data from this app is consumed by [frontend-app-admin-portal](https://github.com/openedx/frontend-app-admin-portal/).
 Follow the instructions in that README to set it up.
 
 Management commands for creating development data are below.
@@ -34,7 +34,7 @@ Management commands for creating development data are below.
 ### Management Commands for Devs
 
 For the convenience of creating some test data in a local setup, there are some management commands that exist.
-To create a test enterprise, go into the [lms shell][LMS](https://github.com/edx/devstack) and run `./manage.py lms seed_enterprise_devstack_data`
+To create a test enterprise, go into the [lms shell][LMS](https://github.com/openedx/devstack) and run `./manage.py lms seed_enterprise_devstack_data`
 You can then use the test enterprise's UUID for the following commands.
 
 These commands can be run from this repo or from `edx-analytics-data-api`.

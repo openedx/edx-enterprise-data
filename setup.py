@@ -110,7 +110,7 @@ setup(
     long_description="Tools and products related to providing access to Enterprise data.",
     author="edX",
     author_email="oscm@edx.org",
-    url="https://github.com/edx/edx-enterprise-data",
+    url="https://github.com/openedx/edx-enterprise-data",
     packages=[
         'enterprise_data',
         'enterprise_reporting',
