@@ -18,3 +18,5 @@ tox-battery==0.5.2
 
 # Constrain until https://github.com/datadriventests/ddt/issues/83 is fixed.
 ddt<1.4.0
+
+tox<4.0.0
