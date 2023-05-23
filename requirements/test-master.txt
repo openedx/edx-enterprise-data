@@ -12,15 +12,15 @@ asn1crypto==1.5.1
     # via
     #   oscrypto
     #   snowflake-connector-python
-awscli==1.27.134
+awscli==1.27.138
     # via -r requirements/reporting.in
 bcrypt==4.0.1
     # via paramiko
 billiard==3.6.4.0
     # via celery
-boto3==1.26.134
+boto3==1.26.138
     # via -r requirements/reporting.in
-botocore==1.29.134
+botocore==1.29.138
     # via
     #   awscli
     #   boto3
@@ -104,7 +104,7 @@ edx-django-utils==5.4.0
     #   -r requirements/base.in
     #   edx-drf-extensions
     #   edx-rest-api-client
-edx-drf-extensions==8.7.0
+edx-drf-extensions==8.8.0
     # via
     #   -r requirements/base.in
     #   -r requirements/test-master.in
@@ -115,7 +115,7 @@ edx-opaque-keys==2.3.0
     #   edx-drf-extensions
 edx-rbac==1.7.0
     # via -r requirements/base.in
-edx-rest-api-client==5.5.0
+edx-rest-api-client==5.5.2
     # via -r requirements/base.in
 exceptiongroup==1.1.1
     # via pytest
@@ -123,7 +123,7 @@ factory-boy==3.2.1
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==18.7.0
+faker==18.9.0
     # via factory-boy
 filelock==3.12.0
     # via snowflake-connector-python
@@ -131,8 +131,6 @@ flaky==3.7.0
     # via -r requirements/test.in
 freezegun==1.2.2
     # via -r requirements/test.in
-future==0.18.3
-    # via pyjwkest
 idna==3.4
     # via
     #   requests
@@ -180,14 +178,10 @@ pyasn1==0.5.0
     #   rsa
 pycparser==2.21
     # via cffi
-pycryptodomex==3.17
-    # via
-    #   pyjwkest
-    #   snowflake-connector-python
+pycryptodomex==3.18.0
+    # via snowflake-connector-python
 pygments==2.15.1
     # via py2neo
-pyjwkest==1.4.2
-    # via edx-drf-extensions
 pyjwt[crypto]==2.7.0
     # via
     #   drf-jwt
@@ -230,12 +224,11 @@ pyyaml==5.4.1
     # via
     #   awscli
     #   responses
-requests==2.30.0
+requests==2.31.0
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
     #   edx-rest-api-client
-    #   pyjwkest
     #   responses
     #   slumber
     #   snowflake-connector-python
@@ -258,7 +251,6 @@ six==1.16.0
     #   interchange
     #   pansi
     #   py2neo
-    #   pyjwkest
     #   python-dateutil
     #   vertica-python
 slumber==0.7.1
@@ -277,9 +269,9 @@ tomli==2.0.1
     # via
     #   coverage
     #   pytest
-types-pyyaml==6.0.12.9
+types-pyyaml==6.0.12.10
     # via responses
-typing-extensions==4.5.0
+typing-extensions==4.6.0
     # via snowflake-connector-python
 unicodecsv==0.14.1
     # via -r requirements/reporting.in
