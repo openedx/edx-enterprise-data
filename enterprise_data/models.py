@@ -81,7 +81,7 @@ class EnterpriseLearnerEnrollment(models.Model):
     unenrollment_end_within_date = models.DateField(null=True)
     is_refunded = models.BooleanField(default=None, null=True)
     seat_delivery_method = models.CharField(max_length=255, null=True)
-    offer_id = models.PositiveIntegerField(null=True)
+    offer_id = models.CharField(max_length=255, null=True)
     offer_name = models.CharField(max_length=255, null=True)
     offer_type = models.CharField(max_length=255, null=True)
     coupon_code = models.CharField(max_length=255, null=True)
@@ -212,7 +212,7 @@ class EnterpriseOffer(models.Model):
         verbose_name = _("Enterprise Offer")
         verbose_name_plural = _("Enterprise Offers")
 
-    offer_id = models.PositiveIntegerField(primary_key=True)
+    offer_id = models.CharField(max_length=255, primary_key=True)
     enterprise_customer_uuid = models.UUIDField()
     enterprise_name = models.CharField(max_length=255, null=True)
     sum_amount_learner_paid = models.FloatField(null=True)

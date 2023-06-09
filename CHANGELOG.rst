@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[4.6.5] - 2023-06-09
+--------------------
+  * Migrate offer_id to a varchar field in the EnterpriseOffer and EnterpriseLearnerEnrollment models.
+
 [4.6.4] - 2022-10-19
 --------------------
   * Refactor enterprise api client and view filters to use cache key without user and remove dependency on session.

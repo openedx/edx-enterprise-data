@@ -241,7 +241,7 @@ class EnterpriseOfferFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = EnterpriseOffer
 
-    offer_id = factory.LazyAttribute(lambda x: FAKER.pyint())
+    offer_id = factory.LazyAttribute(lambda x: FAKER.pystr(min_chars=36, max_chars=200))
     enterprise_customer_uuid = factory.LazyAttribute(lambda x: FAKER.uuid4().replace('-', ''))
     enterprise_name = factory.LazyAttribute(lambda x: ' '.join(FAKER.words(nb=2)).title())
     max_discount = factory.LazyAttribute(lambda x: FAKER.pyfloat(right_digits=2, min_value=10000, max_value=100000))
