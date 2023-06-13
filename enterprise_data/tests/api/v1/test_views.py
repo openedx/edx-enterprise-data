@@ -61,8 +61,8 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
             enterprise_customer_uuid=self.enterprise_id
         )
 
-        offer_1_id = 1
-        offer_2_id = 2
+        offer_1_id = '1234'
+        offer_2_id = '2ThisIsmyOfferId'
 
         learner_enrollment_1 = EnterpriseLearnerEnrollmentFactory(
             offer_id=offer_1_id,
