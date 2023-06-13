@@ -15,10 +15,13 @@ Unreleased
 ----------
 
 =========================
+[4.6.6] - 2023-06-12
+--------------------
+  * Migrate offer_id to a varchar field in the EnterpriseOffer and EnterpriseLearnerEnrollment models.
 
 [4.6.5] - 2023-06-09
 --------------------
-  * Migrate offer_id to a varchar field in the EnterpriseOffer and EnterpriseLearnerEnrollment models.
+  * Releasing a backlog of dependency upgrades and bug fixes.
 
 [4.6.4] - 2022-10-19
 --------------------
