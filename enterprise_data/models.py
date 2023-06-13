@@ -123,6 +123,8 @@ class EnterpriseLearnerEnrollment(models.Model):
     enterprise_customer_uuid = models.UUIDField(db_index=True, null=False)
     enterprise_sso_uid = models.CharField(max_length=255, null=True)
     created = models.DateTimeField(null=True, db_index=True)
+    is_subsidy = models.BooleanField(default=False)
+    course_product_line = models.CharField(max_length=64, null=True)
 
 
 class EnterpriseEnrollment(models.Model):
