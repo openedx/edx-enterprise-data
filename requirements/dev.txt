@@ -6,7 +6,7 @@
 #
 amqp==2.6.1
     # via kombu
-asgiref==3.6.0
+asgiref==3.7.2
     # via django
 asn1crypto==1.5.1
     # via
@@ -16,7 +16,7 @@ astroid==2.15.5
     # via
     #   pylint
     #   pylint-celery
-awscli==1.27.134
+awscli==1.27.152
     # via -r requirements/reporting.in
 bcrypt==4.0.1
     # via paramiko
@@ -24,9 +24,9 @@ billiard==3.6.4.0
     # via celery
 bleach==6.0.0
     # via readme-renderer
-boto3==1.26.134
+boto3==1.26.152
     # via -r requirements/reporting.in
-botocore==1.29.134
+botocore==1.29.152
     # via
     #   awscli
     #   boto3
@@ -47,7 +47,7 @@ cffi==1.15.1
     #   snowflake-connector-python
 chardet==5.1.0
     # via diff-cover
-charset-normalizer==2.1.1
+charset-normalizer==3.1.0
     # via
     #   requests
     #   snowflake-connector-python
@@ -74,7 +74,7 @@ cryptography==40.0.2
     #   pyopenssl
     #   secretstorage
     #   snowflake-connector-python
-diff-cover==7.5.0
+diff-cover==7.6.0
     # via -r requirements/dev-enterprise_data.in
 dill==0.3.6
     # via pylint
@@ -120,12 +120,12 @@ docutils==0.16
     #   readme-renderer
 drf-jwt==1.19.2
     # via edx-drf-extensions
-edx-django-utils==5.4.0
+edx-django-utils==5.5.0
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
     #   edx-rest-api-client
-edx-drf-extensions==8.7.0
+edx-drf-extensions==8.8.0
     # via
     #   -r requirements/base.in
     #   edx-rbac
@@ -141,19 +141,17 @@ edx-opaque-keys==2.3.0
     #   edx-drf-extensions
 edx-rbac==1.7.0
     # via -r requirements/base.in
-edx-rest-api-client==5.5.0
+edx-rest-api-client==5.5.2
     # via -r requirements/base.in
 factory-boy==3.2.1
     # via -r requirements/base.in
-faker==18.7.0
+faker==18.10.1
     # via factory-boy
-filelock==3.12.0
+filelock==3.12.2
     # via
     #   snowflake-connector-python
     #   tox
     #   virtualenv
-future==0.18.3
-    # via pyjwkest
 idna==3.4
     # via
     #   requests
@@ -190,9 +188,9 @@ kombu==4.6.11
     # via celery
 lazy-object-proxy==1.9.0
     # via astroid
-markdown-it-py==2.2.0
+markdown-it-py==3.0.0
     # via rich
-markupsafe==2.1.2
+markupsafe==2.1.3
     # via jinja2
 mccabe==0.7.0
     # via pylint
@@ -214,7 +212,7 @@ packaging==23.1
     #   tox
 pansi==2020.7.3
     # via py2neo
-paramiko==3.1.0
+paramiko==3.2.0
     # via -r requirements/reporting.in
 path==16.6.0
     # via edx-i18n-tools
@@ -226,7 +224,7 @@ pip-tools==6.13.0
     # via -r requirements/dev-enterprise_data.in
 pkginfo==1.9.6
     # via twine
-platformdirs==3.5.1
+platformdirs==3.5.3
     # via
     #   pylint
     #   virtualenv
@@ -250,10 +248,8 @@ pycodestyle==2.10.0
     # via -r requirements/quality.in
 pycparser==2.21
     # via cffi
-pycryptodomex==3.17
-    # via
-    #   pyjwkest
-    #   snowflake-connector-python
+pycryptodomex==3.18.0
+    # via snowflake-connector-python
 pydocstyle==6.3.0
     # via -r requirements/quality.in
 pygments==2.15.1
@@ -262,8 +258,6 @@ pygments==2.15.1
     #   py2neo
     #   readme-renderer
     #   rich
-pyjwkest==1.4.2
-    # via edx-drf-extensions
 pyjwt[crypto]==2.7.0
     # via
     #   drf-jwt
@@ -280,7 +274,7 @@ pylint-celery==0.3
     # via edx-lint
 pylint-django==2.5.3
     # via edx-lint
-pylint-plugin-utils==0.8.1
+pylint-plugin-utils==0.8.2
     # via
     #   pylint-celery
     #   pylint-django
@@ -292,7 +286,7 @@ pynacl==1.5.0
     # via
     #   edx-django-utils
     #   paramiko
-pyopenssl==23.1.1
+pyopenssl==23.2.0
     # via snowflake-connector-python
 pyproject-hooks==1.0.0
     # via build
@@ -318,12 +312,11 @@ pyyaml==5.4.1
     #   edx-i18n-tools
 readme-renderer==37.3
     # via twine
-requests==2.30.0
+requests==2.31.0
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
     #   edx-rest-api-client
-    #   pyjwkest
     #   requests-toolbelt
     #   slumber
     #   snowflake-connector-python
@@ -332,7 +325,7 @@ requests-toolbelt==1.0.0
     # via twine
 rfc3986==2.0.0
     # via twine
-rich==13.3.5
+rich==13.4.2
     # via twine
 rsa==4.7.2
     # via awscli
@@ -355,7 +348,6 @@ six==1.16.0
     #   interchange
     #   pansi
     #   py2neo
-    #   pyjwkest
     #   python-dateutil
     #   tox
     #   vertica-python
@@ -363,8 +355,10 @@ slumber==0.7.1
     # via edx-rest-api-client
 snowballstemmer==2.2.0
     # via pydocstyle
-snowflake-connector-python==3.0.3
+snowflake-connector-python==3.0.4
     # via -r requirements/reporting.in
+sortedcontainers==2.4.0
+    # via snowflake-connector-python
 sqlparse==0.4.4
     # via django
 stevedore==5.1.0
@@ -395,15 +389,16 @@ tox-battery==0.5.2
     #   -r requirements/dev-enterprise_data.in
 twine==4.0.2
     # via -r requirements/dev-enterprise_data.in
-typing-extensions==4.5.0
+typing-extensions==4.6.3
     # via
+    #   asgiref
     #   astroid
     #   pylint
     #   rich
     #   snowflake-connector-python
 unicodecsv==0.14.1
     # via -r requirements/reporting.in
-urllib3==1.26.15
+urllib3==1.26.16
     # via
     #   botocore
     #   py2neo
