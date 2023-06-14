@@ -267,14 +267,19 @@ class EnterpriseOfferViewSet(EnterpriseViewSetMixin, viewsets.ReadOnlyModelViewS
     filter_backends = (filters.OrderingFilter, DjangoFilterBackend,)
     ordering_fields = '__all__'
 
+    lookup_field = 'offer_id'
+
     filterset_fields = (
         'offer_id',
         'status'
     )
 
+    def get_object(self):
+        self.kwargs['offer_id'] = self.kwargs['offer_id'].replace('-', '')
+        return super().get_object()
+
     def get_queryset(self):
         enterprise_customer_uuid = self.kwargs['enterprise_id']
-        import pdb; pdb.set_trace()
         return EnterpriseOffer.objects.filter(
             enterprise_customer_uuid=enterprise_customer_uuid,
         )
