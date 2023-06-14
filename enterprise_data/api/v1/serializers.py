@@ -2,11 +2,13 @@
 Serializers for enterprise api v1.
 """
 
-import uuid
+import logging
 
 from rest_framework import serializers
 
 from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment, EnterpriseOffer
+
+LOGGER = logging.getLogger(__name__)
 
 
 class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
@@ -69,25 +71,27 @@ class EnterpriseOfferSerializer(serializers.ModelSerializer):
             If the given string is not exclusively numeric characters, but also does not parse as a UUID (either because
             it has the wrong length, incorrect dashes, or some other reason).
         """
-        try:
-            int(value)
-        except ValueError:
-            pass
-        else:
-            # any value that looks like an integer, regardless of length, is stored to the db.  Even if the input is
-            # exactly 32 characters, which unfortunately will become indistinguishable between an integer or a UUID.
+        LOGGER.info('Validating offer ID: %s', value)
+        if len(value) < 10 and isinstance(value, int):
+            LOGGER.info('Validated offer ID is int: %s', value)
             return value
 
-        # By this point, the value either does not parse as an integer (probably because it contains dashes and/or alpha
-        # characters). Test that it is a valid UUID before storing to the db.
-        try:
-            uuid.UUID(value)
-        except ValueError as exc:
-            raise serializers.ValidationError("requested offer_id neither a valid integer nor UUID.") from exc
+        elif isinstance(value, str) and len(value) == 32:
+            LOGGER.info('Validated offer ID is string/UUID: %s', value)
+            return value
+        else:
+            raise serializers.ValidationError("requested offer_id neither a valid integer nor UUID.")
 
-        # By this point, the value does parse as a valid UUID, so normalize the value by removing the hyphens before
-        # storing to the DB.
-        return value.replace('-', '')
+    def to_internal_value(self, data):
+        """
+        Convert the incoming data offer_id field to a format that can be stored in the db.
+        """
+        LOGGER.info('Converting offer ID to internal value to_internal_value: %s', data)
+        ret = super().to_representation(data)
+        if isinstance(ret['offer_id'], str):
+            ret['offer_id'] = ret['offer_id'].replace('-', '')
+        LOGGER.info('Converted offer ID to internal value to_internal_value: %s', ret)
+        return ret
 
     def to_representation(self, instance):
         """
