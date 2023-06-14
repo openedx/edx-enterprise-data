@@ -2,8 +2,9 @@
 Tests for views in the `enterprise_data` module.
 """
 
+import os
 from unittest import mock
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import ddt
 from pytest import mark
@@ -125,12 +126,16 @@ class TestEnterpriseOffersViewSet(JWTTestMixin, APITransactionTestCase):
         self.client.force_authenticate(user=self.user)
 
         self.enterprise_customer_uuid_1 = uuid4()
+        self.enterprise_offer_1_offer_id = str(uuid4()).replace('-', '')
         self.enterprise_offer_1 = EnterpriseOfferFactory(
+            offer_id=self.enterprise_offer_1_offer_id,
             enterprise_customer_uuid=self.enterprise_customer_uuid_1
         )
 
         self.enterprise_customer_2_uuid = uuid4()
+        self.enterprise_offer_2_offer_id = '11111'
         self.enterprise_offer_2 = EnterpriseOfferFactory(
+            offer_id=self.enterprise_offer_2_offer_id,
             enterprise_customer_uuid=self.enterprise_customer_2_uuid
         )
 
@@ -154,3 +159,41 @@ class TestEnterpriseOffersViewSet(JWTTestMixin, APITransactionTestCase):
         response_json = response.json()
         results = response_json['results']
         assert results == expected_results
+
+    def test_retrieve_offers_uuid(self):
+        """
+        Make sure that EnterpriseOffer objects that store UUID values inside offer_id return a hyphenated UUID.
+        """
+        enterprise_id = self.enterprise_offer_1.enterprise_customer_uuid
+        url = os.path.join(
+            reverse(
+                'v1:enterprise-offers-list',
+                kwargs={'enterprise_id': enterprise_id}
+            ),
+            self.enterprise_offer_1_offer_id + "/",
+        )
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+
+        response_json = response.json()
+        results = response_json
+        assert results['offer_id'] == str(UUID(self.enterprise_offer_1_offer_id))
+
+    def test_retrieve_offer_offer_id_int(self):
+        """
+        Make sure that EnterpriseOffer objects that store integer values inside offer_id return the value verbatim.
+        """
+        enterprise_id = self.enterprise_offer_2.enterprise_customer_uuid
+        url = os.path.join(
+            reverse(
+                'v1:enterprise-offers-list',
+                kwargs={'enterprise_id': enterprise_id}
+            ),
+            self.enterprise_offer_2_offer_id + "/",
+        )
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+
+        response_json = response.json()
+        results = response_json
+        assert results['offer_id'] == self.enterprise_offer_2_offer_id

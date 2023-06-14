@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[4.6.7] - 2023-06-14
+--------------------
+  * Add support for offer_id to be either an integer or a UUID.
+
 [4.6.6] - 2023-06-12
 --------------------
   * Migrate offer_id to a varchar field in the EnterpriseOffer and EnterpriseLearnerEnrollment models.
