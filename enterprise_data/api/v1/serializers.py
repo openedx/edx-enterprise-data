@@ -2,6 +2,8 @@
 Serializers for enterprise api v1.
 """
 
+import uuid
+
 from rest_framework import serializers
 
 from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment, EnterpriseOffer
@@ -58,6 +60,54 @@ class EnterpriseOfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = EnterpriseOffer
         fields = '__all__'
+
+    def validate_offer_id(self, value) -> str:
+        """
+        For a given offer_id string from the requester, determine the best representation to use for db storage.
+
+        Raises serializers.ValidationError:
+            If the given string is not exclusively numeric characters, but also does not parse as a UUID (either because
+            it has the wrong length, incorrect dashes, or some other reason).
+        """
+        try:
+            int(value)
+        except ValueError:
+            pass
+        else:
+            # any value that looks like an integer, regardless of length, is stored to the db.  Even if the input is
+            # exactly 32 characters, which unfortunately will become indistinguishable between an integer or a UUID.
+            return value
+
+        # By this point, the value either does not parse as an integer (probably because it contains dashes and/or alpha
+        # characters). Test that it is a valid UUID before storing to the db.
+        try:
+            uuid.UUID(value)
+        except ValueError as exc:
+            raise serializers.ValidationError("requested offer_id neither a valid integer nor UUID.") from exc
+
+        # By this point, the value does parse as a valid UUID, so normalize the value by removing the hyphens before
+        # storing to the DB.
+        return value.replace('-', '')
+
+    def to_representation(self, instance):
+        """
+        Add `-` dashes to the outgoing data offer_id field.
+        """
+        ret = super().to_representation(instance)
+
+        # A 32 character offer_id is our heuristic for whether the stored value represents a UUID or integer.  If the
+        # heuristic passes, make the serialized output look like a UUID.
+        if len(ret['offer_id']) == 32:
+            ret['offer_id'] = '-'.join([
+                    ret['offer_id'][:8],
+                    ret['offer_id'][8:12],
+                    ret['offer_id'][12:16],
+                    ret['offer_id'][16:20],
+                    ret['offer_id'][20:]
+                ]
+            )
+
+        return ret
 
 
 class EnterpriseLearnerSerializer(serializers.ModelSerializer):

@@ -78,3 +78,6 @@ geckodriver/
 
 # Visual Studio Code
 .vscode
+
+# pyenv
+.python-version
