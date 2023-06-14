@@ -126,9 +126,9 @@ class TestEnterpriseOffersViewSet(JWTTestMixin, APITransactionTestCase):
         self.client.force_authenticate(user=self.user)
 
         self.enterprise_customer_uuid_1 = uuid4()
-        self.enterprise_offer_1_offer_id = str(uuid4()).replace('-', '')
+        self.enterprise_offer_1_offer_id = str(uuid4())
         self.enterprise_offer_1 = EnterpriseOfferFactory(
-            offer_id=self.enterprise_offer_1_offer_id,
+            offer_id=self.enterprise_offer_1_offer_id.replace('-', ''),
             enterprise_customer_uuid=self.enterprise_customer_uuid_1
         )
 
