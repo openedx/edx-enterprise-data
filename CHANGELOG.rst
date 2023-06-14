@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[4.6.9] - 2023-06-14
+--------------------
+  * Allow querying of offers by either new style UUIDs or old style enterprise ID numbers.
+
 [4.6.8] - 2023-06-14
 --------------------
   * Add to_internal_value method for offer_id translation.
