@@ -274,6 +274,7 @@ class EnterpriseOfferViewSet(EnterpriseViewSetMixin, viewsets.ReadOnlyModelViewS
 
     def get_queryset(self):
         enterprise_customer_uuid = self.kwargs['enterprise_id']
+        import pdb; pdb.set_trace()
         return EnterpriseOffer.objects.filter(
             enterprise_customer_uuid=enterprise_customer_uuid,
         )
