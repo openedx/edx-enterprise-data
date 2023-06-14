@@ -2,10 +2,13 @@
 Serializers for enterprise api v1.
 """
 
+import uuid
+
 from rest_framework import serializers
 
 from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment, EnterpriseOffer
 
+MAX_OFFER_ID = 123 #fixme
 
 class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
     """
@@ -54,6 +57,26 @@ class EnterpriseOfferSerializer(serializers.ModelSerializer):
     """
     Serializer for EnterpriseOfferSerializer model.
     """
+
+    def validate_offer_id(self, value) -> str:
+        try:
+            offer_id_int = int(value)
+            if offer_id_int < MAX_OFFER_ID:
+                return value
+        except ValueError:
+            pass
+
+        # By this point, the value either does not parse as an integer
+        # (probably because it contains dashes and/or alpha characters), or it
+        # is an integer larger than the maximum allowed.
+        try:
+            uuid.UUID(value)
+            # By this point, the value does parse as a valid UUID, so remove
+            # the dashes because that's what currently stored in the DB.
+            return value.split('-').join('');
+        except ValueError:
+            raise serializers.ValidationError("requested offer_id neither a valid integer nor UUID.")
+
 
     class Meta:
         model = EnterpriseOffer
