@@ -59,7 +59,6 @@ class EnterpriseOfferSerializer(serializers.ModelSerializer):
         model = EnterpriseOffer
         fields = '__all__'
 
-
     def to_internal_value(self, data):
         """
         Convert the incoming data offer_id field to a format that can be stored in the db.

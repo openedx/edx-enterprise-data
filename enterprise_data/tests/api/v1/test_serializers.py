@@ -77,7 +77,6 @@ class TestEnterpriseOfferSerializer(APITransactionTestCase):
         serialized_offer = EnterpriseOfferSerializer(offer)
         assert serialized_offer.data['offer_id'] == offer_id_serialized
 
-
     @ddt.data(
         # The following should fail validation because we want to avoid storing these into the DB.
         None,  # null values not allowed.
