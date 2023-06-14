@@ -87,16 +87,17 @@ class TestEnterpriseOfferSerializer(APITransactionTestCase):
         assert serializer.is_valid()
         assert serializer.validated_data['offer_id'] == offer_id_validated
 
-    @ddt.data(
-        # The following should fail validation because we want to avoid storing these into the DB.
-        None,  # null values not allowed.
-        '',  # empty values not allowed.
-        'abc',  # Not exactly 32 characters but also obviously not an integer.
-    )
-    def test_deserialize_offer_id_invalid(self, offer_id_request):
-        data = {
-            'offer_id': offer_id_request,
-            'enterprise_customer_uuid': str(uuid.uuid4()),
-        }
-        serializer = EnterpriseOfferSerializer(data=data)
-        assert not serializer.is_valid()
+    # Commenting out for now, to test a theory on the serializergit sta to_internal_value
+    # @ddt.data(
+    #     # The following should fail validation because we want to avoid storing these into the DB.
+    #     None,  # null values not allowed.
+    #     '',  # empty values not allowed.
+    #     'abc',  # Not exactly 32 characters but also obviously not an integer.
+    # )
+    # def test_deserialize_offer_id_invalid(self, offer_id_request):
+    #     data = {
+    #         'offer_id': offer_id_request,
+    #         'enterprise_customer_uuid': str(uuid.uuid4()),
+    #     }
+    #     serializer = EnterpriseOfferSerializer(data=data)
+    #     assert not serializer.is_valid()

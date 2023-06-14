@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[4.6.8] - 2023-06-14
+--------------------
+  * Add to_internal_value method for offer_id translation.
+
 [4.6.7] - 2023-06-14
 --------------------
   * Add support for offer_id to be either an integer or a UUID.
