@@ -275,6 +275,11 @@ class EnterpriseOfferViewSet(EnterpriseViewSetMixin, viewsets.ReadOnlyModelViewS
     )
 
     def get_object(self):
+        """
+        This ensures that UUIDs with dashes are properly handled when requesting info about offers.
+
+        Related to the work in EnterpriseOfferSerializer with `to_internal_value` and `to_representation`
+        """
         self.kwargs['offer_id'] = self.kwargs['offer_id'].replace('-', '')
         return super().get_object()
 

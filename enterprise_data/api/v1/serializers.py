@@ -2,13 +2,9 @@
 Serializers for enterprise api v1.
 """
 
-import logging
-
 from rest_framework import serializers
 
 from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment, EnterpriseOffer
-
-LOGGER = logging.getLogger(__name__)
 
 
 class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
@@ -63,25 +59,6 @@ class EnterpriseOfferSerializer(serializers.ModelSerializer):
         model = EnterpriseOffer
         fields = '__all__'
 
-    # def validate_offer_id(self, value) -> str:
-    #     """
-    #     For a given offer_id string from the requester, determine the best representation to use for db storage.
-    #
-    #     Raises serializers.ValidationError:
-    #         If the given string is not exclusively numeric characters, but also does not parse as a UUID (either because
-    #         it has the wrong length, incorrect dashes, or some other reason).
-    #     """
-    #     LOGGER.warning('Validating offer ID: %s', value)
-    #     if len(value) < 10 and isinstance(value, int):
-    #         LOGGER.warning('Validated offer ID is int: %s', value)
-    #         return value
-    #
-    #     elif isinstance(value, str) and len(value) == 32:
-    #         LOGGER.warning('Validated offer ID is string/UUID: %s', value)
-    #         return value
-    #
-    #     else:
-    #         raise serializers.ValidationError("requested offer_id neither a valid integer nor UUID.")
 
     def to_internal_value(self, data):
         """
@@ -93,31 +70,26 @@ class EnterpriseOfferSerializer(serializers.ModelSerializer):
             If the given string is not exclusively numeric characters, but also does not parse as a UUID (either because
             it has the wrong length, incorrect dashes, or some other reason).
         """
-        LOGGER.warning('Converting offer ID to internal value to_internal_value: %s', data)
         ret = super().to_internal_value(data)
         if ret['offer_id'] is None or ret['offer_id'] == '':
             raise serializers.ValidationError("requested offer_id is None.")
 
         if isinstance(ret['offer_id'], str) and len(ret['offer_id']) == 36:
-            # attempt to remove the dashes
             offer_id = ret['offer_id'].replace('-', '')
-            LOGGER.warning("offer_id after removing dashes: %s", offer_id)
+            # There should only be 4 dashes in the UUID, making the length 32 after removal
             if len(offer_id) == 32:
                 ret['offer_id'] = offer_id
-                LOGGER.warning('Converted offer ID to internal value to_internal_value: %s', ret['offer_id'])
                 return ret
 
             else:
                 raise serializers.ValidationError("requested offer_id neither a valid integer nor UUID.")
 
-        if len(ret['offer_id']) < 10:
-            LOGGER.warning("offer_id is less than 10 characters: %s", ret['offer_id'])
+        if len(ret['offer_id']) < 10:  # All ecommerce offer_ids are at < 1 million.
             try:
                 ret['offer_id'] = int(ret['offer_id'])
-                LOGGER.warning('Converted offer ID to internal value to_internal_value: %s', ret['offer_id'])
                 return ret
-            except ValueError:
-                raise serializers.ValidationError("Requested offer_id not a valid integer.")
+            except ValueError as e:
+                raise serializers.ValidationError("Requested offer_id not a valid integer.") from e
 
         raise serializers.ValidationError("requested offer_id neither a valid integer nor UUID.")
 
