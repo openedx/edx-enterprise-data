@@ -85,7 +85,7 @@ class EnterpriseOfferSerializer(serializers.ModelSerializer):
 
         if len(ret['offer_id']) < 10:  # All ecommerce offer_ids are at < 1 million.
             try:
-                ret['offer_id'] = int(ret['offer_id'])
+                int(ret['offer_id'])
                 return ret
             except ValueError as e:
                 raise serializers.ValidationError("Requested offer_id not a valid integer.") from e
