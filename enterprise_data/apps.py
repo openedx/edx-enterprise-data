@@ -1,3 +1,4 @@
+# pylint: skip-file
 """
 Enterprise Data Django application initialization.
 """
@@ -11,3 +12,9 @@ class EnterpriseDataAppConfig(AppConfig):
     """
 
     name = "enterprise_data"
+
+    def ready(self) -> None:
+        """
+        Perform tasks when the Django application is ready.
+        """
+        import enterprise_data.signals
