@@ -12,15 +12,15 @@ asn1crypto==1.5.1
     # via
     #   oscrypto
     #   snowflake-connector-python
-awscli==1.27.153
+awscli==1.27.156
     # via -r requirements/reporting.in
 bcrypt==4.0.1
     # via paramiko
 billiard==3.6.4.0
     # via celery
-boto3==1.26.153
+boto3==1.26.156
     # via -r requirements/reporting.in
-botocore==1.29.153
+botocore==1.29.156
     # via
     #   awscli
     #   boto3
