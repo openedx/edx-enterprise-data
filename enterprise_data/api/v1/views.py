@@ -88,7 +88,8 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         'last_activity_date', 'progress_status', 'passed_date', 'current_grade',
         'letter_grade', 'enterprise_user_id', 'user_email', 'user_account_creation_date',
         'user_country_code', 'user_username', 'enterprise_name', 'enterprise_customer_uuid',
-        'enterprise_sso_uid', 'created', 'course_api_url', 'total_learning_time_hours',
+        'enterprise_sso_uid', 'created', 'course_api_url', 'total_learning_time_hours', 'is_subsidy',
+        'course_product_line'
     ]
 
     def get_renderer_context(self):
@@ -171,6 +172,14 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         ignore_null_course_list_price = query_filters.get('ignore_null_course_list_price')
         if ignore_null_course_list_price:
             queryset = queryset.filter(course_list_price__isnull=False)
+
+        course_product_line = query_filters.get('course_product_line')
+        if course_product_line:
+            queryset = queryset.filter(course_product_line=course_product_line)
+
+        is_subsidy = query_filters.get('is_subsidy')
+        if is_subsidy:
+            queryset = queryset.filter(is_subsidy=is_subsidy)
 
         return queryset
 

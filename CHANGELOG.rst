@@ -15,6 +15,11 @@ Unreleased
 ----------
 
 =========================
+[4.7.0] - 2023-06-20
+---------------------
+  * Added new fields for subsidy and product_line in EnterpriseLearnerEnrollmentViewSet.
+
+
 [4.6.10] - 2023-06-20
 ---------------------
   * Improve querries and implement caching for EnterpriseLearnerEnrollmentViewSet.
