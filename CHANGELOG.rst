@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[4.6.10] - 2023-06-20
+---------------------
+  * Improve querries and implement caching for EnterpriseLearnerEnrollmentViewSet.
+
 [4.6.9] - 2023-06-14
 --------------------
   * Allow querying of offers by either new style UUIDs or old style enterprise ID numbers.
