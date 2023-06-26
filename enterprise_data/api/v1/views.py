@@ -7,6 +7,7 @@ from datetime import date, timedelta
 from logging import getLogger
 
 from django_filters.rest_framework import DjangoFilterBackend
+from edx_django_utils.cache import TieredCache
 from edx_rbac.mixins import PermissionRequiredMixin
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
 from edx_rest_framework_extensions.paginators import DefaultPagination
@@ -24,8 +25,10 @@ from enterprise_data.constants import ANALYTICS_API_VERSION_1
 from enterprise_data.filters import AuditEnrollmentsFilterBackend, AuditUsersEnrollmentFilterBackend
 from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment, EnterpriseOffer
 from enterprise_data.paginators import EnterpriseEnrollmentsPagination
+from enterprise_data.utils import get_cache_key
 
 LOGGER = getLogger(__name__)
+DEFAULT_LEARNER_CACHE_TIMEOUT = 60 * 10
 
 
 def subtract_one_month(original_date):
@@ -85,7 +88,8 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         'last_activity_date', 'progress_status', 'passed_date', 'current_grade',
         'letter_grade', 'enterprise_user_id', 'user_email', 'user_account_creation_date',
         'user_country_code', 'user_username', 'enterprise_name', 'enterprise_customer_uuid',
-        'enterprise_sso_uid', 'created', 'course_api_url', 'total_learning_time_hours',
+        'enterprise_sso_uid', 'created', 'course_api_url', 'total_learning_time_hours', 'is_subsidy',
+        'course_product_line'
     ]
 
     def get_renderer_context(self):
@@ -103,20 +107,29 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
             return EnterpriseLearnerEnrollment.objects.none()
 
         enterprise_customer_uuid = self.kwargs['enterprise_id']
+        cache_key = get_cache_key(
+            resource='enterprise-learner',
+            enterprise_customer=enterprise_customer_uuid,
+        )
+        cached_response = TieredCache.get_cached_response(cache_key)
+        if cached_response.is_found:
+            return cached_response.value
+        else:
+            enterprise = EnterpriseLearner.objects.filter(enterprise_customer_uuid=enterprise_customer_uuid).exists()
 
-        enterprise = EnterpriseLearner.objects.filter(enterprise_customer_uuid=enterprise_customer_uuid)
-        if not enterprise:
-            LOGGER.warning(
-                "[Data Overview Failure] Wrong Enterprise UUID. UUID [%s], Endpoint ['%s'], User: [%s]",
-                enterprise_customer_uuid,
-                self.request.get_full_path(),
-                self.request.user.username,
-            )
+            if not enterprise:
+                LOGGER.warning(
+                    "[Data Overview Failure] Wrong Enterprise UUID. UUID [%s], Endpoint ['%s'], User: [%s]",
+                    enterprise_customer_uuid,
+                    self.request.get_full_path(),
+                    self.request.user.username,
+                )
 
-        enrollments = EnterpriseLearnerEnrollment.objects.filter(enterprise_customer_uuid=enterprise_customer_uuid)
+            enrollments = EnterpriseLearnerEnrollment.objects.filter(enterprise_customer_uuid=enterprise_customer_uuid)
 
-        enrollments = self.apply_filters(enrollments)
-        return enrollments
+            enrollments = self.apply_filters(enrollments)
+            TieredCache.set_all_tiers(cache_key, enrollments, DEFAULT_LEARNER_CACHE_TIMEOUT)
+            return enrollments
 
     def apply_filters(self, queryset):
         """
@@ -159,6 +172,14 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         ignore_null_course_list_price = query_filters.get('ignore_null_course_list_price')
         if ignore_null_course_list_price:
             queryset = queryset.filter(course_list_price__isnull=False)
+
+        course_product_line = query_filters.get('course_product_line')
+        if course_product_line:
+            queryset = queryset.filter(course_product_line=course_product_line)
+
+        is_subsidy = query_filters.get('is_subsidy')
+        if is_subsidy:
+            queryset = queryset.filter(is_subsidy=is_subsidy)
 
         return queryset
 

@@ -181,6 +181,8 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
     user_username = factory.Sequence('robot{}'.format)
     user_account_creation_date = factory.lazy_attribute(lambda x: '2018-01-01')
     user_country_code = factory.lazy_attribute(lambda x: FAKER.country_code())
+    is_subsidy = factory.lazy_attribute(lambda x: FAKER.boolean())  # pylint: disable=no-member
+    course_product_line = factory.LazyAttribute(lambda x: FAKER.pystr())
 
     @factory.lazy_attribute
     def course_end_date(self):
