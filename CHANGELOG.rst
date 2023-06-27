@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+  * Support added for Django 4.2
+
+[4.8.0] - 2023-06-27
+---------------------
 [4.7.0] - 2023-06-20
 ---------------------
   * Added new fields for subsidy and product_line in EnterpriseLearnerEnrollmentViewSet.
