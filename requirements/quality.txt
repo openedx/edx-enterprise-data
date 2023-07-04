@@ -16,7 +16,7 @@ astroid==2.15.5
     # via
     #   pylint
     #   pylint-celery
-awscli==1.27.156
+awscli==1.28.0
     # via -r requirements/reporting.in
 bcrypt==4.0.1
     # via paramiko
@@ -24,9 +24,9 @@ billiard==3.6.4.0
     # via celery
 bleach==6.0.0
     # via readme-renderer
-boto3==1.26.156
+boto3==1.27.0
     # via -r requirements/reporting.in
-botocore==1.29.156
+botocore==1.30.0
     # via
     #   awscli
     #   boto3
@@ -84,7 +84,7 @@ dill==0.3.6
     # via pylint
 distlib==0.3.6
     # via virtualenv
-django==3.2.19
+django==3.2.20
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/base.in
@@ -148,13 +148,13 @@ edx-rbac==1.7.0
     # via -r requirements/base.in
 edx-rest-api-client==5.5.2
     # via -r requirements/base.in
-exceptiongroup==1.1.1
+exceptiongroup==1.1.2
     # via pytest
 factory-boy==3.2.1
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==18.10.1
+faker==18.11.2
     # via factory-boy
 filelock==3.12.2
     # via
@@ -197,7 +197,7 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-keyring==23.13.1
+keyring==24.2.0
     # via twine
 kombu==4.6.11
     # via celery
@@ -217,7 +217,7 @@ monotonic==1.6
     # via py2neo
 more-itertools==9.1.0
     # via jaraco-classes
-newrelic==8.8.0
+newrelic==8.8.1
     # via edx-django-utils
 oscrypto==1.3.0
     # via snowflake-connector-python
@@ -238,15 +238,15 @@ pbr==5.11.1
     # via stevedore
 pgpy==0.6.0
     # via -r requirements/reporting.in
-pip-tools==6.13.0
+pip-tools==6.14.0
     # via -r requirements/dev-enterprise_data.in
 pkginfo==1.9.6
     # via twine
-platformdirs==3.6.0
+platformdirs==3.8.0
     # via
     #   pylint
     #   virtualenv
-pluggy==1.0.0
+pluggy==1.2.0
     # via
     #   diff-cover
     #   pytest
@@ -309,7 +309,7 @@ pyopenssl==23.2.0
     # via snowflake-connector-python
 pyproject-hooks==1.0.0
     # via build
-pytest==7.3.2
+pytest==7.4.0
     # via
     #   pytest-cov
     #   pytest-django
@@ -408,6 +408,7 @@ tomli==2.0.1
     # via
     #   build
     #   coverage
+    #   pip-tools
     #   pylint
     #   pyproject-hooks
     #   pytest
@@ -425,7 +426,7 @@ twine==4.0.2
     # via -r requirements/dev-enterprise_data.in
 types-pyyaml==6.0.12.10
     # via responses
-typing-extensions==4.6.3
+typing-extensions==4.7.1
     # via
     #   asgiref
     #   astroid
