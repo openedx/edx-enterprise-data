@@ -15,6 +15,11 @@ Unreleased
 ----------
 
 =========================
+[4.8.0] - 2023-07-4
+---------------------
+  * Added new fields for offer utilization in OCM and Exec-Ed product types.
+
+
 [4.7.0] - 2023-06-20
 ---------------------
   * Added new fields for subsidy and product_line in EnterpriseLearnerEnrollmentViewSet.

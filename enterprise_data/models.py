@@ -230,6 +230,8 @@ class EnterpriseOffer(models.Model):
     amount_of_offer_spent = models.FloatField(null=True)
     percent_of_offer_spent = models.FloatField(null=True)
     remaining_balance = models.FloatField(null=True)
+    amount_offer_spent_ocm = models.FloatField(null=True)
+    amount_offer_spent_exec_ed = models.FloatField(null=True)
 
     def __str__(self):
         """
