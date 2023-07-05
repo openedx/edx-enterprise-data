@@ -270,6 +270,12 @@ class EnterpriseOfferFactory(factory.django.DjangoModelFactory):
     remaining_balance = factory.lazy_attribute(
         lambda x: round(x.max_discount - x.amount_of_offer_spent, 2)
     )
+    amount_offer_spent_ocm = factory.lazy_attribute(
+        lambda x: round(x.amount_of_offer_spent / 2, 2)
+    )
+    amount_offer_spent_exec_ed = factory.lazy_attribute(
+        lambda x: round(x.amount_of_offer_spent / 2, 2)
+    )
 
 
 def get_dummy_enterprise_api_data(**kwargs):
