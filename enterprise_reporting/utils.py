@@ -351,3 +351,55 @@ def extract_catalog_uuids_from_reporting_config(reporting_config):
         ]
     }
     return enterprise_customer_catalogs
+
+
+def retry_on_exception(max_retries=3, delay=2, backoff=2):
+    """
+    Decorator to retry a function on exception with exponential backoff. The
+    function will be retried on exception up to max_retries times. The delay
+    between retries will increase exponentially with each retry.
+
+    :param max_retries: maximum number of retries
+    :param delay: initial delay in seconds
+    :param backoff: backoff multiplier e.g. value of 2 will double the delay
+
+    :return: decorator
+    """
+
+    def backoff_time(retry_count):
+        """
+        Calculate wait time using exponential backoff formula
+
+        :param retry_count: number of retries
+        :return: wait time
+        """
+        return delay * (backoff ** (retry_count - 1))
+
+    def wait(wait_time):
+        """
+        Wait for wait_time seconds using time.sleep
+
+        :param wait_time: time to wait in seconds
+        :return: None
+        """
+        import time
+        time.sleep(wait_time)
+
+    def decorator_retry(func):
+        def wrapper(*args, **kwargs):
+            retry_count = 0
+            while retry_count < max_retries:  # retry loop
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    LOGGER.info(
+                        'Exception raised while calling %s. Retrying: %s',
+                        func.__name__,
+                        str(e),
+                    )
+                    retry_count += 1
+                    time = backoff_time(retry_count)
+                    wait(time)
+            return func(*args, **kwargs)  # last attempt (don't wait)
+        return wrapper
+    return decorator_retry
