@@ -68,7 +68,7 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
     pagination_class = EnterpriseEnrollmentsPagination
     filter_backends = (AuditEnrollmentsFilterBackend, filters.OrderingFilter,)
     ordering_fields = '__all__'
-    ordering = ('user_email',)
+    ordering = ('-last_activity_date',)
     ENROLLMENT_MODE_FILTER = 'user_current_enrollment_mode'
     COUPON_CODE_FILTER = 'coupon_code'
     OFFER_FILTER = 'offer_type'
