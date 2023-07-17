@@ -15,6 +15,11 @@ Unreleased
 ----------
 
 =========================
+[4.8.1] - 2023-07-14
+---------------------
+  *  Sort enterprise enrollments by default on last_activity_date.
+
+
 [4.8.0] - 2023-07-4
 ---------------------
   * Added new fields for offer utilization in OCM and Exec-Ed product types.
