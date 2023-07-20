@@ -8,7 +8,13 @@ from functools import wraps
 from urllib.parse import parse_qs, urljoin, urlparse
 from edx_rest_api_client.client import get_oauth_access_token
 
+import logging
 import requests
+
+from enterprise_reporting.utils import retry_on_exception
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 class EdxOAuth2APIMixin:
@@ -53,6 +59,7 @@ class EdxOAuth2APIClient(EdxOAuth2APIMixin):
         self.expires_at = datetime.utcnow()
         self.access_token = None
 
+    @retry_on_exception(max_retries=3, delay=2, backoff=2)
     def connect(self):
         """
         Connect to the REST API, authenticating with an access token retrieved with our client credentials.

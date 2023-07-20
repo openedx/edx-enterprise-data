@@ -295,3 +295,24 @@ class TestPrepareAttachments(unittest.TestCase):
                 os.path.basename(filename)
             )
             assert attachments[index].get('Content-Disposition') == expected_header
+
+
+class TestRetryOnException(unittest.TestCase):
+    """
+    Test that the decorator `retry_on_exception` works correctly.
+    """
+
+    def test_retry_on_exception(self):
+        """
+        retry_on_exception should retry the function the given
+        number of times if an exception is raised.
+        """
+
+        @utils.retry_on_exception(max_retries=1, delay=1, backoff=1)
+        def raise_exception():
+            raise Exception('test')
+
+        # The function should be retried once after an exception,
+        # then raise the exception.
+        with self.assertRaises(Exception):
+            raise_exception()
