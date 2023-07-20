@@ -15,6 +15,11 @@ Unreleased
 ----------
 
 =========================
+[4.9.0] - 2023-07-20
+---------------------
+  * Support added for Django 4.2
+
+
 [4.8.1] - 2023-07-14
 ---------------------
   *  Sort enterprise enrollments by default on last_activity_date.
