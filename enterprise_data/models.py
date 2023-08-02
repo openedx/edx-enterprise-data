@@ -127,6 +127,83 @@ class EnterpriseLearnerEnrollment(models.Model):
     course_product_line = models.CharField(max_length=64, null=True)
 
 
+class EnterpriseAdminLearnerProgress(models.Model):
+    """
+    Aggregated data on learners at different risk points, either during subsidy activation or throughout the course.
+    """
+
+    objects = EnterpriseReportingModelManager()
+
+    class Meta:
+        app_label = 'enterprise_data'
+        db_table = 'enterprise_admin_learner_progress'
+        verbose_name = _("Enterprise Admin Learner Progress")
+        verbose_name_plural = _("Enterprise Admin Learner Progress")
+
+    enterprise_customer_uuid = models.UUIDField(primary_key=True)
+    enterprise_customer_name = models.CharField(max_length=255)
+    active_subscription_plan = models.BooleanField(
+        help_text='Whether the subscription plan is active or nor?'
+    )
+    assigned_licenses = models.PositiveIntegerField(
+        help_text='Number of assigned licenses'
+    )
+    activated_licenses = models.PositiveIntegerField(
+        help_text='Number of active licenses'
+    )
+    assigned_licenses_percentage = models.FloatField(
+        help_text='Float representation of percentage of assigned licenses out of total'
+    )
+    activated_licenses_percentage = models.FloatField(
+        help_text='Float representation of percentage of active licenses out of total'
+    )
+    active_enrollments = models.PositiveIntegerField(
+        help_text='Number of enrollments in active courses'
+    )
+    at_risk_enrollment_less_than_one_hour = models.PositiveIntegerField(
+        help_text='Number of enrollments from the past 30 days that have not yet achieved 1 hour of learning time'
+    )
+    at_risk_enrollment_end_date_soon = models.PositiveIntegerField(
+        help_text=(
+            'Number of enrollments have end dates coming up in the next 30 days. Course complete time is almost up'
+        )
+    )
+    at_risk_enrollment_dormant = models.PositiveIntegerField(
+        help_text='Number of dormant enrollments in the past 30 days'
+    )
+    created_at = models.DateTimeField()
+
+
+class EnterpriseAdminSummarizeInsights(models.Model):
+    """
+    Aggregated data on enrollments, daily sessions, learning hours, and completions for the past 60 days.
+    """
+
+    objects = EnterpriseReportingModelManager()
+
+    class Meta:
+        app_label = 'enterprise_data'
+        db_table = 'enterprise_admin_summarize_insights'
+        verbose_name = _("Enterprise Admin Summarize Insights")
+        verbose_name_plural = _("Enterprise Admin Summarize Insights")
+
+    enterprise_customer_uuid = models.UUIDField(primary_key=True)
+    enterprise_customer_name = models.CharField(max_length=255)
+    enrolls = models.PositiveIntegerField(help_text='Total number of enrollments in last 30 days')
+    enrolls_prior = models.PositiveIntegerField(help_text='Total number of enrollments in last 31-60 days')
+    passed = models.PositiveIntegerField(help_text='Total number of completions in last 30 days')
+    passed_prior = models.PositiveIntegerField(help_text='Total number of completions in last 31-60 days')
+    engage = models.PositiveIntegerField(help_text='Total number of daily sessions/engagements in last 30 days')
+    engage_prior = models.PositiveIntegerField(
+        help_text='Total number of daily sessions/engagements in last 31-60 days'
+    )
+    hours = models.PositiveIntegerField(help_text='Total number of learning hours in last 30 days')
+    hours_prior = models.PositiveIntegerField(help_text='Total number of learning hours in last 31-60 days')
+    contract_end_date = models.DateTimeField(help_text='Contract end date')
+    active_contract = models.BooleanField(help_text='Whether or not the customer has a contract?')
+    created_at = models.DateTimeField()
+
+
 class EnterpriseEnrollment(models.Model):
     """Enterprise Enrollment is the learner details for a specific course enrollment.
 
