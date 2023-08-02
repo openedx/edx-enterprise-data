@@ -15,6 +15,11 @@ Unreleased
 ----------
 
 =========================
+[4.10.0] - 2023-08-02
+---------------------
+  * Add `EnterpriseAdminLearnerProgress` and `EnterpriseAdminSummarizeInsights` models
+
+
 [4.9.0] - 2023-07-20
 ---------------------
   * Support added for Django 4.2
