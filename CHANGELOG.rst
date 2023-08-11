@@ -15,6 +15,11 @@ Unreleased
 ----------
 
 =========================
+[4.11.0] - 2023-08-16
+---------------------
+  * Add api endpoint for `EnterpriseAdminLearnerProgress` and `EnterpriseAdminSummarizeInsights` models
+
+
 [4.10.0] - 2023-08-02
 ---------------------
   * Add `EnterpriseAdminLearnerProgress` and `EnterpriseAdminSummarizeInsights` models
