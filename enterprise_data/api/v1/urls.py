@@ -5,7 +5,10 @@ URL definitions for enterprise data api v1.
 
 from rest_framework.routers import DefaultRouter
 
+from django.urls import re_path
+
 from enterprise_data.api.v1 import views
+from enterprise_data.constants import UUID4_REGEX
 
 app_name = 'enterprise_data_api_v1'
 
@@ -31,4 +34,12 @@ router.register(
     'enterprise-learner-completed-courses',
 )
 
-urlpatterns = router.urls
+urlpatterns = [
+    re_path(
+        fr'^admin/insights/(?P<enterprise_id>{UUID4_REGEX})$',
+        views.EnterpriseAdminInsightsView.as_view(),
+        name='enterprise-admin-insights'
+    ),
+]
+
+urlpatterns += router.urls

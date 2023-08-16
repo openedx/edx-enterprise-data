@@ -8,12 +8,15 @@ from logging import getLogger
 
 from django_filters.rest_framework import DjangoFilterBackend
 from edx_django_utils.cache import TieredCache
+from edx_rbac.decorators import permission_required
 from edx_rbac.mixins import PermissionRequiredMixin
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
 from edx_rest_framework_extensions.paginators import DefaultPagination
 from rest_framework import filters, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
+from rest_framework.views import APIView
 
 from django.db.models import Count, Max, OuterRef, Prefetch, Q, Subquery, Value
 from django.db.models.fields import IntegerField
@@ -23,7 +26,13 @@ from django.utils import timezone
 from enterprise_data.api.v1 import serializers
 from enterprise_data.constants import ANALYTICS_API_VERSION_1
 from enterprise_data.filters import AuditEnrollmentsFilterBackend, AuditUsersEnrollmentFilterBackend
-from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment, EnterpriseOffer
+from enterprise_data.models import (
+    EnterpriseAdminLearnerProgress,
+    EnterpriseAdminSummarizeInsights,
+    EnterpriseLearner,
+    EnterpriseLearnerEnrollment,
+    EnterpriseOffer,
+)
 from enterprise_data.paginators import EnterpriseEnrollmentsPagination
 from enterprise_data.utils import get_cache_key
 
@@ -441,3 +450,40 @@ class EnterpriseLearnerCompletedCoursesViewSet(EnterpriseViewSetMixin, viewsets.
             is_consent_granted=True,  # DSC check required
         ).values('user_email').annotate(completed_courses=Count('courserun_key')).order_by('user_email')
         return enrollments
+
+
+class EnterpriseAdminInsightsView(APIView):
+    """
+    API for getting the enterprise admin insights.
+    """
+    authentication_classes = (JwtAuthentication,)
+    http_method_names = ['get']
+
+    @permission_required('can_access_enterprise', fn=lambda request, enterprise_id: enterprise_id)
+    def get(self, request, enterprise_id):
+        """
+        HTTP GET endpoint to retrieve the enterprise admin insights
+        """
+        response_data = {}
+        learner_progress = {}
+        summary = {}
+
+        try:
+            learner_progress = EnterpriseAdminLearnerProgress.objects.get(enterprise_customer_uuid=enterprise_id)
+            learner_progress = serializers.EnterpriseAdminLearnerProgressSerializer(learner_progress).data
+            response_data['learner_progress'] = learner_progress
+        except EnterpriseAdminLearnerProgress.DoesNotExist:
+            pass
+
+        try:
+            summary = EnterpriseAdminSummarizeInsights.objects.get(enterprise_customer_uuid=enterprise_id)
+            summary = serializers.EnterpriseAdminSummarizeInsightsSerializer(summary).data
+            response_data['summary'] = summary
+        except EnterpriseAdminSummarizeInsights.DoesNotExist:
+            pass
+
+        status = HTTP_200_OK
+        if learner_progress == {} and summary == {}:
+            status = HTTP_404_NOT_FOUND
+
+        return Response(data=response_data, status=status)

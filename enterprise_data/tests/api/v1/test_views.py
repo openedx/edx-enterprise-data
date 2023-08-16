@@ -2,6 +2,7 @@
 Tests for views in the `enterprise_data` module.
 """
 
+import datetime
 import os
 from unittest import mock
 from uuid import UUID, uuid4
@@ -14,6 +15,10 @@ from rest_framework.test import APITransactionTestCase
 
 from enterprise_data.api.v1.serializers import EnterpriseOfferSerializer
 from enterprise_data.models import EnterpriseLearnerEnrollment, EnterpriseOffer
+from enterprise_data.tests.factories import (
+    EnterpriseAdminLearnerProgressFactory,
+    EnterpriseAdminSummarizeInsightsFactory,
+)
 from enterprise_data.tests.mixins import JWTTestMixin
 from enterprise_data.tests.test_utils import (
     EnterpriseLearnerEnrollmentFactory,
@@ -245,3 +250,72 @@ class TestEnterpriseOffersViewSet(JWTTestMixin, APITransactionTestCase):
         response_json = response.json()
         results = response_json
         assert results['offer_id'] == self.enterprise_offer_2_offer_id
+
+
+@ddt.ddt
+@mark.django_db
+class TestEnterpriseAdminInsightsView(JWTTestMixin, APITransactionTestCase):
+    """
+    Tests for EnterpriseAdminInsightsView.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.user = UserFactory()
+        self.enterprise_customer_uuid_1 = uuid4()
+        self.enterprise_customer_uuid_2 = uuid4()
+        self.set_jwt_cookie(context=f'{self.enterprise_customer_uuid_1}')
+
+    def verify_data(self, received, expected):
+        """
+        Verify that received and expected data are same.
+        """
+        received_keys = received.keys()
+        for key in received_keys:
+            expected_value = getattr(expected, key)
+            if isinstance(expected_value, UUID):
+                expected_value = str(expected_value)
+            if isinstance(expected_value, datetime.datetime):
+                expected_value = expected_value.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
+            assert received[key] == expected_value
+
+    def test_retrieve_enterprise_admin_insights(self):
+        """
+        Verify that `EnterpriseAdminInsightsView` gives correct response if the user has access to enterprise.
+        """
+        enterprise_customer_uuid = self.enterprise_customer_uuid_1
+        learner_progress_obj = EnterpriseAdminLearnerProgressFactory.create(
+            enterprise_customer_uuid=enterprise_customer_uuid
+        )
+        summary_obj = EnterpriseAdminSummarizeInsightsFactory.create(
+            enterprise_customer_uuid=enterprise_customer_uuid
+        )
+
+        url = reverse('v1:enterprise-admin-insights', kwargs={'enterprise_id': enterprise_customer_uuid})
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+
+        response_json = response.json()
+
+        learner_progress = response_json['learner_progress']
+        self.verify_data(learner_progress, learner_progress_obj)
+        summary = response_json['summary']
+        self.verify_data(summary, summary_obj)
+
+    def test_retrieve_enterprise_admin_insights_no_data(self):
+        """
+        Verify that `EnterpriseAdminInsightsView` gives correct response if the user has access but no data exists.
+        """
+        url = reverse('v1:enterprise-admin-insights', kwargs={'enterprise_id': self.enterprise_customer_uuid_1})
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_retrieve_enterprise_admin_insights_no_access(self):
+        """
+        Verify that `EnterpriseAdminInsightsView` give 401 if the user has access to enterprise.
+        """
+        enterprise_customer_uuid = self.enterprise_customer_uuid_2
+        url = reverse('v1:enterprise-admin-insights', kwargs={'enterprise_id': enterprise_customer_uuid})
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED

@@ -4,7 +4,13 @@ Serializers for enterprise api v1.
 
 from rest_framework import serializers
 
-from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment, EnterpriseOffer
+from enterprise_data.models import (
+    EnterpriseAdminLearnerProgress,
+    EnterpriseAdminSummarizeInsights,
+    EnterpriseLearner,
+    EnterpriseLearnerEnrollment,
+    EnterpriseOffer,
+)
 
 
 class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
@@ -143,3 +149,23 @@ class LearnerCompletedCoursesSerializer(serializers.Serializer):    # pylint: di
 
     user_email = serializers.EmailField()
     completed_courses = serializers.IntegerField()
+
+
+class EnterpriseAdminLearnerProgressSerializer(serializers.ModelSerializer):
+    """
+    Serializer for EnterpriseAdminLearnerProgress model.
+    """
+
+    class Meta:
+        model = EnterpriseAdminLearnerProgress
+        fields = '__all__'
+
+
+class EnterpriseAdminSummarizeInsightsSerializer(serializers.ModelSerializer):
+    """
+    Serializer for EnterpriseAdminSummarizeInsights model.
+    """
+
+    class Meta:
+        model = EnterpriseAdminSummarizeInsights
+        fields = '__all__'
