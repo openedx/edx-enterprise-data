@@ -160,6 +160,56 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]['enrollment_id'], learner_enrollment_subsidized.enrollment_id)
 
+    def test_search_by_course_title(self):
+        """Test that the course title search works correctly"""
+        enterprise_learner = EnterpriseLearnerFactory(
+            enterprise_customer_uuid=self.enterprise_id
+        )
+        course_titles = ['Introduction to Python', 'Introduction to Java', 'Introduction to C++']
+
+        for title in course_titles:
+            EnterpriseLearnerEnrollmentFactory(
+                enterprise_customer_uuid=self.enterprise_id,
+                is_consent_granted=True,
+                enterprise_user_id=enterprise_learner.enterprise_user_id,
+                course_title=title,
+            )
+
+        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
+        response = self.client.get(url, data={'search_all': 'Introduction to'})
+        results = response.json()['results']
+        self.assertEqual(len(results), 3)
+
+    def test_search_by_email(self):
+        """Test that the email search works correctly"""
+        enterprise_learner = EnterpriseLearnerFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            user_email="johndoe@example.com"
+        )
+        EnterpriseLearnerEnrollmentFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            is_consent_granted=True,
+            enterprise_user_id=enterprise_learner.enterprise_user_id,
+            course_title="Sample course",
+            user_email="johndoe@example.com"
+        )
+        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
+        response = self.client.get(url, data={'search_all': 'john'})
+        results = response.json()['results']
+        self.assertEqual(len(results), 1)
+
+    def test_search_no_results(self):
+        """Test that the search returns no results if no matches are found"""
+        EnterpriseLearnerFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            user_email="test@example.com"
+        )
+        search_term = 'nonexistentemail@example.com'
+        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
+        response = self.client.get(url, data={'search_all': search_term})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()['count'], 0)
+
 
 @ddt.ddt
 @mark.django_db
