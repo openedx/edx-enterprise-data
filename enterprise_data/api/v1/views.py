@@ -166,7 +166,12 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         search_email = query_filters.get('search')
         if search_email:
             queryset = queryset.filter(user_email__icontains=search_email)
-
+        search_all_param = query_filters.get('search_all')
+        if search_all_param:
+            queryset = queryset.filter(
+                Q(user_email__icontains=search_all_param)
+                | Q(course_title__icontains=search_all_param)
+            )
         search_course = query_filters.get('search_course')
         if search_course:
             queryset = queryset.filter(course_title__icontains=search_course)

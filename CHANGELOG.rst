@@ -15,6 +15,11 @@ Unreleased
 ----------
 
 =========================
+[4.11.1] - 2023-08-17
+---------------------
+  * Add api filtering for `EnterpriseLearnerEnrollmentViewSet` for course_title or user_email
+
+
 [4.11.0] - 2023-08-16
 ---------------------
   * Add api endpoint for `EnterpriseAdminLearnerProgress` and `EnterpriseAdminSummarizeInsights` models
