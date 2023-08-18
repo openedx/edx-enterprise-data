@@ -2,9 +2,9 @@
 Views for enterprise api v1.
 """
 
-
 from datetime import date, timedelta
 from logging import getLogger
+from uuid import UUID
 
 from django_filters.rest_framework import DjangoFilterBackend
 from edx_django_utils.cache import TieredCache
@@ -181,7 +181,7 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
 
         offer_id = query_filters.get('offer_id')
         if offer_id:
-            queryset = queryset.filter(offer_id=offer_id)
+            queryset = self.filter_by_offer_id(queryset, offer_id)
 
         ignore_null_course_list_price = query_filters.get('ignore_null_course_list_price')
         if ignore_null_course_list_price:
@@ -196,6 +196,27 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
             queryset = queryset.filter(is_subsidy=is_subsidy)
 
         return queryset
+
+    def filter_by_offer_id(self, queryset, offer_id):
+        """
+        Filter queryset by `offer_id`
+        """
+        # offer_id field in table contains two types of data
+        # 1. integer
+        # 2. uuid
+        # In table, uuids are stored without hyphen and in lower case
+        # but api clients are sending uuids with hyphen and that causes the issue
+        # we need to remove the hyphens from uuid, convert the uuid to lower case and then do a compare in DB
+
+        # if offer_id is a uuid only then do the transformation
+        try:
+            offer_id_uuid_obj = UUID(offer_id, version=4)
+            offer_id = str(offer_id_uuid_obj)
+            offer_id = offer_id.replace('-', '')
+        except ValueError:
+            pass
+
+        return queryset.filter(offer_id=offer_id)
 
     def filter_active_enrollments(self, queryset):
         """
