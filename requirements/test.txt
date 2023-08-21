@@ -12,22 +12,22 @@ asn1crypto==1.5.1
     # via
     #   oscrypto
     #   snowflake-connector-python
-awscli==1.28.0
+awscli==1.29.10
     # via -r requirements/reporting.in
 bcrypt==4.0.1
     # via paramiko
 billiard==3.6.4.0
     # via celery
-boto3==1.27.0
+boto3==1.28.10
     # via -r requirements/reporting.in
-botocore==1.30.0
+botocore==1.31.10
     # via
     #   awscli
     #   boto3
     #   s3transfer
 celery==4.4.7
     # via -r requirements/reporting.in
-certifi==2023.5.7
+certifi==2023.7.22
     # via
     #   py2neo
     #   requests
@@ -37,11 +37,11 @@ cffi==1.15.1
     #   cryptography
     #   pynacl
     #   snowflake-connector-python
-charset-normalizer==3.1.0
+charset-normalizer==3.2.0
     # via
     #   requests
     #   snowflake-connector-python
-click==8.1.3
+click==8.1.6
     # via edx-django-utils
 colorama==0.4.4
     # via awscli
@@ -96,7 +96,7 @@ docutils==0.16
     # via awscli
 drf-jwt==1.19.2
     # via edx-drf-extensions
-edx-django-utils==5.5.0
+edx-django-utils==5.6.0
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
@@ -115,11 +115,11 @@ edx-rest-api-client==5.5.2
     # via -r requirements/base.in
 exceptiongroup==1.1.2
     # via pytest
-factory-boy==3.2.1
+factory-boy==3.3.0
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==18.11.2
+faker==19.2.0
     # via factory-boy
 filelock==3.12.2
     # via snowflake-connector-python
@@ -141,7 +141,7 @@ jmespath==1.0.1
     #   botocore
 kombu==4.6.11
     # via celery
-mock==5.0.2
+mock==5.1.0
     # via -r requirements/test.in
 monotonic==1.6
     # via py2neo
@@ -178,7 +178,7 @@ pycryptodomex==3.18.0
     # via snowflake-connector-python
 pygments==2.15.1
     # via py2neo
-pyjwt[crypto]==2.7.0
+pyjwt[crypto]==2.8.0
     # via
     #   drf-jwt
     #   edx-drf-extensions
@@ -216,7 +216,7 @@ pytz==2023.3
     #   djangorestframework
     #   interchange
     #   snowflake-connector-python
-pyyaml==5.4.1
+pyyaml==6.0.1
     # via
     #   awscli
     #   responses
@@ -267,11 +267,12 @@ tomli==2.0.1
     # via
     #   coverage
     #   pytest
-types-pyyaml==6.0.12.10
+types-pyyaml==6.0.12.11
     # via responses
 typing-extensions==4.7.1
     # via
     #   asgiref
+    #   faker
     #   snowflake-connector-python
 unicodecsv==0.14.1
     # via -r requirements/reporting.in
