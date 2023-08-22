@@ -338,7 +338,7 @@ class TestEnterpriseAdminInsightsView(JWTTestMixin, APITransactionTestCase):
         learner_progress_obj = EnterpriseAdminLearnerProgressFactory.create(
             enterprise_customer_uuid=enterprise_customer_uuid
         )
-        summary_obj = EnterpriseAdminSummarizeInsightsFactory.create(
+        learner_engagement_obj = EnterpriseAdminSummarizeInsightsFactory.create(
             enterprise_customer_uuid=enterprise_customer_uuid
         )
 
@@ -350,8 +350,8 @@ class TestEnterpriseAdminInsightsView(JWTTestMixin, APITransactionTestCase):
 
         learner_progress = response_json['learner_progress']
         self.verify_data(learner_progress, learner_progress_obj)
-        summary = response_json['summary']
-        self.verify_data(summary, summary_obj)
+        learner_engagement = response_json['learner_engagement']
+        self.verify_data(learner_engagement, learner_engagement_obj)
 
     def test_retrieve_enterprise_admin_insights_no_data(self):
         """
