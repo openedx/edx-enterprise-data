@@ -12,15 +12,15 @@ asn1crypto==1.5.1
     # via
     #   oscrypto
     #   snowflake-connector-python
-awscli==1.29.10
+awscli==1.29.31
     # via -r requirements/reporting.in
 bcrypt==4.0.1
     # via paramiko
 billiard==3.6.4.0
     # via celery
-boto3==1.28.10
+boto3==1.28.31
     # via -r requirements/reporting.in
-botocore==1.31.10
+botocore==1.31.31
     # via
     #   awscli
     #   boto3
@@ -41,13 +41,13 @@ charset-normalizer==3.2.0
     # via
     #   requests
     #   snowflake-connector-python
-click==8.1.6
+click==8.1.7
     # via edx-django-utils
 colorama==0.4.4
     # via awscli
-coverage[toml]==7.2.7
+coverage[toml]==7.3.0
     # via pytest-cov
-cryptography==40.0.2
+cryptography==41.0.3
     # via
     #   -r requirements/reporting.in
     #   django-fernet-fields
@@ -66,6 +66,7 @@ ddt==1.6.0
     #   django-fernet-fields
     #   django-filter
     #   django-model-utils
+    #   django-waffle
     #   djangorestframework
     #   drf-jwt
     #   edx-django-utils
@@ -84,7 +85,7 @@ django-model-utils==4.3.1
     #   -r requirements/base.in
     #   -r requirements/test.in
     #   edx-rbac
-django-waffle==3.0.0
+django-waffle==4.0.0
     # via
     #   edx-django-utils
     #   edx-drf-extensions
@@ -97,31 +98,31 @@ docutils==0.16
     # via awscli
 drf-jwt==1.19.2
     # via edx-drf-extensions
-edx-django-utils==5.6.0
+edx-django-utils==5.7.0
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
     #   edx-rest-api-client
-edx-drf-extensions==8.8.0
+edx-drf-extensions==8.9.0
     # via
     #   -r requirements/base.in
     #   -r requirements/test-master.in
     #   edx-rbac
-edx-opaque-keys==2.3.0
+edx-opaque-keys==2.4.0
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
-edx-rbac==1.7.0
+edx-rbac==1.8.0
     # via -r requirements/base.in
-edx-rest-api-client==5.5.2
+edx-rest-api-client==5.6.0
     # via -r requirements/base.in
-exceptiongroup==1.1.2
+exceptiongroup==1.1.3
     # via pytest
 factory-boy==3.3.0
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==19.2.0
+faker==19.3.0
     # via factory-boy
 filelock==3.12.2
     # via snowflake-connector-python
@@ -147,7 +148,7 @@ mock==5.1.0
     # via -r requirements/test.in
 monotonic==1.6
     # via py2neo
-newrelic==8.8.1
+newrelic==8.10.1
     # via edx-django-utils
 oscrypto==1.3.0
     # via snowflake-connector-python
@@ -158,12 +159,14 @@ packaging==23.1
     #   snowflake-connector-python
 pansi==2020.7.3
     # via py2neo
-paramiko==3.2.0
+paramiko==3.3.1
     # via -r requirements/reporting.in
 pbr==5.11.1
     # via stevedore
 pgpy==0.6.0
     # via -r requirements/reporting.in
+platformdirs==3.8.1
+    # via snowflake-connector-python
 pluggy==1.2.0
     # via pytest
 psutil==5.9.5
@@ -178,7 +181,7 @@ pycparser==2.21
     # via cffi
 pycryptodomex==3.18.0
     # via snowflake-connector-python
-pygments==2.15.1
+pygments==2.16.1
     # via py2neo
 pyjwt[crypto]==2.8.0
     # via
@@ -230,13 +233,13 @@ requests==2.31.0
     #   responses
     #   slumber
     #   snowflake-connector-python
-responses==0.23.1
+responses==0.23.3
     # via -r requirements/test.in
 rsa==4.7.2
     # via awscli
 rules==3.3
     # via -r requirements/base.in
-s3transfer==0.6.1
+s3transfer==0.6.2
     # via
     #   awscli
     #   boto3
@@ -253,7 +256,7 @@ six==1.16.0
     #   vertica-python
 slumber==0.7.1
     # via edx-rest-api-client
-snowflake-connector-python==3.0.4
+snowflake-connector-python==3.1.0
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
@@ -269,6 +272,8 @@ tomli==2.0.1
     # via
     #   coverage
     #   pytest
+tomlkit==0.12.1
+    # via snowflake-connector-python
 types-pyyaml==6.0.12.11
     # via responses
 typing-extensions==4.7.1
@@ -285,7 +290,7 @@ urllib3==1.26.16
     #   requests
     #   responses
     #   snowflake-connector-python
-vertica-python==1.3.2
+vertica-python==1.3.4
     # via -r requirements/reporting.in
 vine==1.3.0
     # via
