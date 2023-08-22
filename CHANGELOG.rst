@@ -15,9 +15,15 @@ Unreleased
 ----------
 
 =========================
+[5.0.0] - 2023-08-22
+---------------------
+  * Rename `summary` to `learner_engagement` in `EnterpriseLearnerEnrollmentViewSet` response
+
+
 [4.11.2] - 2023-08-18
 ---------------------
-  * Add api filtering for `EnterpriseLearnerEnrollmentViewSet` for course_title or user_email
+  * Fix offer id filtering in `EnterpriseLearnerEnrollmentViewSet`
+
 
 [4.11.1] - 2023-08-17
 ---------------------

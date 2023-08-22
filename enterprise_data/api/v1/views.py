@@ -492,7 +492,7 @@ class EnterpriseAdminInsightsView(APIView):
         """
         response_data = {}
         learner_progress = {}
-        summary = {}
+        learner_engagement = {}
 
         try:
             learner_progress = EnterpriseAdminLearnerProgress.objects.get(enterprise_customer_uuid=enterprise_id)
@@ -502,14 +502,14 @@ class EnterpriseAdminInsightsView(APIView):
             pass
 
         try:
-            summary = EnterpriseAdminSummarizeInsights.objects.get(enterprise_customer_uuid=enterprise_id)
-            summary = serializers.EnterpriseAdminSummarizeInsightsSerializer(summary).data
-            response_data['summary'] = summary
+            learner_engagement = EnterpriseAdminSummarizeInsights.objects.get(enterprise_customer_uuid=enterprise_id)
+            learner_engagement = serializers.EnterpriseAdminSummarizeInsightsSerializer(learner_engagement).data
+            response_data['learner_engagement'] = learner_engagement
         except EnterpriseAdminSummarizeInsights.DoesNotExist:
             pass
 
         status = HTTP_200_OK
-        if learner_progress == {} and summary == {}:
+        if learner_progress == {} and learner_engagement == {}:
             status = HTTP_404_NOT_FOUND
 
         return Response(data=response_data, status=status)
