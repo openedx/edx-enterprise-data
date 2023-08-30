@@ -1,6 +1,7 @@
 """
 Serializers for enterprise api v1.
 """
+from uuid import UUID
 
 from rest_framework import serializers
 
@@ -10,6 +11,7 @@ from enterprise_data.models import (
     EnterpriseLearner,
     EnterpriseLearnerEnrollment,
     EnterpriseOffer,
+    EnterpriseSubsidyBudget,
 )
 
 
@@ -39,7 +41,7 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
             'letter_grade', 'enterprise_user_id', 'user_email', 'user_account_creation_date',
             'user_country_code', 'user_username', 'enterprise_name', 'enterprise_customer_uuid',
             'enterprise_sso_uid', 'created', 'course_api_url', 'total_learning_time_hours', 'is_subsidy',
-            'course_product_line'
+            'course_product_line', 'budget_id'
         )
 
     def get_course_api_url(self, obj):
@@ -57,10 +59,35 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
         return round((obj.total_learning_time_seconds or 0.0)/3600.0, 2)
 
 
+class EnterpriseSubsidyBudgetSerializer(serializers.ModelSerializer):
+    """
+    Serializer for EnterpriseSubsidyBudget model.
+    """
+
+    class Meta:
+        model = EnterpriseSubsidyBudget
+        fields = '__all__'
+
+
 class EnterpriseOfferSerializer(serializers.ModelSerializer):
     """
     Serializer for EnterpriseOfferSerializer model.
     """
+    budgets = serializers.SerializerMethodField()
+
+    def get_budgets(self, instance):
+        """Gets related budgets"""
+
+        try:
+            # if offer_id is a uuid
+            offer_uuid = UUID(instance.offer_id, version=4)
+            budget_queryset = EnterpriseSubsidyBudget.objects.filter(subsidy_uuid=offer_uuid)
+            serializer = EnterpriseSubsidyBudgetSerializer(instance=budget_queryset, many=True, read_only=True)
+            return serializer.data
+        except ValueError:
+            pass
+
+        return []
 
     class Meta:
         model = EnterpriseOffer

@@ -15,6 +15,11 @@ Unreleased
 ----------
 
 =========================
+[5.1.0] - 2023-09-04
+---------------------
+  * Added model and api for new policy/budget aggregates - EnterpriseSubsidyBudget
+
+
 [5.0.0] - 2023-08-22
 ---------------------
   * Rename `summary` to `learner_engagement` in `EnterpriseLearnerEnrollmentViewSet` response
