@@ -8,12 +8,7 @@ import unittest
 import ddt
 from pytest import mark
 
-from enterprise_data.tests.test_utils import (
-    EnterpriseEnrollmentFactory,
-    EnterpriseOfferFactory,
-    EnterpriseSubsidyBudgetFactory,
-    EnterpriseUserFactory,
-)
+from enterprise_data.tests.test_utils import EnterpriseEnrollmentFactory, EnterpriseOfferFactory, EnterpriseUserFactory
 
 
 @mark.django_db
@@ -64,31 +59,6 @@ class TestEnterpriseOffer(unittest.TestCase):
         expected_str = (f'<Enterprise Offer {self.enterprise_offer.offer_id} '
                         f'for {self.enterprise_offer.enterprise_name}>')
         assert expected_str == method(self.enterprise_offer)
-
-
-@mark.django_db
-@ddt.ddt
-class TestEnterpriseSubsidyBudget(unittest.TestCase):
-    """
-    Tests for Enterprise Subsidy Budget model
-    """
-
-    def setUp(self):
-        self.enterprise_subsidy_budget = EnterpriseSubsidyBudgetFactory(
-            enterprise_customer_uuid='ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
-            enterprise_customer_name='test-enterprise'
-        )
-        super().setUp()
-
-    @ddt.data(str, repr)
-    def test_string_conversion(self, method):
-        """
-        Test conversion to string.
-        """
-        expected_str = (f'<Enterprise Budget {self.enterprise_subsidy_budget.subsidy_access_policy_uuid} '
-                        f'for Subsidy {self.enterprise_subsidy_budget.subsidy_uuid} '
-                        f'for {self.enterprise_subsidy_budget.enterprise_customer_name}>')
-        assert expected_str == method(self.enterprise_subsidy_budget)
 
 
 @mark.django_db

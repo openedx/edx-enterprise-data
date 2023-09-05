@@ -17,7 +17,6 @@ from enterprise_data.models import (
     EnterpriseLearner,
     EnterpriseLearnerEnrollment,
     EnterpriseOffer,
-    EnterpriseSubsidyBudget,
     EnterpriseUser,
 )
 
@@ -235,52 +234,6 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
             for field in dsc_dependent_fields:
                 setattr(obj, field, None)
             obj.save()
-
-
-class EnterpriseSubsidyBudgetFactory(factory.django.DjangoModelFactory):
-    """
-    EnterpriseSubsidyBudget model Factory.
-    """
-    class Meta:
-        model = EnterpriseSubsidyBudget
-
-    subsidy_access_policy_uuid = factory.LazyAttribute(lambda x: FAKER.uuid4().replace('-', ''))
-    subsidy_uuid = factory.LazyAttribute(lambda x: FAKER.uuid4().replace('-', ''))
-    enterprise_customer_uuid = factory.LazyAttribute(lambda x: FAKER.uuid4().replace('-', ''))
-    enterprise_customer_name = factory.LazyAttribute(lambda x: ' '.join(FAKER.words(nb=2)).title())
-    subsidy_access_policy_description = factory.LazyAttribute(lambda x: ' '.join(FAKER.words(nb=2)).title())
-    subsidy_title = factory.LazyAttribute(lambda x: ' '.join(FAKER.words(nb=2)).title())
-    catalog_name = factory.LazyAttribute(lambda x: ' '.join(FAKER.words(nb=2)).title())
-    subsidy_access_policy_type = 'PerLearnerSpendCreditAccessPolicy'
-    date_created = factory.LazyAttribute(lambda _: datetime(2020, 1, 1, tzinfo=pytz.utc))
-    subsidy_start_datetime = factory.LazyAttribute(lambda _: datetime(2022, 1, 1, tzinfo=pytz.utc))
-    subsidy_expiration_datetime = factory.LazyAttribute(lambda _: datetime(2090, 1, 1, tzinfo=pytz.utc))
-    is_active = True
-    is_test = False
-    ocm_usage = factory.lazy_attribute(
-        lambda x: round(x.amount_of_policy_spent / 2, 2)
-    )
-    exec_ed_usage = factory.lazy_attribute(
-        lambda x: round(x.amount_of_policy_spent / 2, 2)
-    )
-    usage_total = factory.lazy_attribute(
-        lambda x: x.amount_of_policy_spent
-    )
-    enterprise_contract_discount_percent = factory.LazyAttribute(
-        lambda _: FAKER.pyfloat(right_digits=2, min_value=1, max_value=100)
-    )
-    starting_balance = factory.LazyAttribute(
-        lambda x: FAKER.pyfloat(right_digits=2, min_value=10000, max_value=100000)
-    )
-    amount_of_policy_spent = factory.lazy_attribute(
-        lambda x: FAKER.pyfloat(right_digits=2, min_value=1, max_value=x.starting_balance)
-    )
-    remaining_balance = factory.lazy_attribute(
-        lambda x: x.starting_balance - x.amount_of_policy_spent
-    )
-    percent_of_policy_spent = factory.lazy_attribute(
-        lambda x: round(x.amount_of_policy_spent / x.starting_balance, 2)
-    )
 
 
 class EnterpriseOfferFactory(factory.django.DjangoModelFactory):
