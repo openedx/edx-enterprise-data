@@ -338,8 +338,13 @@ class EnterpriseSubsidyBudget(models.Model):
         verbose_name = _("Enterprise Subsidy Budget")
         verbose_name_plural = _("Enterprise Subsidy Budgets")
 
-    id = models.CharField(db_index=True, primary_key=True, max_length=32)
-    subsidy_access_policy_uuid = models.UUIDField()
+    id = models.CharField(
+        db_index=True,
+        primary_key=True,
+        max_length=32,
+        help_text="Hashed surrogate key based on subsidy_access_policy_uuid and subsidy_uuid"
+    )
+    subsidy_access_policy_uuid = models.UUIDField(help_text="Budget Id")
     subsidy_uuid = models.UUIDField()
     enterprise_customer_uuid = models.UUIDField()
     enterprise_customer_name = models.CharField(max_length=255, null=True)

@@ -66,7 +66,7 @@ class EnterpriseSubsidyBudgetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EnterpriseSubsidyBudget
-        fields = '__all__'
+        exclude = ('id',)
 
 
 class EnterpriseOfferSerializer(serializers.ModelSerializer):
