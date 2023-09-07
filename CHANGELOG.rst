@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[5.3.1] - 2023-09-07
+---------------------
+  * Exclude hashed `id` field from `EnterpriseSubsidyBudgetSerializer`
+
 [5.3.0] - 2023-09-07
 ---------------------
   * Added model and api for new policy/budget aggregates - EnterpriseSubsidyBudget
