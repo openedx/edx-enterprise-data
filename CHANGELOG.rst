@@ -15,9 +15,10 @@ Unreleased
 ----------
 
 =========================
-[5.2.0] - 2023-09-05
+[5.3.0] - 2023-09-07
 ---------------------
-  * Reverting release 5.1.0
+  * Added model and api for new policy/budget aggregates - EnterpriseSubsidyBudget
+
 
 [5.0.0] - 2023-08-22
 ---------------------
