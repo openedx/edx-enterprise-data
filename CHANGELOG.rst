@@ -15,6 +15,15 @@ Unreleased
 ----------
 
 =========================
+[5.3.1] - 2023-09-07
+---------------------
+  * Exclude hashed `id` field from `EnterpriseSubsidyBudgetSerializer`
+
+[5.3.0] - 2023-09-07
+---------------------
+  * Added model and api for new policy/budget aggregates - EnterpriseSubsidyBudget
+
+
 [5.0.0] - 2023-08-22
 ---------------------
   * Rename `summary` to `learner_engagement` in `EnterpriseLearnerEnrollmentViewSet` response

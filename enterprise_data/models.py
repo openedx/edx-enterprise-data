@@ -125,6 +125,7 @@ class EnterpriseLearnerEnrollment(models.Model):
     created = models.DateTimeField(null=True, db_index=True)
     is_subsidy = models.BooleanField(default=False)
     course_product_line = models.CharField(max_length=64, null=True)
+    budget_id = models.UUIDField(db_index=True, null=True)
 
 
 class EnterpriseAdminLearnerProgress(models.Model):
@@ -315,6 +316,62 @@ class EnterpriseOffer(models.Model):
         Return a human-readable string representation of the object.
         """
         return f'<Enterprise Offer {self.offer_id} for {self.enterprise_name}>'
+
+    def __repr__(self):
+        """
+        Return uniquely identifying string representation.
+        """
+        return self.__str__()
+
+
+class EnterpriseSubsidyBudget(models.Model):
+    """
+    Details for budgets in an enterprise offer.
+
+    """
+
+    objects = EnterpriseReportingModelManager()
+
+    class Meta:
+        app_label = 'enterprise_data'
+        db_table = 'ent_subsidy_access_policy_aggregates'
+        verbose_name = _("Enterprise Subsidy Budget")
+        verbose_name_plural = _("Enterprise Subsidy Budgets")
+
+    id = models.CharField(
+        db_index=True,
+        primary_key=True,
+        max_length=32,
+        help_text="Hashed surrogate key based on subsidy_access_policy_uuid and subsidy_uuid"
+    )
+    subsidy_access_policy_uuid = models.UUIDField(help_text="Budget Id")
+    subsidy_uuid = models.UUIDField()
+    enterprise_customer_uuid = models.UUIDField()
+    enterprise_customer_name = models.CharField(max_length=255, null=True)
+    subsidy_access_policy_description = models.CharField(max_length=500, null=True)
+    subsidy_title = models.CharField(max_length=255, null=True)
+    catalog_name = models.CharField(max_length=255, null=True)
+    subsidy_access_policy_type = models.CharField(max_length=255, null=True)
+    date_created = models.DateTimeField(null=True)
+    subsidy_start_datetime = models.DateTimeField(null=True)
+    subsidy_expiration_datetime = models.DateTimeField(null=True)
+    is_active = models.BooleanField(default=False)
+    is_test = models.BooleanField(default=False)
+    ocm_usage = models.FloatField(null=True)
+    exec_ed_usage = models.FloatField(null=True)
+    usage_total = models.FloatField(null=True)
+    enterprise_contract_discount_percent = models.FloatField(null=True)
+    starting_balance = models.FloatField(null=True)
+    amount_of_policy_spent = models.FloatField(null=True)
+    remaining_balance = models.FloatField(null=True)
+    percent_of_policy_spent = models.FloatField(null=True)
+
+    def __str__(self):
+        """
+        Return a human-readable string representation of the object.
+        """
+        return (f'<Enterprise Budget {self.subsidy_access_policy_uuid} for '
+                f'Subsidy {self.subsidy_uuid} for {self.enterprise_customer_name}>')
 
     def __repr__(self):
         """
