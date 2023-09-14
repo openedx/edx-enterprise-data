@@ -349,6 +349,7 @@ class EnterpriseSubsidyBudget(models.Model):
     enterprise_customer_uuid = models.UUIDField()
     enterprise_customer_name = models.CharField(max_length=255, null=True)
     subsidy_access_policy_description = models.CharField(max_length=500, null=True)
+    subsidy_access_policy_display_name = models.CharField(max_length=512, null=True)
     subsidy_title = models.CharField(max_length=255, null=True)
     catalog_name = models.CharField(max_length=255, null=True)
     subsidy_access_policy_type = models.CharField(max_length=255, null=True)
