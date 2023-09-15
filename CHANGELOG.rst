@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[5.4.0] - 2023-09-14
+---------------------
+  * Add `subsidy_access_policy_display_name` field in `EnterpriseSubsidyBudget` model
+
 [5.3.1] - 2023-09-07
 ---------------------
   * Exclude hashed `id` field from `EnterpriseSubsidyBudgetSerializer`
