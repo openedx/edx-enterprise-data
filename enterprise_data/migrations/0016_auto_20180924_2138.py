@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='enterpriseenrollment',
             name='consent_granted',
-            field=models.NullBooleanField(default=None),
+            field=models.BooleanField(null=True),
         ),
     ]
