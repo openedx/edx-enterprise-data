@@ -12,15 +12,15 @@ asn1crypto==1.5.1
     # via
     #   oscrypto
     #   snowflake-connector-python
-awscli==1.29.40
+awscli==1.29.50
     # via -r requirements/reporting.in
 bcrypt==4.0.1
     # via paramiko
 billiard==3.6.4.0
     # via celery
-boto3==1.28.40
+boto3==1.28.50
     # via -r requirements/reporting.in
-botocore==1.31.40
+botocore==1.31.50
     # via
     #   awscli
     #   boto3
@@ -74,7 +74,7 @@ django-crum==0.7.9
     #   edx-rbac
 django-fernet-fields==0.6
     # via -r requirements/base.in
-django-filter==23.2
+django-filter==23.3
     # via -r requirements/base.in
 django-model-utils==4.3.1
     # via
@@ -97,7 +97,7 @@ edx-django-utils==5.7.0
     #   -r requirements/base.in
     #   edx-drf-extensions
     #   edx-rest-api-client
-edx-drf-extensions==8.9.2
+edx-drf-extensions==8.9.3
     # via
     #   -r requirements/base.in
     #   edx-rbac
@@ -111,9 +111,9 @@ edx-rest-api-client==5.6.0
     # via -r requirements/base.in
 factory-boy==3.3.0
     # via -r requirements/base.in
-faker==19.3.1
+faker==19.6.1
     # via factory-boy
-filelock==3.12.3
+filelock==3.12.4
     # via snowflake-connector-python
 idna==3.4
     # via
@@ -157,7 +157,7 @@ pyasn1==0.5.0
     #   rsa
 pycparser==2.21
     # via cffi
-pycryptodomex==3.18.0
+pycryptodomex==3.19.0
     # via snowflake-connector-python
 pygments==2.16.1
     # via py2neo
@@ -180,10 +180,9 @@ pyopenssl==23.2.0
 python-dateutil==2.8.2
     # via
     #   botocore
-    #   edx-drf-extensions
     #   faker
     #   vertica-python
-pytz==2023.3
+pytz==2023.3.post1
     # via
     #   celery
     #   django
@@ -211,7 +210,6 @@ semantic-version==2.10.0
     # via edx-drf-extensions
 six==1.16.0
     # via
-    #   edx-drf-extensions
     #   edx-rbac
     #   interchange
     #   pansi
@@ -220,7 +218,7 @@ six==1.16.0
     #   vertica-python
 slumber==0.7.1
     # via edx-rest-api-client
-snowflake-connector-python==3.1.1
+snowflake-connector-python==3.2.0
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
@@ -232,12 +230,11 @@ stevedore==5.1.0
     #   edx-opaque-keys
 tomlkit==0.12.1
     # via snowflake-connector-python
-typing-extensions==4.7.1
+typing-extensions==4.8.0
     # via
     #   asgiref
     #   edx-opaque-keys
     #   faker
-    #   filelock
     #   snowflake-connector-python
 unicodecsv==0.14.1
     # via -r requirements/reporting.in
@@ -247,7 +244,7 @@ urllib3==1.26.16
     #   py2neo
     #   requests
     #   snowflake-connector-python
-vertica-python==1.3.4
+vertica-python==1.3.5
     # via -r requirements/reporting.in
 vine==1.3.0
     # via
