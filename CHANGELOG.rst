@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[5.4.1] - 2023-09-22
+---------------------
+  * Update NullBooleanField for Django 4.2 support
+
 [5.4.0] - 2023-09-14
 ---------------------
   * Add `subsidy_access_policy_display_name` field in `EnterpriseSubsidyBudget` model

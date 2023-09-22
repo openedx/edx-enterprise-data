@@ -10,7 +10,7 @@
 
 # TODO: Many pinned dependencies should be unpinned and/or moved to this constraints file.
 
-# Stick to the latest LTS version of Django
-Django>=3.2,<4.0
+# Common constraints for edx repos
+-c common_constraints.txt
 
 tox<4.0.0
