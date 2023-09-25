@@ -234,7 +234,7 @@ class EnterpriseEnrollment(models.Model):
     course_id = models.CharField(max_length=255, help_text='The course the learner is enrolled in.')
     enrollment_created_timestamp = models.DateTimeField()
     user_current_enrollment_mode = models.CharField(max_length=32)
-    consent_granted = models.NullBooleanField(default=None)
+    consent_granted = models.BooleanField(default=None, null=True)
     letter_grade = models.CharField(max_length=32, null=True)
     has_passed = models.BooleanField(default=False)
     passed_timestamp = models.DateTimeField(null=True)

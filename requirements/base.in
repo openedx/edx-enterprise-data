@@ -6,7 +6,7 @@ edx-django-utils
 edx-drf-extensions
 edx-opaque-keys
 Django
-django-fernet-fields
+django-fernet-fields-v2
 django-filter
 django-model-utils
 edx-rbac

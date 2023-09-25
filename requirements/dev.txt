@@ -12,19 +12,19 @@ asn1crypto==1.5.1
     # via
     #   oscrypto
     #   snowflake-connector-python
-astroid==2.15.6
+astroid==2.15.7
     # via
     #   pylint
     #   pylint-celery
-awscli==1.29.50
+awscli==1.29.53
     # via -r requirements/reporting.in
 bcrypt==4.0.1
     # via paramiko
 billiard==3.6.4.0
     # via celery
-boto3==1.28.50
+boto3==1.28.53
     # via -r requirements/reporting.in
-botocore==1.31.50
+botocore==1.31.53
     # via
     #   awscli
     #   boto3
@@ -62,15 +62,14 @@ code-annotations==1.5.0
     # via edx-lint
 colorama==0.4.4
     # via awscli
-cryptography==41.0.3
+cryptography==41.0.4
     # via
     #   -r requirements/reporting.in
-    #   django-fernet-fields
+    #   django-fernet-fields-v2
     #   paramiko
     #   pgpy
     #   pyjwt
     #   pyopenssl
-    #   secretstorage
     #   snowflake-connector-python
 diff-cover==7.7.0
     # via -r requirements/dev-enterprise_data.in
@@ -80,10 +79,10 @@ distlib==0.3.7
     # via virtualenv
 django==3.2.21
     # via
-    #   -c requirements/constraints.txt
+    #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
     #   django-crum
-    #   django-fernet-fields
+    #   django-fernet-fields-v2
     #   django-filter
     #   django-model-utils
     #   django-waffle
@@ -97,7 +96,7 @@ django-crum==0.7.9
     # via
     #   edx-django-utils
     #   edx-rbac
-django-fernet-fields==0.6
+django-fernet-fields-v2==0.9
     # via -r requirements/base.in
 django-filter==23.3
     # via -r requirements/base.in
@@ -124,7 +123,7 @@ edx-django-utils==5.7.0
     #   -r requirements/base.in
     #   edx-drf-extensions
     #   edx-rest-api-client
-edx-drf-extensions==8.9.3
+edx-drf-extensions==8.10.0
     # via
     #   -r requirements/base.in
     #   edx-rbac
@@ -134,7 +133,7 @@ edx-lint==5.3.4
     # via
     #   -r requirements/dev-enterprise_data.in
     #   -r requirements/quality.in
-edx-opaque-keys==2.5.0
+edx-opaque-keys==2.5.1
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
@@ -144,7 +143,7 @@ edx-rest-api-client==5.6.0
     # via -r requirements/base.in
 factory-boy==3.3.0
     # via -r requirements/base.in
-faker==19.6.1
+faker==19.6.2
     # via factory-boy
 filelock==3.12.4
     # via
@@ -160,7 +159,7 @@ importlib-metadata==6.8.0
     #   build
     #   keyring
     #   twine
-importlib-resources==6.0.1
+importlib-resources==6.1.0
     # via keyring
 interchange==2021.0.4
     # via py2neo
@@ -170,10 +169,6 @@ isort==5.12.0
     #   pylint
 jaraco-classes==3.3.0
     # via keyring
-jeepney==0.8.0
-    # via
-    #   keyring
-    #   secretstorage
 jinja2==3.1.2
     # via
     #   code-annotations
@@ -337,8 +332,6 @@ s3transfer==0.6.2
     # via
     #   awscli
     #   boto3
-secretstorage==3.3.3
-    # via keyring
 semantic-version==2.10.0
     # via edx-drf-extensions
 six==1.16.0
@@ -383,6 +376,7 @@ tomlkit==0.12.1
     #   snowflake-connector-python
 tox==3.28.0
     # via
+    #   -c requirements/common_constraints.txt
     #   -c requirements/constraints.txt
     #   -r requirements/dev-enterprise_data.in
     #   tox-battery
