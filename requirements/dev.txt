@@ -16,15 +16,15 @@ astroid==2.15.7
     # via
     #   pylint
     #   pylint-celery
-awscli==1.29.53
+awscli==1.29.54
     # via -r requirements/reporting.in
 bcrypt==4.0.1
     # via paramiko
 billiard==3.6.4.0
     # via celery
-boto3==1.28.53
+boto3==1.28.54
     # via -r requirements/reporting.in
-botocore==1.31.53
+botocore==1.31.54
     # via
     #   awscli
     #   boto3
@@ -70,6 +70,7 @@ cryptography==41.0.4
     #   pgpy
     #   pyjwt
     #   pyopenssl
+    #   secretstorage
     #   snowflake-connector-python
 diff-cover==7.7.0
     # via -r requirements/dev-enterprise_data.in
@@ -169,6 +170,10 @@ isort==5.12.0
     #   pylint
 jaraco-classes==3.3.0
     # via keyring
+jeepney==0.8.0
+    # via
+    #   keyring
+    #   secretstorage
 jinja2==3.1.2
     # via
     #   code-annotations
@@ -195,7 +200,7 @@ monotonic==1.6
     # via py2neo
 more-itertools==10.1.0
     # via jaraco-classes
-newrelic==9.0.0
+newrelic==9.1.0
     # via edx-django-utils
 nh3==0.2.14
     # via readme-renderer
@@ -262,7 +267,7 @@ pyjwt[crypto]==2.8.0
     #   edx-drf-extensions
     #   edx-rest-api-client
     #   snowflake-connector-python
-pylint==2.17.5
+pylint==2.17.6
     # via
     #   edx-lint
     #   pylint-celery
@@ -332,6 +337,8 @@ s3transfer==0.6.2
     # via
     #   awscli
     #   boto3
+secretstorage==3.3.3
+    # via keyring
 semantic-version==2.10.0
     # via edx-drf-extensions
 six==1.16.0

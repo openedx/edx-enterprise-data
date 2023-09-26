@@ -12,15 +12,15 @@ asn1crypto==1.5.1
     # via
     #   oscrypto
     #   snowflake-connector-python
-awscli==1.29.53
+awscli==1.29.54
     # via -r requirements/reporting.in
 bcrypt==4.0.1
     # via paramiko
 billiard==3.6.4.0
     # via celery
-boto3==1.28.53
+boto3==1.28.54
     # via -r requirements/reporting.in
-botocore==1.31.53
+botocore==1.31.54
     # via
     #   awscli
     #   boto3
@@ -146,7 +146,7 @@ mock==5.1.0
     # via -r requirements/test.in
 monotonic==1.6
     # via py2neo
-newrelic==9.0.0
+newrelic==9.1.0
     # via edx-django-utils
 oscrypto==1.3.0
     # via snowflake-connector-python
