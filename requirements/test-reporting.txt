@@ -14,15 +14,15 @@ atomicwrites==1.4.1
     # via pytest
 attrs==23.1.0
     # via pytest
-awscli==1.29.53
+awscli==1.29.58
     # via -r requirements/reporting.in
 bcrypt==4.0.1
     # via paramiko
 billiard==3.6.4.0
     # via celery
-boto3==1.28.53
+boto3==1.28.58
     # via -r requirements/reporting.in
-botocore==1.31.53
+botocore==1.31.58
     # via
     #   awscli
     #   boto3
@@ -34,18 +34,18 @@ certifi==2023.7.22
     #   py2neo
     #   requests
     #   snowflake-connector-python
-cffi==1.15.1
+cffi==1.16.0
     # via
     #   cryptography
     #   pynacl
     #   snowflake-connector-python
-charset-normalizer==3.2.0
+charset-normalizer==3.3.0
     # via
     #   requests
     #   snowflake-connector-python
 colorama==0.4.4
     # via awscli
-coverage==7.3.1
+coverage==7.3.2
     # via pytest-cov
 cryptography==41.0.4
     # via
@@ -85,7 +85,7 @@ more-itertools==10.1.0
     # via pytest
 oscrypto==1.3.0
     # via snowflake-connector-python
-packaging==23.1
+packaging==23.2
     # via
     #   py2neo
     #   snowflake-connector-python
@@ -157,7 +157,7 @@ responses==0.23.3
     # via -r requirements/test-reporting.in
 rsa==4.7.2
     # via awscli
-s3transfer==0.6.2
+s3transfer==0.7.0
     # via
     #   awscli
     #   boto3
@@ -193,7 +193,7 @@ typing-extensions==4.8.0
     # via snowflake-connector-python
 unicodecsv==0.14.1
     # via -r requirements/reporting.in
-urllib3==1.26.16
+urllib3==1.26.17
     # via
     #   botocore
     #   py2neo

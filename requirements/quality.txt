@@ -12,19 +12,19 @@ asn1crypto==1.5.1
     # via
     #   oscrypto
     #   snowflake-connector-python
-astroid==2.15.7
+astroid==2.15.8
     # via
     #   pylint
     #   pylint-celery
-awscli==1.29.53
+awscli==1.29.58
     # via -r requirements/reporting.in
 bcrypt==4.0.1
     # via paramiko
 billiard==3.6.4.0
     # via celery
-boto3==1.28.53
+boto3==1.28.58
     # via -r requirements/reporting.in
-botocore==1.31.53
+botocore==1.31.58
     # via
     #   awscli
     #   boto3
@@ -38,14 +38,14 @@ certifi==2023.7.22
     #   py2neo
     #   requests
     #   snowflake-connector-python
-cffi==1.15.1
+cffi==1.16.0
     # via
     #   cryptography
     #   pynacl
     #   snowflake-connector-python
 chardet==5.2.0
     # via diff-cover
-charset-normalizer==3.2.0
+charset-normalizer==3.3.0
     # via
     #   requests
     #   snowflake-connector-python
@@ -62,7 +62,7 @@ code-annotations==1.5.0
     # via edx-lint
 colorama==0.4.4
     # via awscli
-coverage[toml]==7.3.1
+coverage[toml]==7.3.2
     # via pytest-cov
 cryptography==41.0.4
     # via
@@ -72,6 +72,7 @@ cryptography==41.0.4
     #   pgpy
     #   pyjwt
     #   pyopenssl
+    #   secretstorage
     #   snowflake-connector-python
 ddt==1.6.0
     # via -r requirements/test.in
@@ -184,6 +185,10 @@ isort==5.12.0
     #   pylint
 jaraco-classes==3.3.0
     # via keyring
+jeepney==0.8.0
+    # via
+    #   keyring
+    #   secretstorage
 jinja2==3.1.2
     # via
     #   code-annotations
@@ -212,13 +217,13 @@ monotonic==1.6
     # via py2neo
 more-itertools==10.1.0
     # via jaraco-classes
-newrelic==9.0.0
+newrelic==9.1.0
     # via edx-django-utils
 nh3==0.2.14
     # via readme-renderer
 oscrypto==1.3.0
     # via snowflake-connector-python
-packaging==23.1
+packaging==23.2
     # via
     #   build
     #   py2neo
@@ -281,7 +286,7 @@ pyjwt[crypto]==2.8.0
     #   edx-drf-extensions
     #   edx-rest-api-client
     #   snowflake-connector-python
-pylint==2.17.5
+pylint==2.17.7
     # via
     #   edx-lint
     #   pylint-celery
@@ -354,16 +359,18 @@ responses==0.23.3
     # via -r requirements/test.in
 rfc3986==2.0.0
     # via twine
-rich==13.5.3
+rich==13.6.0
     # via twine
 rsa==4.7.2
     # via awscli
 rules==3.3
     # via -r requirements/base.in
-s3transfer==0.6.2
+s3transfer==0.7.0
     # via
     #   awscli
     #   boto3
+secretstorage==3.3.3
+    # via keyring
 semantic-version==2.10.0
     # via edx-drf-extensions
 six==1.16.0
@@ -433,7 +440,7 @@ typing-extensions==4.8.0
     #   snowflake-connector-python
 unicodecsv==0.14.1
     # via -r requirements/reporting.in
-urllib3==1.26.16
+urllib3==1.26.17
     # via
     #   botocore
     #   py2neo
