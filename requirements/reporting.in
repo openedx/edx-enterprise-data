@@ -7,8 +7,12 @@ celery==4.4.7                           # Run task workers in other locations
 cryptography
 paramiko
 PGPy                                    # Required for Enterprise Reporting
-py2neo
 pyminizip                               # Required for Enterprise Reporting
 unicodecsv==0.14.1                      # Allows exporting CSV with unicode support (a drop-in replacement for built-in csv module)
 vertica-python                          # Required for Enterprise Reporting
 snowflake-connector-python              # Required for Enterprise Reporting
+
+# Official py2neo version has been removed from both PyPI/GitHub 
+# Using the latest available fork for now unless 
+# it is replaced by the official Neo4j driver
+https://github.com/overhangio/py2neo/releases/download/2021.2.3/py2neo-2021.2.3.tar.gz
