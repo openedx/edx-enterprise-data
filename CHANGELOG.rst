@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[5.4.2] - 2023-10-12
+---------------------
+  * Make `contract_end_date` nullable in `EnterpriseAdminSummarizeInsights` model
+
 [5.4.1] - 2023-09-22
 ---------------------
   * Update NullBooleanField for Django 4.2 support

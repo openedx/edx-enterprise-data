@@ -200,7 +200,7 @@ class EnterpriseAdminSummarizeInsights(models.Model):
     )
     hours = models.PositiveIntegerField(help_text='Total number of learning hours in last 30 days')
     hours_prior = models.PositiveIntegerField(help_text='Total number of learning hours in last 31-60 days')
-    contract_end_date = models.DateTimeField(help_text='Contract end date')
+    contract_end_date = models.DateTimeField(help_text='Contract end date', null=True)
     active_contract = models.BooleanField(help_text='Whether or not the customer has a contract?')
     created_at = models.DateTimeField()
 
