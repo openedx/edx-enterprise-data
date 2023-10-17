@@ -14,15 +14,15 @@ atomicwrites==1.4.1
     # via pytest
 attrs==23.1.0
     # via pytest
-awscli==1.29.62
+awscli==1.29.64
     # via -r requirements/reporting.in
 bcrypt==4.0.1
     # via paramiko
 billiard==3.6.4.0
     # via celery
-boto3==1.28.62
+boto3==1.28.64
     # via -r requirements/reporting.in
-botocore==1.31.62
+botocore==1.31.64
     # via
     #   awscli
     #   boto3
@@ -171,7 +171,7 @@ six==1.16.0
     #   python-dateutil
     #   tox
     #   vertica-python
-snowflake-connector-python==3.2.1
+snowflake-connector-python==3.3.0
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
