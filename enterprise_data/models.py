@@ -310,6 +310,7 @@ class EnterpriseOffer(models.Model):
     remaining_balance = models.FloatField(null=True)
     amount_offer_spent_ocm = models.FloatField(null=True)
     amount_offer_spent_exec_ed = models.FloatField(null=True)
+    export_timestamp = models.DateTimeField(null=True)
 
     def __str__(self):
         """

@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[5.5.0] - 2023-10-19
+---------------------
+  * Add data export timestamp
+
 [5.4.1] - 2023-09-22
 ---------------------
   * Update NullBooleanField for Django 4.2 support
