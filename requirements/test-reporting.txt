@@ -14,15 +14,15 @@ atomicwrites==1.4.1
     # via pytest
 attrs==23.1.0
     # via pytest
-awscli==1.29.62
+awscli==1.29.68
     # via -r requirements/reporting.in
 bcrypt==4.0.1
     # via paramiko
 billiard==3.6.4.0
     # via celery
-boto3==1.28.62
+boto3==1.28.68
     # via -r requirements/reporting.in
-botocore==1.31.62
+botocore==1.31.68
     # via
     #   awscli
     #   boto3
@@ -39,7 +39,7 @@ cffi==1.16.0
     #   cryptography
     #   pynacl
     #   snowflake-connector-python
-charset-normalizer==3.3.0
+charset-normalizer==3.3.1
     # via
     #   requests
     #   snowflake-connector-python
@@ -171,7 +171,7 @@ six==1.16.0
     #   python-dateutil
     #   tox
     #   vertica-python
-snowflake-connector-python==3.2.1
+snowflake-connector-python==3.3.1
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
@@ -184,16 +184,13 @@ tox==3.28.0
     #   -c requirements/common_constraints.txt
     #   -c requirements/constraints.txt
     #   -r requirements/test-reporting.in
-    #   tox-battery
-tox-battery==0.6.2
-    # via -r requirements/test-reporting.in
 types-pyyaml==6.0.12.12
     # via responses
 typing-extensions==4.8.0
     # via snowflake-connector-python
 unicodecsv==0.14.1
     # via -r requirements/reporting.in
-urllib3==1.26.17
+urllib3==1.26.18
     # via
     #   botocore
     #   py2neo
