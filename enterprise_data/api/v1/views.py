@@ -27,6 +27,7 @@ from enterprise_data.api.v1 import serializers
 from enterprise_data.constants import ANALYTICS_API_VERSION_1
 from enterprise_data.filters import AuditEnrollmentsFilterBackend, AuditUsersEnrollmentFilterBackend
 from enterprise_data.models import (
+    DemoEnterpriseLearnerEnrollment,
     EnterpriseAdminLearnerProgress,
     EnterpriseAdminSummarizeInsights,
     EnterpriseLearner,
@@ -100,6 +101,11 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         'enterprise_sso_uid', 'created', 'course_api_url', 'total_learning_time_hours', 'is_subsidy',
         'course_product_line', 'budget_id'
     ]
+
+    def get_serializer_class(self):
+        if 'demo' in self.request.query_params:
+            return serializers.DemoEnterpriseLearnerEnrollmentSerializer
+        return super().get_serializer_class()
 
     def get_renderer_context(self):
         renderer_context = super().get_renderer_context()
@@ -360,6 +366,11 @@ class EnterpriseLearnerViewSet(EnterpriseViewSetMixin, viewsets.ReadOnlyModelVie
     ordering_fields = '__all__'
     ordering = ('user_email',)
 
+    def get_serializer_class(self):
+        if 'demo' in self.request.query_params:
+            return serializers.DemoEnterpriseLearnerSerializer
+        return super().get_serializer_class()
+
     def get_queryset(self):
         LOGGER.info("[ELV_ANALYTICS_API_V1] QueryParams: [%s]", self.request.query_params)
         queryset = super().get_queryset().prefetch_related(
@@ -479,6 +490,12 @@ class EnterpriseLearnerCompletedCoursesViewSet(EnterpriseViewSetMixin, viewsets.
             has_passed=True,
             is_consent_granted=True,  # DSC check required
         ).values('user_email').annotate(completed_courses=Count('courserun_key')).order_by('user_email')
+        if 'demo' in self.request.query_params:
+            enrollments = DemoEnterpriseLearnerEnrollment.objects.filter(
+                enterprise_customer_uuid=self.kwargs['enterprise_id'],
+                has_passed=True,
+                is_consent_granted=True,  # DSC check required
+            ).values('user_email').annotate(completed_courses=Count('courserun_key')).order_by('user_email')
         return enrollments
 
 
