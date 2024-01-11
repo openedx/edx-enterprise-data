@@ -20,7 +20,12 @@ from enterprise_reporting.clients.enterprise import (
 from enterprise_reporting.clients.s3 import S3Client
 from enterprise_reporting.clients.vertica import VerticaClient
 from enterprise_reporting.delivery_method import SFTPDeliveryMethod, SMTPDeliveryMethod
-from enterprise_reporting.utils import decrypt_string, extract_catalog_uuids_from_reporting_config, generate_data
+from enterprise_reporting.utils import (
+    decrypt_string,
+    extract_catalog_uuids_from_reporting_config,
+    generate_data,
+    retry_on_exception,
+)
 
 LOGGER = logging.getLogger(__name__)
 NOW = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -115,6 +120,7 @@ class EnterpriseReportSender:
         """Get a full path to the report file that can be modified with arbitrary formatting."""
         return '_{}.'.join(self.data_report_file_name.rsplit('.'))
 
+    @retry_on_exception(max_retries=2, delay=1, backoff=2)
     def send_enterprise_report(self):
         """Generate the report file of the appropriate type and send it through the configured delivery method."""
         LOGGER.info(f'Starting process to send report to {self.enterprise_customer_name}')

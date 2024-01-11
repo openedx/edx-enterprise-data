@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[5.5.1] - 2024-01-10
+---------------------
+  * Added retry mechanism for failed report deliveries.
+
 [5.5.0] - 2023-10-19
 ---------------------
   * Add data export timestamp
