@@ -12,15 +12,15 @@ atomicwrites==1.4.1
     # via pytest
 attrs==23.2.0
     # via pytest
-awscli==1.32.24
+awscli==1.32.30
     # via -r requirements/reporting.in
 bcrypt==4.1.2
     # via paramiko
 billiard==3.6.4.0
     # via celery
-boto3==1.34.24
+boto3==1.34.30
     # via -r requirements/reporting.in
-botocore==1.34.24
+botocore==1.34.30
     # via
     #   awscli
     #   boto3
@@ -43,7 +43,7 @@ charset-normalizer==3.3.2
     #   snowflake-connector-python
 colorama==0.4.4
     # via awscli
-coverage==7.4.0
+coverage==7.4.1
     # via pytest-cov
 cryptography==41.0.7
     # via
@@ -98,7 +98,7 @@ platformdirs==3.11.0
     # via
     #   snowflake-connector-python
     #   virtualenv
-pluggy==1.3.0
+pluggy==1.4.0
     # via
     #   pytest
     #   tox
@@ -134,7 +134,7 @@ python-dateutil==2.8.2
     # via
     #   botocore
     #   vertica-python
-pytz==2023.3.post1
+pytz==2023.4
     # via
     #   celery
     #   interchange
@@ -165,7 +165,7 @@ six==1.16.0
     #   python-dateutil
     #   tox
     #   vertica-python
-snowflake-connector-python==3.6.0
+snowflake-connector-python==3.7.0
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python

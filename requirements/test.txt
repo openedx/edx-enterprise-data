@@ -10,15 +10,15 @@ asgiref==3.7.2
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.32.24
+awscli==1.32.30
     # via -r requirements/reporting.in
 bcrypt==4.1.2
     # via paramiko
 billiard==3.6.4.0
     # via celery
-boto3==1.34.24
+boto3==1.34.30
     # via -r requirements/reporting.in
-botocore==1.34.24
+botocore==1.34.30
     # via
     #   awscli
     #   boto3
@@ -43,7 +43,7 @@ click==8.1.7
     # via edx-django-utils
 colorama==0.4.4
     # via awscli
-coverage[toml]==7.4.0
+coverage[toml]==7.4.1
     # via
     #   coverage
     #   pytest-cov
@@ -102,7 +102,7 @@ edx-django-utils==5.10.1
     #   -r requirements/base.in
     #   edx-drf-extensions
     #   edx-rest-api-client
-edx-drf-extensions==9.1.2
+edx-drf-extensions==10.1.0
     # via
     #   -r requirements/base.in
     #   edx-rbac
@@ -120,7 +120,7 @@ factory-boy==3.3.0
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==22.5.0
+faker==22.6.0
     # via factory-boy
 filelock==3.13.1
     # via snowflake-connector-python
@@ -146,7 +146,7 @@ mock==5.1.0
     # via -r requirements/test.in
 monotonic==1.6
     # via py2neo
-newrelic==9.5.0
+newrelic==9.6.0
     # via edx-django-utils
 packaging==23.2
     # via
@@ -163,7 +163,7 @@ pgpy==0.6.0
     # via -r requirements/reporting.in
 platformdirs==3.11.0
     # via snowflake-connector-python
-pluggy==1.3.0
+pluggy==1.4.0
     # via pytest
 psutil==5.9.8
     # via edx-django-utils
@@ -193,7 +193,7 @@ pynacl==1.5.0
     #   paramiko
 pyopenssl==23.3.0
     # via snowflake-connector-python
-pytest==7.4.4
+pytest==8.0.0
     # via
     #   pytest-cov
     #   pytest-django
@@ -207,7 +207,7 @@ python-dateutil==2.8.2
     #   faker
     #   freezegun
     #   vertica-python
-pytz==2023.3.post1
+pytz==2023.4
     # via
     #   celery
     #   django
@@ -248,7 +248,7 @@ six==1.16.0
     #   vertica-python
 slumber==0.7.1
     # via edx-rest-api-client
-snowflake-connector-python==3.6.0
+snowflake-connector-python==3.7.0
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
