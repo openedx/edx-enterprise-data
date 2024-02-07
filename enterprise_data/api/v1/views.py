@@ -18,9 +18,12 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
 from rest_framework.views import APIView
 
+from django.conf import settings
+from django.core.paginator import Paginator
 from django.db.models import Count, Max, OuterRef, Prefetch, Q, Subquery, Value
 from django.db.models.fields import IntegerField
 from django.db.models.functions import Coalesce
+from django.http import StreamingHttpResponse
 from django.utils import timezone
 
 from enterprise_data.api.v1 import serializers
@@ -34,6 +37,7 @@ from enterprise_data.models import (
     EnterpriseOffer,
 )
 from enterprise_data.paginators import EnterpriseEnrollmentsPagination
+from enterprise_data.renderers import EnrollmentsCSVRenderer
 from enterprise_data.utils import get_cache_key
 
 LOGGER = getLogger(__name__)
@@ -81,6 +85,7 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
     ENROLLMENT_MODE_FILTER = 'user_current_enrollment_mode'
     COUPON_CODE_FILTER = 'coupon_code'
     OFFER_FILTER = 'offer_type'
+    # TODO: Remove after we release the streaming csv changes
     # This will be used as CSV header for csv generated from `admin-portal`.
     # Do not change the order of fields below. Ordering is important because csv generated
     # on `admin-portal` should match `progress_v3` csv generated in `enterprise_reporting`
@@ -101,6 +106,7 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         'course_product_line', 'budget_id'
     ]
 
+    # TODO: Remove after we release the streaming csv changes
     def get_renderer_context(self):
         renderer_context = super().get_renderer_context()
         renderer_context['header'] = self.header
@@ -124,21 +130,34 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         if cached_response.is_found:
             return cached_response.value
         else:
-            enterprise = EnterpriseLearner.objects.filter(enterprise_customer_uuid=enterprise_customer_uuid).exists()
-
-            if not enterprise:
-                LOGGER.warning(
-                    "[Data Overview Failure] Wrong Enterprise UUID. UUID [%s], Endpoint ['%s'], User: [%s]",
-                    enterprise_customer_uuid,
-                    self.request.get_full_path(),
-                    self.request.user.username,
-                )
-
             enrollments = EnterpriseLearnerEnrollment.objects.filter(enterprise_customer_uuid=enterprise_customer_uuid)
-
             enrollments = self.apply_filters(enrollments)
             TieredCache.set_all_tiers(cache_key, enrollments, DEFAULT_LEARNER_CACHE_TIMEOUT)
             return enrollments
+
+    def list(self, request, *args, **kwargs):
+        """
+        Override the list method to handle streaming CSV download.
+        """
+        if self.request.query_params.get('streaming_csv_enabled') == 'true':
+            if request.accepted_renderer.format == 'csv':
+                return StreamingHttpResponse(
+                    EnrollmentsCSVRenderer().render(self._stream_serialized_data()),
+                    content_type="text/csv",
+                    headers={"Content-Disposition": 'attachment; filename="learner_progress_report.csv"'},
+                )
+
+        return super().list(request, *args, **kwargs)
+
+    def _stream_serialized_data(self):
+        """
+        Stream the serialized data.
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer_class()
+        paginator = Paginator(queryset, per_page=settings.ENROLLMENTS_PAGE_SIZE)
+        for page_number in paginator.page_range:
+            yield from serializer(paginator.page(page_number).object_list, many=True).data
 
     def apply_filters(self, queryset):
         """
