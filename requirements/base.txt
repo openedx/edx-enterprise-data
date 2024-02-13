@@ -10,22 +10,22 @@ asgiref==3.7.2
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.32.24
+awscli==1.32.40
     # via -r requirements/reporting.in
 bcrypt==4.1.2
     # via paramiko
 billiard==3.6.4.0
     # via celery
-boto3==1.34.24
+boto3==1.34.40
     # via -r requirements/reporting.in
-botocore==1.34.24
+botocore==1.34.40
     # via
     #   awscli
     #   boto3
     #   s3transfer
 celery==4.4.7
     # via -r requirements/reporting.in
-certifi==2023.11.17
+certifi==2024.2.2
     # via
     #   py2neo
     #   requests
@@ -52,7 +52,7 @@ cryptography==41.0.7
     #   pyjwt
     #   pyopenssl
     #   snowflake-connector-python
-django==3.2.23
+django==3.2.24
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
@@ -74,7 +74,7 @@ django-fernet-fields-v2==0.9
     # via -r requirements/base.in
 django-filter==23.5
     # via -r requirements/base.in
-django-model-utils==4.3.1
+django-model-utils==4.4.0
     # via
     #   -r requirements/base.in
     #   edx-rbac
@@ -95,7 +95,7 @@ edx-django-utils==5.10.1
     #   -r requirements/base.in
     #   edx-drf-extensions
     #   edx-rest-api-client
-edx-drf-extensions==9.1.2
+edx-drf-extensions==10.2.0
     # via
     #   -r requirements/base.in
     #   edx-rbac
@@ -109,7 +109,7 @@ edx-rest-api-client==5.6.1
     # via -r requirements/base.in
 factory-boy==3.3.0
     # via -r requirements/base.in
-faker==22.5.0
+faker==23.1.0
     # via factory-boy
 filelock==3.13.1
     # via snowflake-connector-python
@@ -127,7 +127,7 @@ kombu==4.6.11
     # via celery
 monotonic==1.6
     # via py2neo
-newrelic==9.5.0
+newrelic==9.6.0
     # via edx-django-utils
 packaging==23.2
     # via
@@ -176,7 +176,7 @@ python-dateutil==2.8.2
     #   botocore
     #   faker
     #   vertica-python
-pytz==2023.3.post1
+pytz==2024.1
     # via
     #   celery
     #   django
@@ -212,7 +212,7 @@ six==1.16.0
     #   vertica-python
 slumber==0.7.1
     # via edx-rest-api-client
-snowflake-connector-python==3.6.0
+snowflake-connector-python==3.7.0
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
