@@ -15,6 +15,11 @@ Unreleased
 ----------
 
 =========================
+[6.0.0] - 2024-02-13
+---------------------
+  * Add streaming csv support
+  * Add support to avoid call to LMS for filtering enrollments
+
 [5.5.1] - 2024-01-10
 ---------------------
   * Added retry mechanism for failed report deliveries.

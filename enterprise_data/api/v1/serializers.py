@@ -27,7 +27,7 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
         model = EnterpriseLearnerEnrollment
         # Do not change the order of fields below. Ordering is important becuase `progress_v3`
         # csv generated in `enterprise_reporting` should be same as csv generated on `admin-portal`
-        # Order and field names below should match with `EnterpriseLearnerEnrollmentViewSet.header`
+        # Order and field names below should match with `EnrollmentsCSVRenderer.header`
         fields = (
             'enrollment_id', 'enterprise_enrollment_id', 'is_consent_granted', 'paid_by',
             'user_current_enrollment_mode', 'enrollment_date', 'unenrollment_date',

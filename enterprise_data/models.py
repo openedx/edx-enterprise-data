@@ -70,6 +70,13 @@ class EnterpriseLearnerEnrollment(models.Model):
         db_table = 'enterprise_learner_enrollment'
         verbose_name = _("Enterprise Learner Enrollment")
         verbose_name_plural = _("Enterprise Learner Enrollments")
+        indexes = [
+            models.Index(fields=['enterprise_customer_uuid', 'enterprise_user_id', 'user_current_enrollment_mode']),
+            models.Index(fields=['enterprise_customer_uuid', 'offer_id', 'budget_id']),
+            models.Index(fields=[
+                'enterprise_customer_uuid', 'user_current_enrollment_mode', 'coupon_code', 'offer_type'
+            ]),
+        ]
 
     enterprise_enrollment_id = models.PositiveIntegerField(primary_key=True)
     enrollment_id = models.PositiveIntegerField(null=True)

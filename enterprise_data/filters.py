@@ -73,14 +73,25 @@ class AuditEnrollmentsFilterBackend(filters.BaseFilterBackend, FiltersMixin):
     `user_current_enrollment_mode` field.
     """
 
+    def exclude_audit_enrollments(self, view):
+        """
+        Determine if audit enrollments should be excluded.
+        """
+        # this will be passed from admin-portal to avoid api call to lms
+        audit_enrollments = view.request.query_params.get('audit_enrollments')
+        if audit_enrollments:
+            return audit_enrollments == 'false'
+
+        enterprise_uuid = view.kwargs['enterprise_id']
+        enterprise_customer = self.get_enterprise_customer(enterprise_uuid)
+        return enterprise_customer.get('enable_audit_data_reporting') is False
+
     def filter_queryset(self, request, queryset, view):
         """
         Filter out queryset for results where enrollment mode is `audit`.
         """
-        enterprise_uuid = view.kwargs['enterprise_id']
-        enterprise_customer = self.get_enterprise_customer(enterprise_uuid)
-
-        if not enterprise_customer.get('enable_audit_data_reporting'):
+        if self.exclude_audit_enrollments(view):
+            enterprise_uuid = view.kwargs['enterprise_id']
             LOGGER.info(f'[AuditEnrollmentsFilterBackend] excluding audit enrollments for: {enterprise_uuid}')
             # Filter out enrollments that have audit mode and do not have a coupon code or an offer.
             filter_query = {
