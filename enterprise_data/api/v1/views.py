@@ -139,13 +139,12 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         """
         Override the list method to handle streaming CSV download.
         """
-        if self.request.query_params.get('streaming_csv_enabled') == 'true':
-            if request.accepted_renderer.format == 'csv':
-                return StreamingHttpResponse(
-                    EnrollmentsCSVRenderer().render(self._stream_serialized_data()),
-                    content_type="text/csv",
-                    headers={"Content-Disposition": 'attachment; filename="learner_progress_report.csv"'},
-                )
+        if request.accepted_renderer.format == 'csv':
+            return StreamingHttpResponse(
+                EnrollmentsCSVRenderer().render(self._stream_serialized_data()),
+                content_type="text/csv",
+                headers={"Content-Disposition": 'attachment; filename="learner_progress_report.csv"'},
+            )
 
         return super().list(request, *args, **kwargs)
 

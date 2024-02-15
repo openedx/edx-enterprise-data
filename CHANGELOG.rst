@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[6.1.0] - 2024-02-15
+---------------------
+  * Permanently enable streaming csv
+
 [6.0.0] - 2024-02-13
 ---------------------
   * Add streaming csv support
