@@ -14,15 +14,15 @@ astroid==3.0.3
     # via
     #   pylint
     #   pylint-celery
-awscli==1.32.35
+awscli==1.32.45
     # via -r requirements/reporting.in
 bcrypt==4.1.2
     # via paramiko
 billiard==3.6.4.0
     # via celery
-boto3==1.34.35
+boto3==1.34.45
     # via -r requirements/reporting.in
-botocore==1.34.35
+botocore==1.34.45
     # via
     #   awscli
     #   boto3
@@ -72,6 +72,7 @@ cryptography==41.0.7
     #   pgpy
     #   pyjwt
     #   pyopenssl
+    #   secretstorage
     #   snowflake-connector-python
 ddt==1.7.1
     # via -r requirements/test.in
@@ -81,7 +82,7 @@ dill==0.3.8
     # via pylint
 distlib==0.3.8
     # via virtualenv
-django==3.2.23
+django==3.2.24
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
@@ -104,7 +105,7 @@ django-fernet-fields-v2==0.9
     # via -r requirements/base.in
 django-filter==23.5
     # via -r requirements/base.in
-django-model-utils==4.3.1
+django-model-utils==4.4.0
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
@@ -155,7 +156,7 @@ factory-boy==3.3.0
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==22.7.0
+faker==23.2.1
     # via factory-boy
 filelock==3.13.1
     # via
@@ -185,8 +186,12 @@ isort==5.13.2
     # via
     #   -r requirements/quality.in
     #   pylint
-jaraco-classes==3.3.0
+jaraco-classes==3.3.1
     # via keyring
+jeepney==0.8.0
+    # via
+    #   keyring
+    #   secretstorage
 jinja2==3.1.3
     # via
     #   code-annotations
@@ -236,7 +241,7 @@ pbr==6.0.0
     # via stevedore
 pgpy==0.6.0
     # via -r requirements/reporting.in
-pip-tools==7.3.0
+pip-tools==7.4.0
     # via -r requirements/dev-enterprise_data.in
 pkginfo==1.9.6
     # via twine
@@ -305,8 +310,10 @@ pynacl==1.5.0
 pyopenssl==23.3.0
     # via snowflake-connector-python
 pyproject-hooks==1.0.0
-    # via build
-pytest==8.0.0
+    # via
+    #   build
+    #   pip-tools
+pytest==8.0.1
     # via
     #   pytest-cov
     #   pytest-django
@@ -320,7 +327,7 @@ python-dateutil==2.8.2
     #   faker
     #   freezegun
     #   vertica-python
-python-slugify==8.0.3
+python-slugify==8.0.4
     # via code-annotations
 pytz==2024.1
     # via
@@ -349,7 +356,7 @@ requests==2.31.0
     #   twine
 requests-toolbelt==1.0.0
     # via twine
-responses==0.24.1
+responses==0.25.0
     # via -r requirements/test.in
 rfc3986==2.0.0
     # via twine
@@ -363,6 +370,8 @@ s3transfer==0.10.0
     # via
     #   awscli
     #   boto3
+secretstorage==3.3.3
+    # via keyring
 semantic-version==2.10.0
     # via edx-drf-extensions
 six==1.16.0
@@ -390,7 +399,7 @@ stevedore==5.1.0
     #   code-annotations
     #   edx-django-utils
     #   edx-opaque-keys
-testfixtures==7.2.2
+testfixtures==8.0.0
     # via
     #   -r requirements/quality.in
     #   -r requirements/test.in
@@ -413,7 +422,7 @@ tox==3.28.0
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/dev-enterprise_data.in
-twine==4.0.2
+twine==5.0.0
     # via -r requirements/dev-enterprise_data.in
 typing-extensions==4.9.0
     # via
