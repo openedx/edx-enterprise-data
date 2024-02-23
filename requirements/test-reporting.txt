@@ -4,28 +4,29 @@
 #
 #    make upgrade
 #
-amqp==2.6.1
+amqp==5.2.0
     # via kombu
 asn1crypto==1.5.1
     # via snowflake-connector-python
-atomicwrites==1.4.1
-    # via pytest
-attrs==23.2.0
-    # via pytest
-awscli==1.32.35
+awscli==1.32.56
     # via -r requirements/reporting.in
+backports-zoneinfo[tzdata]==0.2.1 ; python_version < "3.9"
+    # via
+    #   -c requirements/constraints.txt
+    #   celery
+    #   kombu
 bcrypt==4.1.2
     # via paramiko
-billiard==3.6.4.0
+billiard==4.2.0
     # via celery
-boto3==1.34.35
+boto3==1.34.56
     # via -r requirements/reporting.in
-botocore==1.34.35
+botocore==1.34.56
     # via
     #   awscli
     #   boto3
     #   s3transfer
-celery==4.4.7
+celery==5.3.6
     # via -r requirements/reporting.in
 certifi==2024.2.2
     # via
@@ -41,11 +42,23 @@ charset-normalizer==3.3.2
     # via
     #   requests
     #   snowflake-connector-python
+click==8.1.7
+    # via
+    #   celery
+    #   click-didyoumean
+    #   click-plugins
+    #   click-repl
+click-didyoumean==0.3.0
+    # via celery
+click-plugins==1.1.1
+    # via celery
+click-repl==0.3.0
+    # via celery
 colorama==0.4.4
     # via awscli
-coverage==7.4.1
+coverage[toml]==7.4.3
     # via pytest-cov
-cryptography==41.0.7
+cryptography==42.0.5
     # via
     #   -r requirements/reporting.in
     #   paramiko
@@ -58,6 +71,8 @@ distlib==0.3.8
     # via virtualenv
 docutils==0.16
     # via awscli
+exceptiongroup==1.2.0
+    # via pytest
 filelock==3.13.1
     # via
     #   snowflake-connector-python
@@ -67,23 +82,24 @@ idna==3.6
     # via
     #   requests
     #   snowflake-connector-python
+iniconfig==2.0.0
+    # via pytest
 interchange==2021.0.4
     # via py2neo
 jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-kombu==4.6.11
+kombu==5.3.5
     # via celery
 mock==2.0.0
     # via -r requirements/test-reporting.in
 monotonic==1.6
     # via py2neo
-more-itertools==10.2.0
-    # via pytest
 packaging==23.2
     # via
     #   py2neo
+    #   pytest
     #   snowflake-connector-python
     #   tox
 pansi==2020.7.3
@@ -102,10 +118,10 @@ pluggy==1.4.0
     # via
     #   pytest
     #   tox
+prompt-toolkit==3.0.43
+    # via click-repl
 py==1.11.0
-    # via
-    #   pytest
-    #   tox
+    # via tox
 py2neo @ https://github.com/overhangio/py2neo/releases/download/2021.2.3/py2neo-2021.2.3.tar.gz
     # via -r requirements/reporting.in
 pyasn1==0.5.1
@@ -122,21 +138,21 @@ pyminizip==0.2.6
     # via -r requirements/reporting.in
 pynacl==1.5.0
     # via paramiko
-pyopenssl==23.3.0
+pyopenssl==24.0.0
     # via snowflake-connector-python
-pytest==3.7.1
+pytest==8.0.2
     # via
     #   -r requirements/test-reporting.in
     #   pytest-cov
-pytest-cov==2.5.1
+pytest-cov==4.1.0
     # via -r requirements/test-reporting.in
-python-dateutil==2.8.2
+python-dateutil==2.9.0.post0
     # via
     #   botocore
+    #   celery
     #   vertica-python
 pytz==2024.1
     # via
-    #   celery
     #   interchange
     #   snowflake-connector-python
 pyyaml==6.0.1
@@ -147,7 +163,7 @@ requests==2.31.0
     # via
     #   responses
     #   snowflake-connector-python
-responses==0.24.1
+responses==0.25.0
     # via -r requirements/test-reporting.in
 rsa==4.7.2
     # via awscli
@@ -161,24 +177,30 @@ six==1.16.0
     #   mock
     #   pansi
     #   py2neo
-    #   pytest
     #   python-dateutil
     #   tox
     #   vertica-python
-snowflake-connector-python==3.7.0
+snowflake-connector-python==3.7.1
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
 tomli==2.0.1
-    # via tox
-tomlkit==0.12.3
+    # via
+    #   coverage
+    #   pytest
+    #   tox
+tomlkit==0.12.4
     # via snowflake-connector-python
 tox==3.28.0
+    # via -r requirements/test-reporting.in
+typing-extensions==4.10.0
     # via
-    #   -c requirements/constraints.txt
-    #   -r requirements/test-reporting.in
-typing-extensions==4.9.0
-    # via snowflake-connector-python
+    #   kombu
+    #   snowflake-connector-python
+tzdata==2024.1
+    # via
+    #   backports-zoneinfo
+    #   celery
 unicodecsv==0.14.1
     # via -r requirements/reporting.in
 urllib3==1.26.18
@@ -190,12 +212,12 @@ urllib3==1.26.18
     #   snowflake-connector-python
 vertica-python==1.3.8
     # via -r requirements/reporting.in
-vine==1.3.0
+vine==5.1.0
     # via
     #   amqp
     #   celery
-virtualenv==20.25.0
+    #   kombu
+virtualenv==20.25.1
     # via tox
-
-# The following packages are considered to be unsafe in a requirements file:
-# setuptools
+wcwidth==0.2.13
+    # via prompt-toolkit

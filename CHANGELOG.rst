@@ -15,6 +15,11 @@ Unreleased
 ----------
 
 =========================
+[6.2.0] - 2024-03-06
+---------------------
+  * Dropped support for ``Django<4.2``
+  * Added support for ``Python 3.12``
+
 [6.1.1] - 2024-02-22
 ---------------------
   * Update uuid4 regex
