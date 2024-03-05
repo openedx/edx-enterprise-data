@@ -10,15 +10,17 @@ asgiref==3.7.2
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.32.35
+awscli==1.32.55
     # via -r requirements/reporting.in
+backports-zoneinfo==0.2.1
+    # via django
 bcrypt==4.1.2
     # via paramiko
 billiard==3.6.4.0
     # via celery
-boto3==1.34.35
+boto3==1.34.55
     # via -r requirements/reporting.in
-botocore==1.34.35
+botocore==1.34.55
     # via
     #   awscli
     #   boto3
@@ -43,11 +45,11 @@ click==8.1.7
     # via edx-django-utils
 colorama==0.4.4
     # via awscli
-coverage[toml]==7.4.1
+coverage[toml]==7.4.3
     # via
     #   coverage
     #   pytest-cov
-cryptography==41.0.7
+cryptography==42.0.5
     # via
     #   -r requirements/reporting.in
     #   django-fernet-fields-v2
@@ -56,7 +58,7 @@ cryptography==41.0.7
     #   pyjwt
     #   pyopenssl
     #   snowflake-connector-python
-ddt==1.7.1
+ddt==1.7.2
     # via -r requirements/test.in
     # via
     #   -c requirements/common_constraints.txt
@@ -80,7 +82,7 @@ django-fernet-fields-v2==0.9
     # via -r requirements/base.in
 django-filter==23.5
     # via -r requirements/base.in
-django-model-utils==4.3.1
+django-model-utils==4.4.0
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
@@ -125,7 +127,7 @@ factory-boy==3.3.0
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==22.7.0
+faker==24.0.0
     # via factory-boy
 filelock==3.13.1
     # via snowflake-connector-python
@@ -151,7 +153,7 @@ mock==5.1.0
     # via -r requirements/test.in
 monotonic==1.6
     # via py2neo
-newrelic==9.6.0
+newrelic==9.7.0
     # via edx-django-utils
 packaging==23.2
     # via
@@ -196,9 +198,9 @@ pynacl==1.5.0
     # via
     #   edx-django-utils
     #   paramiko
-pyopenssl==23.3.0
+pyopenssl==24.0.0
     # via snowflake-connector-python
-pytest==8.0.0
+pytest==8.0.2
     # via
     #   pytest-cov
     #   pytest-django
@@ -206,7 +208,7 @@ pytest-cov==4.1.0
     # via -r requirements/test.in
 pytest-django==4.8.0
     # via -r requirements/test.in
-python-dateutil==2.8.2
+python-dateutil==2.9.0.post0
     # via
     #   botocore
     #   faker
@@ -215,7 +217,6 @@ python-dateutil==2.8.2
 pytz==2024.1
     # via
     #   celery
-    #   django
     #   djangorestframework
     #   interchange
     #   snowflake-connector-python
@@ -231,7 +232,7 @@ requests==2.31.0
     #   responses
     #   slumber
     #   snowflake-connector-python
-responses==0.24.1
+responses==0.25.0
     # via -r requirements/test.in
 rsa==4.7.2
     # via awscli
@@ -253,25 +254,25 @@ six==1.16.0
     #   vertica-python
 slumber==0.7.1
     # via edx-rest-api-client
-snowflake-connector-python==3.7.0
+snowflake-connector-python==3.7.1
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
 sqlparse==0.4.4
     # via django
-stevedore==5.1.0
+stevedore==5.2.0
     # via
     #   edx-django-utils
     #   edx-opaque-keys
-testfixtures==7.2.2
+testfixtures==8.1.0
     # via -r requirements/test.in
 tomli==2.0.1
     # via
     #   coverage
     #   pytest
-tomlkit==0.12.3
+tomlkit==0.12.4
     # via snowflake-connector-python
-typing-extensions==4.9.0
+typing-extensions==4.10.0
     # via
     #   asgiref
     #   edx-opaque-keys

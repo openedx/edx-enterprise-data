@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-coverage==7.4.1
+coverage==7.4.3
     # via -r requirements/ci.in
 distlib==0.3.8
     # via virtualenv
@@ -28,5 +28,5 @@ tox==3.28.0
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/ci.in
-virtualenv==20.25.0
+virtualenv==20.25.1
     # via tox
