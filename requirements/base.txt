@@ -4,26 +4,32 @@
 #
 #    make upgrade
 #
-amqp==2.6.1
+amqp==5.2.0
     # via kombu
 asgiref==3.7.2
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.32.35
+awscli==1.32.56
     # via -r requirements/reporting.in
+backports-zoneinfo[tzdata]==0.2.1 ; python_version < "3.9"
+    # via
+    #   -c requirements/constraints.txt
+    #   celery
+    #   django
+    #   kombu
 bcrypt==4.1.2
     # via paramiko
-billiard==3.6.4.0
+billiard==4.2.0
     # via celery
-boto3==1.34.35
+boto3==1.34.56
     # via -r requirements/reporting.in
-botocore==1.34.35
+botocore==1.34.56
     # via
     #   awscli
     #   boto3
     #   s3transfer
-celery==4.4.7
+celery==5.3.6
     # via -r requirements/reporting.in
 certifi==2024.2.2
     # via
@@ -40,10 +46,21 @@ charset-normalizer==3.3.2
     #   requests
     #   snowflake-connector-python
 click==8.1.7
-    # via edx-django-utils
+    # via
+    #   celery
+    #   click-didyoumean
+    #   click-plugins
+    #   click-repl
+    #   edx-django-utils
+click-didyoumean==0.3.0
+    # via celery
+click-plugins==1.1.1
+    # via celery
+click-repl==0.3.0
+    # via celery
 colorama==0.4.4
     # via awscli
-cryptography==41.0.7
+cryptography==42.0.5
     # via
     #   -r requirements/reporting.in
     #   django-fernet-fields-v2
@@ -52,7 +69,7 @@ cryptography==41.0.7
     #   pyjwt
     #   pyopenssl
     #   snowflake-connector-python
-django==3.2.23
+django==4.2.11
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
@@ -74,7 +91,7 @@ django-fernet-fields-v2==0.9
     # via -r requirements/base.in
 django-filter==23.5
     # via -r requirements/base.in
-django-model-utils==4.3.1
+django-model-utils==4.4.0
     # via
     #   -r requirements/base.in
     #   edx-rbac
@@ -112,7 +129,7 @@ edx-rest-api-client==5.6.1
     # via -r requirements/base.in
 factory-boy==3.3.0
     # via -r requirements/base.in
-faker==22.7.0
+faker==24.0.0
     # via factory-boy
 filelock==3.13.1
     # via snowflake-connector-python
@@ -126,11 +143,11 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-kombu==4.6.11
+kombu==5.3.5
     # via celery
 monotonic==1.6
     # via py2neo
-newrelic==9.6.0
+newrelic==9.7.0
     # via edx-django-utils
 packaging==23.2
     # via
@@ -146,6 +163,8 @@ pgpy==0.6.0
     # via -r requirements/reporting.in
 platformdirs==3.11.0
     # via snowflake-connector-python
+prompt-toolkit==3.0.43
+    # via click-repl
 psutil==5.9.8
     # via edx-django-utils
 py2neo @ https://github.com/overhangio/py2neo/releases/download/2021.2.3/py2neo-2021.2.3.tar.gz
@@ -172,17 +191,16 @@ pynacl==1.5.0
     # via
     #   edx-django-utils
     #   paramiko
-pyopenssl==23.3.0
+pyopenssl==24.0.0
     # via snowflake-connector-python
-python-dateutil==2.8.2
+python-dateutil==2.9.0.post0
     # via
     #   botocore
+    #   celery
     #   faker
     #   vertica-python
 pytz==2024.1
     # via
-    #   celery
-    #   django
     #   djangorestframework
     #   interchange
     #   snowflake-connector-python
@@ -215,24 +233,29 @@ six==1.16.0
     #   vertica-python
 slumber==0.7.1
     # via edx-rest-api-client
-snowflake-connector-python==3.7.0
+snowflake-connector-python==3.7.1
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
 sqlparse==0.4.4
     # via django
-stevedore==5.1.0
+stevedore==5.2.0
     # via
     #   edx-django-utils
     #   edx-opaque-keys
-tomlkit==0.12.3
+tomlkit==0.12.4
     # via snowflake-connector-python
-typing-extensions==4.9.0
+typing-extensions==4.10.0
     # via
     #   asgiref
     #   edx-opaque-keys
     #   faker
+    #   kombu
     #   snowflake-connector-python
+tzdata==2024.1
+    # via
+    #   backports-zoneinfo
+    #   celery
 unicodecsv==0.14.1
     # via -r requirements/reporting.in
 urllib3==1.26.18
@@ -243,7 +266,10 @@ urllib3==1.26.18
     #   snowflake-connector-python
 vertica-python==1.3.8
     # via -r requirements/reporting.in
-vine==1.3.0
+vine==5.1.0
     # via
     #   amqp
     #   celery
+    #   kombu
+wcwidth==0.2.13
+    # via prompt-toolkit

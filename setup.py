@@ -130,11 +130,10 @@ setup(
     version=VERSION,
     classifiers=[
         'Framework :: Django',
-        'Framework :: Django :: 3.2',
-        'Framework :: Django :: 4.0',
         'Framework :: Django :: 4.2',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.12',
     ],
     description="""Enterprise Reporting""",
     long_description="Tools and products related to providing access to Enterprise data.",

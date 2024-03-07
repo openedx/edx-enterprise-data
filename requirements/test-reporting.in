@@ -3,7 +3,7 @@
 
 responses                           # utility library for mocking out the requests library
 tox
-pytest==3.7.1
+pytest==8.0.2
 ddt==1.1.2
 mock==2.0.0
-pytest-cov==2.5.1
+pytest-cov==4.1.0
