@@ -10,21 +10,22 @@ asgiref==3.7.2
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.32.56
+awscli==1.32.65
     # via -r requirements/reporting.in
 backports-zoneinfo[tzdata]==0.2.1 ; python_version < "3.9"
     # via
     #   -c requirements/constraints.txt
     #   celery
     #   django
+    #   djangorestframework
     #   kombu
 bcrypt==4.1.2
     # via paramiko
 billiard==4.2.0
     # via celery
-boto3==1.34.56
+boto3==1.34.65
     # via -r requirements/reporting.in
-botocore==1.34.56
+botocore==1.34.65
     # via
     #   awscli
     #   boto3
@@ -60,7 +61,7 @@ click-repl==0.3.0
     # via celery
 colorama==0.4.4
     # via awscli
-coverage[toml]==7.4.3
+coverage[toml]==7.4.4
     # via pytest-cov
 cryptography==42.0.5
     # via
@@ -93,7 +94,7 @@ django-crum==0.7.9
     #   edx-rbac
 django-fernet-fields-v2==0.9
     # via -r requirements/base.in
-django-filter==23.5
+django-filter==24.1
     # via -r requirements/base.in
 django-model-utils==4.4.0
     # via
@@ -104,7 +105,7 @@ django-waffle==4.1.0
     # via
     #   edx-django-utils
     #   edx-drf-extensions
-djangorestframework==3.14.0
+djangorestframework==3.15.0
     # via
     #   -r requirements/test-master.in
     #   djangorestframework-csv
@@ -116,7 +117,7 @@ docutils==0.16
     # via awscli
 drf-jwt==1.19.2
     # via edx-drf-extensions
-edx-django-utils==5.10.1
+edx-django-utils==5.11.0
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
@@ -140,11 +141,11 @@ factory-boy==3.3.0
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==24.0.0
+faker==24.3.0
     # via factory-boy
 filelock==3.13.1
     # via snowflake-connector-python
-flaky==3.7.0
+flaky==3.8.1
     # via -r requirements/test.in
 freezegun==1.4.0
     # via -r requirements/test.in
@@ -166,9 +167,9 @@ mock==5.1.0
     # via -r requirements/test.in
 monotonic==1.6
     # via py2neo
-newrelic==9.7.0
+newrelic==9.7.1
     # via edx-django-utils
-packaging==23.2
+packaging==24.0
     # via
     #   py2neo
     #   pytest
@@ -213,9 +214,9 @@ pynacl==1.5.0
     # via
     #   edx-django-utils
     #   paramiko
-pyopenssl==24.0.0
+pyopenssl==24.1.0
     # via snowflake-connector-python
-pytest==8.0.2
+pytest==8.1.1
     # via
     #   pytest-cov
     #   pytest-django
@@ -232,7 +233,6 @@ python-dateutil==2.9.0.post0
     #   vertica-python
 pytz==2024.1
     # via
-    #   djangorestframework
     #   interchange
     #   snowflake-connector-python
 pyyaml==6.0.1
@@ -253,7 +253,7 @@ rsa==4.7.2
     # via awscli
 rules==3.3
     # via -r requirements/base.in
-s3transfer==0.10.0
+s3transfer==0.10.1
     # via
     #   awscli
     #   boto3
