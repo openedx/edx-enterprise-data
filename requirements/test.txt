@@ -6,25 +6,26 @@
 #
 amqp==5.2.0
     # via kombu
-asgiref==3.7.2
+asgiref==3.8.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.32.56
+awscli==1.32.80
     # via -r requirements/reporting.in
 backports-zoneinfo[tzdata]==0.2.1 ; python_version < "3.9"
     # via
     #   -c requirements/constraints.txt
     #   celery
     #   django
+    #   djangorestframework
     #   kombu
 bcrypt==4.1.2
     # via paramiko
 billiard==4.2.0
     # via celery
-boto3==1.34.56
+boto3==1.34.80
     # via -r requirements/reporting.in
-botocore==1.34.56
+botocore==1.34.80
     # via
     #   awscli
     #   boto3
@@ -52,7 +53,7 @@ click==8.1.7
     #   click-plugins
     #   click-repl
     #   edx-django-utils
-click-didyoumean==0.3.0
+click-didyoumean==0.3.1
     # via celery
 click-plugins==1.1.1
     # via celery
@@ -60,7 +61,7 @@ click-repl==0.3.0
     # via celery
 colorama==0.4.4
     # via awscli
-coverage[toml]==7.4.3
+coverage[toml]==7.4.4
     # via pytest-cov
 cryptography==42.0.5
     # via
@@ -93,9 +94,9 @@ django-crum==0.7.9
     #   edx-rbac
 django-fernet-fields-v2==0.9
     # via -r requirements/base.in
-django-filter==23.5
+django-filter==24.2
     # via -r requirements/base.in
-django-model-utils==4.4.0
+django-model-utils==4.5.0
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
@@ -104,7 +105,7 @@ django-waffle==4.1.0
     # via
     #   edx-django-utils
     #   edx-drf-extensions
-djangorestframework==3.14.0
+djangorestframework==3.15.1
     # via
     #   djangorestframework-csv
     #   drf-jwt
@@ -115,12 +116,12 @@ docutils==0.16
     # via awscli
 drf-jwt==1.19.2
     # via edx-drf-extensions
-edx-django-utils==5.10.1
+edx-django-utils==5.12.0
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
     #   edx-rest-api-client
-edx-drf-extensions==10.2.0
+edx-drf-extensions==10.3.0
     # via
     #   -r requirements/base.in
     #   edx-rbac
@@ -130,7 +131,7 @@ edx-opaque-keys==2.5.1
     #   edx-drf-extensions
 edx-rbac==1.8.0
     # via -r requirements/base.in
-edx-rest-api-client==5.6.1
+edx-rest-api-client==5.7.0
     # via -r requirements/base.in
 exceptiongroup==1.2.0
     # via pytest
@@ -138,11 +139,11 @@ factory-boy==3.3.0
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==24.0.0
+faker==24.7.1
     # via factory-boy
-filelock==3.13.1
+filelock==3.13.3
     # via snowflake-connector-python
-flaky==3.7.0
+flaky==3.8.1
     # via -r requirements/test.in
 freezegun==1.4.0
     # via -r requirements/test.in
@@ -158,15 +159,15 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-kombu==5.3.5
+kombu==5.3.6
     # via celery
 mock==5.1.0
     # via -r requirements/test.in
 monotonic==1.6
     # via py2neo
-newrelic==9.7.0
+newrelic==9.8.0
     # via edx-django-utils
-packaging==23.2
+packaging==24.0
     # via
     #   py2neo
     #   pytest
@@ -189,11 +190,11 @@ psutil==5.9.8
     # via edx-django-utils
 py2neo @ https://github.com/overhangio/py2neo/releases/download/2021.2.3/py2neo-2021.2.3.tar.gz
     # via -r requirements/reporting.in
-pyasn1==0.5.1
+pyasn1==0.6.0
     # via
     #   pgpy
     #   rsa
-pycparser==2.21
+pycparser==2.22
     # via cffi
 pygments==2.17.2
     # via py2neo
@@ -211,13 +212,13 @@ pynacl==1.5.0
     # via
     #   edx-django-utils
     #   paramiko
-pyopenssl==24.0.0
+pyopenssl==24.1.0
     # via snowflake-connector-python
-pytest==8.0.2
+pytest==8.1.1
     # via
     #   pytest-cov
     #   pytest-django
-pytest-cov==4.1.0
+pytest-cov==5.0.0
     # via -r requirements/test.in
 pytest-django==4.8.0
     # via -r requirements/test.in
@@ -230,7 +231,6 @@ python-dateutil==2.9.0.post0
     #   vertica-python
 pytz==2024.1
     # via
-    #   djangorestframework
     #   interchange
     #   snowflake-connector-python
 pyyaml==6.0.1
@@ -251,7 +251,7 @@ rsa==4.7.2
     # via awscli
 rules==3.3
     # via -r requirements/base.in
-s3transfer==0.10.0
+s3transfer==0.10.1
     # via
     #   awscli
     #   boto3
@@ -285,7 +285,7 @@ tomli==2.0.1
     #   pytest
 tomlkit==0.12.4
     # via snowflake-connector-python
-typing-extensions==4.10.0
+typing-extensions==4.11.0
     # via
     #   asgiref
     #   edx-opaque-keys
