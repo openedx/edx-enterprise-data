@@ -10,7 +10,7 @@ asgiref==3.8.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.32.80
+awscli==1.32.94
     # via -r requirements/reporting.in
 backports-zoneinfo[tzdata]==0.2.1 ; python_version < "3.9"
     # via
@@ -23,9 +23,9 @@ bcrypt==4.1.2
     # via paramiko
 billiard==4.2.0
     # via celery
-boto3==1.34.80
+boto3==1.34.94
     # via -r requirements/reporting.in
-botocore==1.34.80
+botocore==1.34.94
     # via
     #   awscli
     #   boto3
@@ -59,9 +59,9 @@ click-plugins==1.1.1
     # via celery
 click-repl==0.3.0
     # via celery
-colorama==0.4.4
+colorama==0.4.6
     # via awscli
-coverage[toml]==7.4.4
+coverage[toml]==7.5.0
     # via pytest-cov
 cryptography==42.0.5
     # via
@@ -112,6 +112,8 @@ djangorestframework==3.15.1
     #   edx-drf-extensions
 djangorestframework-csv==3.0.2
     # via -r requirements/base.in
+dnspython==2.6.1
+    # via pymongo
 docutils==0.16
     # via awscli
 drf-jwt==1.19.2
@@ -125,29 +127,29 @@ edx-drf-extensions==10.3.0
     # via
     #   -r requirements/base.in
     #   edx-rbac
-edx-opaque-keys==2.5.1
+edx-opaque-keys==2.9.0
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
-edx-rbac==1.8.0
+edx-rbac==1.9.0
     # via -r requirements/base.in
 edx-rest-api-client==5.7.0
     # via -r requirements/base.in
-exceptiongroup==1.2.0
+exceptiongroup==1.2.1
     # via pytest
 factory-boy==3.3.0
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==24.7.1
+faker==25.0.0
     # via factory-boy
-filelock==3.13.3
+filelock==3.14.0
     # via snowflake-connector-python
 flaky==3.8.1
     # via -r requirements/test.in
-freezegun==1.4.0
+freezegun==1.5.0
     # via -r requirements/test.in
-idna==3.6
+idna==3.7
     # via
     #   requests
     #   snowflake-connector-python
@@ -159,13 +161,13 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-kombu==5.3.6
+kombu==5.3.7
     # via celery
 mock==5.1.0
     # via -r requirements/test.in
 monotonic==1.6
     # via py2neo
-newrelic==9.8.0
+newrelic==9.9.0
     # via edx-django-utils
 packaging==24.0
     # via
@@ -180,9 +182,9 @@ pbr==6.0.0
     # via stevedore
 pgpy==0.6.0
     # via -r requirements/reporting.in
-platformdirs==3.11.0
+platformdirs==4.2.1
     # via snowflake-connector-python
-pluggy==1.4.0
+pluggy==1.5.0
     # via pytest
 prompt-toolkit==3.0.43
     # via click-repl
@@ -206,7 +208,7 @@ pyjwt[crypto]==2.8.0
     #   snowflake-connector-python
 pyminizip==0.2.6
     # via -r requirements/reporting.in
-pymongo==3.13.0
+pymongo==4.4.0
     # via edx-opaque-keys
 pynacl==1.5.0
     # via
@@ -214,7 +216,7 @@ pynacl==1.5.0
     #   paramiko
 pyopenssl==24.1.0
     # via snowflake-connector-python
-pytest==8.1.1
+pytest==8.2.0
     # via
     #   pytest-cov
     #   pytest-django
@@ -267,11 +269,11 @@ six==1.16.0
     #   vertica-python
 slumber==0.7.1
     # via edx-rest-api-client
-snowflake-connector-python==3.7.1
+snowflake-connector-python==3.10.0
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
-sqlparse==0.4.4
+sqlparse==0.5.0
     # via django
 stevedore==5.2.0
     # via
@@ -289,7 +291,6 @@ typing-extensions==4.11.0
     # via
     #   asgiref
     #   edx-opaque-keys
-    #   faker
     #   kombu
     #   snowflake-connector-python
 tzdata==2024.1
@@ -314,3 +315,6 @@ vine==5.1.0
     #   kombu
 wcwidth==0.2.13
     # via prompt-toolkit
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools
