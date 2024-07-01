@@ -8,7 +8,7 @@ amqp==5.2.0
     # via kombu
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.33.10
+awscli==1.33.18
     # via -r requirements/reporting.in
 backports-zoneinfo[tzdata]==0.2.1 ; python_version < "3.9"
     # via
@@ -19,9 +19,9 @@ bcrypt==4.1.3
     # via paramiko
 billiard==4.2.0
     # via celery
-boto3==1.34.128
+boto3==1.34.136
     # via -r requirements/reporting.in
-botocore==1.34.128
+botocore==1.34.136
     # via
     #   awscli
     #   boto3
@@ -62,7 +62,7 @@ colorama==0.4.6
     # via
     #   awscli
     #   tox
-coverage[toml]==7.5.3
+coverage[toml]==7.5.4
     # via pytest-cov
 cryptography==42.0.8
     # via
@@ -79,7 +79,7 @@ docutils==0.16
     # via awscli
 exceptiongroup==1.2.1
     # via pytest
-filelock==3.15.1
+filelock==3.15.4
     # via
     #   snowflake-connector-python
     #   tox
@@ -146,7 +146,7 @@ pynacl==1.5.0
     # via paramiko
 pyopenssl==24.1.0
     # via snowflake-connector-python
-pyproject-api==1.6.1
+pyproject-api==1.7.1
     # via tox
 pytest==8.0.2
     # via
@@ -175,7 +175,7 @@ responses==0.25.3
     # via -r requirements/test-reporting.in
 rsa==4.7.2
     # via awscli
-s3transfer==0.10.1
+s3transfer==0.10.2
     # via
     #   awscli
     #   boto3
@@ -187,7 +187,7 @@ six==1.16.0
     #   py2neo
     #   python-dateutil
     #   vertica-python
-snowflake-connector-python==3.10.1
+snowflake-connector-python==3.11.0
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
@@ -225,7 +225,7 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==20.26.2
+virtualenv==20.26.3
     # via tox
 wcwidth==0.2.13
     # via prompt-toolkit
