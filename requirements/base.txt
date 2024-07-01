@@ -10,7 +10,7 @@ asgiref==3.8.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.33.10
+awscli==1.33.18
     # via -r requirements/reporting.in
 backports-zoneinfo[tzdata]==0.2.1 ; python_version < "3.9"
     # via
@@ -23,9 +23,9 @@ bcrypt==4.1.3
     # via paramiko
 billiard==4.2.0
     # via celery
-boto3==1.34.128
+boto3==1.34.136
     # via -r requirements/reporting.in
-botocore==1.34.128
+botocore==1.34.136
     # via
     #   awscli
     #   boto3
@@ -100,7 +100,7 @@ django-waffle==4.1.0
     # via
     #   edx-django-utils
     #   edx-drf-extensions
-djangorestframework==3.15.1
+djangorestframework==3.15.2
     # via
     #   djangorestframework-csv
     #   drf-jwt
@@ -128,13 +128,13 @@ edx-opaque-keys==2.10.0
     #   edx-drf-extensions
 edx-rbac==1.9.0
     # via -r requirements/base.in
-edx-rest-api-client==5.7.0
+edx-rest-api-client==5.7.1
     # via -r requirements/base.in
 factory-boy==3.3.0
     # via -r requirements/base.in
-faker==25.8.0
+faker==26.0.0
     # via factory-boy
-filelock==3.15.1
+filelock==3.15.4
     # via snowflake-connector-python
 idna==3.7
     # via
@@ -168,7 +168,7 @@ platformdirs==4.2.2
     # via snowflake-connector-python
 prompt-toolkit==3.0.47
     # via click-repl
-psutil==5.9.8
+psutil==6.0.0
     # via edx-django-utils
 py2neo @ https://github.com/overhangio/py2neo/releases/download/2021.2.3/py2neo-2021.2.3.tar.gz
     # via -r requirements/reporting.in
@@ -188,7 +188,7 @@ pyjwt[crypto]==2.8.0
     #   snowflake-connector-python
 pyminizip==0.2.6
     # via -r requirements/reporting.in
-pymongo==4.7.3
+pymongo==4.8.0
     # via edx-opaque-keys
 pynacl==1.5.0
     # via
@@ -208,7 +208,7 @@ pytz==2024.1
     #   snowflake-connector-python
 pyyaml==6.0.1
     # via awscli
-requests==2.31.0
+requests==2.32.3
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
@@ -219,7 +219,7 @@ rsa==4.7.2
     # via awscli
 rules==3.4
     # via -r requirements/base.in
-s3transfer==0.10.1
+s3transfer==0.10.2
     # via
     #   awscli
     #   boto3
@@ -235,7 +235,7 @@ six==1.16.0
     #   vertica-python
 slumber==0.7.1
     # via edx-rest-api-client
-snowflake-connector-python==3.10.1
+snowflake-connector-python==3.11.0
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
