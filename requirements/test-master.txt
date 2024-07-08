@@ -10,7 +10,7 @@ asgiref==3.8.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.33.18
+awscli==1.33.22
     # via -r requirements/reporting.in
 backports-zoneinfo[tzdata]==0.2.1 ; python_version < "3.9"
     # via
@@ -23,16 +23,16 @@ bcrypt==4.1.3
     # via paramiko
 billiard==4.2.0
     # via celery
-boto3==1.34.136
+boto3==1.34.140
     # via -r requirements/reporting.in
-botocore==1.34.136
+botocore==1.34.140
     # via
     #   awscli
     #   boto3
     #   s3transfer
 celery==5.3.6
     # via -r requirements/reporting.in
-certifi==2024.6.2
+certifi==2024.7.4
     # via
     #   py2neo
     #   requests
