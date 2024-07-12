@@ -41,7 +41,7 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
             'letter_grade', 'enterprise_user_id', 'user_email', 'user_account_creation_date',
             'user_country_code', 'user_username', 'enterprise_name', 'enterprise_customer_uuid',
             'enterprise_sso_uid', 'created', 'course_api_url', 'total_learning_time_hours', 'is_subsidy',
-            'course_product_line', 'budget_id'
+            'course_product_line', 'budget_id', 'enterprise_group_name', 'enterprise_group_uuid',
         )
 
     def get_course_api_url(self, obj):

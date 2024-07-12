@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[7.0.0] - 2024-07-12
+---------------------
+  * Add new fields in EnterpriseLearnerEnrollment model
+
 [6.2.3] - 2024-07-01
 ---------------------
   * Dependency updates
