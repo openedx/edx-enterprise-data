@@ -9,6 +9,8 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from enterprise_data.utils import get_unique_id
+
 LOGGER = getLogger(__name__)
 
 
@@ -78,7 +80,7 @@ class EnterpriseLearnerEnrollment(models.Model):
             ]),
         ]
 
-    enterprise_enrollment_id = models.PositiveIntegerField(primary_key=True)
+    enterprise_enrollment_id = models.PositiveIntegerField(null=True)
     enrollment_id = models.PositiveIntegerField(null=True)
     is_consent_granted = models.BooleanField(default=False)
     paid_by = models.CharField(max_length=255, null=True)
@@ -133,6 +135,11 @@ class EnterpriseLearnerEnrollment(models.Model):
     is_subsidy = models.BooleanField(default=False)
     course_product_line = models.CharField(max_length=64, null=True)
     budget_id = models.UUIDField(db_index=True, null=True)
+    is_included_in_utilization = models.BooleanField(default=False)
+    lpr_unique_id = models.PositiveBigIntegerField(primary_key=True, default=get_unique_id)
+    subscription_license_uuid = models.UUIDField(null=True)
+    enterprise_group_name = models.CharField(max_length=25, null=True)
+    enterprise_group_uuid = models.UUIDField(null=True)
 
 
 class EnterpriseAdminLearnerProgress(models.Model):

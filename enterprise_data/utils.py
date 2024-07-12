@@ -2,8 +2,8 @@
 Utility functions for Enterprise Data app.
 """
 
-
 import hashlib
+import random
 
 
 def get_cache_key(**kwargs):
@@ -28,3 +28,10 @@ def get_cache_key(**kwargs):
     key = '__'.join([f'{item}:{value}' for item, value in kwargs.items()])
 
     return hashlib.md5(key.encode('utf-8')).hexdigest()
+
+
+def get_unique_id():
+    """
+    Return a unique 32 bit integer.
+    """
+    return random.getrandbits(32)
