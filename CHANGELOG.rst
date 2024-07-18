@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[8.0.0] - 2024-07-18
+---------------------
+  * Fix migration for EnterpriseLearnerEnrollment model
+
 [7.0.0] - 2024-07-12
 ---------------------
   * Add new fields in EnterpriseLearnerEnrollment model
