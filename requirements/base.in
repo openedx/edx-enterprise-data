@@ -13,3 +13,6 @@ django-model-utils
 edx-rbac
 rules
 factory_boy
+numpy<=1.24.4
+pandas<=2.0.3
+mysql-connector-python

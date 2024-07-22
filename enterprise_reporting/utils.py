@@ -11,6 +11,7 @@ from collections import OrderedDict
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from urllib.parse import parse_qs, urlparse
 
 import boto3
 import pgpy
@@ -18,7 +19,6 @@ import pyminizip
 import pytz
 from cryptography.fernet import Fernet
 from fernet_fields.hkdf import derive_fernet_key
-from urllib.parse import parse_qs, urlparse
 
 from django.utils.encoding import force_str
 

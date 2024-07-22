@@ -196,3 +196,23 @@ class EnterpriseAdminSummarizeInsightsSerializer(serializers.ModelSerializer):
     class Meta:
         model = EnterpriseAdminSummarizeInsights
         fields = '__all__'
+
+
+class AdminAnalyticsAggregatesQueryParamsSerializer(serializers.Serializer):  # pylint: disable=abstract-method
+    """
+    Serializer for validating admin analytics query params.
+    """
+    start_date = serializers.DateField(required=False)
+    end_date = serializers.DateField(required=False)
+
+    def validate(self, attrs):
+        """
+        Validate the query params.
+
+        Raises:
+            serializers.ValidationError: If start_date is greater than end_date.
+        """
+        if 'start_date' in attrs and 'end_date' in attrs:
+            if attrs['start_date'] > attrs['end_date']:
+                raise serializers.ValidationError("start_date should be less than or equal to end_date.")
+        return attrs

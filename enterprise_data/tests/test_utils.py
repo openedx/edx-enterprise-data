@@ -345,3 +345,76 @@ def get_dummy_enterprise_api_data(**kwargs):
         'replace_sensitive_sso_username': False
     }
     return enterprise_api_dummy_data
+
+
+def get_dummy_engagements_data(enterprise_uuid: str, count=10):
+    """
+    Utility method to get dummy enrollment's data.
+    """
+    return [
+        {
+            'user_id': FAKER.random_int(min=1),
+            'email': FAKER.email(),
+            'enterprise_customer_uuid': enterprise_uuid,
+            'course_key': FAKER.slug(),
+            'enroll_type': 'verified',
+            'activity_date': FAKER.date_time_between(
+                start_date='-2M',
+                end_date='+2M',
+            ),
+            'course_title': ' '.join(FAKER.words(nb=5)).title(),
+            'course_subject': ' '.join(FAKER.words(nb=2)).title(),
+            'is_engaged': FAKER.boolean(),
+            'is_engaged_video': FAKER.boolean(),
+            'is_engaged_forum': FAKER.boolean(),
+            'is_engaged_problem': FAKER.boolean(),
+            'is_active': FAKER.boolean(),
+            'learning_time_seconds': FAKER.random_int(min=1),
+        } for _ in range(count)
+    ]
+
+
+def get_dummy_enrollments_data(enterprise_uuid: str, count=10):
+    """
+    Utility method to get dummy enrollment's data.
+    """
+    return [
+        {
+            'enterprise_customer_name': ' '.join(FAKER.words(nb=2)).title(),
+            'enterprise_customer_uuid': enterprise_uuid,
+            'lms_enrollment_id': FAKER.random_int(min=1),
+            'user_id': FAKER.random_int(min=1),
+            'email': FAKER.email(),
+            'course_key': FAKER.slug(),
+            'courserun_key': FAKER.slug(),
+            'course_id': FAKER.slug(),
+            'course_subject': ' '.join(FAKER.words(nb=2)).title(),
+            'course_title': ' '.join(FAKER.words(nb=5)).title(),
+            'enterprise_enrollment_date': FAKER.date_time_between(
+                start_date='-2M',
+                end_date='+2M',
+            ),
+            'lms_enrollment_mode': 'verified',
+            'enroll_type': 'verified',
+            'program_title': ' '.join(FAKER.words(nb=2)).title(),
+            'date_certificate_awarded': FAKER.date_time_between(
+                start_date='-2M',
+                end_date='+2M',
+            ),
+            'grade_percent': FAKER.pyfloat(right_digits=2, min_value=0, max_value=1),
+            'cert_awarded': FAKER.boolean(),
+            'date_certificate_created_raw': FAKER.date_time_between(
+                start_date='-2M',
+                end_date='+2M',
+            ),
+            'passed_date_raw': FAKER.date_time_between(
+                start_date='-2M',
+                end_date='+2M',
+            ),
+            'passed_date': FAKER.date_time_between(
+                start_date='-2M',
+                end_date='+2M',
+            ),
+            'has_passed': FAKER.boolean(),
+        } for _ in range(count)
+    ]

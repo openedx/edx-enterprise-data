@@ -1,22 +1,15 @@
 """
-Views for enterprise api v1.
+Views for the enterprise learner.
 """
 
 from datetime import date, timedelta
 from logging import getLogger
 from uuid import UUID
 
-from django_filters.rest_framework import DjangoFilterBackend
 from edx_django_utils.cache import TieredCache
-from edx_rbac.decorators import permission_required
-from edx_rbac.mixins import PermissionRequiredMixin
-from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
-from edx_rest_framework_extensions.paginators import DefaultPagination
 from rest_framework import filters, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
-from rest_framework.views import APIView
 
 from django.conf import settings
 from django.core.paginator import Paginator
@@ -27,50 +20,16 @@ from django.http import StreamingHttpResponse
 from django.utils import timezone
 
 from enterprise_data.api.v1 import serializers
-from enterprise_data.constants import ANALYTICS_API_VERSION_1
 from enterprise_data.filters import AuditEnrollmentsFilterBackend, AuditUsersEnrollmentFilterBackend
-from enterprise_data.models import (
-    EnterpriseAdminLearnerProgress,
-    EnterpriseAdminSummarizeInsights,
-    EnterpriseLearner,
-    EnterpriseLearnerEnrollment,
-    EnterpriseOffer,
-)
+from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment
 from enterprise_data.paginators import EnterpriseEnrollmentsPagination
 from enterprise_data.renderers import EnrollmentsCSVRenderer
-from enterprise_data.utils import get_cache_key
+from enterprise_data.utils import get_cache_key, subtract_one_month
+
+from .base import EnterpriseViewSetMixin
 
 LOGGER = getLogger(__name__)
 DEFAULT_LEARNER_CACHE_TIMEOUT = 60 * 10
-
-
-def subtract_one_month(original_date):
-    """
-    Returns a date exactly one month prior to the passed in date.
-    """
-    one_day = timedelta(days=1)
-    one_month_earlier = original_date - one_day
-    while one_month_earlier.month == original_date.month or one_month_earlier.day > original_date.day:
-        one_month_earlier -= one_day
-    return one_month_earlier
-
-
-class EnterpriseViewSetMixin(PermissionRequiredMixin):
-    """
-    Base class for all Enterprise view sets.
-    """
-    authentication_classes = (JwtAuthentication,)
-    pagination_class = DefaultPagination
-    permission_required = 'can_access_enterprise'
-    API_VERSION = ANALYTICS_API_VERSION_1
-
-    def paginate_queryset(self, queryset):
-        """
-        Allows no_page query param to skip pagination
-        """
-        if 'no_page' in self.request.query_params:
-            return None
-        return super().paginate_queryset(queryset)
 
 
 class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOnlyModelViewSet):
@@ -337,37 +296,6 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         return Response(content)
 
 
-class EnterpriseOfferViewSet(EnterpriseViewSetMixin, viewsets.ReadOnlyModelViewSet):
-    """
-    Viewset for enterprise offers.
-    """
-    serializer_class = serializers.EnterpriseOfferSerializer
-    filter_backends = (filters.OrderingFilter, DjangoFilterBackend,)
-    ordering_fields = '__all__'
-
-    lookup_field = 'offer_id'
-
-    filterset_fields = (
-        'offer_id',
-        'status'
-    )
-
-    def get_object(self):
-        """
-        This ensures that UUIDs with dashes are properly handled when requesting info about offers.
-
-        Related to the work in EnterpriseOfferSerializer with `to_internal_value` and `to_representation`
-        """
-        self.kwargs['offer_id'] = self.kwargs['offer_id'].replace('-', '')
-        return super().get_object()
-
-    def get_queryset(self):
-        enterprise_customer_uuid = self.kwargs['enterprise_id']
-        return EnterpriseOffer.objects.filter(
-            enterprise_customer_uuid=enterprise_customer_uuid,
-        )
-
-
 class EnterpriseLearnerViewSet(EnterpriseViewSetMixin, viewsets.ReadOnlyModelViewSet):
     """
     Viewset for routes related to Enterprise Learners.
@@ -498,40 +426,3 @@ class EnterpriseLearnerCompletedCoursesViewSet(EnterpriseViewSetMixin, viewsets.
             is_consent_granted=True,  # DSC check required
         ).values('user_email').annotate(completed_courses=Count('courserun_key')).order_by('user_email')
         return enrollments
-
-
-class EnterpriseAdminInsightsView(APIView):
-    """
-    API for getting the enterprise admin insights.
-    """
-    authentication_classes = (JwtAuthentication,)
-    http_method_names = ['get']
-
-    @permission_required('can_access_enterprise', fn=lambda request, enterprise_id: enterprise_id)
-    def get(self, request, enterprise_id):
-        """
-        HTTP GET endpoint to retrieve the enterprise admin insights
-        """
-        response_data = {}
-        learner_progress = {}
-        learner_engagement = {}
-
-        try:
-            learner_progress = EnterpriseAdminLearnerProgress.objects.get(enterprise_customer_uuid=enterprise_id)
-            learner_progress = serializers.EnterpriseAdminLearnerProgressSerializer(learner_progress).data
-            response_data['learner_progress'] = learner_progress
-        except EnterpriseAdminLearnerProgress.DoesNotExist:
-            pass
-
-        try:
-            learner_engagement = EnterpriseAdminSummarizeInsights.objects.get(enterprise_customer_uuid=enterprise_id)
-            learner_engagement = serializers.EnterpriseAdminSummarizeInsightsSerializer(learner_engagement).data
-            response_data['learner_engagement'] = learner_engagement
-        except EnterpriseAdminSummarizeInsights.DoesNotExist:
-            pass
-
-        status = HTTP_200_OK
-        if learner_progress == {} and learner_engagement == {}:
-            status = HTTP_404_NOT_FOUND
-
-        return Response(data=response_data, status=status)

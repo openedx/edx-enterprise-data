@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[8.2.0] - 2024-07-25
+---------------------
+  * Added a new API endpoint to get admin analytics aggregated data on user enrollment and engagement.
+
 [8.1.0] - 2024-07-22
 ---------------------
   * Upgrade python requirements

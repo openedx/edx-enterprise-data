@@ -1,9 +1,9 @@
 """
 Tests for clients in enterprise_reporting.
 """
+from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
 from urllib.parse import urljoin
-from datetime import datetime, timedelta
 
 import responses
 
