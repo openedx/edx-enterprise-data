@@ -10,15 +10,15 @@ asgiref==3.8.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.33.27
+awscli==1.33.31
     # via -r requirements/reporting.in
-bcrypt==4.1.3
+bcrypt==4.2.0
     # via paramiko
 billiard==4.2.0
     # via celery
-boto3==1.34.145
+boto3==1.34.149
     # via -r requirements/reporting.in
-botocore==1.34.145
+botocore==1.34.149
     # via
     #   awscli
     #   boto3
@@ -228,7 +228,7 @@ six==1.16.0
     #   vertica-python
 slumber==0.7.1
     # via edx-rest-api-client
-snowflake-connector-python==3.11.0
+snowflake-connector-python==3.12.0
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python

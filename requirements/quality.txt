@@ -14,17 +14,17 @@ astroid==3.2.4
     # via
     #   pylint
     #   pylint-celery
-awscli==1.33.27
+awscli==1.33.31
     # via -r requirements/reporting.in
 backports-tarfile==1.2.0
     # via jaraco-context
-bcrypt==4.1.3
+bcrypt==4.2.0
     # via paramiko
 billiard==4.2.0
     # via celery
-boto3==1.34.145
+boto3==1.34.149
     # via -r requirements/reporting.in
-botocore==1.34.145
+botocore==1.34.149
     # via
     #   awscli
     #   boto3
@@ -260,7 +260,7 @@ pansi==2020.7.3
     # via py2neo
 paramiko==3.4.0
     # via -r requirements/reporting.in
-path==16.14.0
+path==17.0.0
     # via edx-i18n-tools
 pbr==6.0.0
     # via stevedore
@@ -341,7 +341,7 @@ pyproject-hooks==1.1.0
     # via
     #   build
     #   pip-tools
-pytest==8.3.1
+pytest==8.3.2
     # via
     #   pytest-cov
     #   pytest-django
@@ -413,7 +413,7 @@ slumber==0.7.1
     # via edx-rest-api-client
 snowballstemmer==2.2.0
     # via pydocstyle
-snowflake-connector-python==3.11.0
+snowflake-connector-python==3.12.0
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
