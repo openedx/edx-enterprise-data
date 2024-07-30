@@ -2,14 +2,11 @@
 Test Enterprise client.
 """
 
+import json
 import os
 import unittest
 
-import json
-
-from enterprise_reporting.utils import (
-    extract_catalog_uuids_from_reporting_config,
-)
+from enterprise_reporting.utils import extract_catalog_uuids_from_reporting_config
 
 REPO_DIR = os.getcwd()
 FIXTURE_DIR = os.path.join(REPO_DIR, 'enterprise_reporting/fixtures')

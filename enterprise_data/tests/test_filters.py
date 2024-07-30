@@ -12,7 +12,7 @@ from rest_framework.test import APIRequestFactory, APITestCase
 
 from django.conf import settings
 
-from enterprise_data.api.v1.views import EnterpriseLearnerViewSet
+from enterprise_data.api.v1.views.enterprise_learner import EnterpriseLearnerViewSet
 from enterprise_data.filters import AuditUsersEnrollmentFilterBackend
 from enterprise_data.models import EnterpriseEnrollment, EnterpriseLearnerEnrollment
 from enterprise_data.tests.mixins import JWTTestMixin

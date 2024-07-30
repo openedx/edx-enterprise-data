@@ -1,9 +1,14 @@
 """
 Utility functions for Enterprise Data app.
 """
-
 import hashlib
 import random
+import time
+from datetime import timedelta
+from functools import wraps
+from logging import getLogger
+
+LOGGER = getLogger(__name__)
 
 
 def get_cache_key(**kwargs):
@@ -35,3 +40,45 @@ def get_unique_id():
     Return a unique 32 bit integer.
     """
     return random.getrandbits(32)
+
+
+def subtract_one_month(original_date):
+    """
+    Return a date exactly one month prior to the passed in date.
+    """
+    one_day = timedelta(days=1)
+    one_month_earlier = original_date - one_day
+    while one_month_earlier.month == original_date.month or one_month_earlier.day > original_date.day:
+        one_month_earlier -= one_day
+    return one_month_earlier
+
+
+def timeit(func):
+    """
+    Measure time taken by a function.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        LOGGER.info(f'Time taken by {func.__name__}: {end - start} seconds')
+        return result
+
+    return wrapper
+
+
+def date_filter(start, end, data_frame, date_column):
+    """
+    Filter a pandas DataFrame by date range.
+
+    Arguments:
+        start (DatetimeScalar | NaTType | None): The start date.
+        end (DatetimeScalar | NaTType | None): The end date.
+        data_frame (pandas.DataFrame): The DataFrame to filter.
+        date_column (str): The name of the date column.
+
+    Returns:
+        (pandas.DataFrame): The filtered DataFrame.
+    """
+    return data_frame[(start <= data_frame[date_column]) & (data_frame[date_column] <= end)]

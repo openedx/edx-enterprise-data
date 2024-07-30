@@ -2,17 +2,16 @@
 Clients used to access third party systems.
 """
 
+import logging
 import os
 from datetime import datetime, timedelta
 from functools import wraps
 from urllib.parse import parse_qs, urljoin, urlparse
+
+import requests
 from edx_rest_api_client.client import get_oauth_access_token
 
-import logging
-import requests
-
 from enterprise_reporting.utils import retry_on_exception
-
 
 LOGGER = logging.getLogger(__name__)
 

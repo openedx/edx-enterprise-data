@@ -3,13 +3,13 @@ External Resource Link Report Generation Code.
 """
 
 
-from collections import Counter
-from datetime import date
-import operator
 import logging
+import operator
 import os
 import re
 import sys
+from collections import Counter
+from datetime import date
 from urllib.parse import urlparse
 
 from py2neo import Graph

@@ -2,13 +2,13 @@
 Test utils for external link reports.
 """
 
-from collections import OrderedDict
 import unittest
+from collections import OrderedDict
 
 from enterprise_reporting.external_resource_link_report import (
     AGGREGATE_REPORT_CSV_HEADER_ROW,
-    create_csv_string,
     create_columns_for_aggregate_report,
+    create_csv_string,
     process_coursegraph_results,
     split_up_results,
 )

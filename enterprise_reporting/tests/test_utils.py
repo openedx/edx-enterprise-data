@@ -3,21 +3,21 @@ Test utilities.
 """
 
 
+import datetime
 import os
 import tempfile
 import unittest
 from collections import OrderedDict
+
 import ddt
 import pgpy
+import pytz
 from pgpy.constants import CompressionAlgorithm, HashAlgorithm, KeyFlags, PubKeyAlgorithm, SymmetricKeyAlgorithm
 from pgpy.errors import PGPError
 
 from enterprise_reporting import utils
 
 from .utils import create_files, verify_compressed
-
-import pytz
-import datetime
 
 
 @ddt.ddt
