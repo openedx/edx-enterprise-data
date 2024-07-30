@@ -4,10 +4,29 @@ Utility functions for interacting with the database.
 from contextlib import closing
 from logging import getLogger
 
-from enterprise_data.admin_analytics.constants import DATABASE_CONNECTION_CONFIG, DATABASE_CONNECTOR
+from mysql.connector import connect
+
+from django.conf import settings
+
 from enterprise_data.utils import timeit
 
 LOGGER = getLogger(__name__)
+
+
+def get_db_connection(database=settings.ENTERPRISE_REPORTING_DB_ALIAS):
+    """
+    Get a connection to the database.
+
+    Returns:
+        (mysql.connector.connection.MySQLConnection): The database connection.
+    """
+    return connect(
+        host=settings.DATABASES[database]['HOST'],
+        port=settings.DATABASES[database]['PORT'],
+        database=settings.DATABASES[database]['NAME'],
+        user=settings.DATABASES[database]['USER'],
+        password=settings.DATABASES[database]['PASSWORD'],
+    )
 
 
 @timeit
@@ -22,7 +41,7 @@ def run_query(query):
         (list): The results of the query.
     """
     try:
-        with closing(DATABASE_CONNECTOR(**DATABASE_CONNECTION_CONFIG)) as connection:
+        with closing(get_db_connection()) as connection:
             with closing(connection.cursor()) as cursor:
                 cursor.execute(query)
                 return cursor.fetchall()
