@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[8.4.0] - 2024-08-09
+---------------------
+  * feat: endpoint to get skills aggregated data for an enterprise customer
+
 [8.3.1] - 2024-08-06
 ---------------------
   * Dependency updates

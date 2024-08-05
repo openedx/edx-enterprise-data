@@ -418,3 +418,31 @@ def get_dummy_enrollments_data(enterprise_uuid: str, count=10):
             'has_passed': FAKER.boolean(),
         } for _ in range(count)
     ]
+
+
+def get_dummy_skills_data(enterprise_uuid: str, count=10):
+    """
+    Utility method to get dummy skills data.
+    """
+    return [
+        {
+            'course_number': FAKER.random_int(min=1),
+            'skill_type': 'skill_type',
+            'skill_name': ' '.join(FAKER.words(nb=2)).title(),
+            'skill_url': FAKER.url(),
+            'confidence': FAKER.random_int(min=1),
+            'skill_rank': FAKER.random_int(min=1),
+            'course_title': ' '.join(FAKER.words(nb=5)).title(),
+            'course_key': FAKER.slug(),
+            'level_type': 'level_type',
+            'primary_subject_name': ' '.join(FAKER.words(nb=2)).title(),
+            'date': FAKER.date_time_between(
+                start_date='-2M',
+                end_date='+2M',
+            ),
+            'enterprise_customer_uuid': enterprise_uuid,
+            'enterprise_customer_name': ' '.join(FAKER.words(nb=2)).title(),
+            'enrolls': FAKER.random_int(min=1),
+            'completions': FAKER.random_int(min=1),
+        } for _ in range(count)
+    ]

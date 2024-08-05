@@ -82,3 +82,19 @@ def date_filter(start, end, data_frame, date_column):
         (pandas.DataFrame): The filtered DataFrame.
     """
     return data_frame[(start <= data_frame[date_column]) & (data_frame[date_column] <= end)]
+
+
+def primary_subject_truncate(x):
+    """
+    Truncate primary subject to a few categories.
+    """
+    if x in [
+        "business-management",
+        "computer-science",
+        "data-analysis-statistics",
+        "engineering",
+        "communication",
+    ]:
+        return x
+    else:
+        return "other"

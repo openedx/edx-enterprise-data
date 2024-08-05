@@ -47,6 +47,11 @@ urlpatterns = [
         enterprise_admin_views.EnterpriseAdminAnalyticsAggregatesView.as_view(),
         name='enterprise-admin-analytics-aggregates'
     ),
+    re_path(
+        fr'^admin/anlaytics/(?P<enterprise_id>{UUID4_REGEX})/skills/stats',
+        enterprise_admin_views.EnterpriseAdminAnalyticsSkillsView.as_view(),
+        name='enterprise-admin-analytics-skills'
+    ),
 ]
 
 urlpatterns += router.urls
