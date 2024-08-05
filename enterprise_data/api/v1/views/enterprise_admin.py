@@ -21,9 +21,12 @@ from enterprise_data.admin_analytics.utils import (
     get_skills_chart_data,
     get_top_skills_csv_data,
 )
-from enterprise_data.api.v1 import serializers
-from enterprise_data.models import EnterpriseAdminLearnerProgress, EnterpriseAdminSummarizeInsights
+from enterprise_data.models import EnterpriseAdminLearnerProgress, EnterpriseAdminSummarizeInsights, EnterpriseExecEdLCModulePerformance
 from enterprise_data.utils import date_filter
+from rest_framework import filters, viewsets
+
+from enterprise_data.api.v1 import serializers
+from .base import EnterpriseViewSetMixin
 
 
 class EnterpriseAdminInsightsView(APIView):
@@ -109,16 +112,16 @@ class EnterpriseAdminAnalyticsAggregatesView(APIView):
         # 1. minimum enrollment date from the data as the start_date
         # 2. today's date as the end_date
         start_date = serializer.data.get(
-            "start_date", enrollment.enterprise_enrollment_date.min()
+            'start_date', enrollment.enterprise_enrollment_date.min()
         )
-        end_date = serializer.data.get("end_date", datetime.now())
+        end_date = serializer.data.get('end_date', datetime.now())
 
         # Date filtering.
         dff = date_filter(
             start=start_date,
             end=end_date,
             data_frame=enrollment.copy(),
-            date_column="enterprise_enrollment_date",
+            date_column='enterprise_enrollment_date',
         )
 
         enrolls = len(dff)
@@ -128,7 +131,7 @@ class EnterpriseAdminAnalyticsAggregatesView(APIView):
             start=start_date,
             end=end_date,
             data_frame=enrollment.copy(),
-            date_column="passed_date",
+            date_column='passed_date',
         )
 
         completions = dff.has_passed.sum()
@@ -138,7 +141,7 @@ class EnterpriseAdminAnalyticsAggregatesView(APIView):
             start=start_date,
             end=end_date,
             data_frame=engagement.copy(),
-            date_column="activity_date",
+            date_column='activity_date',
         )
 
         hours = round(dff.learning_time_seconds.sum() / 60 / 60, 1)
@@ -146,14 +149,14 @@ class EnterpriseAdminAnalyticsAggregatesView(APIView):
 
         return Response(
             data={
-                "enrolls": enrolls,
-                "courses": courses,
-                "completions": completions,
-                "hours": hours,
-                "sessions": sessions,
-                "last_updated_at": last_updated_at.date() if last_updated_at else None,
-                "min_enrollment_date": enrollment.enterprise_enrollment_date.min().date(),
-                "max_enrollment_date": enrollment.enterprise_enrollment_date.max().date(),
+                'enrolls': enrolls,
+                'courses': courses,
+                'completions': completions,
+                'hours': hours,
+                'sessions': sessions,
+                'last_updated_at': last_updated_at.date() if last_updated_at else None,
+                'min_enrollment_date': enrollment.enterprise_enrollment_date.min().date(),
+                'max_enrollment_date': enrollment.enterprise_enrollment_date.max().date(),
             },
             status=HTTP_200_OK,
         )
@@ -231,3 +234,22 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
         }
 
         return Response(data=response_data, status=HTTP_200_OK)
+
+
+class EnterpriseLearnerCompletedCoursesViewSet(EnterpriseViewSetMixin, viewsets.ReadOnlyModelViewSet):
+    """
+    View to for getting enterprise exec ed learner module performance records.
+    """
+    serializer_class = serializers.EnterpriseExecEdLCModulePerformanceSerializer
+    filter_backends = (filters.OrderingFilter,)
+    ordering_fields = '__all__'
+    ordering = ('-last_access',)
+
+    def get_queryset(self):
+        """
+        Return the queryset of EnterpriseExecEdLCModulePerformance objects.
+        """
+        enterprise_customer_uuid = self.kwargs['enterprise_id']
+        return EnterpriseExecEdLCModulePerformance.objects.filter(
+            enterprise_customer_uuid=enterprise_customer_uuid,
+        )

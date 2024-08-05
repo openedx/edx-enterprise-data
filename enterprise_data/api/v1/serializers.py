@@ -12,6 +12,7 @@ from enterprise_data.models import (
     EnterpriseLearnerEnrollment,
     EnterpriseOffer,
     EnterpriseSubsidyBudget,
+    EnterpriseExecEdLCModulePerformance,
 )
 
 
@@ -216,3 +217,13 @@ class AdminAnalyticsAggregatesQueryParamsSerializer(serializers.Serializer):  # 
             if attrs['start_date'] > attrs['end_date']:
                 raise serializers.ValidationError("start_date should be less than or equal to end_date.")
         return attrs
+
+
+class EnterpriseExecEdLCModulePerformanceSerializer(serializers.ModelSerializer):
+    """
+    Serializer for EnterpriseExecEdLCModulePerformance model.
+    """
+
+    class Meta:
+        model = EnterpriseExecEdLCModulePerformance
+        fields = '__all__'
