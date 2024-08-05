@@ -123,7 +123,13 @@ def get_skills_bubble_chart_df(skills_filtered):
     """ Get the skills data for the bubble chart.
 
     Args:
+<<<<<<< HEAD
         skills_filtered (list): The skills data.
+=======
+        start_date (str): The start date for the date filter.
+        end_date (str): The end date for the date filter.
+        skills (list): The skills data.
+>>>>>>> 4039547 (feat: endpoint to get skills aggregated data for an enterprise customer)
 
     Returns:
         (pandas.DataFrame): The skills data for the bubble chart.
@@ -149,7 +155,13 @@ def get_top_skills_enrollment(skills_filtered):
     """ Get the top skills by enrolls.
 
     Args:
+<<<<<<< HEAD
         skills_filtered (pandas.DataFrame): The skills data.
+=======
+        start_date (str): The start date for the date filter.
+        end_date (str): The end date for the date filter.
+        skills (pandas.DataFrame): The skills data.
+>>>>>>> 4039547 (feat: endpoint to get skills aggregated data for an enterprise customer)
 
     Returns:
         (pandas.DataFrame): The top skills by enrolls data
@@ -184,7 +196,13 @@ def get_top_skills_completion(skills_filtered):
     """ Get the top skills by completions.
 
     Args:
+<<<<<<< HEAD
         skills_filtered (pandas.DataFrame): The skills data.
+=======
+        start_date (str): The start date for the date filter.
+        end_date (str): The end date for the date filter.
+        skills (pandas.DataFrame): The skills data.
+>>>>>>> 4039547 (feat: endpoint to get skills aggregated data for an enterprise customer)
 
     Returns:
         (pandas.DataFrame): The top skills by completions
