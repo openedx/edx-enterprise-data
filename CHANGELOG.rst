@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[8.3.1] - 2024-08-06
+---------------------
+  * Dependency updates
+
 [8.3.0] - 2024-07-25
 ---------------------
   * refactor: Refactor code to avoid error conditions.
