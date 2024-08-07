@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[8.4.0] - 2024-08-08
+---------------------
+  * Added a new model and REST endpoint to get Exec Ed LC Module Performance data.
+
 [8.3.1] - 2024-08-06
 ---------------------
   * Dependency updates

@@ -112,20 +112,19 @@ class EnterpriseAdminAnalyticsAggregatesView(APIView):
         }, status=HTTP_200_OK)
 
 
-class EnterpriseLearnerCompletedCoursesViewSet(EnterpriseViewSetMixin, viewsets.ReadOnlyModelViewSet):
+class EnterpriseExecEdLCModulePerformanceViewSet(EnterpriseViewSetMixin, viewsets.ReadOnlyModelViewSet):
     """
     View to for getting enterprise exec ed learner module performance records.
     """
     serializer_class = serializers.EnterpriseExecEdLCModulePerformanceSerializer
     filter_backends = (filters.OrderingFilter,)
     ordering_fields = '__all__'
-    ordering = ('-last_access',)
+    ordering = ('last_access',)
 
     def get_queryset(self):
         """
         Return the queryset of EnterpriseExecEdLCModulePerformance objects.
         """
-        enterprise_customer_uuid = self.kwargs['enterprise_id']
         return EnterpriseExecEdLCModulePerformance.objects.filter(
-            enterprise_customer_uuid=enterprise_customer_uuid,
+            enterprise_customer_uuid=self.kwargs['enterprise_id'],
         )
