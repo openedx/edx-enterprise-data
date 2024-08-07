@@ -1,11 +1,11 @@
 """
 Views for enterprise admin api v1.
 """
-
 from datetime import datetime, timedelta
 
 from edx_rbac.decorators import permission_required
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
+from rest_framework import filters, viewsets
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
 from rest_framework.views import APIView
@@ -21,11 +21,14 @@ from enterprise_data.admin_analytics.utils import (
     get_skills_chart_data,
     get_top_skills_csv_data,
 )
-from enterprise_data.models import EnterpriseAdminLearnerProgress, EnterpriseAdminSummarizeInsights, EnterpriseExecEdLCModulePerformance
-from enterprise_data.utils import date_filter
-from rest_framework import filters, viewsets
-
 from enterprise_data.api.v1 import serializers
+from enterprise_data.models import (
+    EnterpriseAdminLearnerProgress,
+    EnterpriseAdminSummarizeInsights,
+    EnterpriseExecEdLCModulePerformance,
+)
+from enterprise_data.utils import date_filter
+
 from .base import EnterpriseViewSetMixin
 
 
@@ -236,20 +239,23 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
         return Response(data=response_data, status=HTTP_200_OK)
 
 
-class EnterpriseLearnerCompletedCoursesViewSet(EnterpriseViewSetMixin, viewsets.ReadOnlyModelViewSet):
+class EnterpriseExecEdLCModulePerformanceViewSet(EnterpriseViewSetMixin, viewsets.ReadOnlyModelViewSet):
     """
     View to for getting enterprise exec ed learner module performance records.
     """
     serializer_class = serializers.EnterpriseExecEdLCModulePerformanceSerializer
-    filter_backends = (filters.OrderingFilter,)
+    filter_backends = (filters.OrderingFilter, filters.SearchFilter)
     ordering_fields = '__all__'
-    ordering = ('-last_access',)
+    ordering = ('last_access',)
+    search_fields = (
+        'username',
+        'course_name'
+    )
 
     def get_queryset(self):
         """
         Return the queryset of EnterpriseExecEdLCModulePerformance objects.
         """
-        enterprise_customer_uuid = self.kwargs['enterprise_id']
         return EnterpriseExecEdLCModulePerformance.objects.filter(
-            enterprise_customer_uuid=enterprise_customer_uuid,
+            enterprise_customer_uuid=self.kwargs['enterprise_id'],
         )

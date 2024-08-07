@@ -8,11 +8,11 @@ from rest_framework import serializers
 from enterprise_data.models import (
     EnterpriseAdminLearnerProgress,
     EnterpriseAdminSummarizeInsights,
+    EnterpriseExecEdLCModulePerformance,
     EnterpriseLearner,
     EnterpriseLearnerEnrollment,
     EnterpriseOffer,
     EnterpriseSubsidyBudget,
-    EnterpriseExecEdLCModulePerformance,
 )
 
 
