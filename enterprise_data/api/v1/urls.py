@@ -8,6 +8,7 @@ from rest_framework.routers import DefaultRouter
 from django.urls import re_path
 
 from enterprise_data.api.v1.views import enterprise_admin as enterprise_admin_views
+from enterprise_data.api.v1.views import enterprise_completions as enterprise_completions_views
 from enterprise_data.api.v1.views import enterprise_learner as enterprise_learner_views
 from enterprise_data.api.v1.views import enterprise_offers as enterprise_offers_views
 from enterprise_data.constants import UUID4_REGEX
@@ -51,6 +52,16 @@ urlpatterns = [
         fr'^admin/anlaytics/(?P<enterprise_id>{UUID4_REGEX})/skills/stats',
         enterprise_admin_views.EnterpriseAdminAnalyticsSkillsView.as_view(),
         name='enterprise-admin-analytics-skills'
+    ),
+    re_path(
+        fr'^admin/anlaytics/(?P<enterprise_id>{UUID4_REGEX})/completions/stats',
+        enterprise_completions_views.EnterrpiseAdminCompletionsStatsView.as_view(),
+        name='enterprise-admin-analytics-completions'
+    ),
+    re_path(
+        fr'^admin/anlaytics/(?P<enterprise_id>{UUID4_REGEX})/completions',
+        enterprise_completions_views.EnterrpiseAdminCompletionsView.as_view(),
+        name='enterprise-admin-analytics-completions'
     ),
 ]
 

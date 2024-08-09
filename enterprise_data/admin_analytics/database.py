@@ -13,7 +13,7 @@ from enterprise_data.utils import timeit
 LOGGER = getLogger(__name__)
 
 
-def get_db_connection(database=settings.ENTERPRISE_REPORTING_DB_ALIAS):
+def get_db_connection(database='default'):
     """
     Get a connection to the database.
 

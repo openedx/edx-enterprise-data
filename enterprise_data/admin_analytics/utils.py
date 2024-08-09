@@ -17,6 +17,9 @@ class ChartType(Enum):
     BUBBLE = 'bubble'
     TOP_SKILLS_ENROLLMENT = 'top_skills_enrollment'
     TOP_SKILLS_COMPLETION = 'top_skills_completion'
+    COMPLETIONS_OVER_TIME = 'completions_over_time'
+    TOP_COURSES_BY_COMPLETIONS = 'top_courses_by_completions'
+    TOP_SUBJECTS_BY_COMPLETIONS = 'top_subjects_by_completions'
 
 
 def get_cache_timeout(cache_expiry):
@@ -123,13 +126,7 @@ def get_skills_bubble_chart_df(skills_filtered):
     """ Get the skills data for the bubble chart.
 
     Args:
-<<<<<<< HEAD
-        skills_filtered (list): The skills data.
-=======
-        start_date (str): The start date for the date filter.
-        end_date (str): The end date for the date filter.
-        skills (list): The skills data.
->>>>>>> 4039547 (feat: endpoint to get skills aggregated data for an enterprise customer)
+        skills_filtered (pandas.DataFrame): The skills data.
 
     Returns:
         (pandas.DataFrame): The skills data for the bubble chart.
@@ -155,13 +152,7 @@ def get_top_skills_enrollment(skills_filtered):
     """ Get the top skills by enrolls.
 
     Args:
-<<<<<<< HEAD
         skills_filtered (pandas.DataFrame): The skills data.
-=======
-        start_date (str): The start date for the date filter.
-        end_date (str): The end date for the date filter.
-        skills (pandas.DataFrame): The skills data.
->>>>>>> 4039547 (feat: endpoint to get skills aggregated data for an enterprise customer)
 
     Returns:
         (pandas.DataFrame): The top skills by enrolls data
@@ -196,13 +187,7 @@ def get_top_skills_completion(skills_filtered):
     """ Get the top skills by completions.
 
     Args:
-<<<<<<< HEAD
         skills_filtered (pandas.DataFrame): The skills data.
-=======
-        start_date (str): The start date for the date filter.
-        end_date (str): The end date for the date filter.
-        skills (pandas.DataFrame): The skills data.
->>>>>>> 4039547 (feat: endpoint to get skills aggregated data for an enterprise customer)
 
     Returns:
         (pandas.DataFrame): The top skills by completions
