@@ -29,3 +29,17 @@ class EnrollmentsCSVRenderer(CSVStreamingRenderer):
         'enterprise_sso_uid', 'created', 'course_api_url', 'total_learning_time_hours', 'is_subsidy',
         'course_product_line', 'budget_id', 'enterprise_group_name', 'enterprise_group_uuid',
     ]
+
+
+class IndividualEnrollmentsCSVRenderer(CSVStreamingRenderer):
+    """
+    Custom streaming csv renderer for advance analytics individual enrollments data.
+    """
+
+    header = [
+        'email',
+        'course_title',
+        'course_subject',
+        'enroll_type',
+        'enterprise_enrollment_date',
+    ]
