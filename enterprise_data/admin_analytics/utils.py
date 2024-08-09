@@ -92,6 +92,88 @@ def fetch_and_cache_engagements_data(enterprise_id, cache_expiry):
         return engagements
 
 
+def date_aggregation(level, group, date, df, type_="count"):
+    if type_ == "count":
+        if level == "Daily":
+            df = df.groupby(group).size().reset_index()
+            group.append("count")
+            df.columns = group
+        elif level == "Weekly":
+            df[date] = df[date].dt.to_period("W").dt.start_time
+            df = df.groupby(group).size().reset_index()
+            group.append("count")
+            df.columns = group
+        elif level == "Monthly":
+            df[date] = df[date].dt.to_period("M").dt.start_time
+            df = df.groupby(group).size().reset_index()
+            group.append("count")
+            df.columns = group
+        elif level == "Quarterly":
+            df[date] = df[date].dt.to_period("Q").dt.start_time
+            df = df.groupby(group).size().reset_index()
+            group.append("count")
+            df.columns = group
+    elif type_ == "sum":
+        if level == "Daily":
+            df = df.groupby(group).sum().reset_index()
+            group.append("sum")
+            df.columns = group
+        elif level == "Weekly":
+            df[date] = df[date].dt.to_period("W").dt.start_time
+            df = df.groupby(group).sum().reset_index()
+            group.append("sum")
+            df.columns = group
+        elif level == "Monthly":
+            df[date] = df[date].dt.to_period("M").dt.start_time
+            df = df.groupby(group).sum().reset_index()
+            group.append("sum")
+            df.columns = group
+        elif level == "Quarterly":
+            df[date] = df[date].dt.to_period("Q").dt.start_time
+            df = df.groupby(group).sum().reset_index()
+            group.append("sum")
+            df.columns = group
+
+    return df
+
+
+def calculation(calc, val, df, type_="count"):
+    if type_ == "count":
+        if calc == "Total":
+            pass
+        elif calc == "Running Total":
+            df["count"] = df.groupby("enroll_type")["count"].cumsum()
+        elif calc == "Moving Average (3 Period)":
+            df["count"] = (
+                df.groupby("enroll_type")["count"]
+                .rolling(3)
+                .mean()
+                .droplevel(level=[0])
+            )
+        elif calc == "Moving Average (7 Period)":
+            df["count"] = (
+                df.groupby("enroll_type")["count"]
+                .rolling(7)
+                .mean()
+                .droplevel(level=[0])
+            )
+    elif type_ == "sum":
+        if calc == "Total":
+            pass
+        elif calc == "Running Total":
+            df["sum"] = df.groupby("enroll_type")["sum"].cumsum()
+        elif calc == "Moving Average (3 Period)":
+            df["sum"] = (
+                df.groupby("enroll_type")["sum"].rolling(3).mean().droplevel(level=[0])
+            )
+        elif calc == "Moving Average (7 Period)":
+            df["sum"] = (
+                df.groupby("enroll_type")["sum"].rolling(7).mean().droplevel(level=[0])
+            )
+
+    return df
+
+
 def fetch_and_cache_skills_data(enterprise_id, cache_expiry):
     """
     Helper method to fetch and cache skills data.
