@@ -108,6 +108,10 @@ class TestEnterpriseAdminAnalyticsSkillsView(JWTTestMixin, APITransactionTestCas
             return [
                 list(item.values()) for item in get_dummy_skills_data(self.enterprise_id)
             ]
+        elif 'fact_enrollment_admin_dash' in query:
+            return [
+                list(item.values()) for item in get_dummy_enrollments_data(self.enterprise_id, 15)
+            ]
         else:
             return [
                 list(item.values()) for item in get_dummy_skills_data(self.enterprise_id)

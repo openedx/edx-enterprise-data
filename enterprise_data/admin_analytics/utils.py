@@ -18,6 +18,9 @@ class ChartType(Enum):
     BUBBLE = 'bubble'
     TOP_SKILLS_ENROLLMENT = 'top_skills_enrollment'
     TOP_SKILLS_COMPLETION = 'top_skills_completion'
+    COMPLETIONS_OVER_TIME = 'completions_over_time'
+    TOP_COURSES_BY_COMPLETIONS = 'top_courses_by_completions'
+    TOP_SUBJECTS_BY_COMPLETIONS = 'top_subjects_by_completions'
 
 
 def granularity_aggregation(level, group, date, data_frame, aggregation_type="count"):
@@ -172,7 +175,7 @@ def get_skills_bubble_chart_df(skills_filtered):
     """ Get the skills data for the bubble chart.
 
     Args:
-        skills_filtered (list): The skills data.
+        skills_filtered (pandas.DataFrame): The skills data.
 
     Returns:
         (pandas.DataFrame): The skills data for the bubble chart.

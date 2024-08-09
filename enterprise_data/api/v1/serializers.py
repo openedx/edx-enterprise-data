@@ -206,6 +206,11 @@ class AdminAnalyticsAggregatesQueryParamsSerializer(serializers.Serializer):  # 
     """
     start_date = serializers.DateField(required=False)
     end_date = serializers.DateField(required=False)
+    granularity = serializers.CharField(required=False)
+    calculation = serializers.CharField(required=False)
+    response_type = serializers.CharField(required=False)
+    page = serializers.IntegerField(required=False)
+    chart_type = serializers.CharField(required=False)
 
     def validate(self, attrs):
         """

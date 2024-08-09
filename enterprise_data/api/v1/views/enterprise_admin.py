@@ -189,17 +189,21 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
             data=request.GET
         )
         serializer.is_valid(raise_exception=True)
-
-        start_date = serializer.data.get("start_date")
-        end_date = serializer.data.get("end_date", datetime.now())
-
         last_updated_at = fetch_max_enrollment_datetime()
         cache_expiry = (
             last_updated_at + timedelta(days=1) if last_updated_at else datetime.now()
         )
+
+        enrollment = fetch_and_cache_enrollments_data(
+            enterprise_id, cache_expiry
+        ).copy()
+
+        start_date = serializer.data.get('start_date', enrollment.enterprise_enrollment_date.min())
+        end_date = serializer.data.get('end_date', datetime.now())
+
         skills = fetch_and_cache_skills_data(enterprise_id, cache_expiry).copy()
 
-        if request.GET.get("format") == "csv":
+        if serializer.data.get('response_type') == 'csv':
             csv_data = get_top_skills_csv_data(skills, start_date, end_date)
             response = HttpResponse(content_type='text/csv')
             filename = f"Skills by Enrollment and Completion, {start_date} - {end_date}.csv"

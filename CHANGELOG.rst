@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[8.7.0] - 2024-08-13
+---------------------
+  * feat: add endpoints to get completion data for an enterprise customer
+
 [8.6.1] - 2024-08-12
 ---------------------
   * Dependency updates

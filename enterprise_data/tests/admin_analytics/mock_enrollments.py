@@ -3,6 +3,7 @@
 import pandas as pd
 
 from enterprise_data.admin_analytics.constants import ENROLLMENT_CSV
+from enterprise_data.admin_analytics.utils import ChartType
 
 ENROLLMENTS = [
     {
@@ -71,7 +72,7 @@ ENROLLMENTS = [
         "cert_awarded": 0,
         "date_certificate_created_raw": None,
         "passed_date_raw": None,
-        "passed_date": None,
+        "passed_date": '2022-08-24',
         "has_passed": 0,
     },
     {
@@ -94,7 +95,7 @@ ENROLLMENTS = [
         "cert_awarded": 0,
         "date_certificate_created_raw": None,
         "passed_date_raw": None,
-        "passed_date": None,
+        "passed_date": "2022-08-24",
         "has_passed": 0,
     },
     {
@@ -117,7 +118,7 @@ ENROLLMENTS = [
         "cert_awarded": 0,
         "date_certificate_created_raw": None,
         "passed_date_raw": None,
-        "passed_date": None,
+        "passed_date": "2022-08-20",
         "has_passed": 0,
     },
 ]
@@ -140,6 +141,21 @@ ENROLLMENT_STATS_CSVS = {
     ),
     ENROLLMENT_CSV.TOP_SUBJECTS_BY_ENROLLMENTS.value: (
         b'course_subject,certificate\nbusiness-management,2\ncommunication,1\nmedicine,1\nsocial-sciences,1\n'
+    )
+}
+COMPLETIONS_STATS_CSVS = {
+    ChartType.COMPLETIONS_OVER_TIME.value: (
+        b'passed_date,certificate\n'
+        b'2021-08-25,1\n'
+        b'2021-09-01,2\n'
+    ),
+    ChartType.TOP_COURSES_BY_COMPLETIONS.value: (
+        b'course_key,course_title,certificate\n'
+        b'hEmW+tvk03,Re-engineered tangible approach,2\n'
+    ),
+    ChartType.TOP_SUBJECTS_BY_COMPLETIONS.value: (
+        b'course_subject,certificate\n'
+        b'business-management,2\n'
     )
 }
 
