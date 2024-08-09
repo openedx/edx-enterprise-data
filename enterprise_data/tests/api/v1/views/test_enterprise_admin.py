@@ -2,6 +2,7 @@
 Test cases for enterprise_admin views
 """
 from unittest import mock
+from uuid import uuid4
 
 import ddt
 from mock import patch
@@ -16,6 +17,7 @@ from enterprise_data.tests.test_utils import (
     get_dummy_engagements_data,
     get_dummy_enrollments_data,
     get_dummy_enterprise_api_data,
+    get_dummy_skills_data,
 )
 from enterprise_data_roles.constants import ENTERPRISE_DATA_ADMIN_ROLE
 from enterprise_data_roles.models import EnterpriseDataFeatureRole, EnterpriseDataRoleAssignment
@@ -80,3 +82,50 @@ class TestEnterpriseAdminAnalyticsAggregatesView(JWTTestMixin, APITransactionTes
             assert 'last_updated_at' in response.json()
             assert 'min_enrollment_date' in response.json()
             assert 'max_enrollment_date' in response.json()
+
+
+@ddt.ddt
+@mark.django_db
+class TestEnterpriseAdminAnalyticsSkillsView(JWTTestMixin, APITransactionTestCase):
+    """
+    Tests for EnterpriseAdminAnalyticsSkillsView.
+    """
+
+    def setUp(self):
+        """
+        Setup method.
+        """
+        super().setUp()
+        self.user = UserFactory()
+        self.enterprise_id = uuid4()
+        self.set_jwt_cookie(context=f'{self.enterprise_id}')
+
+    def _mock_run_query(self, query):
+        """
+        mock implementation of run_query.
+        """
+        if 'skills_daily_rollup_admin_dash' in query:
+            return [
+                list(item.values()) for item in get_dummy_skills_data(self.enterprise_id)
+            ]
+        else:
+            return [
+                list(item.values()) for item in get_dummy_skills_data(self.enterprise_id)
+            ]
+
+    def test_get_admin_analytics_skills(self):
+        """
+        Test to get admin analytics skills.
+        """
+        params = {'start_date': '2021-01-01', 'end_date': '2025-12-31'}
+        url = reverse('v1:enterprise-admin-analytics-skills', kwargs={'enterprise_id': self.enterprise_id})
+        with patch('enterprise_data.admin_analytics.data_loaders.run_query', side_effect=self._mock_run_query):
+            response = self.client.get(url, params)
+            assert response.status_code == status.HTTP_200_OK
+            data = response.json()
+            assert 'top_skills' in data
+            assert 'top_skills_by_enrollments' in data
+            assert 'top_skills_by_completions' in data
+            assert len(data['top_skills']) == 10
+            assert len(data['top_skills_by_enrollments']) == 10
+            assert len(data['top_skills_by_completions']) == 10
