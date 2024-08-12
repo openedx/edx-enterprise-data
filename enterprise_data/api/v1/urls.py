@@ -35,6 +35,11 @@ router.register(
     enterprise_learner_views.EnterpriseLearnerCompletedCoursesViewSet,
     'enterprise-learner-completed-courses',
 )
+router.register(
+    r'enterprise/(?P<enterprise_id>.+)/module-performance',
+    enterprise_admin_views.EnterpriseExecEdLCModulePerformanceViewSet,
+    'enterprise-admin-module-performance',
+)
 
 urlpatterns = [
     re_path(
