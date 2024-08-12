@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[8.6.1] - 2024-08-12
+---------------------
+  * Dependency updates
+
 [8.6.0] - 2024-08-12
 ---------------------
   * Added API endpoints for advance analytics enrollments data.
