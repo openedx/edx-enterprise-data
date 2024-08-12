@@ -10,15 +10,15 @@ asgiref==3.8.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.33.35
+awscli==1.33.40
     # via -r requirements/reporting.in
 bcrypt==4.2.0
     # via paramiko
 billiard==4.2.0
     # via celery
-boto3==1.34.153
+boto3==1.34.158
     # via -r requirements/reporting.in
-botocore==1.34.153
+botocore==1.34.158
     # via
     #   awscli
     #   boto3
@@ -30,7 +30,7 @@ certifi==2024.7.4
     #   py2neo
     #   requests
     #   snowflake-connector-python
-cffi==1.16.0
+cffi==1.17.0
     # via
     #   cryptography
     #   pynacl
@@ -63,7 +63,7 @@ cryptography==42.0.8
     #   pyjwt
     #   pyopenssl
     #   snowflake-connector-python
-django==4.2.14
+django==4.2.15
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
@@ -125,7 +125,7 @@ edx-rest-api-client==5.7.1
     # via -r requirements/base.in
 factory-boy==3.3.0
     # via -r requirements/base.in
-faker==26.1.0
+faker==26.3.0
     # via factory-boy
 filelock==3.15.4
     # via snowflake-connector-python
@@ -139,13 +139,13 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-kombu==5.3.7
+kombu==5.4.0
     # via celery
 monotonic==1.6
     # via py2neo
 mysql-connector-python==9.0.0
     # via -r requirements/base.in
-newrelic==9.12.0
+newrelic==9.13.0
     # via edx-django-utils
 numpy==1.24.4
     # via
@@ -162,7 +162,7 @@ pandas==2.0.3
     #   -r requirements/base.in
 pansi==2020.7.3
     # via py2neo
-paramiko==3.4.0
+paramiko==3.4.1
     # via -r requirements/reporting.in
 pbr==6.0.0
     # via stevedore
@@ -212,7 +212,7 @@ pytz==2024.1
     #   interchange
     #   pandas
     #   snowflake-connector-python
-pyyaml==6.0.1
+pyyaml==6.0.2
     # via awscli
 requests==2.32.3
     # via
