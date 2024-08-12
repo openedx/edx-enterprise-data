@@ -5,9 +5,11 @@ from uuid import UUID
 
 from rest_framework import serializers
 
+from enterprise_data.admin_analytics.constants import CALCULATION, ENROLLMENT_CSV, GRANULARITY
 from enterprise_data.models import (
     EnterpriseAdminLearnerProgress,
     EnterpriseAdminSummarizeInsights,
+    EnterpriseExecEdLCModulePerformance,
     EnterpriseLearner,
     EnterpriseLearnerEnrollment,
     EnterpriseOffer,
@@ -216,3 +218,102 @@ class AdminAnalyticsAggregatesQueryParamsSerializer(serializers.Serializer):  # 
             if attrs['start_date'] > attrs['end_date']:
                 raise serializers.ValidationError("start_date should be less than or equal to end_date.")
         return attrs
+
+
+class EnterpriseExecEdLCModulePerformanceSerializer(serializers.ModelSerializer):
+    """
+    Serializer for EnterpriseExecEdLCModulePerformance model.
+    """
+
+    class Meta:
+        model = EnterpriseExecEdLCModulePerformance
+        fields = '__all__'
+
+
+class AdvanceAnalyticsQueryParamSerializer(serializers.Serializer):  # pylint: disable=abstract-method
+    """Serializer for validating query params"""
+    GRANULARITY_CHOICES = [
+        GRANULARITY.DAILY.value,
+        GRANULARITY.WEEKLY.value,
+        GRANULARITY.MONTHLY.value,
+        GRANULARITY.QUARTERLY.value
+    ]
+    CALCULATION_CHOICES = [
+        CALCULATION.TOTAL.value,
+        CALCULATION.RUNNING_TOTAL.value,
+        CALCULATION.MOVING_AVERAGE_3_PERIOD.value,
+        CALCULATION.MOVING_AVERAGE_7_PERIOD.value
+    ]
+
+    start_date = serializers.DateField(required=False)
+    end_date = serializers.DateField(required=False)
+    granularity = serializers.CharField(required=False)
+    calculation = serializers.CharField(required=False)
+
+    def validate(self, attrs):
+        """
+        Validate the query params.
+
+        Raises:
+            serializers.ValidationError: If start_date is greater than end_date.
+        """
+        start_date = attrs.get('start_date')
+        end_date = attrs.get('end_date')
+
+        if start_date and end_date and start_date > end_date:
+            raise serializers.ValidationError("start_date should be less than or equal to end_date.")
+
+        return attrs
+
+    def validate_granularity(self, value):
+        """
+        Validate the granularity value.
+
+        Raises:
+            serializers.ValidationError: If granularity is not one of the valid choices.
+        """
+        if value not in self.GRANULARITY_CHOICES:
+            raise serializers.ValidationError(f"Granularity must be one of {self.GRANULARITY_CHOICES}")
+        return value
+
+    def validate_calculation(self, value):
+        """
+        Validate the calculation value.
+
+        Raises:
+            serializers.ValidationError: If calculation is not one of the valid choices
+        """
+        if value not in self.CALCULATION_CHOICES:
+            raise serializers.ValidationError(f"Calculation must be one of {self.CALCULATION_CHOICES}")
+        return value
+
+
+class AdvanceAnalyticsEnrollmentSerializer(AdvanceAnalyticsQueryParamSerializer):  # pylint: disable=abstract-method
+    """Serializer for validating Advance Analytics Enrollments API"""
+    CSV_TYPES = [
+        ENROLLMENT_CSV.INDIVIDUAL_ENROLLMENTS.value
+    ]
+
+    csv_type = serializers.CharField(required=False)
+
+    def validate_csv_type(self, value):
+        """
+        Validate the csv_type value.
+
+        Raises:
+            serializers.ValidationError: If csv_type is not one of the valid choices
+        """
+        if value not in self.CSV_TYPES:
+            raise serializers.ValidationError(f"csv_type must be one of {self.CSV_TYPES}")
+        return value
+
+
+class AdvanceAnalyticsEnrollmentStatsSerializer(
+    AdvanceAnalyticsEnrollmentSerializer
+):  # pylint: disable=abstract-method
+    """Serializer for validating Advance Analytics Enrollments Stats API"""
+    CSV_TYPES = [
+        ENROLLMENT_CSV.ENROLLMENTS_OVER_TIME.value,
+        ENROLLMENT_CSV.TOP_COURSES_BY_ENROLLMENTS.value,
+        ENROLLMENT_CSV.TOP_SUBJECTS_BY_ENROLLMENTS.value
+    ]

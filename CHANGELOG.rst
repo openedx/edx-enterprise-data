@@ -15,6 +15,15 @@ Unreleased
 ----------
 
 =========================
+
+[8.6.0] - 2024-08-12
+---------------------
+  * Added API endpoints for advance analytics enrollments data.
+
+[8.5.0] - 2024-08-12
+---------------------
+  * Added a new model and REST endpoint to get Exec Ed LC Module Performance data.
+
 [8.4.0] - 2024-08-09
 ---------------------
   * feat: endpoint to get skills aggregated data for an enterprise customer
