@@ -43,3 +43,17 @@ class IndividualEnrollmentsCSVRenderer(CSVStreamingRenderer):
         'enroll_type',
         'enterprise_enrollment_date',
     ]
+
+
+class LeaderboardCSVRenderer(CSVStreamingRenderer):
+    """
+    Custom streaming csv renderer for advance analytics leaderboard data.
+    """
+
+    header = [
+        'email',
+        'learning_time_hours',
+        'daily_sessions',
+        'average_session_length',
+        'course_completions',
+    ]

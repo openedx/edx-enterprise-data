@@ -25,3 +25,9 @@ class ENROLLMENT_CSV(Enum):
     TOP_COURSES_BY_ENROLLMENTS = 'top_courses_by_enrollments'
     TOP_SUBJECTS_BY_ENROLLMENTS = 'top_subjects_by_enrollments'
     INDIVIDUAL_ENROLLMENTS = 'individual_enrollments'
+
+
+class RESPONSE_TYPE(Enum):
+    """Response type choices"""
+    JSON = 'json'
+    CSV = 'csv'

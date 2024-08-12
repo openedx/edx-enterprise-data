@@ -8,7 +8,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITransactionTestCase
 
 from enterprise_data.admin_analytics.utils import ChartType
-from enterprise_data.tests.admin_analytics.mock_enrollments import (
+from enterprise_data.tests.admin_analytics.mock_analytics_data import (
     COMPLETIONS_STATS_CSVS,
     ENROLLMENTS,
     enrollments_dataframe,

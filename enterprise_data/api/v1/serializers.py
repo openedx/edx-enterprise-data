@@ -5,7 +5,7 @@ from uuid import UUID
 
 from rest_framework import serializers
 
-from enterprise_data.admin_analytics.constants import CALCULATION, ENROLLMENT_CSV, GRANULARITY
+from enterprise_data.admin_analytics.constants import CALCULATION, ENROLLMENT_CSV, GRANULARITY, RESPONSE_TYPE
 from enterprise_data.models import (
     EnterpriseAdminLearnerProgress,
     EnterpriseAdminSummarizeInsights,
@@ -237,6 +237,10 @@ class EnterpriseExecEdLCModulePerformanceSerializer(serializers.ModelSerializer)
 
 class AdvanceAnalyticsQueryParamSerializer(serializers.Serializer):  # pylint: disable=abstract-method
     """Serializer for validating query params"""
+    RESPONSE_TYPES = [
+        RESPONSE_TYPE.JSON.value,
+        RESPONSE_TYPE.CSV.value
+    ]
     GRANULARITY_CHOICES = [
         GRANULARITY.DAILY.value,
         GRANULARITY.WEEKLY.value,
@@ -254,6 +258,7 @@ class AdvanceAnalyticsQueryParamSerializer(serializers.Serializer):  # pylint: d
     end_date = serializers.DateField(required=False)
     granularity = serializers.CharField(required=False)
     calculation = serializers.CharField(required=False)
+    response_type = serializers.CharField(required=False)
 
     def validate(self, attrs):
         """
@@ -269,6 +274,17 @@ class AdvanceAnalyticsQueryParamSerializer(serializers.Serializer):  # pylint: d
             raise serializers.ValidationError("start_date should be less than or equal to end_date.")
 
         return attrs
+
+    def validate_response_type(self, value):
+        """
+        Validate the response_type value.
+
+        Raises:
+            serializers.ValidationError: If response_type is not one of the valid choices in `RESPONSE_TYPES`.
+        """
+        if value not in self.RESPONSE_TYPES:
+            raise serializers.ValidationError(f"response_type must be one of {self.RESPONSE_TYPES}")
+        return value
 
     def validate_granularity(self, value):
         """

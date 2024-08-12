@@ -15,6 +15,7 @@ from enterprise_data.api.v1.views.analytics_enrollments import (
     AdvanceAnalyticsEnrollmentStatsView,
     AdvanceAnalyticsIndividualEnrollmentsView,
 )
+from enterprise_data.api.v1.views.analytics_leaderboard import AdvanceAnalyticsLeaderboardView
 from enterprise_data.constants import UUID4_REGEX
 
 app_name = 'enterprise_data_api_v1'
@@ -56,6 +57,11 @@ urlpatterns = [
         fr'^admin/anlaytics/(?P<enterprise_id>{UUID4_REGEX})$',
         enterprise_admin_views.EnterpriseAdminAnalyticsAggregatesView.as_view(),
         name='enterprise-admin-analytics-aggregates'
+    ),
+    re_path(
+        fr'^admin/anlaytics/(?P<enterprise_uuid>{UUID4_REGEX})/leaderboard$',
+        AdvanceAnalyticsLeaderboardView.as_view(),
+        name='enterprise-admin-analytics-leaderboard'
     ),
     re_path(
         fr'^admin/anlaytics/(?P<enterprise_uuid>{UUID4_REGEX})/enrollments/stats$',

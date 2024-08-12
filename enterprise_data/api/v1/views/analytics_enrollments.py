@@ -1,5 +1,5 @@
 """Advance Analytics for Enrollments"""
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from edx_rbac.decorators import permission_required
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
@@ -9,10 +9,10 @@ from rest_framework.views import APIView
 from django.http import HttpResponse, StreamingHttpResponse
 
 from enterprise_data.admin_analytics.constants import CALCULATION, ENROLLMENT_CSV, GRANULARITY
-from enterprise_data.admin_analytics.data_loaders import fetch_max_enrollment_datetime
 from enterprise_data.admin_analytics.utils import (
     calculation_aggregation,
     fetch_and_cache_enrollments_data,
+    fetch_enrollments_cache_expiry_timestamp,
     granularity_aggregation,
 )
 from enterprise_data.api.v1.paginators import AdvanceAnalyticsPagination
@@ -22,21 +22,6 @@ from enterprise_data.api.v1.serializers import (
 )
 from enterprise_data.renderers import IndividualEnrollmentsCSVRenderer
 from enterprise_data.utils import date_filter
-
-
-def fetch_enrollments_cache_expiry_timestamp():
-    """Calculate cache expiry timestamp"""
-    # TODO: Implement correct cache expiry logic for `enrollments` data.
-    #       Current cache expiry logic is based on `enterprise_learner_enrollment` table,
-    #       Which has nothing to do with the `enrollments` data. Instead cache expiry should
-    #       be based on `fact_enrollment_admin_dash` table. Currently we have no timestamp in
-    #       `fact_enrollment_admin_dash` table that can be used for cache expiry. Add a new
-    #       column in the table for this purpose and then use that column for cache expiry.
-    last_updated_at = fetch_max_enrollment_datetime()
-    cache_expiry = (
-        last_updated_at + timedelta(days=1) if last_updated_at else datetime.now()
-    )
-    return cache_expiry
 
 
 class AdvanceAnalyticsIndividualEnrollmentsView(APIView):

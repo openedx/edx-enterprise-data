@@ -11,7 +11,7 @@ from rest_framework.test import APITransactionTestCase
 from enterprise_data.admin_analytics.constants import ENROLLMENT_CSV
 from enterprise_data.api.v1.serializers import AdvanceAnalyticsEnrollmentSerializer as EnrollmentSerializer
 from enterprise_data.api.v1.serializers import AdvanceAnalyticsEnrollmentStatsSerializer as EnrollmentStatsSerializer
-from enterprise_data.tests.admin_analytics.mock_enrollments import (
+from enterprise_data.tests.admin_analytics.mock_analytics_data import (
     ENROLLMENT_STATS_CSVS,
     ENROLLMENTS,
     enrollments_csv_content,
@@ -59,7 +59,7 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
         )
 
         fetch_max_enrollment_datetime_patcher = patch(
-            'enterprise_data.api.v1.views.analytics_enrollments.fetch_max_enrollment_datetime',
+            'enterprise_data.api.v1.views.analytics_enrollments.fetch_enrollments_cache_expiry_timestamp',
             return_value=datetime.now()
         )
 
@@ -232,7 +232,7 @@ class TestEnrollmentStatsAPI(JWTTestMixin, APITransactionTestCase):
         )
 
         fetch_max_enrollment_datetime_patcher = patch(
-            'enterprise_data.api.v1.views.analytics_enrollments.fetch_max_enrollment_datetime',
+            'enterprise_data.api.v1.views.analytics_enrollments.fetch_enrollments_cache_expiry_timestamp',
             return_value=datetime.now()
         )
 
