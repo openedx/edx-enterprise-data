@@ -6,6 +6,7 @@ from enum import Enum
 
 from edx_django_utils.cache import TieredCache, get_cache_key
 
+from enterprise_data.admin_analytics.constants import CALCULATION, GRANULARITY
 from enterprise_data.admin_analytics.data_loaders import fetch_engagement_data, fetch_enrollment_data, fetch_skills_data
 from enterprise_data.utils import date_filter, primary_subject_truncate
 
@@ -17,6 +18,54 @@ class ChartType(Enum):
     BUBBLE = 'bubble'
     TOP_SKILLS_ENROLLMENT = 'top_skills_enrollment'
     TOP_SKILLS_COMPLETION = 'top_skills_completion'
+
+
+def granularity_aggregation(level, group, date, data_frame, aggregation_type="count"):
+    """Aggregate data based on granularity"""
+    df = data_frame
+
+    period_mapping = {
+        GRANULARITY.WEEKLY.value: "W",
+        GRANULARITY.MONTHLY.value: "M",
+        GRANULARITY.QUARTERLY.value: "Q"
+    }
+
+    if level in period_mapping:
+        df[date] = df[date].dt.to_period(period_mapping[level]).dt.start_time
+
+    agg_column_name = "count"
+    if aggregation_type == "count":
+        df = df.groupby(group).size().reset_index()
+    elif aggregation_type == "sum":
+        df = df.groupby(group).sum().reset_index()
+        agg_column_name = "sum"
+
+    df.columns = group + [agg_column_name]
+    return df
+
+
+def calculation_aggregation(calc, data_frame, aggregation_type="count"):
+    """Aggregate data based on calculation"""
+    df = data_frame
+
+    window_mapping = {
+        CALCULATION.MOVING_AVERAGE_3_PERIOD.value: 3,
+        CALCULATION.MOVING_AVERAGE_7_PERIOD.value: 7,
+    }
+
+    aggregation_column = "count" if aggregation_type == "count" else "sum"
+
+    if calc == CALCULATION.RUNNING_TOTAL.value:
+        df[aggregation_column] = df.groupby("enroll_type")[aggregation_column].cumsum()
+    elif calc in [CALCULATION.MOVING_AVERAGE_3_PERIOD.value, CALCULATION.MOVING_AVERAGE_7_PERIOD.value]:
+        df[aggregation_column] = (
+            df.groupby("enroll_type")[aggregation_column]
+            .rolling(window_mapping[calc])
+            .mean()
+            .droplevel(level=[0])
+        )
+
+    return df
 
 
 def get_cache_timeout(cache_expiry):
