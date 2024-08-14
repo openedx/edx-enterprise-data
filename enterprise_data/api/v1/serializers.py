@@ -5,7 +5,13 @@ from uuid import UUID
 
 from rest_framework import serializers
 
-from enterprise_data.admin_analytics.constants import Calculation, EnrollmentChart, Granularity, ResponseType
+from enterprise_data.admin_analytics.constants import (
+    Calculation,
+    EngagementChart,
+    EnrollmentChart,
+    Granularity,
+    ResponseType,
+)
 from enterprise_data.models import (
     EnterpriseAdminLearnerProgress,
     EnterpriseAdminSummarizeInsights,
@@ -317,6 +323,30 @@ class AdvanceAnalyticsEnrollmentStatsSerializer(
         EnrollmentChart.ENROLLMENTS_OVER_TIME.value,
         EnrollmentChart.TOP_COURSES_BY_ENROLLMENTS.value,
         EnrollmentChart.TOP_SUBJECTS_BY_ENROLLMENTS.value
+    ]
+
+    chart_type = serializers.CharField(required=False)
+
+    def validate_chart_type(self, value):
+        """
+        Validate the chart_type value.
+
+        Raises:
+            serializers.ValidationError: If chart_type is not one of the valid choices
+        """
+        if value not in self.CHART_TYPES:
+            raise serializers.ValidationError(f"chart_type must be one of {self.CHART_TYPES}")
+        return value
+
+
+class AdvanceAnalyticsEngagementStatsSerializer(
+    AdvanceAnalyticsQueryParamSerializer
+):  # pylint: disable=abstract-method
+    """Serializer for validating Advance Analytics Engagements Stats API"""
+    CHART_TYPES = [
+        EngagementChart.ENGAGEMENTS_OVER_TIME.value,
+        EngagementChart.TOP_COURSES_BY_ENGAGEMENTS.value,
+        EngagementChart.TOP_SUBJECTS_BY_ENGAGEMENTS.value
     ]
 
     chart_type = serializers.CharField(required=False)

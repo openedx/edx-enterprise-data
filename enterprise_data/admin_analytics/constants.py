@@ -31,3 +31,11 @@ class ResponseType(Enum):
     """Response type choices"""
     JSON = 'json'
     CSV = 'csv'
+
+
+class EngagementChart(Enum):
+    """Response Choices"""
+    ENGAGEMENTS_OVER_TIME = 'engagements_over_time'
+    TOP_COURSES_BY_ENGAGEMENTS = 'top_courses_by_engagements'
+    TOP_SUBJECTS_BY_ENGAGEMENTS = 'top_subjects_by_engagements'
+    INDIVIDUAL_ENGAGEMENTS = 'individual_engagements'

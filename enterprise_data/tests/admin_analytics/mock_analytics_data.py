@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from enterprise_data.admin_analytics.constants import EnrollmentChart
+from enterprise_data.admin_analytics.constants import EngagementChart, EnrollmentChart
 from enterprise_data.admin_analytics.utils import ChartType
 
 ENROLLMENTS = [
@@ -339,6 +339,30 @@ ENROLLMENT_STATS_CSVS = {
     )
 }
 
+ENGAGEMENT_STATS_CSVS = {
+    EngagementChart.ENGAGEMENTS_OVER_TIME.value: (
+        b'activity_date,certificate\n'
+        b'2021-07-19,0.0\n'
+        b'2021-07-26,4.4\n'
+        b'2021-07-27,1.2\n'
+        b'2021-08-05,3.6\n'
+        b'2021-08-21,2.7\n'
+        b'2021-09-02,1.3\n'
+        b'2021-09-21,1.5\n'
+        b'2022-05-17,0.0\n'
+    ),
+    EngagementChart.TOP_COURSES_BY_ENGAGEMENTS.value: (
+        b'course_key,course_title,certificate\n'
+        b'Kcpr+XoR30,Assimilated even-keeled focus group,0.0\n'
+        b'luGg+KNt30,Synergized reciprocal encoding,14.786944444444444\n'
+    ),
+    EngagementChart.TOP_SUBJECTS_BY_ENGAGEMENTS.value: (
+        b'course_subject,certificate\n'
+        b'business-management,14.786944444444444\n'
+        b'engineering,0.0\n'
+    )
+}
+
 
 def enrollments_dataframe():
     """Return a DataFrame of enrollments."""
@@ -509,3 +533,19 @@ COMPLETIONS_STATS_CSVS = {
         b'business-management,2\n'
     )
 }
+
+
+def engagements_csv_content():
+    """Return the CSV content of engagements."""
+    return (
+        b'email,course_title,activity_date,course_subject,learning_time_hours\r\n'
+        b'graceperez@example.com,Synergized reciprocal encoding,2022-05-17,business-management,0.0\r\n'
+        b'webertodd@example.com,Synergized reciprocal encoding,2021-09-21,business-management,1.5\r\n'
+        b'yferguson@example.net,Synergized reciprocal encoding,2021-09-02,business-management,1.3\r\n'
+        b'seth57@example.org,Synergized reciprocal encoding,2021-08-21,business-management,2.7\r\n'
+        b'padillamichelle@example.org,Synergized reciprocal encoding,2021-08-05,business-management,1.0\r\n'
+        b'weaverpatricia@example.net,Synergized reciprocal encoding,2021-08-05,business-management,2.6\r\n'
+        b'yallison@example.org,Synergized reciprocal encoding,2021-07-27,business-management,1.2\r\n'
+        b'paul77@example.org,Synergized reciprocal encoding,2021-07-26,business-management,4.4\r\n'
+        b'samanthaclarke@example.org,Synergized reciprocal encoding,2021-07-19,business-management,0.0\r\n'
+    )

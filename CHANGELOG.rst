@@ -15,6 +15,9 @@ Unreleased
 ----------
 
 =========================
+[8.10.0] - 2024-08-27
+---------------------
+  * feat: Added API endpoints for advance analytics engagements data.
 
 [8.9.0] - 2024-08-23
 ---------------------

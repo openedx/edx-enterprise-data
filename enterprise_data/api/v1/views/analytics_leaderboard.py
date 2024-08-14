@@ -120,7 +120,10 @@ class AdvanceAnalyticsLeaderboardView(APIView):
             return StreamingHttpResponse(
                 LeaderboardCSVRenderer().render(self._stream_serialized_data(leaderboard_df)),
                 content_type="text/csv",
-                headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+                headers={
+                    "Content-Disposition": f'attachment; filename="{filename}"',
+                    "Access-Control-Expose-Headers": "Content-Disposition"
+                },
             )
 
         paginator = self.pagination_class()

@@ -57,3 +57,17 @@ class LeaderboardCSVRenderer(CSVStreamingRenderer):
         'average_session_length',
         'course_completions',
     ]
+
+
+class IndividualEngagementsCSVRenderer(CSVStreamingRenderer):
+    """
+    Custom streaming csv renderer for advance analytics individual engagements data.
+    """
+
+    header = [
+        'email',
+        'course_title',
+        'activity_date',
+        'course_subject',
+        'learning_time_hours',
+    ]

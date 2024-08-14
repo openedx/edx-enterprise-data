@@ -208,6 +208,7 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
             response = HttpResponse(content_type='text/csv')
             filename = f"Skills by Enrollment and Completion, {start_date} - {end_date}.csv"
             response['Content-Disposition'] = f'attachment; filename="{filename}"'
+            response['Access-Control-Expose-Headers'] = 'Content-Disposition'
             csv_data.to_csv(path_or_buf=response, index=False)
             return response
 
