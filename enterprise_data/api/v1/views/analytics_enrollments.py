@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 
 from django.http import HttpResponse, StreamingHttpResponse
 
-from enterprise_data.admin_analytics.constants import CALCULATION, ENROLLMENT_CSV, GRANULARITY
+from enterprise_data.admin_analytics.constants import CALCULATION, ENROLLMENT_CHART, GRANULARITY, RESPONSE_TYPE
 from enterprise_data.admin_analytics.utils import (
     calculation_aggregation,
     fetch_and_cache_enrollments_data,
@@ -17,8 +17,8 @@ from enterprise_data.admin_analytics.utils import (
 )
 from enterprise_data.api.v1.paginators import AdvanceAnalyticsPagination
 from enterprise_data.api.v1.serializers import (
-    AdvanceAnalyticsEnrollmentSerializer,
     AdvanceAnalyticsEnrollmentStatsSerializer,
+    AdvanceAnalyticsQueryParamSerializer,
 )
 from enterprise_data.renderers import IndividualEnrollmentsCSVRenderer
 from enterprise_data.utils import date_filter
@@ -35,7 +35,7 @@ class AdvanceAnalyticsIndividualEnrollmentsView(APIView):
     @permission_required('can_access_enterprise', fn=lambda request, enterprise_uuid: enterprise_uuid)
     def get(self, request, enterprise_uuid):
         """Get individual enrollments data"""
-        serializer = AdvanceAnalyticsEnrollmentSerializer(data=request.GET)
+        serializer = AdvanceAnalyticsQueryParamSerializer(data=request.GET)
         serializer.is_valid(raise_exception=True)
 
         cache_expiry = fetch_enrollments_cache_expiry_timestamp()
@@ -44,7 +44,7 @@ class AdvanceAnalyticsIndividualEnrollmentsView(APIView):
         # get values from query params or use default values
         start_date = serializer.data.get('start_date', enrollments_df.enterprise_enrollment_date.min())
         end_date = serializer.data.get('end_date', datetime.now())
-        csv_type = request.query_params.get('csv_type')
+        response_type = request.query_params.get('response_type', RESPONSE_TYPE.JSON.value)
 
         # filter enrollments by date
         enrollments = date_filter(start_date, end_date, enrollments_df, "enterprise_enrollment_date")
@@ -62,11 +62,12 @@ class AdvanceAnalyticsIndividualEnrollmentsView(APIView):
         enrollments["enterprise_enrollment_date"] = enrollments["enterprise_enrollment_date"].dt.date
         enrollments = enrollments.sort_values(by="enterprise_enrollment_date", ascending=False).reset_index(drop=True)
 
-        if csv_type == ENROLLMENT_CSV.INDIVIDUAL_ENROLLMENTS.value:
+        if response_type == RESPONSE_TYPE.CSV.value:
+            filename = f"""individual_enrollments, {start_date} - {end_date}.csv"""
             return StreamingHttpResponse(
                 IndividualEnrollmentsCSVRenderer().render(self._stream_serialized_data(enrollments)),
                 content_type="text/csv",
-                headers={"Content-Disposition": 'attachment; filename="individual_enrollments.csv"'},
+                headers={"Content-Disposition": f'attachment; filename="{filename}"'},
             )
 
         paginator = self.pagination_class()
@@ -108,9 +109,10 @@ class AdvanceAnalyticsEnrollmentStatsView(APIView):
         end_date = serializer.data.get('end_date', datetime.now())
         granularity = serializer.data.get('granularity', GRANULARITY.DAILY.value)
         calculation = serializer.data.get('calculation', CALCULATION.TOTAL.value)
-        csv_type = serializer.data.get('csv_type')
+        response_type = serializer.data.get('response_type', RESPONSE_TYPE.JSON.value)
+        chart_type = serializer.data.get('chart_type')
 
-        if csv_type is None:
+        if response_type == RESPONSE_TYPE.JSON.value:
             data = {
                 "enrollments_over_time": self.construct_enrollments_over_time(
                     enrollments_df.copy(),
@@ -131,26 +133,28 @@ class AdvanceAnalyticsEnrollmentStatsView(APIView):
                 ),
             }
             return Response(data)
-        elif csv_type == ENROLLMENT_CSV.ENROLLMENTS_OVER_TIME.value:
-            return self.construct_enrollments_over_time_csv(
-                enrollments_df.copy(),
-                start_date,
-                end_date,
-                granularity,
-                calculation,
-            )
-        elif csv_type == ENROLLMENT_CSV.TOP_COURSES_BY_ENROLLMENTS.value:
-            return self.construct_top_courses_by_enrollments_csv(
-                enrollments_df.copy(),
-                start_date,
-                end_date,
-            )
-        elif csv_type == ENROLLMENT_CSV.TOP_SUBJECTS_BY_ENROLLMENTS.value:
-            return self.construct_top_subjects_by_enrollments_csv(
-                enrollments_df.copy(),
-                start_date,
-                end_date,
-            )
+
+        if response_type == RESPONSE_TYPE.CSV.value:
+            if chart_type == ENROLLMENT_CHART.ENROLLMENTS_OVER_TIME.value:
+                return self.construct_enrollments_over_time_csv(
+                    enrollments_df.copy(),
+                    start_date,
+                    end_date,
+                    granularity,
+                    calculation,
+                )
+            elif chart_type == ENROLLMENT_CHART.TOP_COURSES_BY_ENROLLMENTS.value:
+                return self.construct_top_courses_by_enrollments_csv(
+                    enrollments_df.copy(),
+                    start_date,
+                    end_date,
+                )
+            elif chart_type == ENROLLMENT_CHART.TOP_SUBJECTS_BY_ENROLLMENTS.value:
+                return self.construct_top_subjects_by_enrollments_csv(
+                    enrollments_df.copy(),
+                    start_date,
+                    end_date,
+                )
 
     def enrollments_over_time_common(self, enrollments_df, start_date, end_date, granularity, calculation):
         """

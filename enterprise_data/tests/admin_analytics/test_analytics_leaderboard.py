@@ -9,8 +9,6 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITransactionTestCase
 
 from enterprise_data.admin_analytics.constants import RESPONSE_TYPE
-from enterprise_data.api.v1.serializers import AdvanceAnalyticsEnrollmentSerializer as EnrollmentSerializer
-from enterprise_data.api.v1.serializers import AdvanceAnalyticsEnrollmentStatsSerializer as EnrollmentStatsSerializer
 from enterprise_data.tests.admin_analytics.mock_analytics_data import (
     ENROLLMENTS,
     LEADERBOARD_RESPONSE,
@@ -22,15 +20,6 @@ from enterprise_data.tests.mixins import JWTTestMixin
 from enterprise_data.tests.test_utils import UserFactory
 from enterprise_data_roles.constants import ENTERPRISE_DATA_ADMIN_ROLE
 from enterprise_data_roles.models import EnterpriseDataFeatureRole, EnterpriseDataRoleAssignment
-
-INVALID_CALCULATION_ERROR = (
-    f"Calculation must be one of {EnrollmentSerializer.CALCULATION_CHOICES}"
-)
-INVALID_GRANULARITY_ERROR = (
-    f"Granularity must be one of {EnrollmentSerializer.GRANULARITY_CHOICES}"
-)
-INVALID_CSV_ERROR1 = f"csv_type must be one of {EnrollmentSerializer.CSV_TYPES}"
-INVALID_CSV_ERROR2 = f"csv_type must be one of {EnrollmentStatsSerializer.CSV_TYPES}"
 
 
 @ddt.ddt
@@ -113,6 +102,7 @@ class TestLeaderboardAPI(JWTTestMixin, APITransactionTestCase):
 
         response = self.client.get(self.url, {"page_size": 2})
         assert response.status_code == status.HTTP_200_OK
+        assert response["Content-Type"] == "application/json"
         data = response.json()
         assert data["next"] == f'http://testserver{self.url}?page=2&page_size=2'
         assert data["previous"] is None

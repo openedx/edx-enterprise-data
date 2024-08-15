@@ -16,6 +16,11 @@ Unreleased
 
 =========================
 
+[8.8.0] - 2024-08-15
+---------------------
+  * feat: Add API endpoints for advance analytics leaderboard data
+  * refactor: Use `response_type` and `chart_type` in advance analytics enrollments API endpoints
+
 [8.7.0] - 2024-08-13
 ---------------------
   * feat: add endpoints to get completion data for an enterprise customer

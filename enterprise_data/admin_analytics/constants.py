@@ -19,7 +19,7 @@ class CALCULATION(Enum):
     MOVING_AVERAGE_7_PERIOD = 'Moving Average (7 Period)'
 
 
-class ENROLLMENT_CSV(Enum):
+class ENROLLMENT_CHART(Enum):
     """CSV choices"""
     ENROLLMENTS_OVER_TIME = 'enrollments_over_time'
     TOP_COURSES_BY_ENROLLMENTS = 'top_courses_by_enrollments'
