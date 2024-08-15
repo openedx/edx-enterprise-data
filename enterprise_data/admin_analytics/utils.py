@@ -1,13 +1,18 @@
 """
 Utility functions for fetching data from the database.
 """
-from datetime import datetime
+from datetime import datetime, timedelta
 from enum import Enum
 
 from edx_django_utils.cache import TieredCache, get_cache_key
 
-from enterprise_data.admin_analytics.constants import CALCULATION, GRANULARITY
-from enterprise_data.admin_analytics.data_loaders import fetch_engagement_data, fetch_enrollment_data, fetch_skills_data
+from enterprise_data.admin_analytics.constants import Calculation, Granularity
+from enterprise_data.admin_analytics.data_loaders import (
+    fetch_engagement_data,
+    fetch_enrollment_data,
+    fetch_max_enrollment_datetime,
+    fetch_skills_data,
+)
 from enterprise_data.utils import date_filter, primary_subject_truncate
 
 
@@ -23,14 +28,45 @@ class ChartType(Enum):
     TOP_SUBJECTS_BY_COMPLETIONS = 'top_subjects_by_completions'
 
 
+def fetch_enrollments_cache_expiry_timestamp():
+    """Calculate cache expiry timestamp"""
+    # TODO: Implement correct cache expiry logic for `enrollments` data.
+    #       Current cache expiry logic is based on `enterprise_learner_enrollment` table,
+    #       Which has nothing to do with the `enrollments` data. Instead cache expiry should
+    #       be based on `fact_enrollment_admin_dash` table. Currently we have no timestamp in
+    #       `fact_enrollment_admin_dash` table that can be used for cache expiry. Add a new
+    #       column in the table for this purpose and then use that column for cache expiry.
+    last_updated_at = fetch_max_enrollment_datetime()
+    cache_expiry = (
+        last_updated_at + timedelta(days=1) if last_updated_at else datetime.now()
+    )
+    return cache_expiry
+
+
+def fetch_engagements_cache_expiry_timestamp():
+    """Calculate cache expiry timestamp"""
+    # TODO: Implement correct cache expiry logic for `engagements` data.
+    #       Current cache expiry logic is based on `enterprise_learner_enrollment` table,
+    #       Which has nothing to do with the `engagements` data. Instead cache expiry should
+    #       be based on `fact_enrollment_engagement_day_admin_dash` table. Currently we have
+    #       no timestamp in `fact_enrollment_engagement_day_admin_dash` table that can be used
+    #       for cache expiry. Add a new column in the table for this purpose and then use that
+    #       column for cache expiry.
+    last_updated_at = fetch_max_enrollment_datetime()
+    cache_expiry = (
+        last_updated_at + timedelta(days=1) if last_updated_at else datetime.now()
+    )
+    return cache_expiry
+
+
 def granularity_aggregation(level, group, date, data_frame, aggregation_type="count"):
     """Aggregate data based on granularity"""
     df = data_frame
 
     period_mapping = {
-        GRANULARITY.WEEKLY.value: "W",
-        GRANULARITY.MONTHLY.value: "M",
-        GRANULARITY.QUARTERLY.value: "Q"
+        Granularity.WEEKLY.value: "W",
+        Granularity.MONTHLY.value: "M",
+        Granularity.QUARTERLY.value: "Q"
     }
 
     if level in period_mapping:
@@ -52,15 +88,15 @@ def calculation_aggregation(calc, data_frame, aggregation_type="count"):
     df = data_frame
 
     window_mapping = {
-        CALCULATION.MOVING_AVERAGE_3_PERIOD.value: 3,
-        CALCULATION.MOVING_AVERAGE_7_PERIOD.value: 7,
+        Calculation.MOVING_AVERAGE_3_PERIOD.value: 3,
+        Calculation.MOVING_AVERAGE_7_PERIOD.value: 7,
     }
 
     aggregation_column = "count" if aggregation_type == "count" else "sum"
 
-    if calc == CALCULATION.RUNNING_TOTAL.value:
+    if calc == Calculation.RUNNING_TOTAL.value:
         df[aggregation_column] = df.groupby("enroll_type")[aggregation_column].cumsum()
-    elif calc in [CALCULATION.MOVING_AVERAGE_3_PERIOD.value, CALCULATION.MOVING_AVERAGE_7_PERIOD.value]:
+    elif calc in [Calculation.MOVING_AVERAGE_3_PERIOD.value, Calculation.MOVING_AVERAGE_7_PERIOD.value]:
         df[aggregation_column] = (
             df.groupby("enroll_type")[aggregation_column]
             .rolling(window_mapping[calc])

@@ -5,7 +5,7 @@ from uuid import UUID
 
 from rest_framework import serializers
 
-from enterprise_data.admin_analytics.constants import CALCULATION, ENROLLMENT_CSV, GRANULARITY
+from enterprise_data.admin_analytics.constants import Calculation, EnrollmentChart, Granularity, ResponseType
 from enterprise_data.models import (
     EnterpriseAdminLearnerProgress,
     EnterpriseAdminSummarizeInsights,
@@ -237,23 +237,28 @@ class EnterpriseExecEdLCModulePerformanceSerializer(serializers.ModelSerializer)
 
 class AdvanceAnalyticsQueryParamSerializer(serializers.Serializer):  # pylint: disable=abstract-method
     """Serializer for validating query params"""
+    RESPONSE_TYPES = [
+        ResponseType.JSON.value,
+        ResponseType.CSV.value
+    ]
     GRANULARITY_CHOICES = [
-        GRANULARITY.DAILY.value,
-        GRANULARITY.WEEKLY.value,
-        GRANULARITY.MONTHLY.value,
-        GRANULARITY.QUARTERLY.value
+        Granularity.DAILY.value,
+        Granularity.WEEKLY.value,
+        Granularity.MONTHLY.value,
+        Granularity.QUARTERLY.value
     ]
     CALCULATION_CHOICES = [
-        CALCULATION.TOTAL.value,
-        CALCULATION.RUNNING_TOTAL.value,
-        CALCULATION.MOVING_AVERAGE_3_PERIOD.value,
-        CALCULATION.MOVING_AVERAGE_7_PERIOD.value
+        Calculation.TOTAL.value,
+        Calculation.RUNNING_TOTAL.value,
+        Calculation.MOVING_AVERAGE_3_PERIOD.value,
+        Calculation.MOVING_AVERAGE_7_PERIOD.value
     ]
 
     start_date = serializers.DateField(required=False)
     end_date = serializers.DateField(required=False)
     granularity = serializers.CharField(required=False)
     calculation = serializers.CharField(required=False)
+    response_type = serializers.CharField(required=False)
 
     def validate(self, attrs):
         """
@@ -269,6 +274,17 @@ class AdvanceAnalyticsQueryParamSerializer(serializers.Serializer):  # pylint: d
             raise serializers.ValidationError("start_date should be less than or equal to end_date.")
 
         return attrs
+
+    def validate_response_type(self, value):
+        """
+        Validate the response_type value.
+
+        Raises:
+            serializers.ValidationError: If response_type is not one of the valid choices in `RESPONSE_TYPES`.
+        """
+        if value not in self.RESPONSE_TYPES:
+            raise serializers.ValidationError(f"response_type must be one of {self.RESPONSE_TYPES}")
+        return value
 
     def validate_granularity(self, value):
         """
@@ -293,32 +309,25 @@ class AdvanceAnalyticsQueryParamSerializer(serializers.Serializer):  # pylint: d
         return value
 
 
-class AdvanceAnalyticsEnrollmentSerializer(AdvanceAnalyticsQueryParamSerializer):  # pylint: disable=abstract-method
-    """Serializer for validating Advance Analytics Enrollments API"""
-    CSV_TYPES = [
-        ENROLLMENT_CSV.INDIVIDUAL_ENROLLMENTS.value
-    ]
-
-    csv_type = serializers.CharField(required=False)
-
-    def validate_csv_type(self, value):
-        """
-        Validate the csv_type value.
-
-        Raises:
-            serializers.ValidationError: If csv_type is not one of the valid choices
-        """
-        if value not in self.CSV_TYPES:
-            raise serializers.ValidationError(f"csv_type must be one of {self.CSV_TYPES}")
-        return value
-
-
 class AdvanceAnalyticsEnrollmentStatsSerializer(
-    AdvanceAnalyticsEnrollmentSerializer
+    AdvanceAnalyticsQueryParamSerializer
 ):  # pylint: disable=abstract-method
     """Serializer for validating Advance Analytics Enrollments Stats API"""
-    CSV_TYPES = [
-        ENROLLMENT_CSV.ENROLLMENTS_OVER_TIME.value,
-        ENROLLMENT_CSV.TOP_COURSES_BY_ENROLLMENTS.value,
-        ENROLLMENT_CSV.TOP_SUBJECTS_BY_ENROLLMENTS.value
+    CHART_TYPES = [
+        EnrollmentChart.ENROLLMENTS_OVER_TIME.value,
+        EnrollmentChart.TOP_COURSES_BY_ENROLLMENTS.value,
+        EnrollmentChart.TOP_SUBJECTS_BY_ENROLLMENTS.value
     ]
+
+    chart_type = serializers.CharField(required=False)
+
+    def validate_chart_type(self, value):
+        """
+        Validate the chart_type value.
+
+        Raises:
+            serializers.ValidationError: If chart_type is not one of the valid choices
+        """
+        if value not in self.CHART_TYPES:
+            raise serializers.ValidationError(f"chart_type must be one of {self.CHART_TYPES}")
+        return value

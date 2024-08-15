@@ -8,10 +8,10 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITransactionTestCase
 
-from enterprise_data.admin_analytics.constants import ENROLLMENT_CSV
-from enterprise_data.api.v1.serializers import AdvanceAnalyticsEnrollmentSerializer as EnrollmentSerializer
+from enterprise_data.admin_analytics.constants import EnrollmentChart, ResponseType
 from enterprise_data.api.v1.serializers import AdvanceAnalyticsEnrollmentStatsSerializer as EnrollmentStatsSerializer
-from enterprise_data.tests.admin_analytics.mock_enrollments import (
+from enterprise_data.api.v1.serializers import AdvanceAnalyticsQueryParamSerializer
+from enterprise_data.tests.admin_analytics.mock_analytics_data import (
     ENROLLMENT_STATS_CSVS,
     ENROLLMENTS,
     enrollments_csv_content,
@@ -23,13 +23,13 @@ from enterprise_data_roles.constants import ENTERPRISE_DATA_ADMIN_ROLE
 from enterprise_data_roles.models import EnterpriseDataFeatureRole, EnterpriseDataRoleAssignment
 
 INVALID_CALCULATION_ERROR = (
-    f"Calculation must be one of {EnrollmentSerializer.CALCULATION_CHOICES}"
+    f"Calculation must be one of {AdvanceAnalyticsQueryParamSerializer.CALCULATION_CHOICES}"
 )
 INVALID_GRANULARITY_ERROR = (
-    f"Granularity must be one of {EnrollmentSerializer.GRANULARITY_CHOICES}"
+    f"Granularity must be one of {AdvanceAnalyticsQueryParamSerializer.GRANULARITY_CHOICES}"
 )
-INVALID_CSV_ERROR1 = f"csv_type must be one of {EnrollmentSerializer.CSV_TYPES}"
-INVALID_CSV_ERROR2 = f"csv_type must be one of {EnrollmentStatsSerializer.CSV_TYPES}"
+INVALID_RESPONSE_TYPE_ERROR = f"response_type must be one of {AdvanceAnalyticsQueryParamSerializer.RESPONSE_TYPES}"
+INVALID_CHART_TYPE_ERROR = f"chart_type must be one of {EnrollmentStatsSerializer.CHART_TYPES}"
 
 
 @ddt.ddt
@@ -59,7 +59,7 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
         )
 
         fetch_max_enrollment_datetime_patcher = patch(
-            'enterprise_data.api.v1.views.analytics_enrollments.fetch_max_enrollment_datetime',
+            'enterprise_data.api.v1.views.analytics_enrollments.fetch_enrollments_cache_expiry_timestamp',
             return_value=datetime.now()
         )
 
@@ -100,6 +100,7 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
 
         response = self.client.get(self.url, {"page_size": 2})
         assert response.status_code == status.HTTP_200_OK
+        assert response["Content-Type"] == "application/json"
         data = response.json()
         assert data["next"] == f"http://testserver{self.url}?page=2&page_size=2"
         assert data["previous"] is None
@@ -110,6 +111,7 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
 
         response = self.client.get(self.url, {"page_size": 2, "page": 2})
         assert response.status_code == status.HTTP_200_OK
+        assert response["Content-Type"] == "application/json"
         data = response.json()
         assert data["next"] == f"http://testserver{self.url}?page=3&page_size=2"
         assert data["previous"] == f"http://testserver{self.url}?page_size=2"
@@ -120,6 +122,7 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
 
         response = self.client.get(self.url, {"page_size": 2, "page": 3})
         assert response.status_code == status.HTTP_200_OK
+        assert response["Content-Type"] == "application/json"
         data = response.json()
         assert data["next"] is None
         assert data["previous"] == f"http://testserver{self.url}?page=2&page_size=2"
@@ -130,6 +133,7 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
 
         response = self.client.get(self.url, {"page_size": 5})
         assert response.status_code == status.HTTP_200_OK
+        assert response["Content-Type"] == "application/json"
         data = response.json()
         assert data["next"] is None
         assert data["previous"] is None
@@ -146,15 +150,11 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
         Test the GET method for the AdvanceAnalyticsIndividualEnrollmentsView return correct CSV data.
         """
         mock_fetch_and_cache_enrollments_data.return_value = enrollments_dataframe()
-        response = self.client.get(self.url, {"csv_type": ENROLLMENT_CSV.INDIVIDUAL_ENROLLMENTS.value})
+        response = self.client.get(self.url, {"response_type": ResponseType.CSV.value})
         assert response.status_code == status.HTTP_200_OK
 
         # verify the response headers
         assert response["Content-Type"] == "text/csv"
-        assert (
-            response["Content-Disposition"]
-            == 'attachment; filename="individual_enrollments.csv"'
-        )
 
         # verify the response content
         content = b"".join(response.streaming_content)
@@ -193,7 +193,7 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
             "params": {"granularity": "invalid"},
             "error": {"granularity": [INVALID_GRANULARITY_ERROR]},
         },
-        {"params": {"csv_type": "invalid"}, "error": {"csv_type": [INVALID_CSV_ERROR1]}},
+        {"params": {"response_type": "invalid"}, "error": {"response_type": [INVALID_RESPONSE_TYPE_ERROR]}},
     )
     @ddt.unpack
     def test_get_invalid_query_params(self, params, error):
@@ -232,7 +232,7 @@ class TestEnrollmentStatsAPI(JWTTestMixin, APITransactionTestCase):
         )
 
         fetch_max_enrollment_datetime_patcher = patch(
-            'enterprise_data.api.v1.views.analytics_enrollments.fetch_max_enrollment_datetime',
+            'enterprise_data.api.v1.views.analytics_enrollments.fetch_enrollments_cache_expiry_timestamp',
             return_value=datetime.now()
         )
 
@@ -271,6 +271,7 @@ class TestEnrollmentStatsAPI(JWTTestMixin, APITransactionTestCase):
 
         response = self.client.get(self.url)
         assert response.status_code == status.HTTP_200_OK
+        assert response["Content-Type"] == "application/json"
         data = response.json()
         assert data == {
             "enrollments_over_time": [
@@ -332,21 +333,21 @@ class TestEnrollmentStatsAPI(JWTTestMixin, APITransactionTestCase):
 
     @patch("enterprise_data.api.v1.views.analytics_enrollments.fetch_and_cache_enrollments_data")
     @ddt.data(
-        ENROLLMENT_CSV.ENROLLMENTS_OVER_TIME.value,
-        ENROLLMENT_CSV.TOP_COURSES_BY_ENROLLMENTS.value,
-        ENROLLMENT_CSV.TOP_SUBJECTS_BY_ENROLLMENTS.value,
+        EnrollmentChart.ENROLLMENTS_OVER_TIME.value,
+        EnrollmentChart.TOP_COURSES_BY_ENROLLMENTS.value,
+        EnrollmentChart.TOP_SUBJECTS_BY_ENROLLMENTS.value,
     )
-    def test_get_csv(self, csv_type, mock_fetch_and_cache_enrollments_data):
+    def test_get_csv(self, chart_type, mock_fetch_and_cache_enrollments_data):
         """
         Test that AdvanceAnalyticsEnrollmentStatsView return correct CSV data.
         """
         mock_fetch_and_cache_enrollments_data.return_value = enrollments_dataframe()
 
-        response = self.client.get(self.url, {"csv_type": csv_type})
+        response = self.client.get(self.url, {"response_type": ResponseType.CSV.value, "chart_type": chart_type})
         assert response.status_code == status.HTTP_200_OK
         assert response["Content-Type"] == "text/csv"
         # verify the response content
-        assert response.content == ENROLLMENT_STATS_CSVS[csv_type]
+        assert response.content == ENROLLMENT_STATS_CSVS[chart_type]
 
     @ddt.data(
         {
@@ -381,7 +382,7 @@ class TestEnrollmentStatsAPI(JWTTestMixin, APITransactionTestCase):
             "params": {"granularity": "invalid"},
             "error": {"granularity": [INVALID_GRANULARITY_ERROR]},
         },
-        {"params": {"csv_type": "invalid"}, "error": {"csv_type": [INVALID_CSV_ERROR2]}},
+        {"params": {"chart_type": "invalid"}, "error": {"chart_type": [INVALID_CHART_TYPE_ERROR]}},
     )
     @ddt.unpack
     def test_get_invalid_query_params(self, params, error):

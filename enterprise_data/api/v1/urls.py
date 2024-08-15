@@ -15,6 +15,7 @@ from enterprise_data.api.v1.views.analytics_enrollments import (
     AdvanceAnalyticsEnrollmentStatsView,
     AdvanceAnalyticsIndividualEnrollmentsView,
 )
+from enterprise_data.api.v1.views.analytics_leaderboard import AdvanceAnalyticsLeaderboardView
 from enterprise_data.constants import UUID4_REGEX
 
 app_name = 'enterprise_data_api_v1'
@@ -53,32 +54,37 @@ urlpatterns = [
         name='enterprise-admin-insights'
     ),
     re_path(
-        fr'^admin/anlaytics/(?P<enterprise_id>{UUID4_REGEX})$',
+        fr'^admin/analytics/(?P<enterprise_id>{UUID4_REGEX})$',
         enterprise_admin_views.EnterpriseAdminAnalyticsAggregatesView.as_view(),
         name='enterprise-admin-analytics-aggregates'
     ),
     re_path(
-        fr'^admin/anlaytics/(?P<enterprise_uuid>{UUID4_REGEX})/enrollments/stats$',
+        fr'^admin/analytics/(?P<enterprise_uuid>{UUID4_REGEX})/leaderboard$',
+        AdvanceAnalyticsLeaderboardView.as_view(),
+        name='enterprise-admin-analytics-leaderboard'
+    ),
+    re_path(
+        fr'^admin/analytics/(?P<enterprise_uuid>{UUID4_REGEX})/enrollments/stats$',
         AdvanceAnalyticsEnrollmentStatsView.as_view(),
         name='enterprise-admin-analytics-enrollments-stats'
     ),
     re_path(
-        fr'^admin/anlaytics/(?P<enterprise_uuid>{UUID4_REGEX})/enrollments$',
+        fr'^admin/analytics/(?P<enterprise_uuid>{UUID4_REGEX})/enrollments$',
         AdvanceAnalyticsIndividualEnrollmentsView.as_view(),
         name='enterprise-admin-analytics-enrollments'
     ),
     re_path(
-        fr'^admin/anlaytics/(?P<enterprise_id>{UUID4_REGEX})/skills/stats',
+        fr'^admin/analytics/(?P<enterprise_id>{UUID4_REGEX})/skills/stats',
         enterprise_admin_views.EnterpriseAdminAnalyticsSkillsView.as_view(),
         name='enterprise-admin-analytics-skills'
     ),
     re_path(
-        fr'^admin/anlaytics/(?P<enterprise_id>{UUID4_REGEX})/completions/stats$',
+        fr'^admin/analytics/(?P<enterprise_id>{UUID4_REGEX})/completions/stats$',
         enterprise_completions_views.EnterrpiseAdminCompletionsStatsView.as_view(),
         name='enterprise-admin-analytics-completions-stats'
     ),
     re_path(
-        fr'^admin/anlaytics/(?P<enterprise_id>{UUID4_REGEX})/completions$',
+        fr'^admin/analytics/(?P<enterprise_id>{UUID4_REGEX})/completions$',
         enterprise_completions_views.EnterrpiseAdminCompletionsView.as_view(),
         name='enterprise-admin-analytics-completions'
     ),

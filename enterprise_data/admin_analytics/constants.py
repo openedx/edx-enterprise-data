@@ -3,7 +3,7 @@
 from enum import Enum
 
 
-class GRANULARITY(Enum):
+class Granularity(Enum):
     """Granularity choices"""
     DAILY = 'Daily'
     WEEKLY = 'Weekly'
@@ -11,7 +11,7 @@ class GRANULARITY(Enum):
     QUARTERLY = 'Quarterly'
 
 
-class CALCULATION(Enum):
+class Calculation(Enum):
     """Calculation choices"""
     TOTAL = 'Total'
     RUNNING_TOTAL = 'Running Total'
@@ -19,9 +19,15 @@ class CALCULATION(Enum):
     MOVING_AVERAGE_7_PERIOD = 'Moving Average (7 Period)'
 
 
-class ENROLLMENT_CSV(Enum):
+class EnrollmentChart(Enum):
     """CSV choices"""
     ENROLLMENTS_OVER_TIME = 'enrollments_over_time'
     TOP_COURSES_BY_ENROLLMENTS = 'top_courses_by_enrollments'
     TOP_SUBJECTS_BY_ENROLLMENTS = 'top_subjects_by_enrollments'
     INDIVIDUAL_ENROLLMENTS = 'individual_enrollments'
+
+
+class ResponseType(Enum):
+    """Response type choices"""
+    JSON = 'json'
+    CSV = 'csv'
