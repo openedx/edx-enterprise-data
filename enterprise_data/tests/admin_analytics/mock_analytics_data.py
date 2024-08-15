@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from enterprise_data.admin_analytics.constants import ENROLLMENT_CHART
+from enterprise_data.admin_analytics.constants import EnrollmentChart
 from enterprise_data.admin_analytics.utils import ChartType
 
 ENROLLMENTS = [
@@ -319,7 +319,7 @@ ENGAGEMENTS = [
 ]
 
 ENROLLMENT_STATS_CSVS = {
-    ENROLLMENT_CHART.ENROLLMENTS_OVER_TIME.value: (
+    EnrollmentChart.ENROLLMENTS_OVER_TIME.value: (
         b'enterprise_enrollment_date,certificate\n'
         b'2020-04-03,1\n'
         b'2020-04-08,1\n'
@@ -327,14 +327,14 @@ ENROLLMENT_STATS_CSVS = {
         b'2021-07-03,1\n'
         b'2021-07-04,1\n'
     ),
-    ENROLLMENT_CHART.TOP_COURSES_BY_ENROLLMENTS.value: (
+    EnrollmentChart.TOP_COURSES_BY_ENROLLMENTS.value: (
         b'course_key,course_title,certificate\n'
         b'NOGk+UVD31,Streamlined zero-defect attitude,1\n'
         b'QWXx+Jqz64,Horizontal solution-oriented hub,1\n'
         b'hEmW+tvk03,Re-engineered tangible approach,2\n'
         b'qZJC+KFX86,Secured static capability,1\n'
     ),
-    ENROLLMENT_CHART.TOP_SUBJECTS_BY_ENROLLMENTS.value: (
+    EnrollmentChart.TOP_SUBJECTS_BY_ENROLLMENTS.value: (
         b'course_subject,certificate\nbusiness-management,2\ncommunication,1\nmedicine,1\nsocial-sciences,1\n'
     )
 }

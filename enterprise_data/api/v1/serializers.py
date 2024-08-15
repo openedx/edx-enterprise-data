@@ -5,7 +5,7 @@ from uuid import UUID
 
 from rest_framework import serializers
 
-from enterprise_data.admin_analytics.constants import CALCULATION, ENROLLMENT_CHART, GRANULARITY, RESPONSE_TYPE
+from enterprise_data.admin_analytics.constants import Calculation, EnrollmentChart, Granularity, ResponseType
 from enterprise_data.models import (
     EnterpriseAdminLearnerProgress,
     EnterpriseAdminSummarizeInsights,
@@ -238,20 +238,20 @@ class EnterpriseExecEdLCModulePerformanceSerializer(serializers.ModelSerializer)
 class AdvanceAnalyticsQueryParamSerializer(serializers.Serializer):  # pylint: disable=abstract-method
     """Serializer for validating query params"""
     RESPONSE_TYPES = [
-        RESPONSE_TYPE.JSON.value,
-        RESPONSE_TYPE.CSV.value
+        ResponseType.JSON.value,
+        ResponseType.CSV.value
     ]
     GRANULARITY_CHOICES = [
-        GRANULARITY.DAILY.value,
-        GRANULARITY.WEEKLY.value,
-        GRANULARITY.MONTHLY.value,
-        GRANULARITY.QUARTERLY.value
+        Granularity.DAILY.value,
+        Granularity.WEEKLY.value,
+        Granularity.MONTHLY.value,
+        Granularity.QUARTERLY.value
     ]
     CALCULATION_CHOICES = [
-        CALCULATION.TOTAL.value,
-        CALCULATION.RUNNING_TOTAL.value,
-        CALCULATION.MOVING_AVERAGE_3_PERIOD.value,
-        CALCULATION.MOVING_AVERAGE_7_PERIOD.value
+        Calculation.TOTAL.value,
+        Calculation.RUNNING_TOTAL.value,
+        Calculation.MOVING_AVERAGE_3_PERIOD.value,
+        Calculation.MOVING_AVERAGE_7_PERIOD.value
     ]
 
     start_date = serializers.DateField(required=False)
@@ -314,9 +314,9 @@ class AdvanceAnalyticsEnrollmentStatsSerializer(
 ):  # pylint: disable=abstract-method
     """Serializer for validating Advance Analytics Enrollments Stats API"""
     CHART_TYPES = [
-        ENROLLMENT_CHART.ENROLLMENTS_OVER_TIME.value,
-        ENROLLMENT_CHART.TOP_COURSES_BY_ENROLLMENTS.value,
-        ENROLLMENT_CHART.TOP_SUBJECTS_BY_ENROLLMENTS.value
+        EnrollmentChart.ENROLLMENTS_OVER_TIME.value,
+        EnrollmentChart.TOP_COURSES_BY_ENROLLMENTS.value,
+        EnrollmentChart.TOP_SUBJECTS_BY_ENROLLMENTS.value
     ]
 
     chart_type = serializers.CharField(required=False)

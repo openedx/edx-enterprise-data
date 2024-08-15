@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITransactionTestCase
 
-from enterprise_data.admin_analytics.constants import RESPONSE_TYPE
+from enterprise_data.admin_analytics.constants import ResponseType
 from enterprise_data.tests.admin_analytics.mock_analytics_data import (
     ENROLLMENTS,
     LEADERBOARD_RESPONSE,
@@ -152,7 +152,7 @@ class TestLeaderboardAPI(JWTTestMixin, APITransactionTestCase):
         mock_fetch_and_cache_enrollments_data.return_value = enrollments_dataframe()
         mock_fetch_and_cache_engagements_data.return_value = engagements_dataframe()
 
-        response = self.client.get(self.url, {"response_type": RESPONSE_TYPE.CSV.value})
+        response = self.client.get(self.url, {"response_type": ResponseType.CSV.value})
         assert response.status_code == status.HTTP_200_OK
 
         # verify the response headers

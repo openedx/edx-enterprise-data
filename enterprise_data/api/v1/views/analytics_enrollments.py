@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 
 from django.http import HttpResponse, StreamingHttpResponse
 
-from enterprise_data.admin_analytics.constants import CALCULATION, ENROLLMENT_CHART, GRANULARITY, RESPONSE_TYPE
+from enterprise_data.admin_analytics.constants import Calculation, EnrollmentChart, Granularity, ResponseType
 from enterprise_data.admin_analytics.utils import (
     calculation_aggregation,
     fetch_and_cache_enrollments_data,
@@ -44,7 +44,7 @@ class AdvanceAnalyticsIndividualEnrollmentsView(APIView):
         # get values from query params or use default values
         start_date = serializer.data.get('start_date', enrollments_df.enterprise_enrollment_date.min())
         end_date = serializer.data.get('end_date', datetime.now())
-        response_type = request.query_params.get('response_type', RESPONSE_TYPE.JSON.value)
+        response_type = request.query_params.get('response_type', ResponseType.JSON.value)
 
         # filter enrollments by date
         enrollments = date_filter(start_date, end_date, enrollments_df, "enterprise_enrollment_date")
@@ -62,7 +62,7 @@ class AdvanceAnalyticsIndividualEnrollmentsView(APIView):
         enrollments["enterprise_enrollment_date"] = enrollments["enterprise_enrollment_date"].dt.date
         enrollments = enrollments.sort_values(by="enterprise_enrollment_date", ascending=False).reset_index(drop=True)
 
-        if response_type == RESPONSE_TYPE.CSV.value:
+        if response_type == ResponseType.CSV.value:
             filename = f"""individual_enrollments, {start_date} - {end_date}.csv"""
             return StreamingHttpResponse(
                 IndividualEnrollmentsCSVRenderer().render(self._stream_serialized_data(enrollments)),
@@ -107,12 +107,12 @@ class AdvanceAnalyticsEnrollmentStatsView(APIView):
         # get values from query params or use default
         start_date = serializer.data.get('start_date', enrollments_df.enterprise_enrollment_date.min())
         end_date = serializer.data.get('end_date', datetime.now())
-        granularity = serializer.data.get('granularity', GRANULARITY.DAILY.value)
-        calculation = serializer.data.get('calculation', CALCULATION.TOTAL.value)
-        response_type = serializer.data.get('response_type', RESPONSE_TYPE.JSON.value)
+        granularity = serializer.data.get('granularity', Granularity.DAILY.value)
+        calculation = serializer.data.get('calculation', Calculation.TOTAL.value)
+        response_type = serializer.data.get('response_type', ResponseType.JSON.value)
         chart_type = serializer.data.get('chart_type')
 
-        if response_type == RESPONSE_TYPE.JSON.value:
+        if response_type == ResponseType.JSON.value:
             data = {
                 "enrollments_over_time": self.construct_enrollments_over_time(
                     enrollments_df.copy(),
@@ -134,8 +134,8 @@ class AdvanceAnalyticsEnrollmentStatsView(APIView):
             }
             return Response(data)
 
-        if response_type == RESPONSE_TYPE.CSV.value:
-            if chart_type == ENROLLMENT_CHART.ENROLLMENTS_OVER_TIME.value:
+        if response_type == ResponseType.CSV.value:
+            if chart_type == EnrollmentChart.ENROLLMENTS_OVER_TIME.value:
                 return self.construct_enrollments_over_time_csv(
                     enrollments_df.copy(),
                     start_date,
@@ -143,13 +143,13 @@ class AdvanceAnalyticsEnrollmentStatsView(APIView):
                     granularity,
                     calculation,
                 )
-            elif chart_type == ENROLLMENT_CHART.TOP_COURSES_BY_ENROLLMENTS.value:
+            elif chart_type == EnrollmentChart.TOP_COURSES_BY_ENROLLMENTS.value:
                 return self.construct_top_courses_by_enrollments_csv(
                     enrollments_df.copy(),
                     start_date,
                     end_date,
                 )
-            elif chart_type == ENROLLMENT_CHART.TOP_SUBJECTS_BY_ENROLLMENTS.value:
+            elif chart_type == EnrollmentChart.TOP_SUBJECTS_BY_ENROLLMENTS.value:
                 return self.construct_top_subjects_by_enrollments_csv(
                     enrollments_df.copy(),
                     start_date,
@@ -164,8 +164,8 @@ class AdvanceAnalyticsEnrollmentStatsView(APIView):
             enrollments_df {DataFrame} -- DataFrame of enrollments
             start_date {datetime} -- Enrollment start date in the format 'YYYY-MM-DD'
             end_date {datetime} -- Enrollment end date in the format 'YYYY-MM-DD'
-            granularity {str} -- Granularity of the data. One of GRANULARITY choices
-            calculation {str} -- Calculation of the data. One of CALCULATION choices
+            granularity {str} -- Granularity of the data. One of Granularity choices
+            calculation {str} -- Calculation of the data. One of Calculation choices
         """
         # filter enrollments by date
         enrollments = date_filter(start_date, end_date, enrollments_df, "enterprise_enrollment_date")
@@ -191,8 +191,8 @@ class AdvanceAnalyticsEnrollmentStatsView(APIView):
             enrollments_df {DataFrame} -- DataFrame of enrollments
             start_date {datetime} -- Enrollment start date in the format 'YYYY-MM-DD'
             end_date {datetime} -- Enrollment end date in the format 'YYYY-MM-DD'
-            granularity {str} -- Granularity of the data. One of GRANULARITY choices
-            calculation {str} -- Calculation of the data. One of CALCULATION choices
+            granularity {str} -- Granularity of the data. One of Granularity choices
+            calculation {str} -- Calculation of the data. One of Calculation choices
         """
         enrollments = self.enrollments_over_time_common(enrollments_df, start_date, end_date, granularity, calculation)
 
@@ -207,8 +207,8 @@ class AdvanceAnalyticsEnrollmentStatsView(APIView):
             enrollments_df {DataFrame} -- DataFrame of enrollments
             start_date {datetime} -- Enrollment start date in the format 'YYYY-MM-DD'
             end_date {datetime} -- Enrollment end date in the format 'YYYY-MM-DD'
-            granularity {str} -- Granularity of the data. One of GRANULARITY choices
-            calculation {str} -- Calculation of the data. One of CALCULATION choices
+            granularity {str} -- Granularity of the data. One of Granularity choices
+            calculation {str} -- Calculation of the data. One of Calculation choices
         """
         enrollments = self.enrollments_over_time_common(enrollments_df, start_date, end_date, granularity, calculation)
 

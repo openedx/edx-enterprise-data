@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 
 from django.http import StreamingHttpResponse
 
-from enterprise_data.admin_analytics.constants import RESPONSE_TYPE
+from enterprise_data.admin_analytics.constants import ResponseType
 from enterprise_data.admin_analytics.utils import (
     fetch_and_cache_engagements_data,
     fetch_and_cache_enrollments_data,
@@ -44,7 +44,7 @@ class AdvanceAnalyticsLeaderboardView(APIView):
 
         start_date = serializer.data.get('start_date', enrollments_df.enterprise_enrollment_date.min())
         end_date = serializer.data.get('end_date', datetime.now())
-        response_type = serializer.data.get('response_type', RESPONSE_TYPE.JSON.value)
+        response_type = serializer.data.get('response_type', ResponseType.JSON.value)
 
         # only include learners who have passed the course
         enrollments_df = enrollments_df[enrollments_df["has_passed"] == 1]
@@ -85,7 +85,7 @@ class AdvanceAnalyticsLeaderboardView(APIView):
         # convert `nan` values to `None` because `nan` is not JSON serializable
         leaderboard_df = leaderboard_df.replace(np.nan, None)
 
-        if response_type == RESPONSE_TYPE.CSV.value:
+        if response_type == ResponseType.CSV.value:
             filename = f"""Leaderboard, {start_date} - {end_date}.csv"""
             leaderboard_df = leaderboard_df[
                 [

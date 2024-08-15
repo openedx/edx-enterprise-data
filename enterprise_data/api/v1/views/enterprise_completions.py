@@ -18,7 +18,7 @@ from enterprise_data.admin_analytics.completions_utils import (
     get_top_courses_by_completions,
     get_top_subjects_by_completions,
 )
-from enterprise_data.admin_analytics.constants import CALCULATION, GRANULARITY
+from enterprise_data.admin_analytics.constants import Calculation, Granularity
 from enterprise_data.admin_analytics.data_loaders import fetch_max_enrollment_datetime
 from enterprise_data.admin_analytics.utils import ChartType, fetch_and_cache_enrollments_data
 from enterprise_data.api.v1 import serializers
@@ -71,8 +71,8 @@ class EnterrpiseAdminCompletionsStatsView(APIView):
                     start_date=start_date,
                     end_date=end_date,
                     enrollments=enrollments.copy(),
-                    date_agg=serializer.data.get('granularity', GRANULARITY.DAILY.value),
-                    calc=serializer.data.get('calculation', CALCULATION.TOTAL.value),
+                    date_agg=serializer.data.get('granularity', Granularity.DAILY.value),
+                    calc=serializer.data.get('calculation', Calculation.TOTAL.value),
                 )
             elif chart_type == ChartType.TOP_COURSES_BY_COMPLETIONS.value:
                 csv_data = get_csv_data_for_top_courses_by_completions(
@@ -91,8 +91,8 @@ class EnterrpiseAdminCompletionsStatsView(APIView):
             start_date=start_date,
             end_date=end_date,
             dff=enrollments.copy(),
-            date_agg=serializer.data.get('granularity', GRANULARITY.DAILY.value),
-            calc=serializer.data.get('calculation', CALCULATION.TOTAL.value),
+            date_agg=serializer.data.get('granularity', Granularity.DAILY.value),
+            calc=serializer.data.get('calculation', Calculation.TOTAL.value),
         )
         top_courses_by_completions = get_top_courses_by_completions(
             start_date=start_date, end_date=end_date, dff=enrollments.copy()

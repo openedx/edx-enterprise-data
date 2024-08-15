@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITransactionTestCase
 
-from enterprise_data.admin_analytics.constants import ENROLLMENT_CHART, RESPONSE_TYPE
+from enterprise_data.admin_analytics.constants import EnrollmentChart, ResponseType
 from enterprise_data.api.v1.serializers import AdvanceAnalyticsEnrollmentStatsSerializer as EnrollmentStatsSerializer
 from enterprise_data.api.v1.serializers import AdvanceAnalyticsQueryParamSerializer
 from enterprise_data.tests.admin_analytics.mock_analytics_data import (
@@ -150,7 +150,7 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
         Test the GET method for the AdvanceAnalyticsIndividualEnrollmentsView return correct CSV data.
         """
         mock_fetch_and_cache_enrollments_data.return_value = enrollments_dataframe()
-        response = self.client.get(self.url, {"response_type": RESPONSE_TYPE.CSV.value})
+        response = self.client.get(self.url, {"response_type": ResponseType.CSV.value})
         assert response.status_code == status.HTTP_200_OK
 
         # verify the response headers
@@ -333,9 +333,9 @@ class TestEnrollmentStatsAPI(JWTTestMixin, APITransactionTestCase):
 
     @patch("enterprise_data.api.v1.views.analytics_enrollments.fetch_and_cache_enrollments_data")
     @ddt.data(
-        ENROLLMENT_CHART.ENROLLMENTS_OVER_TIME.value,
-        ENROLLMENT_CHART.TOP_COURSES_BY_ENROLLMENTS.value,
-        ENROLLMENT_CHART.TOP_SUBJECTS_BY_ENROLLMENTS.value,
+        EnrollmentChart.ENROLLMENTS_OVER_TIME.value,
+        EnrollmentChart.TOP_COURSES_BY_ENROLLMENTS.value,
+        EnrollmentChart.TOP_SUBJECTS_BY_ENROLLMENTS.value,
     )
     def test_get_csv(self, chart_type, mock_fetch_and_cache_enrollments_data):
         """
@@ -343,7 +343,7 @@ class TestEnrollmentStatsAPI(JWTTestMixin, APITransactionTestCase):
         """
         mock_fetch_and_cache_enrollments_data.return_value = enrollments_dataframe()
 
-        response = self.client.get(self.url, {"response_type": RESPONSE_TYPE.CSV.value, "chart_type": chart_type})
+        response = self.client.get(self.url, {"response_type": ResponseType.CSV.value, "chart_type": chart_type})
         assert response.status_code == status.HTTP_200_OK
         assert response["Content-Type"] == "text/csv"
         # verify the response content
