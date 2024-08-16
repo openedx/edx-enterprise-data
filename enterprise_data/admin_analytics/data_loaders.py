@@ -7,6 +7,7 @@ import pandas
 from django.http import Http404
 
 from enterprise_data.admin_analytics.database import run_query
+from enterprise_data.utils import timer
 
 
 def get_select_query(table: str, columns: list, enterprise_uuid: str) -> str:
@@ -65,7 +66,8 @@ def fetch_enrollment_data(enterprise_uuid: str):
         enterprise_uuid=enterprise_uuid,
     )
 
-    results = run_query(query=query)
+    with timer('fetch_enrollment_data'):
+        results = run_query(query=query)
     if not results:
         raise Http404(f'No enrollment data found for enterprise {enterprise_uuid}')
 
@@ -113,7 +115,8 @@ def fetch_engagement_data(enterprise_uuid: str):
         table='fact_enrollment_engagement_day_admin_dash', columns=columns, enterprise_uuid=enterprise_uuid
     )
 
-    results = run_query(query=query)
+    with timer('fetch_engagement_data'):
+        results = run_query(query=query)
     if not results:
         raise Http404(f'No engagement data found for enterprise {enterprise_uuid}')
 
@@ -171,7 +174,8 @@ def fetch_skills_data(enterprise_uuid: str):
         table='skills_daily_rollup_admin_dash', columns=cols, enterprise_uuid=enterprise_uuid
     )
 
-    skills = run_query(query=query)
+    with timer('fetch_skills_data'):
+        skills = run_query(query=query)
 
     if not skills:
         raise Http404(f'No skills data found for enterprise {enterprise_uuid}')

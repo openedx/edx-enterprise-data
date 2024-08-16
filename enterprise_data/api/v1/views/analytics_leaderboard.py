@@ -1,5 +1,6 @@
 """Advance Analytics for Leaderboard"""
 from datetime import datetime
+from logging import getLogger
 
 import numpy as np
 import pandas as pd
@@ -20,6 +21,8 @@ from enterprise_data.api.v1.paginators import AdvanceAnalyticsPagination
 from enterprise_data.api.v1.serializers import AdvanceAnalyticsQueryParamSerializer
 from enterprise_data.renderers import LeaderboardCSVRenderer
 from enterprise_data.utils import date_filter
+
+LOGGER = getLogger(__name__)
 
 
 class AdvanceAnalyticsLeaderboardView(APIView):
@@ -46,6 +49,13 @@ class AdvanceAnalyticsLeaderboardView(APIView):
         end_date = serializer.data.get('end_date', datetime.now())
         response_type = serializer.data.get('response_type', ResponseType.JSON.value)
 
+        LOGGER.info(
+            "Leaderboard data requested for enterprise [%s] from [%s] to [%s]",
+            enterprise_uuid,
+            start_date,
+            end_date,
+        )
+
         # only include learners who have passed the course
         enrollments_df = enrollments_df[enrollments_df["has_passed"] == 1]
 
@@ -67,8 +77,12 @@ class AdvanceAnalyticsLeaderboardView(APIView):
         engage["learning_time_hours"] = round(
             engage["learning_time_seconds"].astype("float") / 60 / 60, 1
         )
-        engage["average_session_length"] = round(
-            engage["learning_time_hours"] / engage["daily_sessions"].astype("float"), 1
+
+        # if daily_sessions is 0, set average_session_length to 0 becuase otherwise it will be `inf`
+        engage["average_session_length"] = np.where(
+            engage["daily_sessions"] == 0,
+            0,
+            round(engage["learning_time_hours"] / engage["daily_sessions"].astype("float"), 1)
         )
 
         leaderboard_df = engage.merge(completions, on="email", how="left")
@@ -84,6 +98,13 @@ class AdvanceAnalyticsLeaderboardView(APIView):
 
         # convert `nan` values to `None` because `nan` is not JSON serializable
         leaderboard_df = leaderboard_df.replace(np.nan, None)
+
+        LOGGER.info(
+            "Leaderboard data prepared for enterprise [%s] from [%s] to [%s]",
+            enterprise_uuid,
+            start_date,
+            end_date,
+        )
 
         if response_type == ResponseType.CSV.value:
             filename = f"""Leaderboard, {start_date} - {end_date}.csv"""

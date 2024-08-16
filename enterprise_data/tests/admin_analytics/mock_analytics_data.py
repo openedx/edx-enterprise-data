@@ -374,14 +374,24 @@ def enrollments_csv_content():
 
 def leaderboard_csv_content():
     """Return the CSV content of leaderboard."""
+    # return (
+    #     b'email,learning_time_hours,daily_sessions,average_session_length,course_completions\r\n'
+    #     b'paul77@example.org,4.4,1,4.4,\r\nseth57@example.org,2.7,1,2.7,\r\n'
+    #     b'weaverpatricia@example.net,2.6,1,2.6,\r\nwebertodd@example.com,1.5,1,1.5,\r\n'
+    #     b'yferguson@example.net,1.3,1,1.3,\r\nyallison@example.org,1.2,1,1.2,\r\n'
+    #     b'padillamichelle@example.org,1.0,1,1.0,\r\ncaseyjohnny@example.com,0.0,0,,\r\n'
+    #     b'crystal86@example.net,0.0,0,,\r\ngraceperez@example.com,0.0,0,,\r\n'
+    #     b'mackwilliam@example.com,0.0,0,,\r\nsamanthaclarke@example.org,0.0,0,,\r\n'
+    # )
+
     return (
         b'email,learning_time_hours,daily_sessions,average_session_length,course_completions\r\n'
         b'paul77@example.org,4.4,1,4.4,\r\nseth57@example.org,2.7,1,2.7,\r\n'
         b'weaverpatricia@example.net,2.6,1,2.6,\r\nwebertodd@example.com,1.5,1,1.5,\r\n'
         b'yferguson@example.net,1.3,1,1.3,\r\nyallison@example.org,1.2,1,1.2,\r\n'
-        b'padillamichelle@example.org,1.0,1,1.0,\r\ncaseyjohnny@example.com,0.0,0,,\r\n'
-        b'crystal86@example.net,0.0,0,,\r\ngraceperez@example.com,0.0,0,,\r\n'
-        b'mackwilliam@example.com,0.0,0,,\r\nsamanthaclarke@example.org,0.0,0,,\r\n'
+        b'padillamichelle@example.org,1.0,1,1.0,\r\ncaseyjohnny@example.com,0.0,0,0.0,\r\n'
+        b'crystal86@example.net,0.0,0,0.0,\r\ngraceperez@example.com,0.0,0,0.0,\r\n'
+        b'mackwilliam@example.com,0.0,0,0.0,\r\nsamanthaclarke@example.org,0.0,0,0.0,\r\n'
     )
 
 
@@ -447,7 +457,7 @@ LEADERBOARD_RESPONSE = [
         "daily_sessions": 0,
         "learning_time_seconds": 0,
         "learning_time_hours": 0.0,
-        "average_session_length": None,
+        "average_session_length": 0.0,
         "course_completions": None,
     },
     {
@@ -455,7 +465,7 @@ LEADERBOARD_RESPONSE = [
         "daily_sessions": 0,
         "learning_time_seconds": 0,
         "learning_time_hours": 0.0,
-        "average_session_length": None,
+        "average_session_length": 0.0,
         "course_completions": None,
     },
     {
@@ -463,7 +473,7 @@ LEADERBOARD_RESPONSE = [
         "daily_sessions": 0,
         "learning_time_seconds": 21,
         "learning_time_hours": 0.0,
-        "average_session_length": None,
+        "average_session_length": 0.0,
         "course_completions": None,
     },
     {
@@ -471,7 +481,7 @@ LEADERBOARD_RESPONSE = [
         "daily_sessions": 0,
         "learning_time_seconds": 0,
         "learning_time_hours": 0.0,
-        "average_session_length": None,
+        "average_session_length": 0.0,
         "course_completions": None,
     },
     {
@@ -479,7 +489,7 @@ LEADERBOARD_RESPONSE = [
         "daily_sessions": 0,
         "learning_time_seconds": 29,
         "learning_time_hours": 0.0,
-        "average_session_length": None,
+        "average_session_length": 0.0,
         "course_completions": None,
     },
 ]

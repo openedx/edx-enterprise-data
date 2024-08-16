@@ -4,6 +4,7 @@ Utility functions for Enterprise Data app.
 import hashlib
 import random
 import time
+from contextlib import contextmanager
 from datetime import timedelta
 from functools import wraps
 from logging import getLogger
@@ -66,6 +67,21 @@ def timeit(func):
         return result
 
     return wrapper
+
+
+@contextmanager
+def timer(prefix):
+    """
+    Context manager to measure the time taken by a block of code.
+
+    Arguments:
+        prefix (str): The prefix to print in the log.
+    """
+    start = time.time()
+    yield
+    end = time.time()
+    difference = end - start
+    print(f"TIMER:: {prefix} took {difference:.20f} seconds")
 
 
 def date_filter(start, end, data_frame, date_column):

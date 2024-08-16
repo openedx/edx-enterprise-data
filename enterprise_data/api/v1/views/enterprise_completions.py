@@ -1,6 +1,7 @@
 """Views for enterprise admin completions analytics."""
 import datetime
 from datetime import datetime, timedelta
+from logging import getLogger
 
 from edx_rbac.decorators import permission_required
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
@@ -23,7 +24,9 @@ from enterprise_data.admin_analytics.data_loaders import fetch_max_enrollment_da
 from enterprise_data.admin_analytics.utils import ChartType, fetch_and_cache_enrollments_data
 from enterprise_data.api.v1 import serializers
 from enterprise_data.api.v1.paginators import AdvanceAnalyticsPagination
-from enterprise_data.utils import date_filter
+from enterprise_data.utils import date_filter, timer
+
+LOGGER = getLogger(__name__)
 
 
 class EnterrpiseAdminCompletionsStatsView(APIView):
@@ -67,39 +70,43 @@ class EnterrpiseAdminCompletionsStatsView(APIView):
             csv_data = {}
 
             if chart_type == ChartType.COMPLETIONS_OVER_TIME.value:
-                csv_data = get_csv_data_for_completions_over_time(
-                    start_date=start_date,
-                    end_date=end_date,
-                    enrollments=enrollments.copy(),
-                    date_agg=serializer.data.get('granularity', Granularity.DAILY.value),
-                    calc=serializer.data.get('calculation', Calculation.TOTAL.value),
-                )
+                with timer('completions_over_time_csv_data'):
+                    csv_data = get_csv_data_for_completions_over_time(
+                        start_date=start_date,
+                        end_date=end_date,
+                        enrollments=enrollments.copy(),
+                        date_agg=serializer.data.get('granularity', Granularity.DAILY.value),
+                        calc=serializer.data.get('calculation', Calculation.TOTAL.value),
+                    )
             elif chart_type == ChartType.TOP_COURSES_BY_COMPLETIONS.value:
-                csv_data = get_csv_data_for_top_courses_by_completions(
-                    start_date=start_date, end_date=end_date, enrollments=enrollments.copy()
-                )
+                with timer('top_courses_by_completions_csv_data'):
+                    csv_data = get_csv_data_for_top_courses_by_completions(
+                        start_date=start_date, end_date=end_date, enrollments=enrollments.copy()
+                    )
             elif chart_type == ChartType.TOP_SUBJECTS_BY_COMPLETIONS.value:
-                csv_data = get_csv_data_for_top_subjects_by_completions(
-                    start_date=start_date, end_date=end_date, enrollments=enrollments.copy()
-                )
+                with timer('top_subjects_by_completions_csv_data'):
+                    csv_data = get_csv_data_for_top_subjects_by_completions(
+                        start_date=start_date, end_date=end_date, enrollments=enrollments.copy()
+                    )
             filename = csv_data['filename']
             response['Content-Disposition'] = f'attachment; filename="{filename}"'
             csv_data['data'].to_csv(path_or_buf=response)
             return response
 
-        completions_over_time = get_completions_over_time(
-            start_date=start_date,
-            end_date=end_date,
-            dff=enrollments.copy(),
-            date_agg=serializer.data.get('granularity', Granularity.DAILY.value),
-            calc=serializer.data.get('calculation', Calculation.TOTAL.value),
-        )
-        top_courses_by_completions = get_top_courses_by_completions(
-            start_date=start_date, end_date=end_date, dff=enrollments.copy()
-        )
-        top_subjects_by_completions = get_top_subjects_by_completions(
-            start_date=start_date, end_date=end_date, dff=enrollments.copy()
-        )
+        with timer('completions_all_charts_data'):
+            completions_over_time = get_completions_over_time(
+                start_date=start_date,
+                end_date=end_date,
+                dff=enrollments.copy(),
+                date_agg=serializer.data.get('granularity', Granularity.DAILY.value),
+                calc=serializer.data.get('calculation', Calculation.TOTAL.value),
+            )
+            top_courses_by_completions = get_top_courses_by_completions(
+                start_date=start_date, end_date=end_date, dff=enrollments.copy()
+            )
+            top_subjects_by_completions = get_top_subjects_by_completions(
+                start_date=start_date, end_date=end_date, dff=enrollments.copy()
+            )
 
         return Response(
             data={
@@ -153,6 +160,13 @@ class EnterrpiseAdminCompletionsView(APIView):
         )
         end_date = serializer.data.get('end_date', datetime.now())
 
+        LOGGER.info(
+            "Completions data requested for enterprise [%s] from [%s] to [%s]",
+            enterprise_id,
+            start_date,
+            end_date,
+        )
+
         dff = enrollments[enrollments['has_passed'] == 1]
 
         # Date filtering
@@ -161,6 +175,13 @@ class EnterrpiseAdminCompletionsView(APIView):
         dff = dff[['email', 'course_title', 'course_subject', 'passed_date']]
         dff['passed_date'] = dff['passed_date'].dt.date
         dff = dff.sort_values(by="passed_date", ascending=False).reset_index(drop=True)
+
+        LOGGER.info(
+            "Completions data prepared for enterprise [%s] from [%s] to [%s]",
+            enterprise_id,
+            start_date,
+            end_date,
+        )
 
         if serializer.data.get('response_type') == 'csv':
             response = HttpResponse(content_type='text/csv')

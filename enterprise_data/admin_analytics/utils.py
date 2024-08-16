@@ -3,6 +3,7 @@ Utility functions for fetching data from the database.
 """
 from datetime import datetime, timedelta
 from enum import Enum
+from logging import getLogger
 
 from edx_django_utils.cache import TieredCache, get_cache_key
 
@@ -14,6 +15,8 @@ from enterprise_data.admin_analytics.data_loaders import (
     fetch_skills_data,
 )
 from enterprise_data.utils import date_filter, primary_subject_truncate
+
+LOGGER = getLogger(__name__)
 
 
 class ChartType(Enum):
@@ -144,6 +147,7 @@ def fetch_and_cache_enrollments_data(enterprise_id, cache_expiry):
     cached_response = TieredCache.get_cached_response(cache_key)
 
     if cached_response.is_found:
+        LOGGER.info(f"Enrollments data found in cache for Enterprise [{enterprise_id}]")
         return cached_response.value
     else:
         enrollments = fetch_enrollment_data(enterprise_id)
@@ -171,6 +175,7 @@ def fetch_and_cache_engagements_data(enterprise_id, cache_expiry):
     cached_response = TieredCache.get_cached_response(cache_key)
 
     if cached_response.is_found:
+        LOGGER.info(f"Engagements data found in cache for Enterprise [{enterprise_id}]")
         return cached_response.value
     else:
         engagements = fetch_engagement_data(enterprise_id)
@@ -198,6 +203,7 @@ def fetch_and_cache_skills_data(enterprise_id, cache_expiry):
     cached_response = TieredCache.get_cached_response(cache_key)
 
     if cached_response.is_found:
+        LOGGER.info(f"Skills data found in cache for Enterprise [{enterprise_id}]")
         return cached_response.value
     else:
         skills = fetch_skills_data(enterprise_id)
