@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[8.8.2] - 2024-08-16
+---------------------
+  * fix: typo
+
 [8.8.1] - 2024-08-16
 ---------------------
   * refactor: Add logs and time measurements for different code blocks
