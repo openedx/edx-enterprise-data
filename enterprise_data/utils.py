@@ -79,9 +79,8 @@ def timer(prefix):
     """
     start = time.time()
     yield
-    end = time.time()
-    difference = end - start
-    print(f"TIMER:: {prefix} took {difference:.20f} seconds")
+    difference = time.time() - start
+    LOGGER.info(f"TIMER:: {prefix} took {difference:.20f} seconds")
 
 
 def date_filter(start, end, data_frame, date_column):
