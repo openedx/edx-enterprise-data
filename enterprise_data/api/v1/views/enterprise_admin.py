@@ -27,7 +27,7 @@ from enterprise_data.models import (
     EnterpriseAdminSummarizeInsights,
     EnterpriseExecEdLCModulePerformance,
 )
-from enterprise_data.utils import date_filter
+from enterprise_data.utils import date_filter, timer
 
 from .base import EnterpriseViewSetMixin
 
@@ -211,24 +211,25 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
             csv_data.to_csv(path_or_buf=response, index=False)
             return response
 
-        top_skills = get_skills_chart_data(
-            chart_type=ChartType.BUBBLE,
-            start_date=start_date,
-            end_date=end_date,
-            skills=skills,
-        )
-        top_skills_enrollments = get_skills_chart_data(
-            chart_type=ChartType.TOP_SKILLS_ENROLLMENT,
-            start_date=start_date,
-            end_date=end_date,
-            skills=skills,
-        )
-        top_skills_by_completions = get_skills_chart_data(
-            chart_type=ChartType.TOP_SKILLS_COMPLETION,
-            start_date=start_date,
-            end_date=end_date,
-            skills=skills,
-        )
+        with timer('skills_all_charts_data'):
+            top_skills = get_skills_chart_data(
+                chart_type=ChartType.BUBBLE,
+                start_date=start_date,
+                end_date=end_date,
+                skills=skills,
+            )
+            top_skills_enrollments = get_skills_chart_data(
+                chart_type=ChartType.TOP_SKILLS_ENROLLMENT,
+                start_date=start_date,
+                end_date=end_date,
+                skills=skills,
+            )
+            top_skills_by_completions = get_skills_chart_data(
+                chart_type=ChartType.TOP_SKILLS_COMPLETION,
+                start_date=start_date,
+                end_date=end_date,
+                skills=skills,
+            )
 
         response_data = {
             "top_skills": top_skills.to_dict(orient="records"),

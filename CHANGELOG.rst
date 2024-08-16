@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[8.8.1] - 2024-08-16
+---------------------
+  * refactor: Add logs and time measurements for different code blocks
+
 [8.8.0] - 2024-08-15
 ---------------------
   * feat: Add API endpoints for advance analytics leaderboard data

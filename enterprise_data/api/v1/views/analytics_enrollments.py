@@ -1,5 +1,6 @@
 """Advance Analytics for Enrollments"""
 from datetime import datetime
+from logging import getLogger
 
 from edx_rbac.decorators import permission_required
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
@@ -21,7 +22,9 @@ from enterprise_data.api.v1.serializers import (
     AdvanceAnalyticsQueryParamSerializer,
 )
 from enterprise_data.renderers import IndividualEnrollmentsCSVRenderer
-from enterprise_data.utils import date_filter
+from enterprise_data.utils import date_filter, timer
+
+LOGGER = getLogger(__name__)
 
 
 class AdvanceAnalyticsIndividualEnrollmentsView(APIView):
@@ -46,6 +49,13 @@ class AdvanceAnalyticsIndividualEnrollmentsView(APIView):
         end_date = serializer.data.get('end_date', datetime.now())
         response_type = request.query_params.get('response_type', ResponseType.JSON.value)
 
+        LOGGER.info(
+            "Individual enrollments data requested for enterprise [%s] from [%s] to [%s]",
+            enterprise_uuid,
+            start_date,
+            end_date,
+        )
+
         # filter enrollments by date
         enrollments = date_filter(start_date, end_date, enrollments_df, "enterprise_enrollment_date")
 
@@ -61,6 +71,13 @@ class AdvanceAnalyticsIndividualEnrollmentsView(APIView):
         ]
         enrollments["enterprise_enrollment_date"] = enrollments["enterprise_enrollment_date"].dt.date
         enrollments = enrollments.sort_values(by="enterprise_enrollment_date", ascending=False).reset_index(drop=True)
+
+        LOGGER.info(
+            "Individual enrollments data prepared for enterprise [%s] from [%s] to [%s]",
+            enterprise_uuid,
+            start_date,
+            end_date,
+        )
 
         if response_type == ResponseType.CSV.value:
             filename = f"""individual_enrollments, {start_date} - {end_date}.csv"""
@@ -112,49 +129,55 @@ class AdvanceAnalyticsEnrollmentStatsView(APIView):
         response_type = serializer.data.get('response_type', ResponseType.JSON.value)
         chart_type = serializer.data.get('chart_type')
 
+        # TODO: Add validation that if response_type is CSV then chart_type must be provided
+
         if response_type == ResponseType.JSON.value:
-            data = {
-                "enrollments_over_time": self.construct_enrollments_over_time(
-                    enrollments_df.copy(),
-                    start_date,
-                    end_date,
-                    granularity,
-                    calculation,
-                ),
-                "top_courses_by_enrollments": self.construct_top_courses_by_enrollments(
-                    enrollments_df.copy(),
-                    start_date,
-                    end_date,
-                ),
-                "top_subjects_by_enrollments": self.construct_top_subjects_by_enrollments(
-                    enrollments_df.copy(),
-                    start_date,
-                    end_date,
-                ),
-            }
+            with timer('construct_enrollment_all_stats'):
+                data = {
+                    "enrollments_over_time": self.construct_enrollments_over_time(
+                        enrollments_df.copy(),
+                        start_date,
+                        end_date,
+                        granularity,
+                        calculation,
+                    ),
+                    "top_courses_by_enrollments": self.construct_top_courses_by_enrollments(
+                        enrollments_df.copy(),
+                        start_date,
+                        end_date,
+                    ),
+                    "top_subjects_by_enrollments": self.construct_top_subjects_by_enrollments(
+                        enrollments_df.copy(),
+                        start_date,
+                        end_date,
+                    ),
+                }
             return Response(data)
 
         if response_type == ResponseType.CSV.value:
             if chart_type == EnrollmentChart.ENROLLMENTS_OVER_TIME.value:
-                return self.construct_enrollments_over_time_csv(
-                    enrollments_df.copy(),
-                    start_date,
-                    end_date,
-                    granularity,
-                    calculation,
-                )
+                with timer('construct_enrollments_over_time_csv'):
+                    return self.construct_enrollments_over_time_csv(
+                        enrollments_df.copy(),
+                        start_date,
+                        end_date,
+                        granularity,
+                        calculation,
+                    )
             elif chart_type == EnrollmentChart.TOP_COURSES_BY_ENROLLMENTS.value:
-                return self.construct_top_courses_by_enrollments_csv(
-                    enrollments_df.copy(),
-                    start_date,
-                    end_date,
-                )
+                with timer('construct_top_courses_by_enrollments_csv'):
+                    return self.construct_top_courses_by_enrollments_csv(
+                        enrollments_df.copy(),
+                        start_date,
+                        end_date,
+                    )
             elif chart_type == EnrollmentChart.TOP_SUBJECTS_BY_ENROLLMENTS.value:
-                return self.construct_top_subjects_by_enrollments_csv(
-                    enrollments_df.copy(),
-                    start_date,
-                    end_date,
-                )
+                with timer('construct_top_subjects_by_enrollments_csv'):
+                    return self.construct_top_subjects_by_enrollments_csv(
+                        enrollments_df.copy(),
+                        start_date,
+                        end_date,
+                    )
 
     def enrollments_over_time_common(self, enrollments_df, start_date, end_date, granularity, calculation):
         """
