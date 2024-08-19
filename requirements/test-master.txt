@@ -10,15 +10,15 @@ asgiref==3.8.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.33.40
+awscli==1.34.0
     # via -r requirements/reporting.in
 bcrypt==4.2.0
     # via paramiko
 billiard==4.2.0
     # via celery
-boto3==1.34.158
+boto3==1.35.0
     # via -r requirements/reporting.in
-botocore==1.34.158
+botocore==1.35.0
     # via
     #   awscli
     #   boto3
@@ -130,11 +130,11 @@ edx-rbac==1.9.0
     # via -r requirements/base.in
 edx-rest-api-client==5.7.1
     # via -r requirements/base.in
-factory-boy==3.3.0
+factory-boy==3.3.1
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==26.3.0
+faker==27.0.0
     # via factory-boy
 filelock==3.15.4
     # via snowflake-connector-python
@@ -287,7 +287,7 @@ stevedore==5.2.0
     #   edx-opaque-keys
 testfixtures==8.3.0
     # via -r requirements/test.in
-tomlkit==0.13.0
+tomlkit==0.13.2
     # via snowflake-connector-python
 typing-extensions==4.12.2
     # via
