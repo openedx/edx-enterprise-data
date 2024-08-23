@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[8.9.0] - 2024-08-23
+---------------------
+  * chore: Added logging to measure time taken for different code blocks.
+
 [8.8.2] - 2024-08-16
 ---------------------
   * fix: typo

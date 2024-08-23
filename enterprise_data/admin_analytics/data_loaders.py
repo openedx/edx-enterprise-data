@@ -1,6 +1,8 @@
 """
 Utility functions for fetching data from the database.
 """
+from logging import getLogger
+
 import numpy
 import pandas
 
@@ -8,6 +10,8 @@ from django.http import Http404
 
 from enterprise_data.admin_analytics.database import run_query
 from enterprise_data.utils import timer
+
+LOGGER = getLogger(__name__)
 
 
 def get_select_query(table: str, columns: list, enterprise_uuid: str) -> str:
@@ -68,10 +72,13 @@ def fetch_enrollment_data(enterprise_uuid: str):
 
     with timer('fetch_enrollment_data'):
         results = run_query(query=query)
+
     if not results:
         raise Http404(f'No enrollment data found for enterprise {enterprise_uuid}')
 
+    LOGGER.info(f'[PLOTLY] Enrollment data fetched successfully. Records: {len(results)}')
     enrollments = pandas.DataFrame(numpy.array(results), columns=columns)
+    LOGGER.info('[PLOTLY] Enrollment data converted to DataFrame.')
 
     # Convert date columns to datetime.
     enrollments['enterprise_enrollment_date'] = enrollments['enterprise_enrollment_date'].astype('datetime64[ns]')
@@ -120,7 +127,9 @@ def fetch_engagement_data(enterprise_uuid: str):
     if not results:
         raise Http404(f'No engagement data found for enterprise {enterprise_uuid}')
 
+    LOGGER.info(f'[PLOTLY] Engagement data fetched successfully. Records: {len(results)}')
     engagement = pandas.DataFrame(numpy.array(results), columns=columns)
+    LOGGER.info('[PLOTLY] Engagement data converted to DataFrame.')
     engagement['activity_date'] = engagement['activity_date'].astype('datetime64[ns]')
 
     return engagement
@@ -180,7 +189,9 @@ def fetch_skills_data(enterprise_uuid: str):
     if not skills:
         raise Http404(f'No skills data found for enterprise {enterprise_uuid}')
 
+    LOGGER.info(f'[PLOTLY] Skills data fetched successfully. Records: {len(skills)}')
     skills = pandas.DataFrame(numpy.array(skills), columns=cols)
+    LOGGER.info('[PLOTLY] Skills data converted to DataFrame.')
     skills['date'] = skills['date'].astype('datetime64[ns]')
 
     return skills
