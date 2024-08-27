@@ -382,6 +382,7 @@ class AdvanceAnalyticsEnrollmentStatsView(APIView):
         """
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        response['Access-Control-Expose-Headers'] = 'Content-Disposition'
         enrollments.to_csv(path_or_buf=response)
 
         return response

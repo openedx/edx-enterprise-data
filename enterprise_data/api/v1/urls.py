@@ -11,6 +11,10 @@ from enterprise_data.api.v1.views import enterprise_admin as enterprise_admin_vi
 from enterprise_data.api.v1.views import enterprise_completions as enterprise_completions_views
 from enterprise_data.api.v1.views import enterprise_learner as enterprise_learner_views
 from enterprise_data.api.v1.views import enterprise_offers as enterprise_offers_views
+from enterprise_data.api.v1.views.analytics_engagements import (
+    AdvanceAnalyticsEngagementStatsView,
+    AdvanceAnalyticsIndividualEngagementsView,
+)
 from enterprise_data.api.v1.views.analytics_enrollments import (
     AdvanceAnalyticsEnrollmentStatsView,
     AdvanceAnalyticsIndividualEnrollmentsView,
@@ -72,6 +76,16 @@ urlpatterns = [
         fr'^admin/analytics/(?P<enterprise_uuid>{UUID4_REGEX})/enrollments$',
         AdvanceAnalyticsIndividualEnrollmentsView.as_view(),
         name='enterprise-admin-analytics-enrollments'
+    ),
+    re_path(
+        fr'^admin/analytics/(?P<enterprise_uuid>{UUID4_REGEX})/engagements/stats$',
+        AdvanceAnalyticsEngagementStatsView.as_view(),
+        name='enterprise-admin-analytics-engagements-stats'
+    ),
+    re_path(
+        fr'^admin/analytics/(?P<enterprise_uuid>{UUID4_REGEX})/engagements$',
+        AdvanceAnalyticsIndividualEngagementsView.as_view(),
+        name='enterprise-admin-analytics-engagements'
     ),
     re_path(
         fr'^admin/analytics/(?P<enterprise_id>{UUID4_REGEX})/skills/stats',

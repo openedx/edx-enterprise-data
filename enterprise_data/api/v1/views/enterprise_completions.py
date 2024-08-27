@@ -90,6 +90,7 @@ class EnterrpiseAdminCompletionsStatsView(APIView):
                     )
             filename = csv_data['filename']
             response['Content-Disposition'] = f'attachment; filename="{filename}"'
+            response['Access-Control-Expose-Headers'] = 'Content-Disposition'
             csv_data['data'].to_csv(path_or_buf=response)
             return response
 
@@ -187,6 +188,7 @@ class EnterrpiseAdminCompletionsView(APIView):
             response = HttpResponse(content_type='text/csv')
             filename = f"Individual Completions, {start_date} - {end_date}.csv"
             response['Content-Disposition'] = f'attachment; filename="{filename}"'
+            response['Access-Control-Expose-Headers'] = 'Content-Disposition'
             dff.to_csv(path_or_buf=response, index=False)
             return response
 
