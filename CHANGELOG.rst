@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[8.11.1] - 2024-08-29
+---------------------
+  * fix: Fixed a datetime conversion error appearing on production.
+
 [8.11.0] - 2024-08-29
 ---------------------
   * perf: Performance enhancements for admin analytics aggregates endpoint.

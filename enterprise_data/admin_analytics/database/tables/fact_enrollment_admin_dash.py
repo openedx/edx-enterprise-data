@@ -1,7 +1,7 @@
 """
 Module for interacting with the fact_enrollment_admin_dash table.
 """
-from datetime import date
+from datetime import date, datetime
 from uuid import UUID
 
 from ..queries import FactEnrollmentAdminDashQueries
@@ -23,13 +23,22 @@ class FactEnrollmentAdminDashTable(BaseTable):
             enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
 
         Returns:
-            (tuple<int, int>): The minimum and maximum enrollment dates.
+            (tuple<date, date>): The minimum and maximum enrollment dates.
         """
         results = run_query(
             query=self.queries.get_enrollment_date_range_query(),
             params={'enterprise_customer_uuid': enterprise_customer_uuid}
         )
-        return tuple(results[0])
+        min_date, max_date = results[0]
+
+        # We should return date objects, not datetime objects
+        # This is done to counter cases where database values are datetime objects.
+        if min_date and isinstance(min_date, datetime):
+            min_date = min_date.date()
+        if max_date and isinstance(max_date, datetime):
+            max_date = max_date.date()
+
+        return min_date, max_date
 
     def get_enrollment_and_course_count(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
         """
