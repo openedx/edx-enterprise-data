@@ -95,6 +95,8 @@ class EnterpriseAdminAnalyticsAggregatesView(APIView):
         """
         HTTP GET endpoint to retrieve the enterprise admin aggregate data.
         """
+        # Validate the enterprise_id
+        enterprise_id = enterprise_id.replace('-', '')
         serializer = serializers.AdminAnalyticsAggregatesQueryParamsSerializer(
             data=request.GET
         )
@@ -106,7 +108,7 @@ class EnterpriseAdminAnalyticsAggregatesView(APIView):
         )
 
         start_date = serializer.data.get(
-            'start_date', min_enrollment_date.date()
+            'start_date', min_enrollment_date
         )
         end_date = serializer.data.get('end_date', datetime.today())
 
@@ -128,8 +130,8 @@ class EnterpriseAdminAnalyticsAggregatesView(APIView):
                 'hours': hours,
                 'sessions': sessions,
                 'last_updated_at': last_updated_at.date() if last_updated_at else None,
-                'min_enrollment_date': min_enrollment_date.date(),
-                'max_enrollment_date': max_enrollment_date.date(),
+                'min_enrollment_date': min_enrollment_date,
+                'max_enrollment_date': max_enrollment_date,
             },
             status=HTTP_200_OK,
         )
