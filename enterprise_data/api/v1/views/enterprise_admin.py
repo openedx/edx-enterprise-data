@@ -13,9 +13,9 @@ from rest_framework.views import APIView
 from django.http import HttpResponse
 
 from enterprise_data.admin_analytics.data_loaders import fetch_max_enrollment_datetime
+from enterprise_data.admin_analytics.database.tables import FactEngagementAdminDashTable, FactEnrollmentAdminDashTable
 from enterprise_data.admin_analytics.utils import (
     ChartType,
-    fetch_and_cache_engagements_data,
     fetch_and_cache_enrollments_data,
     fetch_and_cache_skills_data,
     get_skills_chart_data,
@@ -27,7 +27,7 @@ from enterprise_data.models import (
     EnterpriseAdminSummarizeInsights,
     EnterpriseExecEdLCModulePerformance,
 )
-from enterprise_data.utils import date_filter, timer
+from enterprise_data.utils import timer
 
 from .base import EnterpriseViewSetMixin
 
@@ -101,54 +101,24 @@ class EnterpriseAdminAnalyticsAggregatesView(APIView):
         serializer.is_valid(raise_exception=True)
 
         last_updated_at = fetch_max_enrollment_datetime()
-        cache_expiry = (
-            last_updated_at + timedelta(days=1) if last_updated_at else datetime.now()
+        min_enrollment_date, max_enrollment_date = FactEnrollmentAdminDashTable().get_enrollment_date_range(
+            enterprise_id,
         )
 
-        enrollment = fetch_and_cache_enrollments_data(
-            enterprise_id, cache_expiry
-        ).copy()
-        engagement = fetch_and_cache_engagements_data(
-            enterprise_id, cache_expiry
-        ).copy()
-        # Use start and end date if provided by the client, if client has not provided then use
-        # 1. minimum enrollment date from the data as the start_date
-        # 2. today's date as the end_date
         start_date = serializer.data.get(
-            'start_date', enrollment.enterprise_enrollment_date.min()
+            'start_date', min_enrollment_date.date()
         )
-        end_date = serializer.data.get('end_date', datetime.now())
+        end_date = serializer.data.get('end_date', datetime.today())
 
-        # Date filtering.
-        dff = date_filter(
-            start=start_date,
-            end=end_date,
-            data_frame=enrollment.copy(),
-            date_column='enterprise_enrollment_date',
+        enrolls, courses = FactEnrollmentAdminDashTable().get_enrollment_and_course_count(
+            enterprise_id, start_date, end_date,
         )
-
-        enrolls = len(dff)
-        courses = len(dff.course_key.unique())
-
-        dff = date_filter(
-            start=start_date,
-            end=end_date,
-            data_frame=enrollment.copy(),
-            date_column='passed_date',
+        completions = FactEnrollmentAdminDashTable().get_completion_count(
+            enterprise_id, start_date, end_date,
         )
-
-        completions = dff.has_passed.sum()
-
-        # Date filtering.
-        dff = date_filter(
-            start=start_date,
-            end=end_date,
-            data_frame=engagement.copy(),
-            date_column='activity_date',
+        hours, sessions = FactEngagementAdminDashTable().get_learning_hours_and_daily_sessions(
+            enterprise_id, start_date, end_date,
         )
-
-        hours = round(dff.learning_time_seconds.sum() / 60 / 60, 1)
-        sessions = dff.is_engaged.sum()
 
         return Response(
             data={
@@ -158,8 +128,8 @@ class EnterpriseAdminAnalyticsAggregatesView(APIView):
                 'hours': hours,
                 'sessions': sessions,
                 'last_updated_at': last_updated_at.date() if last_updated_at else None,
-                'min_enrollment_date': enrollment.enterprise_enrollment_date.min().date(),
-                'max_enrollment_date': enrollment.enterprise_enrollment_date.max().date(),
+                'min_enrollment_date': min_enrollment_date.date(),
+                'max_enrollment_date': max_enrollment_date.date(),
             },
             status=HTTP_200_OK,
         )
