@@ -30,12 +30,13 @@ def get_db_connection(database=settings.ENTERPRISE_REPORTING_DB_ALIAS):
 
 
 @timeit
-def run_query(query):
+def run_query(query, params: dict = None):
     """
     Run a query on the database and return the results.
 
     Arguments:
         query (str): The query to run.
+        params (dict): The parameters to pass to the query.
 
     Returns:
         (list): The results of the query.
@@ -43,7 +44,7 @@ def run_query(query):
     try:
         with closing(get_db_connection()) as connection:
             with closing(connection.cursor()) as cursor:
-                cursor.execute(query)
+                cursor.execute(query, params=params)
                 return cursor.fetchall()
     except Exception:
         LOGGER.exception(f'[run_query]: run_query failed for query "{query}".')

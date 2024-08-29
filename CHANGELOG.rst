@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[8.11.0] - 2024-08-29
+---------------------
+  * perf: Performance enhancements for admin analytics aggregates endpoint.
+
 [8.10.0] - 2024-08-27
 ---------------------
   * feat: Added API endpoints for advance analytics engagements data.
