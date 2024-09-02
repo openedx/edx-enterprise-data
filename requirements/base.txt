@@ -10,22 +10,22 @@ asgiref==3.8.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.33.40
+awscli==1.34.10
     # via -r requirements/reporting.in
 bcrypt==4.2.0
     # via paramiko
 billiard==4.2.0
     # via celery
-boto3==1.34.158
+boto3==1.35.10
     # via -r requirements/reporting.in
-botocore==1.34.158
+botocore==1.35.10
     # via
     #   awscli
     #   boto3
     #   s3transfer
 celery==5.3.6
     # via -r requirements/reporting.in
-certifi==2024.7.4
+certifi==2024.8.30
     # via
     #   py2neo
     #   requests
@@ -54,7 +54,7 @@ click-repl==0.3.0
     # via celery
 colorama==0.4.6
     # via awscli
-cryptography==42.0.8
+cryptography==43.0.0
     # via
     #   -r requirements/reporting.in
     #   django-fernet-fields-v2
@@ -119,17 +119,17 @@ edx-opaque-keys==2.10.0
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
-edx-rbac==1.9.0
+edx-rbac==1.10.0
     # via -r requirements/base.in
 edx-rest-api-client==5.7.1
     # via -r requirements/base.in
-factory-boy==3.3.0
+factory-boy==3.3.1
     # via -r requirements/base.in
-faker==26.3.0
+faker==28.1.0
     # via factory-boy
 filelock==3.15.4
     # via snowflake-connector-python
-idna==3.7
+idna==3.8
     # via
     #   requests
     #   snowflake-connector-python
@@ -164,7 +164,7 @@ pansi==2020.7.3
     # via py2neo
 paramiko==3.4.1
     # via -r requirements/reporting.in
-pbr==6.0.0
+pbr==6.1.0
     # via stevedore
 pgpy==0.6.0
     # via -r requirements/reporting.in
@@ -241,17 +241,17 @@ six==1.16.0
     #   vertica-python
 slumber==0.7.1
     # via edx-rest-api-client
-snowflake-connector-python==3.12.0
+snowflake-connector-python==3.12.1
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
 sqlparse==0.5.1
     # via django
-stevedore==5.2.0
+stevedore==5.3.0
     # via
     #   edx-django-utils
     #   edx-opaque-keys
-tomlkit==0.13.0
+tomlkit==0.13.2
     # via snowflake-connector-python
 typing-extensions==4.12.2
     # via
@@ -263,7 +263,7 @@ tzdata==2024.1
     #   pandas
 unicodecsv==0.14.1
     # via -r requirements/reporting.in
-urllib3==1.26.19
+urllib3==1.26.20
     # via
     #   -c requirements/constraints.txt
     #   botocore
