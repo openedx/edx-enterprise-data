@@ -15,6 +15,56 @@ class FactEnrollmentAdminDashTable(BaseTable):
     """
     queries = FactEnrollmentAdminDashQueries()
 
+    def get_enrollment_count(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
+        """
+        Get the total number of enrollments for the given enterprise customer.
+
+        Arguments:
+            enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
+            start_date (date): The start date.
+            end_date (date): The end date.
+
+        Returns:
+            (int): The total number of enrollments.
+        """
+        results = run_query(
+            query=self.queries.get_enrollment_count_query(),
+            params={
+                'enterprise_customer_uuid': enterprise_customer_uuid,
+                'start_date': start_date,
+                'end_date': end_date,
+            }
+        )
+        return results[0][0]
+
+    def get_all_enrollments(
+            self, enterprise_customer_uuid: UUID, start_date: date, end_date: date, limit: int, offset: int
+    ):
+        """
+        Get all enrollments for the given enterprise customer.
+
+        Arguments:
+            enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
+            start_date (date): The start date.
+            end_date (date): The end date.
+            limit (int): The maximum number of records to return.
+            offset (int): The number of records to skip.
+
+        Returns:
+            list<dict>: A list of dictionaries containing the enrollment data.
+        """
+        return run_query(
+            query=self.queries.get_all_enrollments_query(),
+            params={
+                'enterprise_customer_uuid': enterprise_customer_uuid,
+                'start_date': start_date,
+                'end_date': end_date,
+                'limit': limit,
+                'offset': offset,
+            },
+            as_dict=True,
+        )
+
     def get_enrollment_date_range(self, enterprise_customer_uuid: UUID):
         """
         Get the enrollment date range for the given enterprise customer.
@@ -83,3 +133,69 @@ class FactEnrollmentAdminDashTable(BaseTable):
             }
         )
         return results[0][0]
+
+    def get_top_courses_by_enrollments(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
+        """
+        Get the top courses enrollments for the given enterprise customer.
+
+        Arguments:
+            enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
+            start_date (date): The start date.
+            end_date (date): The end date.
+
+        Returns:
+            list<dict>: A list of dictionaries containing the course key, course_title and enrollment count.
+        """
+        return run_query(
+            query=self.queries.get_top_courses_enrollments_query(),
+            params={
+                'enterprise_customer_uuid': enterprise_customer_uuid,
+                'start_date': start_date,
+                'end_date': end_date,
+            },
+            as_dict=True,
+        )
+
+    def get_top_subjects_by_enrollments(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
+        """
+        Get the top subjects by enrollments for the given enterprise customer.
+
+        Arguments:
+            enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
+            start_date (date): The start date.
+            end_date (date): The end date.
+
+        Returns:
+            list<dict>: A list of dictionaries containing the subject and enrollment count.
+        """
+        return run_query(
+            query=self.queries.get_top_subjects_by_enrollments_query(),
+            params={
+                'enterprise_customer_uuid': enterprise_customer_uuid,
+                'start_date': start_date,
+                'end_date': end_date,
+            },
+            as_dict=True,
+        )
+
+    def get_enrolment_time_series_data(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
+        """
+        Get the enrollment time series data for the given enterprise customer.
+
+        Arguments:
+            enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
+            start_date (date): The start date.
+            end_date (date): The end date.
+
+        Returns:
+            list<dict>: A list of dictionaries containing the date and enrollment count.
+        """
+        return run_query(
+            query=self.queries.get_enrolment_time_series_data_query(),
+            params={
+                'enterprise_customer_uuid': enterprise_customer_uuid,
+                'start_date': start_date,
+                'end_date': end_date,
+            },
+            as_dict=True,
+        )
