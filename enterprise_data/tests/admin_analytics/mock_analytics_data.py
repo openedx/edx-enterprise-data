@@ -384,18 +384,6 @@ def engagements_dataframe():
     return engagements
 
 
-def enrollments_csv_content():
-    """Return the CSV content of enrollments."""
-    return (
-        b'email,course_title,course_subject,enroll_type,enterprise_enrollment_date\r\n'
-        b'rebeccanelson@example.com,Re-engineered tangible approach,business-management,certificate,2021-07-04\r\n'
-        b'taylorjames@example.com,Re-engineered tangible approach,business-management,certificate,2021-07-03\r\n'
-        b'ssmith@example.com,Secured static capability,medicine,certificate,2021-05-11\r\n'
-        b'amber79@example.com,Streamlined zero-defect attitude,communication,certificate,2020-04-08\r\n'
-        b'kathleenmartin@example.com,Horizontal solution-oriented hub,social-sciences,certificate,2020-04-03\r\n'
-    )
-
-
 def leaderboard_csv_content():
     """Return the CSV content of leaderboard."""
     # return (
