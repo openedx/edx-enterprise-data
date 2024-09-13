@@ -15,10 +15,7 @@ from enterprise_data.api.v1.views.analytics_engagements import (
     AdvanceAnalyticsEngagementStatsView,
     AdvanceAnalyticsIndividualEngagementsView,
 )
-from enterprise_data.api.v1.views.analytics_enrollments import (
-    AdvanceAnalyticsEnrollmentStatsView,
-    AdvanceAnalyticsIndividualEnrollmentsView,
-)
+from enterprise_data.api.v1.views.analytics_enrollments import AdvanceAnalyticsEnrollmentsView
 from enterprise_data.api.v1.views.analytics_leaderboard import AdvanceAnalyticsLeaderboardView
 from enterprise_data.constants import UUID4_REGEX
 
@@ -69,12 +66,12 @@ urlpatterns = [
     ),
     re_path(
         fr'^admin/analytics/(?P<enterprise_uuid>{UUID4_REGEX})/enrollments/stats$',
-        AdvanceAnalyticsEnrollmentStatsView.as_view(),
+        AdvanceAnalyticsEnrollmentsView.as_view({'get': 'stats'}),
         name='enterprise-admin-analytics-enrollments-stats'
     ),
     re_path(
         fr'^admin/analytics/(?P<enterprise_uuid>{UUID4_REGEX})/enrollments$',
-        AdvanceAnalyticsIndividualEnrollmentsView.as_view(),
+        AdvanceAnalyticsEnrollmentsView.as_view({'get': 'list'}),
         name='enterprise-admin-analytics-enrollments'
     ),
     re_path(

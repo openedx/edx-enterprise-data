@@ -265,6 +265,8 @@ class AdvanceAnalyticsQueryParamSerializer(serializers.Serializer):  # pylint: d
     granularity = serializers.CharField(required=False)
     calculation = serializers.CharField(required=False)
     response_type = serializers.CharField(required=False)
+    page = serializers.IntegerField(required=False, min_value=1)
+    page_size = serializers.IntegerField(required=False, min_value=2)
 
     def validate(self, attrs):
         """

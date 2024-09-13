@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[8.12.0] - 2024-09-06
+---------------------
+  * refactor: Performance optimizations for enrollments related API endpoints.
+
 [8.11.1] - 2024-08-29
 ---------------------
   * fix: Fixed a datetime conversion error appearing on production.

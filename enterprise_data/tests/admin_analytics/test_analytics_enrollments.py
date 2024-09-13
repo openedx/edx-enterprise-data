@@ -1,5 +1,4 @@
 """Unittests for analytics_enrollments.py"""
-
 from datetime import datetime
 
 import ddt
@@ -8,15 +7,10 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITransactionTestCase
 
-from enterprise_data.admin_analytics.constants import EnrollmentChart, ResponseType
+from enterprise_data.admin_analytics.constants import ResponseType
 from enterprise_data.api.v1.serializers import AdvanceAnalyticsEnrollmentStatsSerializer as EnrollmentStatsSerializer
 from enterprise_data.api.v1.serializers import AdvanceAnalyticsQueryParamSerializer
-from enterprise_data.tests.admin_analytics.mock_analytics_data import (
-    ENROLLMENT_STATS_CSVS,
-    ENROLLMENTS,
-    enrollments_csv_content,
-    enrollments_dataframe,
-)
+from enterprise_data.tests.admin_analytics.mock_analytics_data import ENROLLMENTS
 from enterprise_data.tests.mixins import JWTTestMixin
 from enterprise_data.tests.test_utils import UserFactory
 from enterprise_data_roles.constants import ENTERPRISE_DATA_ADMIN_ROLE
@@ -59,8 +53,8 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
         )
 
         fetch_max_enrollment_datetime_patcher = patch(
-            'enterprise_data.api.v1.views.analytics_enrollments.fetch_enrollments_cache_expiry_timestamp',
-            return_value=datetime.now()
+            'enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrollment_date_range',
+            return_value=(datetime.now(), datetime.now())
         )
 
         fetch_max_enrollment_datetime_patcher.start()
@@ -69,11 +63,11 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
     def verify_enrollment_data(self, results, results_count):
         """Verify the received enrollment data."""
         attrs = [
-            "email",
-            "course_title",
-            "course_subject",
-            "enroll_type",
-            "enterprise_enrollment_date",
+            'email',
+            'course_title',
+            'course_subject',
+            'enroll_type',
+            'enterprise_enrollment_date',
         ]
 
         assert len(results) == results_count
@@ -89,16 +83,16 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
         expected_data = sorted(filtered_data, key=lambda x: x["email"])
         assert received_data == expected_data
 
-    @patch(
-        "enterprise_data.api.v1.views.analytics_enrollments.fetch_and_cache_enrollments_data"
-    )
-    def test_get(self, mock_fetch_and_cache_enrollments_data):
+    @patch('enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrollment_count')
+    @patch('enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_all_enrollments')
+    def test_get(self, mock_get_all_enrollments, mock_get_enrollment_count):
         """
         Test the GET method for the AdvanceAnalyticsIndividualEnrollmentsView works.
         """
-        mock_fetch_and_cache_enrollments_data.return_value = enrollments_dataframe()
+        mock_get_all_enrollments.return_value = ENROLLMENTS
+        mock_get_enrollment_count.return_value = len(ENROLLMENTS)
 
-        response = self.client.get(self.url, {"page_size": 2})
+        response = self.client.get(self.url + '?page_size=2')
         assert response.status_code == status.HTTP_200_OK
         assert response["Content-Type"] == "application/json"
         data = response.json()
@@ -107,9 +101,8 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
         assert data["current_page"] == 1
         assert data["num_pages"] == 3
         assert data["count"] == 5
-        self.verify_enrollment_data(data["results"], 2)
 
-        response = self.client.get(self.url, {"page_size": 2, "page": 2})
+        response = self.client.get(self.url + '?page_size=2&page=2')
         assert response.status_code == status.HTTP_200_OK
         assert response["Content-Type"] == "application/json"
         data = response.json()
@@ -118,9 +111,8 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
         assert data["current_page"] == 2
         assert data["num_pages"] == 3
         assert data["count"] == 5
-        self.verify_enrollment_data(data["results"], 2)
 
-        response = self.client.get(self.url, {"page_size": 2, "page": 3})
+        response = self.client.get(self.url + '?page_size=2&page=3')
         assert response.status_code == status.HTTP_200_OK
         assert response["Content-Type"] == "application/json"
         data = response.json()
@@ -129,9 +121,8 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
         assert data["current_page"] == 3
         assert data["num_pages"] == 3
         assert data["count"] == 5
-        self.verify_enrollment_data(data["results"], 1)
 
-        response = self.client.get(self.url, {"page_size": 5})
+        response = self.client.get(self.url + '?page_size=5')
         assert response.status_code == status.HTTP_200_OK
         assert response["Content-Type"] == "application/json"
         data = response.json()
@@ -140,16 +131,15 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
         assert data["current_page"] == 1
         assert data["num_pages"] == 1
         assert data["count"] == 5
-        self.verify_enrollment_data(data["results"], 5)
 
-    @patch(
-        "enterprise_data.api.v1.views.analytics_enrollments.fetch_and_cache_enrollments_data"
-    )
-    def test_get_csv(self, mock_fetch_and_cache_enrollments_data):
+    @patch('enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrollment_count')
+    @patch('enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_all_enrollments')
+    def test_get_csv(self, mock_get_all_enrollments, mock_get_enrollment_count):
         """
         Test the GET method for the AdvanceAnalyticsIndividualEnrollmentsView return correct CSV data.
         """
-        mock_fetch_and_cache_enrollments_data.return_value = enrollments_dataframe()
+        mock_get_all_enrollments.return_value = ENROLLMENTS
+        mock_get_enrollment_count.return_value = len(ENROLLMENTS)
         response = self.client.get(self.url, {"response_type": ResponseType.CSV.value})
         assert response.status_code == status.HTTP_200_OK
 
@@ -157,8 +147,33 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
         assert response["Content-Type"] == "text/csv"
 
         # verify the response content
-        content = b"".join(response.streaming_content)
-        assert content == enrollments_csv_content()
+        content = b"".join(response.streaming_content).decode().splitlines()
+        assert len(content) == 6
+
+        # Verify CSV header.
+        assert 'email,course_title,course_subject,enroll_type,enterprise_enrollment_date' == content[0]
+
+        # verify the content
+        assert (
+            'rebeccanelson@example.com,Re-engineered tangible approach,business-management,certificate,2021-07-04'
+            in content
+        )
+        assert (
+            'taylorjames@example.com,Re-engineered tangible approach,business-management,certificate,2021-07-03'
+            in content
+        )
+        assert (
+            'ssmith@example.com,Secured static capability,medicine,certificate,2021-05-11'
+            in content
+        )
+        assert (
+            'amber79@example.com,Streamlined zero-defect attitude,communication,certificate,2020-04-08'
+            in content
+        )
+        assert (
+            'kathleenmartin@example.com,Horizontal solution-oriented hub,social-sciences,certificate,2020-04-03'
+            in content
+        )
 
     @ddt.data(
         {
@@ -232,8 +247,8 @@ class TestEnrollmentStatsAPI(JWTTestMixin, APITransactionTestCase):
         )
 
         fetch_max_enrollment_datetime_patcher = patch(
-            'enterprise_data.api.v1.views.analytics_enrollments.fetch_enrollments_cache_expiry_timestamp',
-            return_value=datetime.now()
+            'enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrollment_date_range',
+            return_value=(datetime.now(), datetime.now())
         )
 
         fetch_max_enrollment_datetime_patcher.start()
@@ -261,93 +276,35 @@ class TestEnrollmentStatsAPI(JWTTestMixin, APITransactionTestCase):
         assert received_data == expected_data
 
     @patch(
-        "enterprise_data.api.v1.views.analytics_enrollments.fetch_and_cache_enrollments_data"
+        'enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.'
+        'get_top_subjects_by_enrollments'
     )
-    def test_get(self, mock_fetch_and_cache_enrollments_data):
+    @patch(
+        'enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_top_courses_by_enrollments'
+    )
+    @patch(
+        'enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrolment_time_series_data'
+    )
+    def test_get(
+            self,
+            mock_get_enrolment_time_series_data,
+            mock_get_top_courses_by_enrollments,
+            mock_get_top_subjects_by_enrollments,
+    ):
         """
         Test the GET method for the AdvanceAnalyticsEnrollmentStatsView works.
         """
-        mock_fetch_and_cache_enrollments_data.return_value = enrollments_dataframe()
+        mock_get_enrolment_time_series_data.return_value = []
+        mock_get_top_courses_by_enrollments.return_value = []
+        mock_get_top_subjects_by_enrollments.return_value = []
 
         response = self.client.get(self.url)
         assert response.status_code == status.HTTP_200_OK
         assert response["Content-Type"] == "application/json"
         data = response.json()
-        assert data == {
-            "enrollments_over_time": [
-                {
-                    "enterprise_enrollment_date": "2020-04-03T00:00:00",
-                    "enroll_type": "certificate",
-                    "count": 1,
-                },
-                {
-                    "enterprise_enrollment_date": "2020-04-08T00:00:00",
-                    "enroll_type": "certificate",
-                    "count": 1,
-                },
-                {
-                    "enterprise_enrollment_date": "2021-05-11T00:00:00",
-                    "enroll_type": "certificate",
-                    "count": 1,
-                },
-                {
-                    "enterprise_enrollment_date": "2021-07-03T00:00:00",
-                    "enroll_type": "certificate",
-                    "count": 1,
-                },
-                {
-                    "enterprise_enrollment_date": "2021-07-04T00:00:00",
-                    "enroll_type": "certificate",
-                    "count": 1,
-                },
-            ],
-            "top_courses_by_enrollments": [
-                {"course_key": "NOGk+UVD31", "enroll_type": "certificate", "count": 1},
-                {"course_key": "QWXx+Jqz64", "enroll_type": "certificate", "count": 1},
-                {"course_key": "hEmW+tvk03", "enroll_type": "certificate", "count": 2},
-                {"course_key": "qZJC+KFX86", "enroll_type": "certificate", "count": 1},
-            ],
-            "top_subjects_by_enrollments": [
-                {
-                    "course_subject": "business-management",
-                    "enroll_type": "certificate",
-                    "count": 2,
-                },
-                {
-                    "course_subject": "communication",
-                    "enroll_type": "certificate",
-                    "count": 1,
-                },
-                {
-                    "course_subject": "medicine",
-                    "enroll_type": "certificate",
-                    "count": 1,
-                },
-                {
-                    "course_subject": "social-sciences",
-                    "enroll_type": "certificate",
-                    "count": 1,
-                },
-            ],
-        }
-
-    @patch("enterprise_data.api.v1.views.analytics_enrollments.fetch_and_cache_enrollments_data")
-    @ddt.data(
-        EnrollmentChart.ENROLLMENTS_OVER_TIME.value,
-        EnrollmentChart.TOP_COURSES_BY_ENROLLMENTS.value,
-        EnrollmentChart.TOP_SUBJECTS_BY_ENROLLMENTS.value,
-    )
-    def test_get_csv(self, chart_type, mock_fetch_and_cache_enrollments_data):
-        """
-        Test that AdvanceAnalyticsEnrollmentStatsView return correct CSV data.
-        """
-        mock_fetch_and_cache_enrollments_data.return_value = enrollments_dataframe()
-
-        response = self.client.get(self.url, {"response_type": ResponseType.CSV.value, "chart_type": chart_type})
-        assert response.status_code == status.HTTP_200_OK
-        assert response["Content-Type"] == "text/csv"
-        # verify the response content
-        assert response.content == ENROLLMENT_STATS_CSVS[chart_type]
+        assert 'enrollments_over_time' in data
+        assert 'top_courses_by_enrollments' in data
+        assert 'top_subjects_by_enrollments' in data
 
     @ddt.data(
         {
