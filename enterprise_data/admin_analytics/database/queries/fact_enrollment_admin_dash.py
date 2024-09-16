@@ -96,10 +96,8 @@ class FactEnrollmentAdminDashQueries:
         """
         # Some local environments raise error when course_title is added in SELECT without GROUP BY.
         # If you face this issue, you can remove course_title from SELECT.
-
-        # TODO: Re-add course_title after testing.
         return f"""
-            SELECT course_key, enroll_type, count(course_key) as enrollment_count
+            SELECT course_key, course_title , enroll_type, count(course_key) as enrollment_count
             FROM fact_enrollment_admin_dash
             WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
                 enterprise_enrollment_date BETWEEN %(start_date)s AND %(end_date)s
