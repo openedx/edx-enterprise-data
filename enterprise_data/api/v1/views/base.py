@@ -92,7 +92,7 @@ class AnalyticsPaginationMixin:
             (Response): The pagination data.
         """
         page_count = math.ceil(total_count / page_size)
-        if page <= 0 or page > page_count:
+        if page_count > 0 and (page <= 0 or page > page_count):
             raise NotFound('Invalid page.')
 
         return Response({

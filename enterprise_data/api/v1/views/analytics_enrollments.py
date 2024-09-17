@@ -43,6 +43,9 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
         """
         Get individual enrollments data for the enterprise.
         """
+        # Remove hyphens from the UUID
+        enterprise_uuid = enterprise_uuid.replace('-', '')
+
         serializer = AdvanceAnalyticsQueryParamSerializer(data=request.GET)
         serializer.is_valid(raise_exception=True)
         min_enrollment_date, _ = FactEnrollmentAdminDashTable().get_enrollment_date_range(
@@ -122,6 +125,9 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
         2. `top_courses_by_enrollments`: This will show the top courses by enrollments.
         3. `top_subjects_by_enrollments`: This will show the top subjects by enrollments.
         """
+        # Remove hyphens from the UUID
+        enterprise_uuid = enterprise_uuid.replace('-', '')
+
         serializer = AdvanceAnalyticsEnrollmentStatsSerializer(data=request.GET)
         serializer.is_valid(raise_exception=True)
 

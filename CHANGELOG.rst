@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[8.12.1] - 2024-09-16
+---------------------
+  * fix: Remove hyphens from enterprise customer UUID before database query.
+
 [8.12.0] - 2024-09-06
 ---------------------
   * refactor: Performance optimizations for enrollments related API endpoints.
