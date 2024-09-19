@@ -537,3 +537,59 @@ def engagements_csv_content():
         b'paul77@example.org,Synergized reciprocal encoding,2021-07-26,business-management,4.4\r\n'
         b'samanthaclarke@example.org,Synergized reciprocal encoding,2021-07-19,business-management,0.0\r\n'
     )
+
+
+TOP_SKILLS = [
+    {
+        "skill_name": "Python (Programming Language)",
+        "skill_type": "Specialized Skill",
+        "enrolls": 19027.0,
+        "completions": 3004.0
+    },
+    {
+        "skill_name": "Data Science",
+        "skill_type": "Specialized Skill",
+        "enrolls": 13756.0,
+        "completions": 1517.0
+    },
+    {
+        "skill_name": "Algorithms",
+        "skill_type": "Specialized Skill",
+        "enrolls": 12776.0,
+        "completions": 1640.0
+    },
+]
+TOP_SKILLS_BY_ENROLLMENTS = [
+    {
+        "skill_name": "Python (Programming Language)",
+        "subject_name": "business-management",
+        "count": 313.0
+    },
+    {
+        "skill_name": "Machine Learning",
+        "subject_name": "business-management",
+        "count": 442.0
+    },
+    {
+        "skill_name": "Computer Science",
+        "subject_name": "business-management",
+        "count": 39.0
+    },
+]
+TOP_SKILLS_BY_COMPLETIONS = [
+    {
+        "skill_name": "Python (Programming Language)",
+        "subject_name": "business-management",
+        "count": 21.0
+    },
+    {
+        "skill_name": "SQL (Programming Language)",
+        "subject_name": "business-management",
+        "count": 11.0
+    },
+    {
+        "skill_name": "Algorithms",
+        "subject_name": "business-management",
+        "count": 15.0
+    },
+]
