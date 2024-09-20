@@ -82,7 +82,7 @@ class LeaderboardCSVRenderer(CSVStreamingRenderer):
     header = [
         'email',
         'learning_time_hours',
-        'daily_sessions',
+        'sessions',
         'average_session_length',
         'course_completions',
     ]

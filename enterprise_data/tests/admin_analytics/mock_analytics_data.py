@@ -351,7 +351,7 @@ def engagements_dataframe():
 def leaderboard_csv_content():
     """Return the CSV content of leaderboard."""
     return (
-        b'email,learning_time_hours,daily_sessions,average_session_length,course_completions\r\n'
+        b'email,learning_time_hours,sessions,average_session_length,course_completions\r\n'
         b'paul77@example.org,4.4,1,4.4,\r\nseth57@example.org,2.7,1,2.7,\r\n'
         b'weaverpatricia@example.net,2.6,1,2.6,\r\nwebertodd@example.com,1.5,1,1.5,\r\n'
         b'yferguson@example.net,1.3,1,1.3,\r\nyallison@example.org,1.2,1,1.2,\r\n'
@@ -364,96 +364,84 @@ def leaderboard_csv_content():
 LEADERBOARD_RESPONSE = [
     {
         "email": "paul77@example.org",
-        "daily_sessions": 1,
-        "learning_time_seconds": 15753,
+        "sessions": 1,
         "learning_time_hours": 4.4,
         "average_session_length": 4.4,
         "course_completions": None,
     },
     {
         "email": "seth57@example.org",
-        "daily_sessions": 1,
-        "learning_time_seconds": 9898,
+        "sessions": 1,
         "learning_time_hours": 2.7,
         "average_session_length": 2.7,
         "course_completions": None,
     },
     {
         "email": "weaverpatricia@example.net",
-        "daily_sessions": 1,
-        "learning_time_seconds": 9441,
+        "sessions": 1,
         "learning_time_hours": 2.6,
         "average_session_length": 2.6,
         "course_completions": None,
     },
     {
         "email": "webertodd@example.com",
-        "daily_sessions": 1,
-        "learning_time_seconds": 5285,
+        "sessions": 1,
         "learning_time_hours": 1.5,
         "average_session_length": 1.5,
         "course_completions": None,
     },
     {
         "email": "yferguson@example.net",
-        "daily_sessions": 1,
-        "learning_time_seconds": 4747,
+        "sessions": 1,
         "learning_time_hours": 1.3,
         "average_session_length": 1.3,
         "course_completions": None,
     },
     {
         "email": "yallison@example.org",
-        "daily_sessions": 1,
-        "learning_time_seconds": 4335,
+        "sessions": 1,
         "learning_time_hours": 1.2,
         "average_session_length": 1.2,
         "course_completions": None,
     },
     {
         "email": "padillamichelle@example.org",
-        "daily_sessions": 1,
-        "learning_time_seconds": 3724,
+        "sessions": 1,
         "learning_time_hours": 1.0,
         "average_session_length": 1.0,
         "course_completions": None,
     },
     {
         "email": "caseyjohnny@example.com",
-        "daily_sessions": 0,
-        "learning_time_seconds": 0,
+        "sessions": 0,
         "learning_time_hours": 0.0,
         "average_session_length": 0.0,
         "course_completions": None,
     },
     {
         "email": "crystal86@example.net",
-        "daily_sessions": 0,
-        "learning_time_seconds": 0,
+        "sessions": 0,
         "learning_time_hours": 0.0,
         "average_session_length": 0.0,
         "course_completions": None,
     },
     {
         "email": "graceperez@example.com",
-        "daily_sessions": 0,
-        "learning_time_seconds": 21,
+        "sessions": 0,
         "learning_time_hours": 0.0,
         "average_session_length": 0.0,
         "course_completions": None,
     },
     {
         "email": "mackwilliam@example.com",
-        "daily_sessions": 0,
-        "learning_time_seconds": 0,
+        "sessions": 0,
         "learning_time_hours": 0.0,
         "average_session_length": 0.0,
         "course_completions": None,
     },
     {
         "email": "samanthaclarke@example.org",
-        "daily_sessions": 0,
-        "learning_time_seconds": 29,
+        "sessions": 0,
         "learning_time_hours": 0.0,
         "average_session_length": 0.0,
         "course_completions": None,

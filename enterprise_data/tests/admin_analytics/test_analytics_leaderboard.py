@@ -12,8 +12,6 @@ from enterprise_data.admin_analytics.constants import ResponseType
 from enterprise_data.tests.admin_analytics.mock_analytics_data import (
     ENROLLMENTS,
     LEADERBOARD_RESPONSE,
-    engagements_dataframe,
-    enrollments_dataframe,
     leaderboard_csv_content,
 )
 from enterprise_data.tests.mixins import JWTTestMixin
@@ -47,22 +45,12 @@ class TestLeaderboardAPI(JWTTestMixin, APITransactionTestCase):
             "v1:enterprise-admin-analytics-leaderboard",
             kwargs={"enterprise_uuid": self.enterprise_uuid},
         )
-
         fetch_max_enrollment_datetime_patcher = patch(
-            'enterprise_data.api.v1.views.analytics_leaderboard.fetch_enrollments_cache_expiry_timestamp',
-            return_value=datetime.now()
+            'enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrollment_date_range',
+            return_value=(datetime.now(), datetime.now())
         )
-
         fetch_max_enrollment_datetime_patcher.start()
         self.addCleanup(fetch_max_enrollment_datetime_patcher.stop)
-
-        fetch_max_engagement_datetime_patcher = patch(
-            'enterprise_data.api.v1.views.analytics_leaderboard.fetch_engagements_cache_expiry_timestamp',
-            return_value=datetime.now()
-        )
-
-        fetch_max_engagement_datetime_patcher.start()
-        self.addCleanup(fetch_max_engagement_datetime_patcher.stop)
 
     def verify_enrollment_data(self, results, results_count):
         """Verify the received enrollment data."""
@@ -87,19 +75,12 @@ class TestLeaderboardAPI(JWTTestMixin, APITransactionTestCase):
         expected_data = sorted(filtered_data, key=lambda x: x["email"])
         assert received_data == expected_data
 
-    @patch(
-        "enterprise_data.api.v1.views.analytics_leaderboard.fetch_and_cache_enrollments_data"
-    )
-    @patch(
-        "enterprise_data.api.v1.views.analytics_leaderboard.fetch_and_cache_engagements_data"
-    )
-    def test_get(self, mock_fetch_and_cache_engagements_data, mock_fetch_and_cache_enrollments_data):
+    @patch('enterprise_data.admin_analytics.database.tables.FactEngagementAdminDashTable.get_leaderboard')
+    def test_get(self, mock_leaderboard):
         """
         Test the GET method for the AdvanceAnalyticsLeaderboardView works.
         """
-        mock_fetch_and_cache_enrollments_data.return_value = enrollments_dataframe()
-        mock_fetch_and_cache_engagements_data.return_value = engagements_dataframe()
-
+        mock_leaderboard.return_value = LEADERBOARD_RESPONSE
         response = self.client.get(self.url, {"page_size": 2})
         assert response.status_code == status.HTTP_200_OK
         assert response["Content-Type"] == "application/json"
@@ -112,16 +93,14 @@ class TestLeaderboardAPI(JWTTestMixin, APITransactionTestCase):
         assert data["results"] == [
             {
                 "email": "paul77@example.org",
-                "daily_sessions": 1,
-                "learning_time_seconds": 15753,
+                "sessions": 1,
                 "learning_time_hours": 4.4,
                 "average_session_length": 4.4,
                 "course_completions": None,
             },
             {
                 "email": "seth57@example.org",
-                "daily_sessions": 1,
-                "learning_time_seconds": 9898,
+                "sessions": 1,
                 "learning_time_hours": 2.7,
                 "average_session_length": 2.7,
                 "course_completions": None,
@@ -139,19 +118,12 @@ class TestLeaderboardAPI(JWTTestMixin, APITransactionTestCase):
         assert data["count"] == 12
         assert data["results"] == LEADERBOARD_RESPONSE
 
-    @patch(
-        "enterprise_data.api.v1.views.analytics_leaderboard.fetch_and_cache_enrollments_data"
-    )
-    @patch(
-        "enterprise_data.api.v1.views.analytics_leaderboard.fetch_and_cache_engagements_data"
-    )
-    def test_get_csv(self, mock_fetch_and_cache_engagements_data, mock_fetch_and_cache_enrollments_data):
+    @patch('enterprise_data.admin_analytics.database.tables.FactEngagementAdminDashTable.get_leaderboard')
+    def test_get_csv(self, mock_leaderboard):
         """
         Test the GET method for the AdvanceAnalyticsIndividualEnrollmentsView return correct CSV data.
         """
-        mock_fetch_and_cache_enrollments_data.return_value = enrollments_dataframe()
-        mock_fetch_and_cache_engagements_data.return_value = engagements_dataframe()
-
+        mock_leaderboard.return_value = LEADERBOARD_RESPONSE
         response = self.client.get(self.url, {"response_type": ResponseType.CSV.value})
         assert response.status_code == status.HTTP_200_OK
 

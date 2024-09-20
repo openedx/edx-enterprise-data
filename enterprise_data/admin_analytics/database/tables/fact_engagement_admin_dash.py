@@ -152,3 +152,25 @@ class FactEngagementAdminDashTable(BaseTable):
             },
             as_dict=True,
         )
+
+    def get_leaderboard(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
+        """
+        Get the leaderboard for the given enterprise customer.
+
+        Arguments:
+            enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
+            start_date (date): The start date.
+            end_date (date): The end date.
+
+        Returns:
+            list[dict]: The leaderboard.
+        """
+        results = run_query(
+            query=self.queries.get_leaderboard_query(),
+            params={
+                'enterprise_customer_uuid': enterprise_customer_uuid,
+                'start_date': start_date,
+                'end_date': end_date,
+            }
+        )
+        return results

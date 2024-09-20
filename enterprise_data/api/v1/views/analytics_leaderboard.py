@@ -11,16 +11,10 @@ from rest_framework.views import APIView
 from django.http import StreamingHttpResponse
 
 from enterprise_data.admin_analytics.constants import ResponseType
-from enterprise_data.admin_analytics.utils import (
-    fetch_and_cache_engagements_data,
-    fetch_and_cache_enrollments_data,
-    fetch_engagements_cache_expiry_timestamp,
-    fetch_enrollments_cache_expiry_timestamp,
-)
+from enterprise_data.admin_analytics.database.tables import FactEngagementAdminDashTable, FactEnrollmentAdminDashTable
 from enterprise_data.api.v1.paginators import AdvanceAnalyticsPagination
 from enterprise_data.api.v1.serializers import AdvanceAnalyticsQueryParamSerializer
 from enterprise_data.renderers import LeaderboardCSVRenderer
-from enterprise_data.utils import date_filter
 
 LOGGER = getLogger(__name__)
 
@@ -36,61 +30,17 @@ class AdvanceAnalyticsLeaderboardView(APIView):
     @permission_required('can_access_enterprise', fn=lambda request, enterprise_uuid: enterprise_uuid)
     def get(self, request, enterprise_uuid):
         """Get leaderboard data"""
+        enterprise_uuid = enterprise_uuid.replace('-', '')
         serializer = AdvanceAnalyticsQueryParamSerializer(data=request.GET)
         serializer.is_valid(raise_exception=True)
 
-        enrollments_cache_expiry = fetch_enrollments_cache_expiry_timestamp()
-        enrollments_df = fetch_and_cache_enrollments_data(enterprise_uuid, enrollments_cache_expiry)
+        if (start_date := serializer.data.get('start_date')) is None:
+            start_date, _ = FactEnrollmentAdminDashTable().get_enrollment_date_range(enterprise_uuid)
 
-        engagements_cache_expiry = fetch_engagements_cache_expiry_timestamp()
-        engagements_df = fetch_and_cache_engagements_data(enterprise_uuid, engagements_cache_expiry)
-
-        start_date = serializer.data.get('start_date', enrollments_df.enterprise_enrollment_date.min())
         end_date = serializer.data.get('end_date', datetime.now())
-        response_type = serializer.data.get('response_type', ResponseType.JSON.value)
-
-        LOGGER.info(
-            "Leaderboard data requested for enterprise [%s] from [%s] to [%s]",
-            enterprise_uuid,
-            start_date,
-            end_date,
-        )
-
-        # only include learners who have passed the course
-        enrollments_df = enrollments_df[enrollments_df["has_passed"] == 1]
-
-        # filter enrollments by date
-        enrollments_df = date_filter(start_date, end_date, enrollments_df, "passed_date")
-
-        completions = enrollments_df.groupby(["email"]).size().reset_index()
-        completions.columns = ["email", "course_completions"]
-
-        # filter engagements by date
-        engagements_df = date_filter(start_date, end_date, engagements_df, "activity_date")
-
-        engage = (
-            engagements_df.groupby(["email"])
-            .agg({"is_engaged": ["sum"], "learning_time_seconds": ["sum"]})
-            .reset_index()
-        )
-        engage.columns = ["email", "daily_sessions", "learning_time_seconds"]
-        engage["learning_time_hours"] = round(
-            engage["learning_time_seconds"].astype("float") / 60 / 60, 1
-        )
-
-        # if daily_sessions is 0, set average_session_length to 0 becuase otherwise it will be `inf`
-        engage["average_session_length"] = np.where(
-            engage["daily_sessions"] == 0,
-            0,
-            round(engage["learning_time_hours"] / engage["daily_sessions"].astype("float"), 1)
-        )
-
-        leaderboard_df = engage.merge(completions, on="email", how="left")
-        leaderboard_df = leaderboard_df.sort_values(
-            by=["learning_time_hours", "daily_sessions", "course_completions"],
-            ascending=[False, False, False],
-        )
-
+        response_type = request.query_params.get('response_type', ResponseType.JSON.value)
+        leaderboard = FactEngagementAdminDashTable().get_leaderboard(enterprise_uuid, start_date, end_date)
+        leaderboard_df = pd.DataFrame(leaderboard)
         # move the aggregated row with email 'null' to the end of the table
         idx = leaderboard_df.index[leaderboard_df['email'] == 'null']
         leaderboard_df.loc[idx, 'email'] = 'learners who have not shared consent'
@@ -99,20 +49,13 @@ class AdvanceAnalyticsLeaderboardView(APIView):
         # convert `nan` values to `None` because `nan` is not JSON serializable
         leaderboard_df = leaderboard_df.replace(np.nan, None)
 
-        LOGGER.info(
-            "Leaderboard data prepared for enterprise [%s] from [%s] to [%s]",
-            enterprise_uuid,
-            start_date,
-            end_date,
-        )
-
         if response_type == ResponseType.CSV.value:
             filename = f"""Leaderboard, {start_date} - {end_date}.csv"""
             leaderboard_df = leaderboard_df[
                 [
                     "email",
                     "learning_time_hours",
-                    "daily_sessions",
+                    "sessions",
                     "average_session_length",
                     "course_completions",
                 ]

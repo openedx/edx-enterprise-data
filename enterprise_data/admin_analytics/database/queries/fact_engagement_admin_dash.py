@@ -109,3 +109,46 @@ class FactEngagementAdminDashQueries:
             GROUP BY activity_date, enroll_type
             ORDER BY activity_date;
         """
+
+    @staticmethod
+    def get_leaderboard_query():
+        """
+        Get the query to fetch the leaderboard.
+        """
+        return """
+            WITH Engagement AS (
+                SELECT
+                    email,
+                    ROUND(SUM(learning_time_seconds) / 3600, 1) as learning_time_hours,
+                    SUM(is_engaged) as sessions,
+                    CASE
+                        WHEN SUM(is_engaged) = 0 THEN 0.0
+                        ELSE ROUND(SUM(learning_time_seconds) / 3600 / SUM(is_engaged), 1)
+                    END AS average_session_length
+                FROM fact_enrollment_engagement_day_admin_dash
+                WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
+                    (activity_date BETWEEN %(start_date)s AND %(end_date)s) AND
+                    is_engaged = 1
+                GROUP BY email
+            ),
+            Completions AS (
+                SELECT email, count(course_key) as course_completions
+                FROM fact_enrollment_admin_dash
+                WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
+                    (passed_date BETWEEN %(start_date)s AND %(end_date)s) AND has_passed = 1
+                GROUP BY email
+            )
+            SELECT
+                Engagement.email,
+                Engagement.learning_time_hours,
+                Engagement.sessions,
+                Engagement.average_session_length,
+                Completions.course_completions
+            FROM Engagement
+            LEFT JOIN Completions
+            ON Engagement.email = Completions.email
+            ORDER BY
+                Engagement.learning_time_hours desc,
+                Engagement.sessions desc,
+                Completions.course_completions desc
+        """
