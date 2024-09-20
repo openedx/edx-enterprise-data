@@ -2,9 +2,6 @@
 
 import pandas as pd
 
-from enterprise_data.admin_analytics.constants import EngagementChart, EnrollmentChart
-from enterprise_data.admin_analytics.utils import ChartType
-
 ENROLLMENTS = [
     {
         "enterprise_customer_name": "Hill Ltd",
@@ -138,6 +135,7 @@ ENGAGEMENTS = [
         "is_engaged_forum": 0,
         "is_engaged_problem": 1,
         "is_active": 1,
+        "learning_time_hours": 3724/3600,
         "learning_time_seconds": 3724,
     },
     {
@@ -154,6 +152,7 @@ ENGAGEMENTS = [
         "is_engaged_forum": 0,
         "is_engaged_problem": 1,
         "is_active": 1,
+        "learning_time_hours": 4335/3600,
         "learning_time_seconds": 4335,
     },
     {
@@ -170,6 +169,7 @@ ENGAGEMENTS = [
         "is_engaged_forum": 0,
         "is_engaged_problem": 1,
         "is_active": 1,
+        "learning_time_hours": 9441/3600,
         "learning_time_seconds": 9441,
     },
     {
@@ -186,6 +186,7 @@ ENGAGEMENTS = [
         "is_engaged_forum": 1,
         "is_engaged_problem": 1,
         "is_active": 1,
+        "learning_time_hours": 9898/3600,
         "learning_time_seconds": 9898,
     },
     {
@@ -202,6 +203,7 @@ ENGAGEMENTS = [
         "is_engaged_forum": 0,
         "is_engaged_problem": 0,
         "is_active": 1,
+        "learning_time_hours": 0,
         "learning_time_seconds": 0,
     },
     {
@@ -218,6 +220,7 @@ ENGAGEMENTS = [
         "is_engaged_forum": 0,
         "is_engaged_problem": 0,
         "is_active": 1,
+        "learning_time_hours": 21/3600,
         "learning_time_seconds": 21,
     },
     {
@@ -234,6 +237,7 @@ ENGAGEMENTS = [
         "is_engaged_forum": 0,
         "is_engaged_problem": 1,
         "is_active": 1,
+        "learning_time_hours": 4747/3600,
         "learning_time_seconds": 4747,
     },
     {
@@ -250,6 +254,7 @@ ENGAGEMENTS = [
         "is_engaged_forum": 0,
         "is_engaged_problem": 0,
         "is_active": 1,
+        "learning_time_hours": 0,
         "learning_time_seconds": 0,
     },
     {
@@ -266,6 +271,7 @@ ENGAGEMENTS = [
         "is_engaged_forum": 1,
         "is_engaged_problem": 1,
         "is_active": 1,
+        "learning_time_hours": 5285/3600,
         "learning_time_seconds": 5285,
     },
     {
@@ -282,6 +288,7 @@ ENGAGEMENTS = [
         "is_engaged_forum": 0,
         "is_engaged_problem": 0,
         "is_active": 1,
+        "learning_time_hours": 0,
         "learning_time_seconds": 0,
     },
     {
@@ -298,6 +305,7 @@ ENGAGEMENTS = [
         "is_engaged_forum": 1,
         "is_engaged_problem": 1,
         "is_active": 1,
+        "learning_time_hours": 15753/3600,
         "learning_time_seconds": 15753,
     },
     {
@@ -314,54 +322,10 @@ ENGAGEMENTS = [
         "is_engaged_forum": 0,
         "is_engaged_problem": 0,
         "is_active": 1,
+        "learning_time_hours": 29/3600,
         "learning_time_seconds": 29,
     }
 ]
-
-ENROLLMENT_STATS_CSVS = {
-    EnrollmentChart.ENROLLMENTS_OVER_TIME.value: (
-        b'enterprise_enrollment_date,certificate\n'
-        b'2020-04-03,1\n'
-        b'2020-04-08,1\n'
-        b'2021-05-11,1\n'
-        b'2021-07-03,1\n'
-        b'2021-07-04,1\n'
-    ),
-    EnrollmentChart.TOP_COURSES_BY_ENROLLMENTS.value: (
-        b'course_key,course_title,certificate\n'
-        b'NOGk+UVD31,Streamlined zero-defect attitude,1\n'
-        b'QWXx+Jqz64,Horizontal solution-oriented hub,1\n'
-        b'hEmW+tvk03,Re-engineered tangible approach,2\n'
-        b'qZJC+KFX86,Secured static capability,1\n'
-    ),
-    EnrollmentChart.TOP_SUBJECTS_BY_ENROLLMENTS.value: (
-        b'course_subject,certificate\nbusiness-management,2\ncommunication,1\nmedicine,1\nsocial-sciences,1\n'
-    )
-}
-
-ENGAGEMENT_STATS_CSVS = {
-    EngagementChart.ENGAGEMENTS_OVER_TIME.value: (
-        b'activity_date,certificate\n'
-        b'2021-07-19,0.0\n'
-        b'2021-07-26,4.4\n'
-        b'2021-07-27,1.2\n'
-        b'2021-08-05,3.6\n'
-        b'2021-08-21,2.7\n'
-        b'2021-09-02,1.3\n'
-        b'2021-09-21,1.5\n'
-        b'2022-05-17,0.0\n'
-    ),
-    EngagementChart.TOP_COURSES_BY_ENGAGEMENTS.value: (
-        b'course_key,course_title,certificate\n'
-        b'Kcpr+XoR30,Assimilated even-keeled focus group,0.0\n'
-        b'luGg+KNt30,Synergized reciprocal encoding,14.786944444444444\n'
-    ),
-    EngagementChart.TOP_SUBJECTS_BY_ENGAGEMENTS.value: (
-        b'course_subject,certificate\n'
-        b'business-management,14.786944444444444\n'
-        b'engineering,0.0\n'
-    )
-}
 
 
 def enrollments_dataframe():
@@ -386,16 +350,6 @@ def engagements_dataframe():
 
 def leaderboard_csv_content():
     """Return the CSV content of leaderboard."""
-    # return (
-    #     b'email,learning_time_hours,daily_sessions,average_session_length,course_completions\r\n'
-    #     b'paul77@example.org,4.4,1,4.4,\r\nseth57@example.org,2.7,1,2.7,\r\n'
-    #     b'weaverpatricia@example.net,2.6,1,2.6,\r\nwebertodd@example.com,1.5,1,1.5,\r\n'
-    #     b'yferguson@example.net,1.3,1,1.3,\r\nyallison@example.org,1.2,1,1.2,\r\n'
-    #     b'padillamichelle@example.org,1.0,1,1.0,\r\ncaseyjohnny@example.com,0.0,0,,\r\n'
-    #     b'crystal86@example.net,0.0,0,,\r\ngraceperez@example.com,0.0,0,,\r\n'
-    #     b'mackwilliam@example.com,0.0,0,,\r\nsamanthaclarke@example.org,0.0,0,,\r\n'
-    # )
-
     return (
         b'email,learning_time_hours,daily_sessions,average_session_length,course_completions\r\n'
         b'paul77@example.org,4.4,1,4.4,\r\nseth57@example.org,2.7,1,2.7,\r\n'
@@ -505,38 +459,6 @@ LEADERBOARD_RESPONSE = [
         "course_completions": None,
     },
 ]
-
-COMPLETIONS_STATS_CSVS = {
-    ChartType.COMPLETIONS_OVER_TIME.value: (
-        b'passed_date,certificate\n'
-        b'2021-08-25,1\n'
-        b'2021-09-01,2\n'
-    ),
-    ChartType.TOP_COURSES_BY_COMPLETIONS.value: (
-        b'course_key,course_title,certificate\n'
-        b'hEmW+tvk03,Re-engineered tangible approach,2\n'
-    ),
-    ChartType.TOP_SUBJECTS_BY_COMPLETIONS.value: (
-        b'course_subject,certificate\n'
-        b'business-management,2\n'
-    )
-}
-
-
-def engagements_csv_content():
-    """Return the CSV content of engagements."""
-    return (
-        b'email,course_title,activity_date,course_subject,learning_time_hours\r\n'
-        b'graceperez@example.com,Synergized reciprocal encoding,2022-05-17,business-management,0.0\r\n'
-        b'webertodd@example.com,Synergized reciprocal encoding,2021-09-21,business-management,1.5\r\n'
-        b'yferguson@example.net,Synergized reciprocal encoding,2021-09-02,business-management,1.3\r\n'
-        b'seth57@example.org,Synergized reciprocal encoding,2021-08-21,business-management,2.7\r\n'
-        b'padillamichelle@example.org,Synergized reciprocal encoding,2021-08-05,business-management,1.0\r\n'
-        b'weaverpatricia@example.net,Synergized reciprocal encoding,2021-08-05,business-management,2.6\r\n'
-        b'yallison@example.org,Synergized reciprocal encoding,2021-07-27,business-management,1.2\r\n'
-        b'paul77@example.org,Synergized reciprocal encoding,2021-07-26,business-management,4.4\r\n'
-        b'samanthaclarke@example.org,Synergized reciprocal encoding,2021-07-19,business-management,0.0\r\n'
-    )
 
 
 TOP_SKILLS = [

@@ -15,6 +15,11 @@ Unreleased
 ----------
 
 =========================
+
+[9.1.0] - 2024-09-23
+---------------------
+  * refactor: Performance optimizations for engagement and completions related API endpoints.
+
 [9.0.1] - 2024-09-23
 ---------------------
   * revert: Revert "feat!: Python 3.12 Upgrade"

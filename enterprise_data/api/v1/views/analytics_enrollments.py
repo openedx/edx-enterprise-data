@@ -15,10 +15,7 @@ from django.http import StreamingHttpResponse
 from enterprise_data.admin_analytics.constants import ResponseType
 from enterprise_data.admin_analytics.database.tables import FactEnrollmentAdminDashTable
 from enterprise_data.api.v1.paginators import AdvanceAnalyticsPagination
-from enterprise_data.api.v1.serializers import (
-    AdvanceAnalyticsEnrollmentStatsSerializer,
-    AdvanceAnalyticsQueryParamSerializer,
-)
+from enterprise_data.api.v1.serializers import AdvanceAnalyticsQueryParamSerializer
 from enterprise_data.api.v1.views.base import AnalyticsPaginationMixin
 from enterprise_data.renderers import IndividualEnrollmentsCSVRenderer
 from enterprise_data.utils import timer
@@ -115,7 +112,7 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
             offset += page_size
 
     @permission_required('can_access_enterprise', fn=lambda request, enterprise_uuid: enterprise_uuid)
-    @action(detail=False, methods=['get'], name='Charts Data', url_path='stats')
+    @action(detail=False, methods=['get'], name='Enterprise enrollments data for charts', url_path='stats')
     def stats(self, request, enterprise_uuid):
         """
         Get data to populate enterprise enrollment charts.
@@ -128,7 +125,7 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
         # Remove hyphens from the UUID
         enterprise_uuid = enterprise_uuid.replace('-', '')
 
-        serializer = AdvanceAnalyticsEnrollmentStatsSerializer(data=request.GET)
+        serializer = AdvanceAnalyticsQueryParamSerializer(data=request.GET)
         serializer.is_valid(raise_exception=True)
 
         min_enrollment_date, _ = FactEnrollmentAdminDashTable().get_enrollment_date_range(

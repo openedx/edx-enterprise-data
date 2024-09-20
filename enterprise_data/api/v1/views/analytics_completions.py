@@ -1,5 +1,5 @@
 """
-Views for handling REST endpoints related to Engagements analytics.
+Views for enterprise admin completions analytics.
 """
 
 from datetime import datetime
@@ -14,23 +14,23 @@ from rest_framework.viewsets import ViewSet
 from django.http import StreamingHttpResponse
 
 from enterprise_data.admin_analytics.constants import ResponseType
-from enterprise_data.admin_analytics.database.tables import FactEngagementAdminDashTable, FactEnrollmentAdminDashTable
+from enterprise_data.admin_analytics.database.tables import FactEnrollmentAdminDashTable
 from enterprise_data.api.v1.paginators import AdvanceAnalyticsPagination
 from enterprise_data.api.v1.serializers import AdvanceAnalyticsQueryParamSerializer
 from enterprise_data.api.v1.views.base import AnalyticsPaginationMixin
-from enterprise_data.renderers import IndividualEngagementsCSVRenderer
+from enterprise_data.renderers import IndividualCompletionsCSVRenderer
 from enterprise_data.utils import timer
 
 LOGGER = getLogger(__name__)
 
 
-class AdvanceAnalyticsEngagementView(AnalyticsPaginationMixin, ViewSet):
+class AdvanceAnalyticsCompletionsView(AnalyticsPaginationMixin, ViewSet):
     """
-    View to handle requests for enterprise engagement data.
+    View to handle requests for enterprise completion data.
 
     Here is the list of URLs that are handled by this view:
-    1. `enterprise_data_api_v1.enterprise-learner-engagement-list`: Get individual engagement data.
-    2. `enterprise_data_api_v1.enterprise-learner-engagement-stats`: Get engagement stats data.
+    1. `enterprise_data_api_v1.enterprise-learner-completion-list`: Get individual completion data.
+    2. `enterprise_data_api_v1.enterprise-learner-completion-stats`: Get completion stats data.
     """
     authentication_classes = (JwtAuthentication,)
     pagination_class = AdvanceAnalyticsPagination
@@ -39,7 +39,7 @@ class AdvanceAnalyticsEngagementView(AnalyticsPaginationMixin, ViewSet):
     @permission_required('can_access_enterprise', fn=lambda request, enterprise_uuid: enterprise_uuid)
     def list(self, request, enterprise_uuid):
         """
-        Get individual engagements data for the enterprise.
+        Get individual completions data for the enterprise.
         """
         # Remove hyphens from the UUID
         enterprise_uuid = enterprise_uuid.replace('-', '')
@@ -55,14 +55,14 @@ class AdvanceAnalyticsEngagementView(AnalyticsPaginationMixin, ViewSet):
         end_date = serializer.data.get('end_date', datetime.now())
         page = serializer.data.get('page', 1)
         page_size = serializer.data.get('page_size', 100)
-        engagements = FactEngagementAdminDashTable().get_all_engagements(
+        completions = FactEnrollmentAdminDashTable().get_all_completions(
             enterprise_customer_uuid=enterprise_uuid,
             start_date=start_date,
             end_date=end_date,
             limit=page_size,
             offset=(page - 1) * page_size,
         )
-        total_count = FactEngagementAdminDashTable().get_engagement_count(
+        total_count = FactEnrollmentAdminDashTable().get_completion_count(
             enterprise_customer_uuid=enterprise_uuid,
             start_date=start_date,
             end_date=end_date,
@@ -70,17 +70,17 @@ class AdvanceAnalyticsEngagementView(AnalyticsPaginationMixin, ViewSet):
         response_type = request.query_params.get('response_type', ResponseType.JSON.value)
 
         LOGGER.info(
-            "Individual engagements data requested for enterprise [%s] from [%s] to [%s]",
+            "Individual completions data requested for enterprise [%s] from [%s] to [%s]",
             enterprise_uuid,
             start_date,
             end_date,
         )
 
         if response_type == ResponseType.CSV.value:
-            filename = f"""individual_engagements, {start_date} - {end_date}.csv"""
+            filename = f"""individual_completions, {start_date} - {end_date}.csv"""
 
             return StreamingHttpResponse(
-                IndividualEngagementsCSVRenderer().render(self._stream_serialized_data(
+                IndividualCompletionsCSVRenderer().render(self._stream_serialized_data(
                     enterprise_uuid, start_date, end_date, total_count
                 )),
                 content_type="text/csv",
@@ -89,7 +89,7 @@ class AdvanceAnalyticsEngagementView(AnalyticsPaginationMixin, ViewSet):
 
         return self.get_paginated_response(
             request=request,
-            records=engagements,
+            records=completions,
             page=page,
             page_size=page_size,
             total_count=total_count,
@@ -102,26 +102,26 @@ class AdvanceAnalyticsEngagementView(AnalyticsPaginationMixin, ViewSet):
         """
         offset = 0
         while offset < total_count:
-            engagements = FactEngagementAdminDashTable().get_all_engagements(
+            completions = FactEnrollmentAdminDashTable().get_all_completions(
                 enterprise_customer_uuid=enterprise_uuid,
                 start_date=start_date,
                 end_date=end_date,
                 limit=page_size,
                 offset=offset,
             )
-            yield from engagements
+            yield from completions
             offset += page_size
 
     @permission_required('can_access_enterprise', fn=lambda request, enterprise_uuid: enterprise_uuid)
-    @action(detail=False, methods=['get'], name='Enterprise engagements data for charts', url_path='stats')
+    @action(detail=False, methods=['get'], name='Enterprise completions data for charts', url_path='stats')
     def stats(self, request, enterprise_uuid):
         """
-        Get data to populate enterprise engagement charts.
+        Get data to populate enterprise completion charts.
 
         Here is the list of the charts and their corresponding data:
-        1. `engagement_over_time`: This will show time series data of engagements over time.
-        2. `top_courses_by_engagement`: This will show the top courses by engagements.
-        3. `top_subjects_by_engagement`: This will show the top subjects by engagements.
+        1. `completions_over_time`: This will show time series data of completions over time.
+        2. `top_courses_by_completions`: This will show the top courses by completions.
+        3. `top_subjects_by_completions`: This will show the top subjects by completions.
         """
         # Remove hyphens from the UUID
         enterprise_uuid = enterprise_uuid.replace('-', '')
@@ -135,15 +135,15 @@ class AdvanceAnalyticsEngagementView(AnalyticsPaginationMixin, ViewSet):
         # get values from query params or use default
         start_date = serializer.data.get('start_date', min_enrollment_date)
         end_date = serializer.data.get('end_date', datetime.now())
-        with timer('construct_engagement_all_stats'):
+        with timer('construct_completion_all_stats'):
             data = {
-                'engagement_over_time': FactEngagementAdminDashTable().get_engagement_time_series_data(
+                'completions_over_time': FactEnrollmentAdminDashTable().get_completions_time_series_data(
                     enterprise_uuid, start_date, end_date
                 ),
-                'top_courses_by_engagement': FactEngagementAdminDashTable().get_top_courses_by_engagement(
+                'top_courses_by_completions': FactEnrollmentAdminDashTable().get_top_courses_by_completions(
                     enterprise_uuid, start_date, end_date,
                 ),
-                'top_subjects_by_engagement': FactEngagementAdminDashTable().get_top_subjects_by_engagement(
+                'top_subjects_by_completions': FactEnrollmentAdminDashTable().get_top_subjects_by_completions(
                     enterprise_uuid, start_date, end_date,
                 ),
             }
