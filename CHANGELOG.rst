@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[9.0.0] - 2024-09-23
+---------------------
+  * feat!: Python 3.12 Upgrade. Dropped support for ``Python<3.12``.
+
 [8.13.0] - 2024-09-23
 ---------------------
   * feat: convert the skills pandas code into sql queries for better performance
