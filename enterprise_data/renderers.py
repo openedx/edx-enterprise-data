@@ -45,17 +45,17 @@ class IndividualEnrollmentsCSVRenderer(CSVStreamingRenderer):
     ]
 
 
-class LeaderboardCSVRenderer(CSVStreamingRenderer):
+class IndividualCompletionsCSVRenderer(CSVStreamingRenderer):
     """
-    Custom streaming csv renderer for advance analytics leaderboard data.
+    Custom streaming csv renderer for advance analytics individual completions data.
     """
 
     header = [
         'email',
-        'learning_time_hours',
-        'daily_sessions',
-        'average_session_length',
-        'course_completions',
+        'course_title',
+        'course_subject',
+        'enroll_type',
+        'passed_date',
     ]
 
 
@@ -67,7 +67,22 @@ class IndividualEngagementsCSVRenderer(CSVStreamingRenderer):
     header = [
         'email',
         'course_title',
-        'activity_date',
         'course_subject',
+        'enroll_type',
+        'activity_date',
         'learning_time_hours',
+    ]
+
+
+class LeaderboardCSVRenderer(CSVStreamingRenderer):
+    """
+    Custom streaming csv renderer for advance analytics leaderboard data.
+    """
+
+    header = [
+        'email',
+        'learning_time_hours',
+        'daily_sessions',
+        'average_session_length',
+        'course_completions',
     ]

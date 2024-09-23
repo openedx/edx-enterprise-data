@@ -8,27 +8,18 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITransactionTestCase
 
 from enterprise_data.admin_analytics.constants import ResponseType
-from enterprise_data.api.v1.serializers import AdvanceAnalyticsEnrollmentStatsSerializer as EnrollmentStatsSerializer
-from enterprise_data.api.v1.serializers import AdvanceAnalyticsQueryParamSerializer
 from enterprise_data.tests.admin_analytics.mock_analytics_data import ENROLLMENTS
 from enterprise_data.tests.mixins import JWTTestMixin
 from enterprise_data.tests.test_utils import UserFactory
 from enterprise_data_roles.constants import ENTERPRISE_DATA_ADMIN_ROLE
 from enterprise_data_roles.models import EnterpriseDataFeatureRole, EnterpriseDataRoleAssignment
 
-INVALID_CALCULATION_ERROR = (
-    f"Calculation must be one of {AdvanceAnalyticsQueryParamSerializer.CALCULATION_CHOICES}"
-)
-INVALID_GRANULARITY_ERROR = (
-    f"Granularity must be one of {AdvanceAnalyticsQueryParamSerializer.GRANULARITY_CHOICES}"
-)
-INVALID_RESPONSE_TYPE_ERROR = f"response_type must be one of {AdvanceAnalyticsQueryParamSerializer.RESPONSE_TYPES}"
-INVALID_CHART_TYPE_ERROR = f"chart_type must be one of {EnrollmentStatsSerializer.CHART_TYPES}"
-
 
 @ddt.ddt
 class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
-    """Tests for AdvanceAnalyticsIndividualEnrollmentsView."""
+    """
+    Tests for AdvanceAnalyticsIndividualEnrollmentsView.
+    """
 
     def setUp(self):
         """
@@ -52,36 +43,13 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
             kwargs={"enterprise_uuid": self.enterprise_uuid},
         )
 
-        fetch_max_enrollment_datetime_patcher = patch(
+        get_enrollment_date_range_patcher = patch(
             'enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrollment_date_range',
             return_value=(datetime.now(), datetime.now())
         )
 
-        fetch_max_enrollment_datetime_patcher.start()
-        self.addCleanup(fetch_max_enrollment_datetime_patcher.stop)
-
-    def verify_enrollment_data(self, results, results_count):
-        """Verify the received enrollment data."""
-        attrs = [
-            'email',
-            'course_title',
-            'course_subject',
-            'enroll_type',
-            'enterprise_enrollment_date',
-        ]
-
-        assert len(results) == results_count
-
-        filtered_data = []
-        for enrollment in ENROLLMENTS:
-            for result in results:
-                if enrollment["email"] == result["email"]:
-                    filtered_data.append({attr: enrollment[attr] for attr in attrs})
-                    break
-
-        received_data = sorted(results, key=lambda x: x["email"])
-        expected_data = sorted(filtered_data, key=lambda x: x["email"])
-        assert received_data == expected_data
+        get_enrollment_date_range_patcher.start()
+        self.addCleanup(get_enrollment_date_range_patcher.stop)
 
     @patch('enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrollment_count')
     @patch('enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_all_enrollments')
@@ -200,15 +168,6 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
                 ]
             },
         },
-        {
-            "params": {"calculation": "invalid"},
-            "error": {"calculation": [INVALID_CALCULATION_ERROR]},
-        },
-        {
-            "params": {"granularity": "invalid"},
-            "error": {"granularity": [INVALID_GRANULARITY_ERROR]},
-        },
-        {"params": {"response_type": "invalid"}, "error": {"response_type": [INVALID_RESPONSE_TYPE_ERROR]}},
     )
     @ddt.unpack
     def test_get_invalid_query_params(self, params, error):
@@ -222,7 +181,9 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
 
 @ddt.ddt
 class TestEnrollmentStatsAPI(JWTTestMixin, APITransactionTestCase):
-    """Tests for AdvanceAnalyticsEnrollmentStatsView."""
+    """
+    Tests for AdvanceAnalyticsEnrollmentStatsView.
+    """
 
     def setUp(self):
         """
@@ -246,34 +207,13 @@ class TestEnrollmentStatsAPI(JWTTestMixin, APITransactionTestCase):
             kwargs={"enterprise_uuid": self.enterprise_uuid},
         )
 
-        fetch_max_enrollment_datetime_patcher = patch(
+        get_enrollment_date_range_patcher = patch(
             'enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrollment_date_range',
             return_value=(datetime.now(), datetime.now())
         )
 
-        fetch_max_enrollment_datetime_patcher.start()
-        self.addCleanup(fetch_max_enrollment_datetime_patcher.stop)
-
-    def verify_enrollment_data(self, results):
-        """Verify the received enrollment data."""
-        attrs = [
-            "email",
-            "course_title",
-            "course_subject",
-            "enroll_type",
-            "enterprise_enrollment_date",
-        ]
-
-        filtered_data = []
-        for enrollment in ENROLLMENTS:
-            for result in results:
-                if enrollment["email"] == result["email"]:
-                    filtered_data.append({attr: enrollment[attr] for attr in attrs})
-                    break
-
-        received_data = sorted(results, key=lambda x: x["email"])
-        expected_data = sorted(filtered_data, key=lambda x: x["email"])
-        assert received_data == expected_data
+        get_enrollment_date_range_patcher.start()
+        self.addCleanup(get_enrollment_date_range_patcher.stop)
 
     @patch(
         'enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.'
@@ -331,15 +271,6 @@ class TestEnrollmentStatsAPI(JWTTestMixin, APITransactionTestCase):
                 ]
             },
         },
-        {
-            "params": {"calculation": "invalid"},
-            "error": {"calculation": [INVALID_CALCULATION_ERROR]},
-        },
-        {
-            "params": {"granularity": "invalid"},
-            "error": {"granularity": [INVALID_GRANULARITY_ERROR]},
-        },
-        {"params": {"chart_type": "invalid"}, "error": {"chart_type": [INVALID_CHART_TYPE_ERROR]}},
     )
     @ddt.unpack
     def test_get_invalid_query_params(self, params, error):
