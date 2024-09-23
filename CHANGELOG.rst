@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[8.13.0] - 2024-09-23
+---------------------
+  * feat: convert the skills pandas code into sql queries for better performance
+
 [8.12.1] - 2024-09-16
 ---------------------
   * fix: Remove hyphens from enterprise customer UUID before database query.

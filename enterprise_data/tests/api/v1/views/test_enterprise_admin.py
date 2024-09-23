@@ -3,7 +3,6 @@ Test cases for enterprise_admin views
 """
 from datetime import datetime
 from unittest import mock
-from uuid import uuid4
 
 import ddt
 from mock import patch
@@ -16,13 +15,13 @@ from enterprise_data.admin_analytics.database.queries import (
     FactEngagementAdminDashQueries,
     FactEnrollmentAdminDashQueries,
 )
-from enterprise_data.tests.mixins import JWTTestMixin
-from enterprise_data.tests.test_utils import (
-    UserFactory,
-    get_dummy_enrollments_data,
-    get_dummy_enterprise_api_data,
-    get_dummy_skills_data,
+from enterprise_data.tests.admin_analytics.mock_analytics_data import (
+    TOP_SKILLS,
+    TOP_SKILLS_BY_COMPLETIONS,
+    TOP_SKILLS_BY_ENROLLMENTS,
 )
+from enterprise_data.tests.mixins import JWTTestMixin
+from enterprise_data.tests.test_utils import UserFactory, get_dummy_enterprise_api_data
 from enterprise_data_roles.constants import ENTERPRISE_DATA_ADMIN_ROLE
 from enterprise_data_roles.models import EnterpriseDataFeatureRole, EnterpriseDataRoleAssignment
 
@@ -108,51 +107,141 @@ class TestEnterpriseAdminAnalyticsAggregatesView(JWTTestMixin, APITransactionTes
 
 
 @ddt.ddt
-@mark.django_db
-class TestEnterpriseAdminAnalyticsSkillsView(JWTTestMixin, APITransactionTestCase):
-    """
-    Tests for EnterpriseAdminAnalyticsSkillsView.
-    """
+class TestSkillsStatsAPI(JWTTestMixin, APITransactionTestCase):
+    """Tests for EnterpriseAdminAnalyticsSkillsView."""
 
     def setUp(self):
         """
         Setup method.
         """
         super().setUp()
-        self.user = UserFactory()
-        self.enterprise_id = uuid4()
-        self.set_jwt_cookie(context=f'{self.enterprise_id}')
+        self.user = UserFactory(is_staff=True)
+        role, __ = EnterpriseDataFeatureRole.objects.get_or_create(
+            name=ENTERPRISE_DATA_ADMIN_ROLE
+        )
+        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
+            role=role, user=self.user
+        )
+        self.client.force_authenticate(user=self.user)
 
-    def _mock_run_query(self, query):
-        """
-        mock implementation of run_query.
-        """
-        if 'skills_daily_rollup_admin_dash' in query:
-            return [
-                list(item.values()) for item in get_dummy_skills_data(self.enterprise_id)
-            ]
-        elif 'fact_enrollment_admin_dash' in query:
-            return [
-                list(item.values()) for item in get_dummy_enrollments_data(self.enterprise_id, 15)
-            ]
-        else:
-            return [
-                list(item.values()) for item in get_dummy_skills_data(self.enterprise_id)
-            ]
+        self.enterprise_uuid = "ee5e6b3a069a4947bb8dd2dbc323396c"
+        self.set_jwt_cookie()
 
-    def test_get_admin_analytics_skills(self):
+        self.url = reverse(
+            "v1:enterprise-admin-analytics-skills",
+            kwargs={"enterprise_id": self.enterprise_uuid},
+        )
+
+    @patch('enterprise_data.api.v1.views.enterprise_admin.FactEnrollmentAdminDashTable.get_enrollment_date_range')
+    @patch('enterprise_data.api.v1.views.enterprise_admin.SkillsDailyRollupAdminDashTable.get_top_skills')
+    @patch('enterprise_data.api.v1.views.enterprise_admin.SkillsDailyRollupAdminDashTable.get_top_skills_by_enrollment')
+    @patch('enterprise_data.api.v1.views.enterprise_admin.SkillsDailyRollupAdminDashTable.get_top_skills_by_completion')
+    def test_get(
+        self,
+        mock_get_top_skills_by_completion,
+        mock_get_top_skills_by_enrollment,
+        mock_get_top_skills,
+        mock_get_enrollment_date_range
+    ):
         """
-        Test to get admin analytics skills.
+        Test the GET method for the EnterpriseAdminAnalyticsSkillsView works.
         """
-        params = {'start_date': '2021-01-01', 'end_date': '2025-12-31'}
-        url = reverse('v1:enterprise-admin-analytics-skills', kwargs={'enterprise_id': self.enterprise_id})
-        with patch('enterprise_data.admin_analytics.data_loaders.run_query', side_effect=self._mock_run_query):
-            response = self.client.get(url, params)
-            assert response.status_code == status.HTTP_200_OK
-            data = response.json()
-            assert 'top_skills' in data
-            assert 'top_skills_by_enrollments' in data
-            assert 'top_skills_by_completions' in data
-            assert len(data['top_skills']) == 10
-            assert len(data['top_skills_by_enrollments']) == 10
-            assert len(data['top_skills_by_completions']) == 10
+        mock_get_enrollment_date_range.return_value = ("2020-04-03", "2024-07-04")
+        mock_get_top_skills.return_value = TOP_SKILLS
+        mock_get_top_skills_by_enrollment.return_value = TOP_SKILLS_BY_ENROLLMENTS
+        mock_get_top_skills_by_completion.return_value = TOP_SKILLS_BY_COMPLETIONS
+
+        response = self.client.get(self.url)
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert data == {
+            "top_skills": [
+                {
+                    "skill_name": "Python (Programming Language)",
+                    "skill_type": "Specialized Skill",
+                    "enrolls": 19027.0,
+                    "completions": 3004.0,
+                },
+                {
+                    "skill_name": "Data Science",
+                    "skill_type": "Specialized Skill",
+                    "enrolls": 13756.0,
+                    "completions": 1517.0,
+                },
+                {
+                    "skill_name": "Algorithms",
+                    "skill_type": "Specialized Skill",
+                    "enrolls": 12776.0,
+                    "completions": 1640.0,
+                },
+            ],
+            "top_skills_by_enrollments": [
+                {
+                    "skill_name": "Python (Programming Language)",
+                    "subject_name": "business-management",
+                    "count": 313.0,
+                },
+                {
+                    "skill_name": "Machine Learning",
+                    "subject_name": "business-management",
+                    "count": 442.0,
+                },
+                {
+                    "skill_name": "Computer Science",
+                    "subject_name": "business-management",
+                    "count": 39.0,
+                },
+            ],
+            "top_skills_by_completions": [
+                {
+                    "skill_name": "Python (Programming Language)",
+                    "subject_name": "business-management",
+                    "count": 21.0,
+                },
+                {
+                    "skill_name": "SQL (Programming Language)",
+                    "subject_name": "business-management",
+                    "count": 11.0,
+                },
+                {
+                    "skill_name": "Algorithms",
+                    "subject_name": "business-management",
+                    "count": 15.0,
+                },
+            ],
+        }
+
+    @ddt.data(
+        {
+            "params": {"start_date": 1},
+            "error": {
+                "start_date": [
+                    "Date has wrong format. Use one of these formats instead: YYYY-MM-DD."
+                ]
+            },
+        },
+        {
+            "params": {"end_date": 2},
+            "error": {
+                "end_date": [
+                    "Date has wrong format. Use one of these formats instead: YYYY-MM-DD."
+                ]
+            },
+        },
+        {
+            "params": {"start_date": "2024-01-01", "end_date": "2023-01-01"},
+            "error": {
+                "non_field_errors": [
+                    "start_date should be less than or equal to end_date."
+                ]
+            },
+        },
+    )
+    @ddt.unpack
+    def test_get_invalid_query_params(self, params, error):
+        """
+        Test the GET method return correct error if any query param value is incorrect.
+        """
+        response = self.client.get(self.url, params)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == error
