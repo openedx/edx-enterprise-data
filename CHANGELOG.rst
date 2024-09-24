@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[9.1.1] - 2024-09-24
+---------------------
+  * fix: disable caching for EnterpriseLearnerEnrollmentViewSet
+
 [9.1.0] - 2024-09-23
 ---------------------
   * refactor: Performance optimizations for engagement and completions related API endpoints.
