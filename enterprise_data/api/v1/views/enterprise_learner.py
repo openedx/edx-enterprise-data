@@ -6,7 +6,6 @@ from datetime import date, timedelta
 from logging import getLogger
 from uuid import UUID
 
-from edx_django_utils.cache import TieredCache
 from rest_framework import filters, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -24,7 +23,7 @@ from enterprise_data.filters import AuditEnrollmentsFilterBackend, AuditUsersEnr
 from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment
 from enterprise_data.paginators import EnterpriseEnrollmentsPagination
 from enterprise_data.renderers import EnrollmentsCSVRenderer
-from enterprise_data.utils import get_cache_key, subtract_one_month
+from enterprise_data.utils import subtract_one_month
 
 from .base import EnterpriseViewSetMixin
 
@@ -81,18 +80,22 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
             return EnterpriseLearnerEnrollment.objects.none()
 
         enterprise_customer_uuid = self.kwargs['enterprise_id']
-        cache_key = get_cache_key(
-            resource='enterprise-learner',
-            enterprise_customer=enterprise_customer_uuid,
-        )
-        cached_response = TieredCache.get_cached_response(cache_key)
-        if cached_response.is_found:
-            return cached_response.value
-        else:
-            enrollments = EnterpriseLearnerEnrollment.objects.filter(enterprise_customer_uuid=enterprise_customer_uuid)
-            enrollments = self.apply_filters(enrollments)
-            TieredCache.set_all_tiers(cache_key, enrollments, DEFAULT_LEARNER_CACHE_TIMEOUT)
-            return enrollments
+
+        # TODO: Created a ticket ENT0-9531 to fix the cache issue
+        # Reason for Comenting cache: Remove the cache for this ViewSet
+        # becuae the cache is not working as expected
+        # cache_key = get_cache_key(
+        #     resource='enterprise-learner',
+        #     enterprise_customer=enterprise_customer_uuid,
+        # )
+        # cached_response = TieredCache.get_cached_response(cache_key)
+        # if cached_response.is_found:
+        #     return cached_response.value
+        # else:
+        enrollments = EnterpriseLearnerEnrollment.objects.filter(enterprise_customer_uuid=enterprise_customer_uuid)
+        enrollments = self.apply_filters(enrollments)
+        # TieredCache.set_all_tiers(cache_key, enrollments, DEFAULT_LEARNER_CACHE_TIMEOUT)
+        return enrollments
 
     def list(self, request, *args, **kwargs):
         """
