@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[9.2.1] - 2024-09-25
+---------------------
+  * fix: Added temporary cache logging on EnterpriseLearnerEnrollmentViewSet.
+
 [9.2.0] - 2024-09-25
 ---------------------
   * refactor: Performance optimizations for leaderboard API endpoints
