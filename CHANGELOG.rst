@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[9.2.0] - 2024-09-25
+---------------------
+  * refactor: Performance optimizations for leaderboard API endpoints
+
 [9.1.1] - 2024-09-24
 ---------------------
   * fix: disable caching for EnterpriseLearnerEnrollmentViewSet

@@ -58,8 +58,8 @@ urlpatterns = [
     ),
     re_path(
         fr'^admin/analytics/(?P<enterprise_uuid>{UUID4_REGEX})/leaderboard$',
-        AdvanceAnalyticsLeaderboardView.as_view(),
-        name='enterprise-admin-analytics-leaderboard'
+        AdvanceAnalyticsLeaderboardView.as_view({'get': 'list'}),
+        name='enterprise-admin-analytics-leaderboard-list'
     ),
     re_path(
         fr'^admin/analytics/(?P<enterprise_uuid>{UUID4_REGEX})/enrollments/stats$',

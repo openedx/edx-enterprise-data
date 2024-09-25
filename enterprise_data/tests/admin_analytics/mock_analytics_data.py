@@ -1,6 +1,6 @@
-"""Mock data for enrollments"""
-
-import pandas as pd
+"""
+Mock data for admin analytics tests.
+"""
 
 ENROLLMENTS = [
     {
@@ -326,39 +326,6 @@ ENGAGEMENTS = [
         "learning_time_seconds": 29,
     }
 ]
-
-
-def enrollments_dataframe():
-    """Return a DataFrame of enrollments."""
-    enrollments = pd.DataFrame(ENROLLMENTS)
-
-    enrollments['enterprise_enrollment_date'] = enrollments['enterprise_enrollment_date'].astype('datetime64[ns]')
-    enrollments['date_certificate_awarded'] = enrollments['date_certificate_awarded'].astype('datetime64[ns]')
-    enrollments['date_certificate_created_raw'] = enrollments['date_certificate_created_raw'].astype('datetime64[ns]')
-    enrollments['passed_date_raw'] = enrollments['passed_date_raw'].astype('datetime64[ns]')
-    enrollments['passed_date'] = enrollments['passed_date'].astype('datetime64[ns]')
-
-    return enrollments
-
-
-def engagements_dataframe():
-    """Return a DataFrame of engagements."""
-    engagements = pd.DataFrame(ENGAGEMENTS)
-    engagements['activity_date'] = engagements['activity_date'].astype('datetime64[ns]')
-    return engagements
-
-
-def leaderboard_csv_content():
-    """Return the CSV content of leaderboard."""
-    return (
-        b'email,learning_time_hours,sessions,average_session_length,course_completions\r\n'
-        b'paul77@example.org,4.4,1,4.4,\r\nseth57@example.org,2.7,1,2.7,\r\n'
-        b'weaverpatricia@example.net,2.6,1,2.6,\r\nwebertodd@example.com,1.5,1,1.5,\r\n'
-        b'yferguson@example.net,1.3,1,1.3,\r\nyallison@example.org,1.2,1,1.2,\r\n'
-        b'padillamichelle@example.org,1.0,1,1.0,\r\ncaseyjohnny@example.com,0.0,0,0.0,\r\n'
-        b'crystal86@example.net,0.0,0,0.0,\r\ngraceperez@example.com,0.0,0,0.0,\r\n'
-        b'mackwilliam@example.com,0.0,0,0.0,\r\nsamanthaclarke@example.org,0.0,0,0.0,\r\n'
-    )
 
 
 LEADERBOARD_RESPONSE = [
