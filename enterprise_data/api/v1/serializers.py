@@ -5,7 +5,7 @@ from uuid import UUID
 
 from rest_framework import serializers
 
-from enterprise_data.admin_analytics.constants import Calculation, Granularity, ResponseType
+from enterprise_data.admin_analytics.constants import ResponseType
 from enterprise_data.models import (
     EnterpriseAdminLearnerProgress,
     EnterpriseAdminSummarizeInsights,
@@ -241,23 +241,8 @@ class AdvanceAnalyticsQueryParamSerializer(serializers.Serializer):  # pylint: d
         ResponseType.JSON.value,
         ResponseType.CSV.value
     ]
-    GRANULARITY_CHOICES = [
-        Granularity.DAILY.value,
-        Granularity.WEEKLY.value,
-        Granularity.MONTHLY.value,
-        Granularity.QUARTERLY.value
-    ]
-    CALCULATION_CHOICES = [
-        Calculation.TOTAL.value,
-        Calculation.RUNNING_TOTAL.value,
-        Calculation.MOVING_AVERAGE_3_PERIOD.value,
-        Calculation.MOVING_AVERAGE_7_PERIOD.value
-    ]
-
     start_date = serializers.DateField(required=False)
     end_date = serializers.DateField(required=False)
-    granularity = serializers.CharField(required=False)
-    calculation = serializers.CharField(required=False)
     response_type = serializers.CharField(required=False)
     page = serializers.IntegerField(required=False, min_value=1)
     page_size = serializers.IntegerField(required=False, min_value=2)
@@ -286,26 +271,4 @@ class AdvanceAnalyticsQueryParamSerializer(serializers.Serializer):  # pylint: d
         """
         if value not in self.RESPONSE_TYPES:
             raise serializers.ValidationError(f"response_type must be one of {self.RESPONSE_TYPES}")
-        return value
-
-    def validate_granularity(self, value):
-        """
-        Validate the granularity value.
-
-        Raises:
-            serializers.ValidationError: If granularity is not one of the valid choices.
-        """
-        if value not in self.GRANULARITY_CHOICES:
-            raise serializers.ValidationError(f"Granularity must be one of {self.GRANULARITY_CHOICES}")
-        return value
-
-    def validate_calculation(self, value):
-        """
-        Validate the calculation value.
-
-        Raises:
-            serializers.ValidationError: If calculation is not one of the valid choices
-        """
-        if value not in self.CALCULATION_CHOICES:
-            raise serializers.ValidationError(f"Calculation must be one of {self.CALCULATION_CHOICES}")
         return value

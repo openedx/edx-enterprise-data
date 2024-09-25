@@ -15,7 +15,6 @@ from django.http import StreamingHttpResponse
 
 from enterprise_data.admin_analytics.constants import ResponseType
 from enterprise_data.admin_analytics.database.tables import FactEnrollmentAdminDashTable
-from enterprise_data.api.v1.paginators import AdvanceAnalyticsPagination
 from enterprise_data.api.v1.serializers import AdvanceAnalyticsQueryParamSerializer
 from enterprise_data.api.v1.views.base import AnalyticsPaginationMixin
 from enterprise_data.renderers import IndividualCompletionsCSVRenderer
@@ -33,7 +32,6 @@ class AdvanceAnalyticsCompletionsView(AnalyticsPaginationMixin, ViewSet):
     2. `enterprise_data_api_v1.enterprise-learner-completion-stats`: Get completion stats data.
     """
     authentication_classes = (JwtAuthentication,)
-    pagination_class = AdvanceAnalyticsPagination
     http_method_names = ('get', )
 
     @permission_required('can_access_enterprise', fn=lambda request, enterprise_uuid: enterprise_uuid)

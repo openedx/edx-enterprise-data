@@ -152,3 +152,53 @@ class FactEngagementAdminDashTable(BaseTable):
             },
             as_dict=True,
         )
+
+    def get_all_leaderboard_data(
+            self, enterprise_customer_uuid: UUID, start_date: date, end_date: date, limit: int, offset: int
+    ):
+        """
+        Get the leaderboard data for the given enterprise customer.
+
+        Arguments:
+            enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
+            start_date (date): The start date.
+            end_date (date): The end date.
+            limit (int): The maximum number of records to return.
+            offset (int): The number of records to skip.
+
+        Returns:
+            list[dict]: The leaderboard data.
+        """
+        return run_query(
+            query=self.queries.get_all_leaderboard_data_query(),
+            params={
+                'enterprise_customer_uuid': enterprise_customer_uuid,
+                'start_date': start_date,
+                'end_date': end_date,
+                'limit': limit,
+                'offset': offset,
+            },
+            as_dict=True,
+        )
+
+    def get_leaderboard_data_count(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
+        """
+        Get the total number of leaderboard records for the given enterprise customer.
+
+        Arguments:
+            enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
+            start_date (date): The start date.
+            end_date (date): The end date.
+
+        Returns:
+            (int): The total number of leaderboard records.
+        """
+        results = run_query(
+            query=self.queries.get_leaderboard_data_count_query(),
+            params={
+                'enterprise_customer_uuid': enterprise_customer_uuid,
+                'start_date': start_date,
+                'end_date': end_date,
+            }
+        )
+        return results[0][0]

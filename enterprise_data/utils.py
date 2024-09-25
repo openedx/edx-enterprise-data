@@ -83,22 +83,6 @@ def timer(prefix):
     LOGGER.info(f"TIMER:: {prefix} took {difference:.20f} seconds")
 
 
-def date_filter(start, end, data_frame, date_column):
-    """
-    Filter a pandas DataFrame by date range.
-
-    Arguments:
-        start (DatetimeScalar | NaTType | None): The start date.
-        end (DatetimeScalar | NaTType | None): The end date.
-        data_frame (pandas.DataFrame): The DataFrame to filter.
-        date_column (str): The name of the date column.
-
-    Returns:
-        (pandas.DataFrame): The filtered DataFrame.
-    """
-    return data_frame[(start <= data_frame[date_column]) & (data_frame[date_column] <= end)]
-
-
 def primary_subject_truncate(x):
     """
     Truncate primary subject to a few categories.
