@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[9.2.2] - 2024-09-27
+---------------------
+  * fix: remove the cache logging on EnterpriseLearnerEnrollmentViewSet.
+
 [9.2.1] - 2024-09-25
 ---------------------
   * fix: Added temporary cache logging on EnterpriseLearnerEnrollmentViewSet.
