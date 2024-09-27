@@ -6,7 +6,6 @@ from datetime import date, timedelta
 from logging import getLogger
 from uuid import UUID
 
-from edx_django_utils.cache import TieredCache
 from rest_framework import filters, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -25,7 +24,7 @@ from enterprise_data.filters import AuditEnrollmentsFilterBackend, AuditUsersEnr
 from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment
 from enterprise_data.paginators import EnterpriseEnrollmentsPagination
 from enterprise_data.renderers import EnrollmentsCSVRenderer
-from enterprise_data.utils import get_cache_key, subtract_one_month
+from enterprise_data.utils import subtract_one_month
 
 from .base import EnterpriseViewSetMixin
 
@@ -83,23 +82,7 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
 
         enterprise_customer_uuid = self.kwargs['enterprise_id']
 
-        # TODO: Created a ticket ENT0-9531 to fix the cache issue
-        # Temporary logging to test cache issue
-        try:
-            LOGGER.info("Trying to get Learner Enrollment data from Cache")
-            cache_key = get_cache_key(
-                resource='enterprise-learner',
-                enterprise_customer=enterprise_customer_uuid,
-            )
-            cached_response = TieredCache.get_cached_response(cache_key)
-            if cached_response.is_found:
-                LOGGER.info("Learner Enrollment data found in Cache for Enterprise: [%s]", enterprise_customer_uuid)
-            else:
-                LOGGER.info("Learner Enrollment data not found in Cache for Enterprise: [%s]", enterprise_customer_uuid)
-                TieredCache.set_all_tiers(cache_key, 'dummy_enrollments', DEFAULT_LEARNER_CACHE_TIMEOUT)
-                LOGGER.info("Cache set for Enterprise: [%s] whose key is: [%s]", enterprise_customer_uuid, cache_key)
-        except Exception as e:
-            LOGGER.error("Memcached connection test failed: %s", e)
+        # TODO: Created a ticket ENT0-9531 to add the cache on this viewset
 
         enrollments = EnterpriseLearnerEnrollment.objects.filter(enterprise_customer_uuid=enterprise_customer_uuid)
         enrollments = self.apply_filters(enrollments)
