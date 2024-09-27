@@ -21,3 +21,6 @@ urllib3<2.0.0
 
 numpy<=1.24.4
 pandas<=2.0.3
+
+# this is the last supported version for python 3.8.x
+astroid<=3.2.4
