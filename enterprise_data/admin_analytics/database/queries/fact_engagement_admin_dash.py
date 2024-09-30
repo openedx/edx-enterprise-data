@@ -111,59 +111,62 @@ class FactEngagementAdminDashQueries:
         """
 
     @staticmethod
-    def get_all_leaderboard_data_query():
+    def get_engagement_data_for_leaderboard_query():
         """
-        Get the query to fetch the leaderboard data.
+        Get the query to fetch the engagement data for leaderboard.
 
-        Query should fetch the leaderboard data for the enterprise customer to show in the data table.
+        Query should fetch the engagement data for like learning time, session length of
+        the enterprise learners to show in the leaderboard.
 
         Returns:
-            (str): Query to fetch the leaderboard data.
+            (str): Query to fetch the engagement data for leaderboard.
         """
         return """
-            WITH Engagement AS (
-                SELECT
-                    email,
-                    ROUND(SUM(learning_time_seconds) / 3600, 1) as learning_time_hours,
-                    SUM(is_engaged) as session_count,
-                    CASE
-                        WHEN SUM(is_engaged) = 0 THEN 0.0
-                        ELSE ROUND(SUM(learning_time_seconds) / 3600 / SUM(is_engaged), 1)
-                    END AS average_session_length
-                FROM fact_enrollment_engagement_day_admin_dash
-                WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
-                    (activity_date BETWEEN %(start_date)s AND %(end_date)s) AND
-                    is_engaged = 1
-                GROUP BY email
-            ),
-            Completions AS (
-                SELECT email, count(course_key) as course_completion_count
-                FROM fact_enrollment_admin_dash
-                WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
-                    (passed_date BETWEEN %(start_date)s AND %(end_date)s) AND
-                    has_passed = 1
-                GROUP BY email
-            )
             SELECT
-                Engagement.email,
-                Engagement.learning_time_hours,
-                Engagement.session_count,
-                Engagement.average_session_length,
-                Completions.course_completion_count
-            FROM Engagement
-            LEFT JOIN Completions
-            ON Engagement.email = Completions.email
-            ORDER BY
-                Engagement.learning_time_hours DESC,
-                Engagement.session_count DESC,
-                Completions.course_completion_count DESC
+                email,
+                ROUND(SUM(learning_time_seconds) / 3600, 1) as learning_time_hours,
+                SUM(is_engaged) as session_count,
+                CASE
+                    WHEN SUM(is_engaged) = 0 THEN 0.0
+                    ELSE ROUND(SUM(learning_time_seconds) / 3600 / SUM(is_engaged), 1)
+                END AS average_session_length
+            FROM fact_enrollment_engagement_day_admin_dash
+            WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
+                (activity_date BETWEEN %(start_date)s AND %(end_date)s) AND
+                is_engaged = 1
+            GROUP BY email
+            ORDER BY learning_time_hours DESC
             LIMIT %(limit)s OFFSET %(offset)s;
+        """
+
+    @staticmethod
+    def get_completion_data_for_leaderboard_query(email_list: list):
+        """
+        Get the query to fetch the completions data for leaderboard.
+
+        Query should fetch the completion data for like course completion count of
+        the enterprise learners to show in the leaderboard.
+
+        Arguments:
+            email_list (str): List of emails to filter the completions data.
+
+        Returns:
+            (list<str>): Query to fetch the completions data for leaderboard.
+        """
+        return f"""
+            SELECT email, count(course_key) as course_completion_count
+            FROM fact_enrollment_admin_dash
+            WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
+                (passed_date BETWEEN %(start_date)s AND %(end_date)s) AND
+                has_passed = 1 AND
+                email IN {str(tuple(email_list))}
+            GROUP BY email;
         """
 
     @staticmethod
     def get_leaderboard_data_count_query():
         """
-        Get the query to fetch the leaderboard row count.
+        Get the query to fetch the leaderboard row count and null email counter.
 
         Query should fetch the count of rows for the leaderboard data for the enterprise customer.
 
@@ -171,26 +174,13 @@ class FactEngagementAdminDashQueries:
             (str): Query to fetch the leaderboard row count.
         """
         return """
-            WITH Engagement AS (
-                SELECT
-                    email
-                FROM fact_enrollment_engagement_day_admin_dash
-                WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
-                    (activity_date BETWEEN %(start_date)s AND %(end_date)s) AND
-                    is_engaged = 1
-                GROUP BY email
-            ),
-            Completions AS (
-                SELECT email, count(course_key) as course_completion_count
-                FROM fact_enrollment_admin_dash
-                WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
-                    (passed_date BETWEEN %(start_date)s AND %(end_date)s) AND
-                    has_passed = 1
-                GROUP BY email
-            )
             SELECT
-                count(*)
-            FROM Engagement
-            LEFT JOIN Completions
-            ON Engagement.email = Completions.email
+                COUNT(*) OVER () AS record_count,
+                sum(case when email is null then 1 else 0 end) null_count
+            FROM fact_enrollment_engagement_day_admin_dash
+            WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
+                (activity_date BETWEEN %(start_date)s AND %(end_date)s) AND
+                is_engaged = 1
+            GROUP BY email
+            LIMIT 1;
         """
