@@ -10,7 +10,7 @@ asgiref==3.8.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-astroid==3.3.4
+astroid==3.2.4
     # via
     #   pylint
     #   pylint-celery
@@ -304,7 +304,7 @@ pyjwt[crypto]==2.9.0
     #   edx-drf-extensions
     #   edx-rest-api-client
     #   snowflake-connector-python
-pylint==3.3.1
+pylint==3.2.7
     # via
     #   edx-lint
     #   pylint-celery
