@@ -16,6 +16,11 @@ Unreleased
 
 =========================
 
+[9.4.0] - 2024-09-30
+---------------------
+  * chore: upgrade python requirements
+  * pin astriod and edx-lint packages
+
 [9.3.0] - 2024-09-30
 ---------------------
   * refactor: Further improvement in SQL queries for leaderboard API endpoint.
