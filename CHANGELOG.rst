@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[9.3.0] - 2024-09-30
+---------------------
+  * refactor: Further improvement in SQL queries for leaderboard API endpoint.
+
 [9.2.2] - 2024-09-27
 ---------------------
   * fix: remove the cache logging on EnterpriseLearnerEnrollmentViewSet.
