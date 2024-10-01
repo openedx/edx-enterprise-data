@@ -12,6 +12,7 @@ asn1crypto==1.5.1
     # via snowflake-connector-python
 astroid==3.2.4
     # via
+    #   -c requirements/constraints.txt
     #   pylint
     #   pylint-celery
 awscli==1.34.29
@@ -158,6 +159,7 @@ edx-i18n-tools==1.6.3
     # via -r requirements/dev-enterprise_data.in
 edx-lint==5.4.0
     # via
+    #   -c requirements/constraints.txt
     #   -r requirements/dev-enterprise_data.in
     #   -r requirements/quality.in
 edx-opaque-keys==2.11.0
