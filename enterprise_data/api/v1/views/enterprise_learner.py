@@ -20,7 +20,6 @@ from django.utils import timezone
 
 from enterprise_data.admin_analytics.database.utils import LOGGER
 from enterprise_data.api.v1 import serializers
-from enterprise_data.filters import AuditEnrollmentsFilterBackend, AuditUsersEnrollmentFilterBackend
 from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment
 from enterprise_data.paginators import EnterpriseEnrollmentsPagination
 from enterprise_data.renderers import EnrollmentsCSVRenderer
@@ -38,7 +37,7 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
     """
     serializer_class = serializers.EnterpriseLearnerEnrollmentSerializer
     pagination_class = EnterpriseEnrollmentsPagination
-    filter_backends = (AuditEnrollmentsFilterBackend, filters.OrderingFilter,)
+    filter_backends = (filters.OrderingFilter,)
     ordering_fields = '__all__'
     ordering = ('-last_activity_date',)
     ENROLLMENT_MODE_FILTER = 'user_current_enrollment_mode'
@@ -297,7 +296,7 @@ class EnterpriseLearnerViewSet(EnterpriseViewSetMixin, viewsets.ReadOnlyModelVie
     """
     queryset = EnterpriseLearner.objects.all()
     serializer_class = serializers.EnterpriseLearnerSerializer
-    filter_backends = (filters.OrderingFilter, AuditUsersEnrollmentFilterBackend,)
+    filter_backends = (filters.OrderingFilter,)
     ordering_fields = '__all__'
     ordering = ('user_email',)
 
