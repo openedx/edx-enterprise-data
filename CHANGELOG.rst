@@ -15,6 +15,9 @@ Unreleased
 ----------
 
 =========================
+[9.4.1] - 2024-10-03
+---------------------
+  * fix: Added guard against empty data in leaderboard queries.
 
 [9.4.0] - 2024-09-30
 ---------------------
