@@ -235,6 +235,10 @@ class FactEngagementAdminDashTable(BaseTable):
             limit=limit,
             offset=offset,
         )
+        # If there is no data, no need to proceed.
+        if not engagement_data:
+            return []
+
         engagement_data_dict = {engagement['email']: engagement for engagement in engagement_data}
         completion_data = self._get_completion_data_for_leaderboard_query(
             enterprise_customer_uuid=enterprise_customer_uuid,
