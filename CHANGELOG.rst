@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[9.5.0] - 2024-10-03
+---------------------
+  * feat: Remove audit data filtering
+
 [9.4.1] - 2024-10-03
 ---------------------
   * fix: Added guard against empty data in leaderboard queries.
