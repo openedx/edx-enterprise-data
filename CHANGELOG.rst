@@ -15,7 +15,12 @@ Unreleased
 ----------
 
 =========================
-[9.5.0] - 2024-10-03
+
+[9.5.1] - 2024-10-07
+---------------------
+  * fix: Added handling for edge cases while fetching data from database.
+
+[9.5.0] - 2024-10-07
 ---------------------
   * feat: Remove audit data filtering
 
