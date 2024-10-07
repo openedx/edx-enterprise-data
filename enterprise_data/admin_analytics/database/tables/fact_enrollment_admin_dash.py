@@ -35,6 +35,8 @@ class FactEnrollmentAdminDashTable(BaseTable):
                 'end_date': end_date,
             }
         )
+        if not results:
+            return 0
         return int(results[0][0] or 0)
 
     def get_all_enrollments(
@@ -79,6 +81,8 @@ class FactEnrollmentAdminDashTable(BaseTable):
             query=self.queries.get_enrollment_date_range_query(),
             params={'enterprise_customer_uuid': enterprise_customer_uuid}
         )
+        if not results:
+            return None, None
         min_date, max_date = results[0]
 
         # We should return date objects, not datetime objects
@@ -110,6 +114,8 @@ class FactEnrollmentAdminDashTable(BaseTable):
                 'end_date': end_date,
             }
         )
+        if not results:
+            return 0, 0
         return tuple(results[0])
 
     def get_completion_count(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
@@ -132,6 +138,9 @@ class FactEnrollmentAdminDashTable(BaseTable):
                 'end_date': end_date,
             }
         )
+        if not results:
+            return 0
+
         return int(results[0][0] or 0)
 
     def get_top_courses_by_enrollments(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):

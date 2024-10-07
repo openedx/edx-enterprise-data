@@ -175,8 +175,7 @@ class FactEngagementAdminDashQueries:
         """
         return """
             SELECT
-                COUNT(*) OVER () AS record_count,
-                sum(case when email is null then 1 else 0 end) null_count
+                COUNT(*) OVER () AS record_count
             FROM fact_enrollment_engagement_day_admin_dash
             WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
                 (activity_date BETWEEN %(start_date)s AND %(end_date)s) AND

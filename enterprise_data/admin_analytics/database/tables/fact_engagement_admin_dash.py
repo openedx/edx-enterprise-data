@@ -35,6 +35,9 @@ class FactEngagementAdminDashTable(BaseTable):
                 'end_date': end_date,
             }
         )
+        if not results:
+            return 0.0, 0
+
         return tuple(results[0])
 
     def get_engagement_count(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
@@ -57,6 +60,8 @@ class FactEngagementAdminDashTable(BaseTable):
                 'end_date': end_date,
             }
         )
+        if not results:
+            return 0
         return results[0][0]
 
     def get_all_engagements(
@@ -272,4 +277,6 @@ class FactEngagementAdminDashTable(BaseTable):
                 'end_date': end_date,
             }
         )
+        if not results:
+            return 0
         return results[0][0]
