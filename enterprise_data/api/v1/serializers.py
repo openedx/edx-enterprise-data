@@ -229,10 +229,15 @@ class EnterpriseExecEdLCModulePerformanceSerializer(serializers.ModelSerializer)
     """
     Serializer for EnterpriseExecEdLCModulePerformance model.
     """
+    extensions_requested = serializers.SerializerMethodField()
 
     class Meta:
         model = EnterpriseExecEdLCModulePerformance
         fields = '__all__'
+
+    def get_extensions_requested(self, obj):
+        """Return extensions_requested if not None, otherwise return 0"""
+        return obj.extensions_requested if obj.extensions_requested is not None else 0
 
 
 class AdvanceAnalyticsQueryParamSerializer(serializers.Serializer):  # pylint: disable=abstract-method
