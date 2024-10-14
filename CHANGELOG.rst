@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[9.6.0] - 2024-10-14
+---------------------
+  * feat: Added caching for API endpoints related to advanced analytics.
+
 [9.5.2] - 2024-10-14
 ---------------------
   * feat: Transform extensions_requested field to return 0 if None

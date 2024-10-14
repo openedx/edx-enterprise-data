@@ -4,6 +4,8 @@ Module for interacting with the fact_enrollment_admin_dash table.
 from datetime import date, datetime
 from uuid import UUID
 
+from enterprise_data.cache.decorators import cache_it
+
 from ..queries import FactEnrollmentAdminDashQueries
 from ..utils import run_query
 from .base import BaseTable
@@ -15,6 +17,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
     """
     queries = FactEnrollmentAdminDashQueries()
 
+    @cache_it()
     def get_enrollment_count(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
         """
         Get the total number of enrollments for the given enterprise customer.
@@ -39,6 +42,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             return 0
         return int(results[0][0] or 0)
 
+    @cache_it()
     def get_all_enrollments(
             self, enterprise_customer_uuid: UUID, start_date: date, end_date: date, limit: int, offset: int
     ):
@@ -67,6 +71,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             as_dict=True,
         )
 
+    @cache_it()
     def get_enrollment_date_range(self, enterprise_customer_uuid: UUID):
         """
         Get the enrollment date range for the given enterprise customer.
@@ -94,6 +99,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
 
         return min_date, max_date
 
+    @cache_it()
     def get_enrollment_and_course_count(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
         """
         Get the enrollment and course count for the given enterprise customer.
@@ -118,6 +124,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             return 0, 0
         return tuple(results[0])
 
+    @cache_it()
     def get_completion_count(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
         """
         Get the completion count for the given enterprise customer.
@@ -143,6 +150,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
 
         return int(results[0][0] or 0)
 
+    @cache_it()
     def get_top_courses_by_enrollments(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
         """
         Get the top courses enrollments for the given enterprise customer.
@@ -165,6 +173,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             as_dict=True,
         )
 
+    @cache_it()
     def get_top_subjects_by_enrollments(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
         """
         Get the top subjects by enrollments for the given enterprise customer.
@@ -187,6 +196,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             as_dict=True,
         )
 
+    @cache_it()
     def get_enrolment_time_series_data(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
         """
         Get the enrollment time series data for the given enterprise customer.
@@ -209,6 +219,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             as_dict=True,
         )
 
+    @cache_it()
     def get_all_completions(
             self, enterprise_customer_uuid: UUID, start_date: date, end_date: date, limit: int, offset: int
     ):
@@ -237,6 +248,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             as_dict=True,
         )
 
+    @cache_it()
     def get_top_courses_by_completions(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
         """
         Get the top courses by completion for the given enterprise customer.
@@ -259,6 +271,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             as_dict=True,
         )
 
+    @cache_it()
     def get_top_subjects_by_completions(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
         """
         Get the top subjects by completions for the given enterprise customer.
@@ -281,6 +294,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             as_dict=True,
         )
 
+    @cache_it()
     def get_completions_time_series_data(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
         """
         Get the completions time series data for the given enterprise customer.
