@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[9.5.2] - 2024-10-14
+---------------------
+  * feat: Transform extensions_requested field to return 0 if None
+
 [9.5.1] - 2024-10-07
 ---------------------
   * fix: Added handling for edge cases while fetching data from database.
