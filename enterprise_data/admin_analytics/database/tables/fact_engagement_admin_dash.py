@@ -4,6 +4,8 @@ Module for interacting with the fact_enrollment_engagement_day_admin_dash table.
 from datetime import date
 from uuid import UUID
 
+from enterprise_data.cache.decorators import cache_it
+
 from ..queries import FactEngagementAdminDashQueries
 from ..utils import run_query
 from .base import BaseTable
@@ -15,6 +17,7 @@ class FactEngagementAdminDashTable(BaseTable):
     """
     queries = FactEngagementAdminDashQueries()
 
+    @cache_it()
     def get_learning_hours_and_daily_sessions(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
         """
         Get the learning hours and daily sessions for the given enterprise customer.
@@ -40,6 +43,7 @@ class FactEngagementAdminDashTable(BaseTable):
 
         return tuple(results[0])
 
+    @cache_it()
     def get_engagement_count(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
         """
         Get the total number of engagements for the given enterprise customer.
@@ -64,6 +68,7 @@ class FactEngagementAdminDashTable(BaseTable):
             return 0
         return results[0][0]
 
+    @cache_it()
     def get_all_engagements(
             self, enterprise_customer_uuid: UUID, start_date: date, end_date: date, limit: int, offset: int
     ):
@@ -92,6 +97,7 @@ class FactEngagementAdminDashTable(BaseTable):
             as_dict=True,
         )
 
+    @cache_it()
     def get_top_courses_by_engagement(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
         """
         Get the top courses by user engagement for the given enterprise customer.
@@ -114,6 +120,7 @@ class FactEngagementAdminDashTable(BaseTable):
             as_dict=True,
         )
 
+    @cache_it()
     def get_top_subjects_by_engagement(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
         """
         Get the top subjects by user engagement for the given enterprise customer.
@@ -136,6 +143,7 @@ class FactEngagementAdminDashTable(BaseTable):
             as_dict=True,
         )
 
+    @cache_it()
     def get_engagement_time_series_data(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
         """
         Get the engagement time series data.
@@ -158,6 +166,7 @@ class FactEngagementAdminDashTable(BaseTable):
             as_dict=True,
         )
 
+    @cache_it()
     def _get_engagement_data_for_leaderboard(
             self, enterprise_customer_uuid: UUID, start_date: date, end_date: date, limit: int, offset: int
     ):
@@ -189,6 +198,7 @@ class FactEngagementAdminDashTable(BaseTable):
             as_dict=True,
         )
 
+    @cache_it()
     def _get_completion_data_for_leaderboard_query(
             self, enterprise_customer_uuid: UUID, start_date: date, end_date: date, email_list: list
     ):
@@ -257,6 +267,7 @@ class FactEngagementAdminDashTable(BaseTable):
 
         return list(engagement_data_dict.values())
 
+    @cache_it()
     def get_leaderboard_data_count(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
         """
         Get the total number of leaderboard records for the given enterprise customer.

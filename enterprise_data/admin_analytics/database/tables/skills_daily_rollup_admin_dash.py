@@ -9,6 +9,7 @@ from enterprise_data.admin_analytics.database.queries.skills_daily_rollup_admin_
 )
 from enterprise_data.admin_analytics.database.tables.base import BaseTable
 from enterprise_data.admin_analytics.database.utils import run_query
+from enterprise_data.cache.decorators import cache_it
 
 
 class SkillsDailyRollupAdminDashTable(BaseTable):
@@ -17,6 +18,7 @@ class SkillsDailyRollupAdminDashTable(BaseTable):
     """
     queries = SkillsDailyRollupAdminDashQueries()
 
+    @cache_it()
     def get_top_skills(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
         """
         Get the top skills for the given enterprise customer.
@@ -39,6 +41,7 @@ class SkillsDailyRollupAdminDashTable(BaseTable):
             as_dict=True,
         )
 
+    @cache_it()
     def get_top_skills_by_enrollment(
         self,
         enterprise_customer_uuid: UUID,
@@ -66,6 +69,7 @@ class SkillsDailyRollupAdminDashTable(BaseTable):
             as_dict=True,
         )
 
+    @cache_it()
     def get_top_skills_by_completion(
         self,
         enterprise_customer_uuid: UUID,
