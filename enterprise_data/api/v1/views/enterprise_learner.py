@@ -150,6 +150,10 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         if search_start_date:
             queryset = queryset.filter(course_start_date=search_start_date)
 
+        budget_uuid = query_filters.get('budget_uuid')
+        if budget_uuid:
+            queryset = queryset.filter(budget_id=budget_uuid)
+
         offer_id = query_filters.get('offer_id')
         if offer_id:
             queryset = self.filter_by_offer_id(queryset, offer_id)
