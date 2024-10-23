@@ -96,6 +96,11 @@ urlpatterns = [
         enterprise_admin_views.EnterpriseAdminAnalyticsSkillsView.as_view(),
         name='enterprise-admin-analytics-skills'
     ),
+    re_path(
+        fr'^enterprise/(?P<enterprise_uuid>{UUID4_REGEX})/budgets',
+        enterprise_admin_views.EnterpriseBudgetView.as_view(),
+        name='enterprise-budgets'
+    ),
 ]
 
 urlpatterns += router.urls

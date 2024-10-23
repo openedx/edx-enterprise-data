@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[9.7.0] - 2024-10-23
+---------------------
+  * feat: Add API to fetch enterprise budgets information
+
 [9.6.0] - 2024-10-14
 ---------------------
   * feat: Added caching for API endpoints related to advanced analytics.

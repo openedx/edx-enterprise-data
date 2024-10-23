@@ -21,6 +21,7 @@ from enterprise_data.models import (
     EnterpriseAdminLearnerProgress,
     EnterpriseAdminSummarizeInsights,
     EnterpriseExecEdLCModulePerformance,
+    EnterpriseSubsidyBudget,
 )
 from enterprise_data.utils import timer
 
@@ -206,3 +207,26 @@ class EnterpriseExecEdLCModulePerformanceViewSet(EnterpriseViewSetMixin, viewset
         return EnterpriseExecEdLCModulePerformance.objects.filter(
             enterprise_customer_uuid=self.kwargs['enterprise_id'],
         )
+
+
+class EnterpriseBudgetView(APIView):
+    """
+    View for getting budgets information for an enterprise.
+    """
+    authentication_classes = (JwtAuthentication,)
+    http_method_names = ["get"]
+
+    @permission_required("can_access_enterprise", fn=lambda request, enterprise_uuid: enterprise_uuid)
+    def get(self, request, enterprise_uuid):
+        """
+        Return the queryset of EnterpriseSubsidyBudget objects.
+        """
+        budgets = EnterpriseSubsidyBudget.objects.filter(
+            enterprise_customer_uuid=enterprise_uuid,
+        ).values(
+            'subsidy_access_policy_uuid',
+            'subsidy_access_policy_display_name',
+        )
+
+        serializer = serializers.EnterpriseBudgetSerializer(budgets, many=True)
+        return Response(serializer.data)

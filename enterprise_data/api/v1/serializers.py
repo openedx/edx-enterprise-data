@@ -240,6 +240,19 @@ class EnterpriseExecEdLCModulePerformanceSerializer(serializers.ModelSerializer)
         return obj.extensions_requested if obj.extensions_requested is not None else 0
 
 
+class EnterpriseBudgetSerializer(serializers.ModelSerializer):
+    """
+    Serializer for EnterpriseSubsidyBudget model.
+    """
+
+    class Meta:
+        model = EnterpriseSubsidyBudget
+        fields = (
+            'subsidy_access_policy_uuid',
+            'subsidy_access_policy_display_name',
+        )
+
+
 class AdvanceAnalyticsQueryParamSerializer(serializers.Serializer):  # pylint: disable=abstract-method
     """Serializer for validating query params"""
     RESPONSE_TYPES = [
