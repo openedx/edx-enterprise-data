@@ -132,7 +132,7 @@ setup(
         'Framework :: Django',
         'Framework :: Django :: 4.2',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.12',
     ],
     description="""Enterprise Reporting""",
     long_description="Tools and products related to providing access to Enterprise data.",
