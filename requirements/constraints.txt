@@ -12,18 +12,3 @@
 
 # Common constraints for edx repos
 -c common_constraints.txt
-
-# Needed for Django 4.2 + Python 3.12 compatibility
-backports.zoneinfo; python_version<"3.9"
-
-# botocore 1.34.145 depends on urllib3<1.27 and >=1.25.4; python_version < "3.10"
-urllib3<2.0.0
-
-numpy<=1.24.4
-pandas<=2.0.3
-
-# this is the last supported version for python 3.8.x
-astroid<=3.2.4
-
-# upgrade to 5.4.0 causes issues with `importlib`
-edx-lint<=5.3.7

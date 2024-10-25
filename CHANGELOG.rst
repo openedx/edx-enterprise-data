@@ -16,6 +16,11 @@ Unreleased
 
 =========================
 
+[10.0.0] - 2024-10-25
+---------------------
+  * feat!: Python 3.12 Upgrade
+  * Dropped support for ``Python<3.12``
+
 [9.7.0] - 2024-10-23
 ---------------------
   * feat: Add API to fetch enterprise budgets information
