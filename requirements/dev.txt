@@ -84,6 +84,7 @@ cryptography==43.0.3
     #   pgpy
     #   pyjwt
     #   pyopenssl
+    #   secretstorage
     #   snowflake-connector-python
 diff-cover==9.2.0
     # via -r requirements/dev-enterprise_data.in
@@ -187,6 +188,10 @@ jaraco-context==6.0.1
     # via keyring
 jaraco-functools==4.1.0
     # via keyring
+jeepney==0.8.0
+    # via
+    #   keyring
+    #   secretstorage
 jinja2==3.1.4
     # via
     #   code-annotations
@@ -365,6 +370,8 @@ s3transfer==0.10.3
     # via
     #   awscli
     #   boto3
+secretstorage==3.3.3
+    # via keyring
 semantic-version==2.10.0
     # via edx-drf-extensions
 six==1.16.0
