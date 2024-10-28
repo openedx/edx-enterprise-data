@@ -10,15 +10,15 @@ asgiref==3.8.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.35.14
+awscli==1.35.15
     # via -r requirements/reporting.in
 bcrypt==4.2.0
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.35.48
+boto3==1.35.49
     # via -r requirements/reporting.in
-botocore==1.35.48
+botocore==1.35.49
     # via
     #   awscli
     #   boto3
