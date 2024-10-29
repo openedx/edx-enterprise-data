@@ -1,7 +1,7 @@
 """
 Advance Analytics for API endpoints to fetch enterprise enrollments data.
 """
-from datetime import datetime
+from datetime import date
 from logging import getLogger
 
 from edx_rbac.decorators import permission_required
@@ -49,7 +49,7 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
 
         # get values from query params or use default values
         start_date = serializer.data.get('start_date', min_enrollment_date)
-        end_date = serializer.data.get('end_date', datetime.now())
+        end_date = serializer.data.get('end_date', date.today())
         page = serializer.data.get('page', 1)
         page_size = serializer.data.get('page_size', 100)
         enrollments = FactEnrollmentAdminDashTable().get_all_enrollments(
@@ -131,7 +131,7 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
         )
         # get values from query params or use default
         start_date = serializer.data.get('start_date', min_enrollment_date)
-        end_date = serializer.data.get('end_date', datetime.now())
+        end_date = serializer.data.get('end_date', date.today())
         with timer('construct_enrollment_all_stats'):
             data = {
                 'enrollments_over_time': FactEnrollmentAdminDashTable().get_enrolment_time_series_data(

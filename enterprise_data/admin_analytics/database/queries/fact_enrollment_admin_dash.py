@@ -8,6 +8,18 @@ class FactEnrollmentAdminDashQueries:
     Queries related to the fact_enrollment_admin_dash table.
     """
     @staticmethod
+    def get_top_enterprises_query(count=10):
+        """
+        Get the query to fetch the top enterprises by enrollments.
+        """
+        return f"""
+            SELECT enterprise_customer_uuid
+            FROM fact_enrollment_admin_dash
+            GROUP BY enterprise_customer_uuid
+            ORDER BY COUNT(enterprise_customer_uuid) DESC LIMIT {count};
+        """
+
+    @staticmethod
     def get_enrollment_count_query():
         """
         Get the query to fetch the total number of enrollments for an enterprise customer.
