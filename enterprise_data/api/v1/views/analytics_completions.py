@@ -2,7 +2,7 @@
 Views for enterprise admin completions analytics.
 """
 
-from datetime import datetime
+from datetime import date
 from logging import getLogger
 
 from edx_rbac.decorators import permission_required
@@ -50,7 +50,7 @@ class AdvanceAnalyticsCompletionsView(AnalyticsPaginationMixin, ViewSet):
 
         # get values from query params or use default values
         start_date = serializer.data.get('start_date', min_enrollment_date)
-        end_date = serializer.data.get('end_date', datetime.now())
+        end_date = serializer.data.get('end_date', date.today())
         page = serializer.data.get('page', 1)
         page_size = serializer.data.get('page_size', 100)
         completions = FactEnrollmentAdminDashTable().get_all_completions(
@@ -132,7 +132,7 @@ class AdvanceAnalyticsCompletionsView(AnalyticsPaginationMixin, ViewSet):
         )
         # get values from query params or use default
         start_date = serializer.data.get('start_date', min_enrollment_date)
-        end_date = serializer.data.get('end_date', datetime.now())
+        end_date = serializer.data.get('end_date', date.today())
         with timer('construct_completion_all_stats'):
             data = {
                 'completions_over_time': FactEnrollmentAdminDashTable().get_completions_time_series_data(
