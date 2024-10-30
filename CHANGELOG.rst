@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[10.1.0] - 2024-10-29
+---------------------
+  * Added management command to pre-warm analytics data.
+
 [10.0.1] - 2024-10-25
 ---------------------
   * Same as ``10.0.0`` 

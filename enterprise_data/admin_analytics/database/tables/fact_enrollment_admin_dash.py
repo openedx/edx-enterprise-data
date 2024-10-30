@@ -17,6 +17,22 @@ class FactEnrollmentAdminDashTable(BaseTable):
     """
     queries = FactEnrollmentAdminDashQueries()
 
+    def get_top_enterprises(self, count=10):
+        """
+        Get the top enterprises by enrollments.
+
+        Arguments:
+            count (int): The number of enterprises to return.
+
+        Returns:
+            list<str>: A list of enterprise UUIDs.
+        """
+        result = run_query(
+            query=self.queries.get_top_enterprises_query(count),
+            as_dict=False,
+        )
+        return [row[0] for row in result]
+
     @cache_it()
     def get_enrollment_count(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
         """
@@ -77,7 +93,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
         Get the enrollment date range for the given enterprise customer.
 
         Arguments:
-            enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
+            enterprise_customer_uuid (UUID | str): The UUID of the enterprise customer.
 
         Returns:
             (tuple<date, date>): The minimum and maximum enrollment dates.

@@ -1,7 +1,7 @@
 """
 Views for enterprise admin api v1.
 """
-from datetime import datetime
+from datetime import date, datetime
 
 from edx_rbac.decorators import permission_required
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
@@ -160,7 +160,7 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
         if (start_date := serializer.data.get('start_date')) is None:
             start_date, _ = FactEnrollmentAdminDashTable().get_enrollment_date_range(enterprise_id)
 
-        end_date = serializer.data.get('end_date', datetime.now())
+        end_date = serializer.data.get('end_date', date.today())
 
         with timer('top_skills'):
             skills = SkillsDailyRollupAdminDashTable().get_top_skills(enterprise_id, start_date, end_date)
