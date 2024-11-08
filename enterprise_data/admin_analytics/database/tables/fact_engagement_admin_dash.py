@@ -200,7 +200,12 @@ class FactEngagementAdminDashTable(BaseTable):
 
     @cache_it()
     def _get_completion_data_for_leaderboard_query(
-            self, enterprise_customer_uuid: UUID, start_date: date, end_date: date, email_list: list
+            self,
+            enterprise_customer_uuid: UUID,
+            start_date: date,
+            end_date: date,
+            email_list: list,
+            include_null_emails: bool = False
     ):
         """
         Get the completion data for leaderboard.
@@ -218,7 +223,7 @@ class FactEngagementAdminDashTable(BaseTable):
             list[dict]: The engagement data for leaderboard.
         """
         return run_query(
-            query=self.queries.get_completion_data_for_leaderboard_query(email_list),
+            query=self.queries.get_completion_data_for_leaderboard_query(email_list, include_null_emails),
             params={
                 'enterprise_customer_uuid': enterprise_customer_uuid,
                 'start_date': start_date,
@@ -254,18 +259,39 @@ class FactEngagementAdminDashTable(BaseTable):
         if not engagement_data:
             return []
 
-        engagement_data_dict = {engagement['email']: engagement for engagement in engagement_data}
+        engagement_data_dict = {}
+        null_email_data = {}
+        null_email_present = False
+        for engagement in engagement_data:
+            if engagement['email'] is None:
+                null_email_present = True
+                null_email_data = engagement
+                continue
+
+            engagement_data_dict[engagement['email']] = engagement
+
         completion_data = self._get_completion_data_for_leaderboard_query(
             enterprise_customer_uuid=enterprise_customer_uuid,
             start_date=start_date,
             end_date=end_date,
             email_list=list(engagement_data_dict.keys()),
+            include_null_emails=null_email_present
         )
         for completion in completion_data:
             email = completion['email']
-            engagement_data_dict[email]['course_completion_count'] = completion['course_completion_count']
+            if email:
+                engagement_data_dict[email]['course_completion_count'] = completion['course_completion_count']
+            else:
+                null_email_data['course_completion_count'] = completion['course_completion_count']
 
-        return list(engagement_data_dict.values())
+        data = list(engagement_data_dict.values())
+
+        # If there is a record with null email, add it to the start of the list.
+        if null_email_present:
+            null_email_data['email'] = 'learners who have not shared consent'
+            data.insert(0, null_email_data)
+
+        return data
 
     @cache_it()
     def get_leaderboard_data_count(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):

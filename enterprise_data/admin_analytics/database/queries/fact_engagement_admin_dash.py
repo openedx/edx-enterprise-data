@@ -140,7 +140,7 @@ class FactEngagementAdminDashQueries:
         """
 
     @staticmethod
-    def get_completion_data_for_leaderboard_query(email_list: list):
+    def get_completion_data_for_leaderboard_query(email_list: list, include_null_emails: bool = False):
         """
         Get the query to fetch the completions data for leaderboard.
 
@@ -153,13 +153,14 @@ class FactEngagementAdminDashQueries:
         Returns:
             (list<str>): Query to fetch the completions data for leaderboard.
         """
+        extra = 'OR email IS NULL' if include_null_emails else ''
         return f"""
             SELECT email, count(course_key) as course_completion_count
             FROM fact_enrollment_admin_dash
             WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
                 (passed_date BETWEEN %(start_date)s AND %(end_date)s) AND
                 has_passed = 1 AND
-                email IN {str(tuple(email_list))}
+                email IN {str(tuple(email_list))} {extra}
             GROUP BY email;
         """
 
