@@ -10,15 +10,15 @@ asgiref==3.8.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.35.20
+awscli==1.35.23
     # via -r requirements/reporting.in
 bcrypt==4.2.0
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.35.54
+boto3==1.35.57
     # via -r requirements/reporting.in
-botocore==1.35.54
+botocore==1.35.57
     # via
     #   awscli
     #   boto3
@@ -69,7 +69,7 @@ ddt==1.7.2
     # via -r requirements/test.in
 django==4.2.16
     # via
-    #   -c requirements/common_constraints.txt
+    #   -c /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/common_constraints.txt
     #   -r requirements/base.in
     #   django-crum
     #   django-fernet-fields-v2
@@ -166,7 +166,7 @@ numpy==2.1.3
     # via
     #   -r requirements/base.in
     #   pandas
-packaging==24.1
+packaging==24.2
     # via
     #   py2neo
     #   pytest
