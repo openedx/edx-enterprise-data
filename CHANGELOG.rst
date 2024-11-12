@@ -16,6 +16,25 @@ Unreleased
 
 =========================
 
+[10.2.0] - 2024-11-12
+---------------------
+  * Fixed null email issue for leaderboard.
+
+
+[10.1.0] - 2024-10-29
+---------------------
+  * Added management command to pre-warm analytics data.
+
+[10.0.1] - 2024-10-25
+---------------------
+  * Same as ``10.0.0`` 
+  * Bumping the version so a new tag can be created in the GitHub 
+
+[10.0.0] - 2024-10-25
+---------------------
+  * feat!: Python 3.12 Upgrade
+  * Dropped support for ``Python<3.12``
+
 [9.7.0] - 2024-10-23
 ---------------------
   * feat: Add API to fetch enterprise budgets information

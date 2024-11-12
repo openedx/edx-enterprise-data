@@ -49,17 +49,18 @@ class AdvanceAnalyticsLeaderboardView(AnalyticsPaginationMixin, ViewSet):
         end_date = serializer.data.get('end_date', date.today())
         page = serializer.data.get('page', 1)
         page_size = serializer.data.get('page_size', 100)
+        total_count = FactEngagementAdminDashTable().get_leaderboard_data_count(
+            enterprise_customer_uuid=enterprise_uuid,
+            start_date=start_date,
+            end_date=end_date,
+        )
         leaderboard = FactEngagementAdminDashTable().get_all_leaderboard_data(
             enterprise_customer_uuid=enterprise_uuid,
             start_date=start_date,
             end_date=end_date,
             limit=page_size,
             offset=(page - 1) * page_size,
-        )
-        total_count = FactEngagementAdminDashTable().get_leaderboard_data_count(
-            enterprise_customer_uuid=enterprise_uuid,
-            start_date=start_date,
-            end_date=end_date,
+            total_count=total_count,
         )
         response_type = request.query_params.get('response_type', ResponseType.JSON.value)
 
@@ -102,6 +103,7 @@ class AdvanceAnalyticsLeaderboardView(AnalyticsPaginationMixin, ViewSet):
                 end_date=end_date,
                 limit=page_size,
                 offset=offset,
+                total_count=total_count,
             )
             yield from leaderboard
             offset += page_size

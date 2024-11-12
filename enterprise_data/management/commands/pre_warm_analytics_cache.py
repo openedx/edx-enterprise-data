@@ -161,17 +161,18 @@ class Command(BaseCommand):
             start_date=start_date,
             end_date=end_date,
         )
+        total_count = enterprise_engagement_table.get_leaderboard_data_count(
+            enterprise_customer_uuid=enterprise_customer_uuid,
+            start_date=start_date,
+            end_date=end_date,
+        )
         enterprise_engagement_table.get_all_leaderboard_data(
             enterprise_customer_uuid=enterprise_customer_uuid,
             start_date=start_date,
             end_date=end_date,
             limit=page_size,
             offset=0,
-        )
-        enterprise_engagement_table.get_leaderboard_data_count(
-            enterprise_customer_uuid=enterprise_customer_uuid,
-            start_date=start_date,
-            end_date=end_date,
+            total_count=total_count,
         )
 
     @staticmethod
