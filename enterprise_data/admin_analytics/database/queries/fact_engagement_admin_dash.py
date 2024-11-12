@@ -164,6 +164,55 @@ class FactEngagementAdminDashQueries:
         """
 
     @staticmethod
+    def get_engagement_data_for_leaderboard_null_email_only_query():
+        """
+        Get the query to fetch the engagement data for leaderboard for NULL emails only.
+
+        Query should fetch the engagement data for like learning time, session length of
+        the enterprise learners to show in the leaderboard.
+
+        Returns:
+            (str): Query to fetch the engagement data for leaderboard.
+        """
+        return """
+            SELECT
+                email,
+                ROUND(SUM(learning_time_seconds) / 3600, 1) as learning_time_hours,
+                SUM(is_engaged) as session_count,
+                CASE
+                    WHEN SUM(is_engaged) = 0 THEN 0.0
+                    ELSE ROUND(SUM(learning_time_seconds) / 3600 / SUM(is_engaged), 1)
+                END AS average_session_length
+            FROM fact_enrollment_engagement_day_admin_dash
+            WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
+                (activity_date BETWEEN %(start_date)s AND %(end_date)s) AND
+                is_engaged = 1 AND
+                email is NULL
+            GROUP BY email;
+        """
+
+    @staticmethod
+    def get_completion_data_for_leaderboard_null_email_only_query():
+        """
+        Get the query to fetch the completions data for leaderboard for NULL emails.
+
+        Query should fetch the completion data for like course completion count of
+        the enterprise learners to show in the leaderboard.
+
+        Returns:
+            (list<str>): Query to fetch the completions data for leaderboard.
+        """
+        return """
+            SELECT email, count(course_key) as course_completion_count
+            FROM fact_enrollment_admin_dash
+            WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
+                (passed_date BETWEEN %(start_date)s AND %(end_date)s) AND
+                has_passed = 1 AND
+                email is NULL
+            GROUP BY email;
+        """
+
+    @staticmethod
     def get_leaderboard_data_count_query():
         """
         Get the query to fetch the leaderboard row count and null email counter.

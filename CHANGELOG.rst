@@ -16,6 +16,11 @@ Unreleased
 
 =========================
 
+[10.2.0] - 2024-11-12
+---------------------
+  * Fixed null email issue for leaderboard.
+
+
 [10.1.0] - 2024-10-29
 ---------------------
   * Added management command to pre-warm analytics data.
