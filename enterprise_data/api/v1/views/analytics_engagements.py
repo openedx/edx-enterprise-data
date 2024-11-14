@@ -75,7 +75,7 @@ class AdvanceAnalyticsEngagementView(AnalyticsPaginationMixin, ViewSet):
         )
 
         if response_type == ResponseType.CSV.value:
-            filename = f"""individual_engagements, {start_date} - {end_date}.csv"""
+            filename = f"""Individual Engagements, {start_date} - {end_date}.csv"""
 
             return StreamingHttpResponse(
                 IndividualEngagementsCSVRenderer().render(self._stream_serialized_data(

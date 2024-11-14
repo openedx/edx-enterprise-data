@@ -16,6 +16,11 @@ Unreleased
 
 =========================
 
+[10.5.0] - 2024-11-14
+---------------------
+  * Fix CSV file names
+  * Fix ordering of skills charts data
+
 [10.4.0] - 2024-11-14
 ---------------------
   * Updated text for null emails record of leaderboard.
@@ -35,8 +40,8 @@ Unreleased
 
 [10.0.1] - 2024-10-25
 ---------------------
-  * Same as ``10.0.0`` 
-  * Bumping the version so a new tag can be created in the GitHub 
+  * Same as ``10.0.0``
+  * Bumping the version so a new tag can be created in the GitHub
 
 [10.0.0] - 2024-10-25
 ---------------------
