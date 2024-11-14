@@ -30,9 +30,18 @@ class Test(TestCase):
         get_enrollment_date_range_patcher.start()
         self.addCleanup(get_enrollment_date_range_patcher.stop)
 
-    @patch('enterprise_data.admin_analytics.database.tables.fact_engagement_admin_dash.run_query', MagicMock())
-    @patch('enterprise_data.admin_analytics.database.tables.fact_enrollment_admin_dash.run_query', MagicMock())
-    @patch('enterprise_data.admin_analytics.database.tables.skills_daily_rollup_admin_dash.run_query', MagicMock())
+    @patch(
+        'enterprise_data.admin_analytics.database.tables.fact_engagement_admin_dash.run_query',
+        MagicMock(return_value=[])
+    )
+    @patch(
+        'enterprise_data.admin_analytics.database.tables.fact_enrollment_admin_dash.run_query',
+        MagicMock(return_value=[])
+    )
+    @patch(
+        'enterprise_data.admin_analytics.database.tables.skills_daily_rollup_admin_dash.run_query',
+        MagicMock(return_value=[])
+    )
     @patch('enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_top_enterprises')
     @patch('enterprise_data.cache.decorators.cache.set')
     @patch('enterprise_data.cache.decorators.cache.get')
@@ -47,5 +56,5 @@ class Test(TestCase):
 
         call_command('pre_warm_analytics_cache')
 
-        assert mock_get_cache.call_count == 24
-        assert mock_set_cache.call_count == 24
+        assert mock_get_cache.call_count == 23
+        assert mock_set_cache.call_count == 23

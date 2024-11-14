@@ -97,3 +97,20 @@ def primary_subject_truncate(x):
         return x
     else:
         return "other"
+
+
+def find_first(iterable, condition):
+    """
+    Find the first item in an iterable that satisfies the condition.
+
+    Arguments:
+        iterable (iterable): The iterable to search.
+        condition (function): The condition to satisfy.
+
+    Returns:
+        The first item that satisfies the condition, or None if no item satisfies the condition.
+    """
+    try:
+        return next(item for item in iterable if condition(item))
+    except StopIteration:
+        return None
