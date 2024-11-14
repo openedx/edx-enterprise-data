@@ -74,7 +74,7 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
         )
 
         if response_type == ResponseType.CSV.value:
-            filename = f"""individual_enrollments, {start_date} - {end_date}.csv"""
+            filename = f"""Individual Enrollments, {start_date} - {end_date}.csv"""
 
             return StreamingHttpResponse(
                 IndividualEnrollmentsCSVRenderer().render(self._stream_serialized_data(
