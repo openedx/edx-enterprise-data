@@ -16,6 +16,14 @@ Unreleased
 
 =========================
 
+[10.4.0] - 2024-11-14
+---------------------
+  * Updated text for null emails record of leaderboard.
+
+[10.3.0] - 2024-11-13
+---------------------
+  * Re-write top 10 charts queries for Enrollments, Engagements and Completions
+
 [10.2.0] - 2024-11-12
 ---------------------
   * Fixed null email issue for leaderboard.

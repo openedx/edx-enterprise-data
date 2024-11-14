@@ -11,6 +11,8 @@ from ..queries import FactEngagementAdminDashQueries
 from ..utils import run_query
 from .base import BaseTable
 
+NULL_EMAIL_TEXT = 'learners who have not shared consent'
+
 
 class FactEngagementAdminDashTable(BaseTable):
     """
@@ -327,8 +329,9 @@ class FactEngagementAdminDashTable(BaseTable):
         if include_null_email:
             engagement_data_dict['None'] = find_first(engagement_data, lambda x: x['email'] is None) or {}
             completion = find_first(completion_data, lambda x: x['email'] is None) or \
-                {'course_completion_count': 'Unknown'}
+                {'course_completion_count': ''}
             engagement_data_dict['None']['course_completion_count'] = completion['course_completion_count']
+            engagement_data_dict['None']['email'] = NULL_EMAIL_TEXT
 
         return list(engagement_data_dict.values())
 
