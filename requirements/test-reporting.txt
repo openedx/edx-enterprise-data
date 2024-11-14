@@ -8,15 +8,15 @@ amqp==5.2.0
     # via kombu
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.35.20
-    # via -r requirements/reporting.in
+awscli==1.35.23
+    # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
 bcrypt==4.2.0
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.35.54
-    # via -r requirements/reporting.in
-botocore==1.35.54
+boto3==1.35.57
+    # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
+botocore==1.35.57
     # via
     #   awscli
     #   boto3
@@ -24,7 +24,7 @@ botocore==1.35.54
 cachetools==5.5.0
     # via tox
 celery==5.3.6
-    # via -r requirements/reporting.in
+    # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
 certifi==2024.8.30
     # via
     #   py2neo
@@ -61,7 +61,7 @@ coverage[toml]==7.6.4
     # via pytest-cov
 cryptography==43.0.3
     # via
-    #   -r requirements/reporting.in
+    #   -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
     #   paramiko
     #   pgpy
     #   pyopenssl
@@ -95,7 +95,7 @@ mock==2.0.0
     # via -r requirements/test-reporting.in
 monotonic==1.6
     # via py2neo
-packaging==24.1
+packaging==24.2
     # via
     #   py2neo
     #   pyproject-api
@@ -105,11 +105,11 @@ packaging==24.1
 pansi==2024.11.0
     # via py2neo
 paramiko==3.5.0
-    # via -r requirements/reporting.in
+    # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
 pbr==6.1.0
     # via mock
 pgpy==0.6.0
-    # via -r requirements/reporting.in
+    # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
 pillow==11.0.0
     # via pansi
 platformdirs==4.3.6
@@ -124,7 +124,7 @@ pluggy==1.5.0
 prompt-toolkit==3.0.48
     # via click-repl
 py2neo @ https://github.com/overhangio/py2neo/releases/download/2021.2.3/py2neo-2021.2.3.tar.gz
-    # via -r requirements/reporting.in
+    # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
 pyasn1==0.6.1
     # via
     #   pgpy
@@ -136,7 +136,7 @@ pygments==2.18.0
 pyjwt==2.9.0
     # via snowflake-connector-python
 pyminizip==0.2.6
-    # via -r requirements/reporting.in
+    # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
 pynacl==1.5.0
     # via paramiko
 pyopenssl==24.2.1
@@ -182,7 +182,7 @@ six==1.16.0
     #   python-dateutil
     #   vertica-python
 snowflake-connector-python==3.12.3
-    # via -r requirements/reporting.in
+    # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
 tomlkit==0.13.2
@@ -196,7 +196,7 @@ tzdata==2024.2
     #   celery
     #   kombu
 unicodecsv==0.14.1
-    # via -r requirements/reporting.in
+    # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
 urllib3==2.2.3
     # via
     #   botocore
@@ -204,7 +204,7 @@ urllib3==2.2.3
     #   requests
     #   responses
 vertica-python==1.4.0
-    # via -r requirements/reporting.in
+    # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
 vine==5.1.0
     # via
     #   amqp
