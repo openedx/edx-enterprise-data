@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-amqp==5.2.0
+amqp==5.3.1
     # via kombu
 asgiref==3.8.1
     # via django
@@ -14,15 +14,15 @@ astroid==3.3.5
     # via
     #   pylint
     #   pylint-celery
-awscli==1.35.23
+awscli==1.36.4
     # via -r requirements/reporting.in
 bcrypt==4.2.0
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.35.57
+boto3==1.35.63
     # via -r requirements/reporting.in
-botocore==1.35.57
+botocore==1.35.63
     # via
     #   awscli
     #   boto3
@@ -70,13 +70,13 @@ click-plugins==1.1.1
     # via celery
 click-repl==0.3.0
     # via celery
-code-annotations==1.8.0
+code-annotations==1.8.1
     # via edx-lint
 colorama==0.4.6
     # via
     #   awscli
     #   tox
-coverage[toml]==7.6.4
+coverage[toml]==7.6.7
     # via pytest-cov
 cryptography==43.0.3
     # via
@@ -124,7 +124,7 @@ django-model-utils==5.0.0
     #   -r requirements/base.in
     #   -r requirements/test.in
     #   edx-rbac
-django-waffle==4.1.0
+django-waffle==4.2.0
     # via
     #   edx-django-utils
     #   edx-drf-extensions
@@ -170,7 +170,7 @@ factory-boy==3.3.1
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==30.8.2
+faker==33.0.0
     # via factory-boy
 filelock==3.16.1
     # via
@@ -221,7 +221,7 @@ lxml[html-clean,html_clean]==5.3.0
     # via
     #   edx-i18n-tools
     #   lxml-html-clean
-lxml-html-clean==0.3.1
+lxml-html-clean==0.4.1
     # via lxml
 markdown-it-py==3.0.0
     # via rich
@@ -310,7 +310,7 @@ pygments==2.18.0
     #   py2neo
     #   readme-renderer
     #   rich
-pyjwt[crypto]==2.9.0
+pyjwt[crypto]==2.10.0
     # via
     #   drf-jwt
     #   edx-drf-extensions
@@ -420,7 +420,7 @@ snowflake-connector-python==3.12.3
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
-sqlparse==0.5.1
+sqlparse==0.5.2
     # via django
 stevedore==5.3.0
     # via

@@ -4,21 +4,21 @@
 #
 #    make upgrade
 #
-amqp==5.2.0
+amqp==5.3.1
     # via kombu
 asgiref==3.8.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.35.23
+awscli==1.36.4
     # via -r requirements/reporting.in
 bcrypt==4.2.0
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.35.57
+boto3==1.35.63
     # via -r requirements/reporting.in
-botocore==1.35.57
+botocore==1.35.63
     # via
     #   awscli
     #   boto3
@@ -89,7 +89,7 @@ django-model-utils==5.0.0
     # via
     #   -r requirements/base.in
     #   edx-rbac
-django-waffle==4.1.0
+django-waffle==4.2.0
     # via
     #   edx-django-utils
     #   edx-drf-extensions
@@ -125,7 +125,7 @@ edx-rest-api-client==6.0.0
     # via -r requirements/base.in
 factory-boy==3.3.1
     # via -r requirements/base.in
-faker==30.8.2
+faker==33.0.0
     # via factory-boy
 filelock==3.16.1
     # via snowflake-connector-python
@@ -183,7 +183,7 @@ pycparser==2.22
     # via cffi
 pygments==2.18.0
     # via py2neo
-pyjwt[crypto]==2.9.0
+pyjwt[crypto]==2.10.0
     # via
     #   drf-jwt
     #   edx-drf-extensions
@@ -240,7 +240,7 @@ snowflake-connector-python==3.12.3
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
-sqlparse==0.5.1
+sqlparse==0.5.2
     # via django
 stevedore==5.3.0
     # via
