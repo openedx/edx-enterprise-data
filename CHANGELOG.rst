@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[10.5.1] - 2024-11-14
+---------------------
+  * chore: upgrade python requirements
+
 [10.5.0] - 2024-11-14
 ---------------------
   * Fix CSV file names
