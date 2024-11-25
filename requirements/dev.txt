@@ -14,15 +14,15 @@ astroid==3.3.5
     # via
     #   pylint
     #   pylint-celery
-awscli==1.36.4
+awscli==1.36.9
     # via -r requirements/reporting.in
-bcrypt==4.2.0
+bcrypt==4.2.1
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.35.63
+boto3==1.35.68
     # via -r requirements/reporting.in
-botocore==1.35.63
+botocore==1.35.68
     # via
     #   awscli
     #   boto3
@@ -70,7 +70,7 @@ click-plugins==1.1.1
     # via celery
 click-repl==0.3.0
     # via celery
-code-annotations==1.8.1
+code-annotations==1.8.2
     # via edx-lint
 colorama==0.4.6
     # via
@@ -138,7 +138,7 @@ docutils==0.16
     #   readme-renderer
 drf-jwt==1.19.2
     # via edx-drf-extensions
-edx-django-utils==7.0.0
+edx-django-utils==7.0.1
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
@@ -226,7 +226,7 @@ more-itertools==10.5.0
     #   jaraco-functools
 mysql-connector-python==9.1.0
     # via -r requirements/base.in
-newrelic==10.2.0
+newrelic==10.3.0
     # via edx-django-utils
 nh3==0.2.18
     # via readme-renderer
@@ -368,7 +368,7 @@ rsa==4.7.2
     # via awscli
 rules==3.5
     # via -r requirements/base.in
-s3transfer==0.10.3
+s3transfer==0.10.4
     # via
     #   awscli
     #   boto3
@@ -392,7 +392,7 @@ sortedcontainers==2.4.0
     # via snowflake-connector-python
 sqlparse==0.5.2
     # via django
-stevedore==5.3.0
+stevedore==5.4.0
     # via
     #   code-annotations
     #   edx-django-utils
@@ -438,7 +438,7 @@ virtualenv==20.27.1
     # via tox
 wcwidth==0.2.13
     # via prompt-toolkit
-wheel==0.45.0
+wheel==0.45.1
     # via
     #   -r requirements/dev-enterprise_data.in
     #   pip-tools
