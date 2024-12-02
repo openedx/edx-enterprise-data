@@ -8,15 +8,15 @@ amqp==5.3.1
     # via kombu
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.36.4
+awscli==1.36.12
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
-bcrypt==4.2.0
+bcrypt==4.2.1
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.35.63
+boto3==1.35.71
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
-botocore==1.35.63
+botocore==1.35.71
     # via
     #   awscli
     #   boto3
@@ -57,9 +57,9 @@ colorama==0.4.6
     # via
     #   awscli
     #   tox
-coverage[toml]==7.6.7
+coverage[toml]==7.6.8
     # via pytest-cov
-cryptography==43.0.3
+cryptography==44.0.0
     # via
     #   -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
     #   paramiko
@@ -133,13 +133,13 @@ pycparser==2.22
     # via cffi
 pygments==2.18.0
     # via py2neo
-pyjwt==2.10.0
+pyjwt==2.10.1
     # via snowflake-connector-python
 pyminizip==0.2.6
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
 pynacl==1.5.0
     # via paramiko
-pyopenssl==24.2.1
+pyopenssl==24.3.0
     # via snowflake-connector-python
 pyproject-api==1.8.0
     # via tox
@@ -170,7 +170,7 @@ responses==0.25.3
     # via -r requirements/test-reporting.in
 rsa==4.7.2
     # via awscli
-s3transfer==0.10.3
+s3transfer==0.10.4
     # via
     #   awscli
     #   boto3
@@ -210,7 +210,7 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==20.27.1
+virtualenv==20.28.0
     # via tox
 wcwidth==0.2.13
     # via prompt-toolkit
