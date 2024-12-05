@@ -124,6 +124,7 @@ class FactEnrollmentAdminDashQueries:
 
             SELECT
                 d.course_key,
+                MAX(d.course_title) AS course_title,
                 d.enroll_type,
                 COUNT(*) AS enrollment_count
             FROM filtered_data d
