@@ -2,4 +2,4 @@
 Enterprise data api application. This Django app exposes API endpoints used by enterprises.
 """
 
-__version__ = "9.7.5"
+__version__ = "10.6.1"

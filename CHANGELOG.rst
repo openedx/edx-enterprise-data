@@ -16,6 +16,18 @@ Unreleased
 
 =========================
 
+[10.6.1] - 2024-12-10
+---------------------
+  * feat: add course_title in top courses in enrollments csv
+
+[10.6.0] - 2024-12-09
+---------------------
+  * chore: upgrade python requirements
+
+[10.5.1] - 2024-11-14
+---------------------
+  * chore: upgrade python requirements
+
 [10.5.0] - 2024-11-14
 ---------------------
   * Fix CSV file names
