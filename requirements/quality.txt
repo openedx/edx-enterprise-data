@@ -10,19 +10,19 @@ asgiref==3.8.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-astroid==3.3.6
+astroid==3.3.7
     # via
     #   pylint
     #   pylint-celery
-awscli==1.36.22
+awscli==1.36.27
     # via -r requirements/reporting.in
 bcrypt==4.2.1
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.35.81
+boto3==1.35.86
     # via -r requirements/reporting.in
-botocore==1.35.81
+botocore==1.35.86
     # via
     #   awscli
     #   boto3
@@ -51,7 +51,7 @@ charset-normalizer==3.4.0
     # via
     #   requests
     #   snowflake-connector-python
-click==8.1.7
+click==8.1.8
     # via
     #   celery
     #   click-didyoumean
@@ -203,7 +203,7 @@ jeepney==0.8.0
     # via
     #   keyring
     #   secretstorage
-jinja2==3.1.4
+jinja2==3.1.5
     # via
     #   code-annotations
     #   diff-cover
@@ -241,9 +241,9 @@ mysql-connector-python==9.1.0
     # via -r requirements/base.in
 newrelic==10.4.0
     # via edx-django-utils
-nh3==0.2.19
+nh3==0.2.20
     # via readme-renderer
-numpy==2.2.0
+numpy==2.2.1
     # via
     #   -r requirements/base.in
     #   pandas
@@ -289,7 +289,7 @@ polib==1.2.0
     # via edx-i18n-tools
 prompt-toolkit==3.0.48
     # via click-repl
-psutil==6.1.0
+psutil==6.1.1
     # via edx-django-utils
 py2neo @ https://github.com/overhangio/py2neo/releases/download/2021.2.3/py2neo-2021.2.3.tar.gz
     # via -r requirements/reporting.in
@@ -452,7 +452,7 @@ tzdata==2024.2
     #   pandas
 unicodecsv==0.14.1
     # via -r requirements/reporting.in
-urllib3==2.2.3
+urllib3==2.3.0
     # via
     #   botocore
     #   py2neo
