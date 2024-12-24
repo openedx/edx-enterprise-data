@@ -112,9 +112,9 @@ class TestEnterpriseGroupMembership(unittest.TestCase):
         """
         Test conversion to string.
         """
-        expected_str = (f'<Enterprise Group Membership: Test Group '
-                        f'(Group UUID: ee5e6b3a-069a-4947-bb8d-d2dbc323396d) '
-                        f'for Customer ID ee5e6b3a-069a-4947-bb8d-d2dbc323396c>')
+        expected_str = ('<Enterprise Group Membership: Test Group '
+                        '(Group UUID: ee5e6b3a-069a-4947-bb8d-d2dbc323396d) '
+                        'for Customer ID ee5e6b3a-069a-4947-bb8d-d2dbc323396c>')
         assert expected_str == method(self.enterprise_group_membership)
 
 
