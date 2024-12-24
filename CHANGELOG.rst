@@ -16,6 +16,11 @@ Unreleased
 
 =========================
 
+[10.7.1] - 2025-01-07
+---------------------
+  * feat: add group_membership table
+  * feat: add APIs to support LPR filtering for enterprise groups
+
 [10.7.0] - 2024-12-24
 ---------------------
   * feat: Added user's first and last name in the enterprise enrollments API and related DB table.
