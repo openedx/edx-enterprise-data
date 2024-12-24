@@ -21,6 +21,7 @@ from enterprise_data.models import (
     EnterpriseAdminLearnerProgress,
     EnterpriseAdminSummarizeInsights,
     EnterpriseExecEdLCModulePerformance,
+    EnterpriseGroupMembership,
     EnterpriseSubsidyBudget,
 )
 from enterprise_data.utils import timer
@@ -229,4 +230,25 @@ class EnterpriseBudgetView(APIView):
         )
 
         serializer = serializers.EnterpriseBudgetSerializer(budgets, many=True)
+        return Response(serializer.data)
+
+
+class EnterpriseGroupMembershipView(APIView):
+    """
+    View for getting Group Memberships information for an enterprise.
+    """
+    authentication_classes = (JwtAuthentication,)
+    http_method_names = ["get"]
+
+    @permission_required("can_access_enterprise", fn=lambda request, enterprise_uuid: enterprise_uuid)
+    def get(self, request, enterprise_uuid):
+        """
+        Returns the groups and budgets for an enterprise.
+        """
+        groups = EnterpriseGroupMembership.objects.filter(
+            enterprise_customer_id=enterprise_uuid,
+            group_type='flex',
+        )
+
+        serializer = serializers.EnterpriseGroupMembershipSerializer(groups, many=True)
         return Response(serializer.data)
