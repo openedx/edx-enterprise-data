@@ -396,6 +396,46 @@ class EnterpriseSubsidyBudget(models.Model):
         return self.__str__()
 
 
+class EnterpriseGroupMembership(models.Model):
+    """
+    Details of group memberships in enterprise reports.
+    """
+
+    objects = EnterpriseReportingModelManager()
+
+    class Meta:
+        app_label = 'enterprise_data'
+        db_table = 'group_membership'
+        verbose_name = _("Group Membership")
+        verbose_name_plural = _("Group Memberships")
+
+    is_applies_to_all_contexts = models.BooleanField(default=False)
+    enterprise_customer_id = models.UUIDField()
+    enterprise_group_name = models.CharField(max_length=255, null=True)
+    enterprise_group_uuid = models.UUIDField(primary_key=True, db_index=True)
+    group_is_removed = models.BooleanField(default=False)
+    group_type = models.CharField(max_length=128, null=True)
+    activated_at = models.DateTimeField(null=True)
+    enterprise_customer_user_id = models.PositiveIntegerField(null=True)
+    membership_is_removed = models.BooleanField(default=False)
+    membership_status = models.CharField(max_length=128, null=True)
+    enterprise_group_membership_uuid = models.UUIDField(null=True)
+
+    def __str__(self):
+        """
+        Return a human-readable string representation of the object.
+        """
+        return (f'<Enterprise Group Membership: {self.enterprise_group_name} '
+                f'(Group UUID: {self.enterprise_group_uuid}) '
+                f'for Customer ID {self.enterprise_customer_id}>')
+
+    def __repr__(self):
+        """
+        Return uniquely identifying string representation.
+        """
+        return self.__str__()
+
+
 class EnterpriseUser(models.Model):
     """Information includes a mix of the user's meta data.
 

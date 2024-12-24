@@ -10,6 +10,7 @@ from enterprise_data.models import (
     EnterpriseAdminLearnerProgress,
     EnterpriseAdminSummarizeInsights,
     EnterpriseExecEdLCModulePerformance,
+    EnterpriseGroupMembership,
     EnterpriseLearner,
     EnterpriseLearnerEnrollment,
     EnterpriseOffer,
@@ -250,6 +251,19 @@ class EnterpriseBudgetSerializer(serializers.ModelSerializer):
         fields = (
             'subsidy_access_policy_uuid',
             'subsidy_access_policy_display_name',
+        )
+
+
+class EnterpriseGroupMembershipSerializer(serializers.ModelSerializer):
+    """
+    Serializer for EnterpriseGroupMembership model.
+    """
+
+    class Meta:
+        model = EnterpriseGroupMembership
+        fields = (
+            'enterprise_group_uuid',
+            'enterprise_group_name',
         )
 
 

@@ -20,7 +20,7 @@ from django.utils import timezone
 
 from enterprise_data.admin_analytics.database.utils import LOGGER
 from enterprise_data.api.v1 import serializers
-from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment
+from enterprise_data.models import EnterpriseGroupMembership, EnterpriseLearner, EnterpriseLearnerEnrollment
 from enterprise_data.paginators import EnterpriseEnrollmentsPagination
 from enterprise_data.renderers import EnrollmentsCSVRenderer
 from enterprise_data.utils import subtract_one_month
@@ -173,6 +173,19 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         is_subsidy = query_filters.get('is_subsidy')
         if is_subsidy:
             queryset = queryset.filter(is_subsidy=is_subsidy)
+
+        group_uuid = query_filters.get('group_uuid')
+        if group_uuid:
+            queryset = queryset.annotate(
+                flex_group_uuid=Subquery(
+                    EnterpriseGroupMembership.objects.filter(
+                        enterprise_customer_user_id=OuterRef('enterprise_user_id'),
+                        enterprise_group_uuid=group_uuid,
+                        group_type='flex',  # We want to filter only flex groups not budget groups
+                    ).values('enterprise_group_uuid')
+                )
+            )
+            queryset = queryset.filter(flex_group_uuid=group_uuid)
 
         return queryset
 
