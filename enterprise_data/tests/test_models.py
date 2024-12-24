@@ -10,6 +10,7 @@ from pytest import mark
 
 from enterprise_data.tests.test_utils import (
     EnterpriseEnrollmentFactory,
+    EnterpriseGroupMembershipFactory,
     EnterpriseOfferFactory,
     EnterpriseSubsidyBudgetFactory,
     EnterpriseUserFactory,
@@ -89,6 +90,32 @@ class TestEnterpriseSubsidyBudget(unittest.TestCase):
                         f'for Subsidy {self.enterprise_subsidy_budget.subsidy_uuid} '
                         f'for {self.enterprise_subsidy_budget.enterprise_customer_name}>')
         assert expected_str == method(self.enterprise_subsidy_budget)
+
+
+@mark.django_db
+@ddt.ddt
+class TestEnterpriseGroupMembership(unittest.TestCase):
+    """
+    Tests for Enterprise Group Membership model
+    """
+
+    def setUp(self):
+        self.enterprise_group_membership = EnterpriseGroupMembershipFactory(
+            enterprise_customer_id='ee5e6b3a-069a-4947-bb8d-d2dbc323396c',
+            enterprise_group_name='Test Group',
+            enterprise_group_uuid='ee5e6b3a-069a-4947-bb8d-d2dbc323396d',
+        )
+        super().setUp()
+
+    @ddt.data(str, repr)
+    def test_string_conversion(self, method):
+        """
+        Test conversion to string.
+        """
+        expected_str = ('<Enterprise Group Membership: Test Group '
+                        '(Group UUID: ee5e6b3a-069a-4947-bb8d-d2dbc323396d) '
+                        'for Customer ID ee5e6b3a-069a-4947-bb8d-d2dbc323396c>')
+        assert expected_str == method(self.enterprise_group_membership)
 
 
 @mark.django_db
