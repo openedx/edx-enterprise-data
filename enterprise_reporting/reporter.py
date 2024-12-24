@@ -52,6 +52,8 @@ class EnterpriseReportSender:
         'user_account_creation_date',
         'user_email',
         'user_username',
+        'user_first_name',
+        'user_last_name',
         'user_age',
         'user_level_of_education',
         'user_gender',

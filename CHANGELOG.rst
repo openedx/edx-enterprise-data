@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[10.7.0] - 2024-12-24
+---------------------
+  * feat: Added user's first and last name in the enterprise enrollments API and related DB table.
+
 [10.6.1] - 2024-12-10
 ---------------------
   * feat: add course_title in top courses in enrollments csv
