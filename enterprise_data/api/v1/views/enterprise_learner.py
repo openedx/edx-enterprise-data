@@ -59,9 +59,9 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         'course_primary_program', 'primary_program_type', 'course_primary_subject', 'has_passed',
         'last_activity_date', 'progress_status', 'passed_date', 'current_grade',
         'letter_grade', 'enterprise_user_id', 'user_email', 'user_account_creation_date',
-        'user_country_code', 'user_username', 'enterprise_name', 'enterprise_customer_uuid',
-        'enterprise_sso_uid', 'created', 'course_api_url', 'total_learning_time_hours', 'is_subsidy',
-        'course_product_line', 'budget_id'
+        'user_country_code', 'user_username', 'user_first_name', 'user_last_name', 'enterprise_name',
+        'enterprise_customer_uuid', 'enterprise_sso_uid', 'created', 'course_api_url', 'total_learning_time_hours',
+        'is_subsidy', 'course_product_line', 'budget_id',
     ]
 
     # TODO: Remove after we release the streaming csv changes

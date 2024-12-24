@@ -180,6 +180,8 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
     enterprise_user_id = factory.Sequence(lambda n: n)
     user_email = factory.lazy_attribute(lambda x: FAKER.email())  # pylint: disable=no-member
     user_username = factory.Sequence('robot{}'.format)
+    user_first_name = factory.Sequence('Robot First {}'.format)
+    user_last_name = factory.Sequence('Robot Last {}'.format)
     user_account_creation_date = factory.lazy_attribute(lambda x: '2018-01-01')
     user_country_code = factory.lazy_attribute(lambda x: FAKER.country_code())
     is_subsidy = factory.lazy_attribute(lambda x: FAKER.boolean())  # pylint: disable=no-member
@@ -230,6 +232,8 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
             'user_account_creation_date',
             'user_country_code',
             'user_username',
+            'user_first_name',
+            'user_last_name',
         ]
         if create and not obj.is_consent_granted:
             for field in dsc_dependent_fields:
