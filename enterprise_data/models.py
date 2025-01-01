@@ -128,6 +128,8 @@ class EnterpriseLearnerEnrollment(models.Model):
     user_account_creation_date = models.DateTimeField(null=True)
     user_country_code = models.CharField(max_length=2, null=True)
     user_username = models.CharField(max_length=255, null=True)
+    user_first_name = models.CharField(max_length=255, null=True)
+    user_last_name = models.CharField(max_length=255, null=True)
     enterprise_name = models.CharField(max_length=255, db_index=True, null=False)
     enterprise_customer_uuid = models.UUIDField(db_index=True, null=False)
     enterprise_sso_uid = models.CharField(max_length=255, null=True)
