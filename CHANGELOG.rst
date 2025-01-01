@@ -16,6 +16,11 @@ Unreleased
 
 =========================
 
+[10.6.2] - 2024-12-24
+---------------------
+  * feat: add group_membership table
+  * feat: add APIs to support LPR filtering for enterprise groups 
+
 [10.6.1] - 2024-12-10
 ---------------------
   * feat: add course_title in top courses in enrollments csv

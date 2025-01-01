@@ -101,6 +101,11 @@ urlpatterns = [
         enterprise_admin_views.EnterpriseBudgetView.as_view(),
         name='enterprise-budgets'
     ),
+    re_path(
+        fr'^enterprise/(?P<enterprise_uuid>{UUID4_REGEX})/groups',
+        enterprise_admin_views.EnterpriseGroupMembershipView.as_view(),
+        name='enterprise-groups'
+    ),
 ]
 
 urlpatterns += router.urls
