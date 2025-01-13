@@ -8,15 +8,15 @@ amqp==5.3.1
     # via kombu
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.36.33
+awscli==1.36.38
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
 bcrypt==4.2.1
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.35.92
+boto3==1.35.97
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
-botocore==1.35.92
+botocore==1.35.97
     # via
     #   awscli
     #   boto3
@@ -131,7 +131,7 @@ pyasn1==0.6.1
     #   rsa
 pycparser==2.22
     # via cffi
-pygments==2.19.0
+pygments==2.19.1
     # via py2neo
 pyjwt==2.10.1
     # via snowflake-connector-python
@@ -166,7 +166,7 @@ requests==2.32.3
     # via
     #   responses
     #   snowflake-connector-python
-responses==0.25.3
+responses==0.25.5
     # via -r requirements/test-reporting.in
 rsa==4.7.2
     # via awscli
@@ -197,8 +197,9 @@ tzdata==2024.2
     #   kombu
 unicodecsv==0.14.1
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
-urllib3==2.3.0
+urllib3==2.2.3
     # via
+    #   -c /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/common_constraints.txt
     #   botocore
     #   py2neo
     #   requests
