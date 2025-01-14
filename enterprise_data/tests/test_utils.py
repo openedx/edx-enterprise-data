@@ -14,6 +14,7 @@ from django.contrib.auth import get_user_model
 
 from enterprise_data.models import (
     EnterpriseEnrollment,
+    EnterpriseGroupMembership,
     EnterpriseLearner,
     EnterpriseLearnerEnrollment,
     EnterpriseOffer,
@@ -286,6 +287,27 @@ class EnterpriseSubsidyBudgetFactory(factory.django.DjangoModelFactory):
     percent_of_policy_spent = factory.lazy_attribute(
         lambda x: round(x.amount_of_policy_spent / x.starting_balance, 2)
     )
+
+
+class EnterpriseGroupMembershipFactory(factory.django.DjangoModelFactory):
+    """
+    EnterpriseGroupMembership model Factory.
+    """
+    class Meta:
+        model = EnterpriseGroupMembership
+
+    enterprise_customer_id = factory.LazyAttribute(lambda _: FAKER.uuid4())
+    enterprise_group_name = factory.LazyAttribute(lambda _: ' '.join(FAKER.words(nb=2)).title())
+    enterprise_group_uuid = factory.LazyAttribute(lambda _: FAKER.uuid4())
+    group_is_removed = factory.LazyAttribute(lambda _: FAKER.boolean())
+    group_type = factory.LazyAttribute(lambda _: 'budget')
+    activated_at = factory.LazyAttribute(lambda _: FAKER.date_time_this_decade(tzinfo=pytz.UTC))
+    enterprise_customer_user_id = factory.LazyAttribute(lambda _: FAKER.random_int(min=1, max=10000))
+    membership_is_removed = factory.LazyAttribute(lambda _: FAKER.boolean())
+    membership_status = factory.LazyAttribute(lambda _: FAKER.word())
+    enterprise_group_membership_uuid = factory.LazyAttribute(lambda _: FAKER.uuid4())
+
+    is_applies_to_all_contexts = factory.LazyAttribute(lambda _: FAKER.boolean())
 
 
 class EnterpriseOfferFactory(factory.django.DjangoModelFactory):

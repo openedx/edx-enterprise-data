@@ -12,7 +12,7 @@ from rest_framework.response import Response
 
 from django.conf import settings
 from django.core.paginator import Paginator
-from django.db.models import Count, Max, OuterRef, Prefetch, Q, Subquery, Value
+from django.db.models import Count, Exists, Max, OuterRef, Prefetch, Q, Subquery, Value
 from django.db.models.fields import IntegerField
 from django.db.models.functions import Coalesce
 from django.http import StreamingHttpResponse
@@ -20,7 +20,7 @@ from django.utils import timezone
 
 from enterprise_data.admin_analytics.database.utils import LOGGER
 from enterprise_data.api.v1 import serializers
-from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment
+from enterprise_data.models import EnterpriseGroupMembership, EnterpriseLearner, EnterpriseLearnerEnrollment
 from enterprise_data.paginators import EnterpriseEnrollmentsPagination
 from enterprise_data.renderers import EnrollmentsCSVRenderer
 from enterprise_data.utils import subtract_one_month
@@ -173,6 +173,15 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         is_subsidy = query_filters.get('is_subsidy')
         if is_subsidy:
             queryset = queryset.filter(is_subsidy=is_subsidy)
+
+        group_uuid = query_filters.get('group_uuid')
+        if group_uuid:
+            flex_group_exists = EnterpriseGroupMembership.objects.filter(
+                enterprise_customer_user_id=OuterRef('enterprise_user_id'),
+                enterprise_group_uuid=group_uuid,
+                group_type='flex'
+            )
+            queryset = queryset.filter(Exists(flex_group_exists))
 
         return queryset
 
