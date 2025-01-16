@@ -38,7 +38,8 @@ class SkillsDailyRollupAdminDashQueries:
             WITH TopSkills AS (
                 -- Get top 10 skills by total enrollments
                 SELECT
-                    skill_name
+                    skill_name,
+                    SUM(enrolls) AS total_enrollment_count
                 FROM
                     skills_daily_rollup_admin_dash
                 WHERE
@@ -47,7 +48,7 @@ class SkillsDailyRollupAdminDashQueries:
                 GROUP BY
                     skill_name
                 ORDER BY
-                    SUM(enrolls) DESC
+                    total_enrollment_count DESC
                 LIMIT 10
             )
             SELECT
@@ -70,7 +71,7 @@ class SkillsDailyRollupAdminDashQueries:
             GROUP BY
                 sd.skill_name, subject_name
             ORDER BY
-                subject_name;
+                total_enrollment_count DESC;
         """
 
     @staticmethod
@@ -82,7 +83,8 @@ class SkillsDailyRollupAdminDashQueries:
             WITH TopSkills AS (
                 -- Get top 10 skills by total completions
                 SELECT
-                    skill_name
+                    skill_name,
+                    SUM(completions) AS total_completion_count
                 FROM
                     skills_daily_rollup_admin_dash
                 WHERE
@@ -91,7 +93,7 @@ class SkillsDailyRollupAdminDashQueries:
                 GROUP BY
                     skill_name
                 ORDER BY
-                    SUM(completions) DESC
+                    total_completion_count DESC
                 LIMIT 10
             )
             SELECT
@@ -114,5 +116,5 @@ class SkillsDailyRollupAdminDashQueries:
             GROUP BY
                 sd.skill_name, subject_name
             ORDER BY
-                subject_name;
+                total_completion_count DESC;
         """

@@ -5,17 +5,12 @@ from uuid import UUID
 
 from rest_framework import serializers
 
-from enterprise_data.admin_analytics.constants import (
-    Calculation,
-    EngagementChart,
-    EnrollmentChart,
-    Granularity,
-    ResponseType,
-)
+from enterprise_data.admin_analytics.constants import ResponseType
 from enterprise_data.models import (
     EnterpriseAdminLearnerProgress,
     EnterpriseAdminSummarizeInsights,
     EnterpriseExecEdLCModulePerformance,
+    EnterpriseGroupMembership,
     EnterpriseLearner,
     EnterpriseLearnerEnrollment,
     EnterpriseOffer,
@@ -47,9 +42,9 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
             'course_primary_program', 'primary_program_type', 'course_primary_subject', 'has_passed',
             'last_activity_date', 'progress_status', 'passed_date', 'current_grade',
             'letter_grade', 'enterprise_user_id', 'user_email', 'user_account_creation_date',
-            'user_country_code', 'user_username', 'enterprise_name', 'enterprise_customer_uuid',
-            'enterprise_sso_uid', 'created', 'course_api_url', 'total_learning_time_hours', 'is_subsidy',
-            'course_product_line', 'budget_id', 'enterprise_group_name', 'enterprise_group_uuid',
+            'user_country_code', 'user_username', 'user_first_name', 'user_last_name', 'enterprise_name',
+            'enterprise_customer_uuid', 'enterprise_sso_uid', 'created', 'course_api_url', 'total_learning_time_hours',
+            'is_subsidy', 'course_product_line', 'budget_id', 'enterprise_group_name', 'enterprise_group_uuid',
         )
 
     def get_course_api_url(self, obj):
@@ -235,10 +230,41 @@ class EnterpriseExecEdLCModulePerformanceSerializer(serializers.ModelSerializer)
     """
     Serializer for EnterpriseExecEdLCModulePerformance model.
     """
+    extensions_requested = serializers.SerializerMethodField()
 
     class Meta:
         model = EnterpriseExecEdLCModulePerformance
         fields = '__all__'
+
+    def get_extensions_requested(self, obj):
+        """Return extensions_requested if not None, otherwise return 0"""
+        return obj.extensions_requested if obj.extensions_requested is not None else 0
+
+
+class EnterpriseBudgetSerializer(serializers.ModelSerializer):
+    """
+    Serializer for EnterpriseSubsidyBudget model.
+    """
+
+    class Meta:
+        model = EnterpriseSubsidyBudget
+        fields = (
+            'subsidy_access_policy_uuid',
+            'subsidy_access_policy_display_name',
+        )
+
+
+class EnterpriseGroupMembershipSerializer(serializers.ModelSerializer):
+    """
+    Serializer for EnterpriseGroupMembership model.
+    """
+
+    class Meta:
+        model = EnterpriseGroupMembership
+        fields = (
+            'enterprise_group_uuid',
+            'enterprise_group_name',
+        )
 
 
 class AdvanceAnalyticsQueryParamSerializer(serializers.Serializer):  # pylint: disable=abstract-method
@@ -247,23 +273,8 @@ class AdvanceAnalyticsQueryParamSerializer(serializers.Serializer):  # pylint: d
         ResponseType.JSON.value,
         ResponseType.CSV.value
     ]
-    GRANULARITY_CHOICES = [
-        Granularity.DAILY.value,
-        Granularity.WEEKLY.value,
-        Granularity.MONTHLY.value,
-        Granularity.QUARTERLY.value
-    ]
-    CALCULATION_CHOICES = [
-        Calculation.TOTAL.value,
-        Calculation.RUNNING_TOTAL.value,
-        Calculation.MOVING_AVERAGE_3_PERIOD.value,
-        Calculation.MOVING_AVERAGE_7_PERIOD.value
-    ]
-
     start_date = serializers.DateField(required=False)
     end_date = serializers.DateField(required=False)
-    granularity = serializers.CharField(required=False)
-    calculation = serializers.CharField(required=False)
     response_type = serializers.CharField(required=False)
     page = serializers.IntegerField(required=False, min_value=1)
     page_size = serializers.IntegerField(required=False, min_value=2)
@@ -292,74 +303,4 @@ class AdvanceAnalyticsQueryParamSerializer(serializers.Serializer):  # pylint: d
         """
         if value not in self.RESPONSE_TYPES:
             raise serializers.ValidationError(f"response_type must be one of {self.RESPONSE_TYPES}")
-        return value
-
-    def validate_granularity(self, value):
-        """
-        Validate the granularity value.
-
-        Raises:
-            serializers.ValidationError: If granularity is not one of the valid choices.
-        """
-        if value not in self.GRANULARITY_CHOICES:
-            raise serializers.ValidationError(f"Granularity must be one of {self.GRANULARITY_CHOICES}")
-        return value
-
-    def validate_calculation(self, value):
-        """
-        Validate the calculation value.
-
-        Raises:
-            serializers.ValidationError: If calculation is not one of the valid choices
-        """
-        if value not in self.CALCULATION_CHOICES:
-            raise serializers.ValidationError(f"Calculation must be one of {self.CALCULATION_CHOICES}")
-        return value
-
-
-class AdvanceAnalyticsEnrollmentStatsSerializer(
-    AdvanceAnalyticsQueryParamSerializer
-):  # pylint: disable=abstract-method
-    """Serializer for validating Advance Analytics Enrollments Stats API"""
-    CHART_TYPES = [
-        EnrollmentChart.ENROLLMENTS_OVER_TIME.value,
-        EnrollmentChart.TOP_COURSES_BY_ENROLLMENTS.value,
-        EnrollmentChart.TOP_SUBJECTS_BY_ENROLLMENTS.value
-    ]
-
-    chart_type = serializers.CharField(required=False)
-
-    def validate_chart_type(self, value):
-        """
-        Validate the chart_type value.
-
-        Raises:
-            serializers.ValidationError: If chart_type is not one of the valid choices
-        """
-        if value not in self.CHART_TYPES:
-            raise serializers.ValidationError(f"chart_type must be one of {self.CHART_TYPES}")
-        return value
-
-
-class AdvanceAnalyticsEngagementStatsSerializer(
-    AdvanceAnalyticsQueryParamSerializer
-):  # pylint: disable=abstract-method
-    """Serializer for validating Advance Analytics Engagements Stats API"""
-    CHART_TYPES = [
-        EngagementChart.ENGAGEMENTS_OVER_TIME.value,
-        EngagementChart.TOP_COURSES_BY_ENGAGEMENTS.value,
-        EngagementChart.TOP_SUBJECTS_BY_ENGAGEMENTS.value
-    ]
-
-    chart_type = serializers.CharField(required=False)
-
-    def validate_chart_type(self, value):
-        """
-        Validate the chart_type value.
-
-        Raises:
-            serializers.ValidationError: If chart_type is not one of the valid choices
-        """
-        if value not in self.CHART_TYPES:
-            raise serializers.ValidationError(f"chart_type must be one of {self.CHART_TYPES}")
         return value

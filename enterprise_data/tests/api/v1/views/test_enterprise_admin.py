@@ -21,7 +21,7 @@ from enterprise_data.tests.admin_analytics.mock_analytics_data import (
     TOP_SKILLS_BY_ENROLLMENTS,
 )
 from enterprise_data.tests.mixins import JWTTestMixin
-from enterprise_data.tests.test_utils import UserFactory, get_dummy_enterprise_api_data
+from enterprise_data.tests.test_utils import EnterpriseSubsidyBudgetFactory, UserFactory, get_dummy_enterprise_api_data
 from enterprise_data_roles.constants import ENTERPRISE_DATA_ADMIN_ROLE
 from enterprise_data_roles.models import EnterpriseDataFeatureRole, EnterpriseDataRoleAssignment
 
@@ -245,3 +245,49 @@ class TestSkillsStatsAPI(JWTTestMixin, APITransactionTestCase):
         response = self.client.get(self.url, params)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == error
+
+
+@ddt.ddt
+class TestEnterpriseBudgetAPI(JWTTestMixin, APITransactionTestCase):
+    """Tests for EnterpriseBudgetView."""
+
+    def setUp(self):
+        """
+        Setup method.
+        """
+        super().setUp()
+        self.user = UserFactory(is_staff=True)
+        role, __ = EnterpriseDataFeatureRole.objects.get_or_create(
+            name=ENTERPRISE_DATA_ADMIN_ROLE
+        )
+        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
+            role=role, user=self.user
+        )
+        self.client.force_authenticate(user=self.user)
+
+        self.enterprise_uuid = "ee5e6b3a069a4947bb8dd2dbc323396c"
+        self.set_jwt_cookie()
+
+        self.url = reverse(
+            "v1:enterprise-budgets",
+            kwargs={"enterprise_uuid": self.enterprise_uuid},
+        )
+
+        self.enterprise_subsidy_budget = EnterpriseSubsidyBudgetFactory(
+            enterprise_customer_uuid=self.enterprise_uuid,
+            subsidy_access_policy_uuid='8d6503dd-e40d-42b8-442b-37dd4c5450e3',
+            subsidy_access_policy_display_name='test-budget'
+        )
+
+    def test_get(self):
+        """
+        Test the GET method for the EnterpriseBudgetView works.
+        """
+        response = self.client.get(self.url)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == [
+            {
+                'subsidy_access_policy_uuid': '8d6503dd-e40d-42b8-442b-37dd4c5450e3',
+                'subsidy_access_policy_display_name': 'test-budget',
+            }
+        ]
