@@ -1,7 +1,7 @@
 """
 Views for enterprise admin api v1.
 """
-from datetime import datetime
+from datetime import date, datetime
 
 from edx_rbac.decorators import permission_required
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
@@ -21,6 +21,8 @@ from enterprise_data.models import (
     EnterpriseAdminLearnerProgress,
     EnterpriseAdminSummarizeInsights,
     EnterpriseExecEdLCModulePerformance,
+    EnterpriseGroupMembership,
+    EnterpriseSubsidyBudget,
 )
 from enterprise_data.utils import timer
 
@@ -159,7 +161,7 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
         if (start_date := serializer.data.get('start_date')) is None:
             start_date, _ = FactEnrollmentAdminDashTable().get_enrollment_date_range(enterprise_id)
 
-        end_date = serializer.data.get('end_date', datetime.now())
+        end_date = serializer.data.get('end_date', date.today())
 
         with timer('top_skills'):
             skills = SkillsDailyRollupAdminDashTable().get_top_skills(enterprise_id, start_date, end_date)
@@ -206,3 +208,47 @@ class EnterpriseExecEdLCModulePerformanceViewSet(EnterpriseViewSetMixin, viewset
         return EnterpriseExecEdLCModulePerformance.objects.filter(
             enterprise_customer_uuid=self.kwargs['enterprise_id'],
         )
+
+
+class EnterpriseBudgetView(APIView):
+    """
+    View for getting budgets information for an enterprise.
+    """
+    authentication_classes = (JwtAuthentication,)
+    http_method_names = ["get"]
+
+    @permission_required("can_access_enterprise", fn=lambda request, enterprise_uuid: enterprise_uuid)
+    def get(self, request, enterprise_uuid):
+        """
+        Return the queryset of EnterpriseSubsidyBudget objects.
+        """
+        budgets = EnterpriseSubsidyBudget.objects.filter(
+            enterprise_customer_uuid=enterprise_uuid,
+        ).values(
+            'subsidy_access_policy_uuid',
+            'subsidy_access_policy_display_name',
+        )
+
+        serializer = serializers.EnterpriseBudgetSerializer(budgets, many=True)
+        return Response(serializer.data)
+
+
+class EnterpriseGroupMembershipView(APIView):
+    """
+    View for getting Group Memberships information for an enterprise.
+    """
+    authentication_classes = (JwtAuthentication,)
+    http_method_names = ["get"]
+
+    @permission_required("can_access_enterprise", fn=lambda request, enterprise_uuid: enterprise_uuid)
+    def get(self, request, enterprise_uuid):
+        """
+        Returns the groups and budgets for an enterprise.
+        """
+        groups = EnterpriseGroupMembership.objects.filter(
+            enterprise_customer_id=enterprise_uuid,
+            group_type='flex',
+        )
+
+        serializer = serializers.EnterpriseGroupMembershipSerializer(groups, many=True)
+        return Response(serializer.data)

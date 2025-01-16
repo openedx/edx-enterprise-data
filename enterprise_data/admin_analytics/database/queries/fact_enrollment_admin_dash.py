@@ -8,6 +8,18 @@ class FactEnrollmentAdminDashQueries:
     Queries related to the fact_enrollment_admin_dash table.
     """
     @staticmethod
+    def get_top_enterprises_query(count=10):
+        """
+        Get the query to fetch the top enterprises by enrollments.
+        """
+        return f"""
+            SELECT enterprise_customer_uuid
+            FROM fact_enrollment_admin_dash
+            GROUP BY enterprise_customer_uuid
+            ORDER BY COUNT(enterprise_customer_uuid) DESC LIMIT {count};
+        """
+
+    @staticmethod
     def get_enrollment_count_query():
         """
         Get the query to fetch the total number of enrollments for an enterprise customer.
@@ -68,6 +80,7 @@ class FactEnrollmentAdminDashQueries:
                 SUM(has_passed) as completions
             FROM fact_enrollment_admin_dash
             WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
+                has_passed=1 AND
                 passed_date BETWEEN %(start_date)s AND %(end_date)s;
         """
 
@@ -85,7 +98,7 @@ class FactEnrollmentAdminDashQueries:
         """
 
     @staticmethod
-    def get_top_courses_enrollments_query(record_count=20):
+    def get_top_courses_by_enrollments_query(record_count=10):
         """
         Get the query to fetch the enrollment count by courses.
 
@@ -94,18 +107,34 @@ class FactEnrollmentAdminDashQueries:
         Arguments:
             record_count (int): Number of records to fetch.
         """
-        # Some local environments raise error when course_title is added in SELECT without GROUP BY.
-        # If you face this issue, you can remove course_title from SELECT.
         return f"""
-            SELECT course_key, course_title , enroll_type, count(course_key) as enrollment_count
-            FROM fact_enrollment_admin_dash
-            WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
+            WITH filtered_data AS (
+                SELECT *
+                FROM fact_enrollment_admin_dash
+                WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
                 enterprise_enrollment_date BETWEEN %(start_date)s AND %(end_date)s
-            GROUP BY course_key, enroll_type ORDER BY enrollment_count DESC LIMIT {record_count};
+            ),
+            top_10_courses AS (
+                SELECT course_key
+                FROM filtered_data
+                GROUP BY course_key
+                ORDER BY COUNT(*) DESC
+                LIMIT {record_count}
+            )
+
+            SELECT
+                d.course_key,
+                MAX(d.course_title) AS course_title,
+                d.enroll_type,
+                COUNT(*) AS enrollment_count
+            FROM filtered_data d
+            JOIN top_10_courses tc
+                ON d.course_key = tc.course_key
+            GROUP BY d.course_key, d.enroll_type;
         """
 
     @staticmethod
-    def get_top_subjects_by_enrollments_query(record_count=20):
+    def get_top_subjects_by_enrollments_query(record_count=10):
         """
         Get the query to fetch the enrollment count by subjects.
 
@@ -115,11 +144,27 @@ class FactEnrollmentAdminDashQueries:
             record_count (int): Number of records to fetch.
         """
         return f"""
-            SELECT course_subject, enroll_type, count(course_subject) enrollment_count
-            FROM fact_enrollment_admin_dash
-            WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
+            WITH filtered_data AS (
+                SELECT *
+                FROM fact_enrollment_admin_dash
+                WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
                 enterprise_enrollment_date BETWEEN %(start_date)s AND %(end_date)s
-            GROUP BY course_subject, enroll_type ORDER BY enrollment_count DESC LIMIT {record_count};
+            ),
+            top_10_subjects AS (
+                SELECT course_subject
+                FROM filtered_data
+                GROUP BY course_subject
+                ORDER BY COUNT(*) DESC
+                LIMIT {record_count}
+            )
+            SELECT
+                d.course_subject,
+                d.enroll_type,
+                COUNT(*) AS enrollment_count
+            FROM filtered_data d
+            JOIN top_10_subjects ts
+                ON d.course_subject = ts.course_subject
+            GROUP BY d.course_subject, d.enroll_type;
         """
 
     @staticmethod
@@ -134,4 +179,128 @@ class FactEnrollmentAdminDashQueries:
                 enterprise_enrollment_date BETWEEN %(start_date)s AND %(end_date)s
             GROUP BY enterprise_enrollment_date, enroll_type
             ORDER BY enterprise_enrollment_date;
+        """
+
+    @staticmethod
+    def get_all_completions_query():
+        """
+        Get the query to fetch all completions.
+        """
+        return """
+            SELECT email, course_title, course_subject, enroll_type, passed_date
+            FROM fact_enrollment_admin_dash
+            WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
+                has_passed=1 AND
+                passed_date BETWEEN %(start_date)s AND %(end_date)s
+            ORDER BY passed_date DESC LIMIT %(limit)s OFFSET %(offset)s
+        """
+
+    @staticmethod
+    def get_top_courses_by_completions_query(record_count=10):
+        """
+        Get the query to fetch the completion count by courses.
+
+        Query should fetch the top N courses by completion count. Where N is the value of record_count.
+
+        Arguments:
+            record_count (int): Number of records to fetch.
+
+        Returns:
+            (str): Query to fetch the enrollment count by courses for the top courses by enrollment count.
+        """
+        return f"""
+            WITH filtered_data AS (
+                SELECT
+                    course_key,
+                    course_title,
+                    enroll_type,
+                    passed_date
+                FROM fact_enrollment_admin_dash
+                WHERE has_passed = 1 AND
+                enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
+                passed_date BETWEEN %(start_date)s AND %(end_date)s
+            ),
+            top_10_courses AS (
+                SELECT
+                    course_key,
+                    COUNT(*) AS total_completion_count
+                FROM filtered_data
+                GROUP BY course_key
+                ORDER BY total_completion_count DESC
+                LIMIT {record_count}
+            )
+            SELECT
+                d.course_key,
+                d.course_title,
+                d.enroll_type,
+                COUNT(*) AS completion_count
+            FROM filtered_data d
+            JOIN top_10_courses tc
+                ON d.course_key = tc.course_key
+            GROUP BY d.course_key, d.course_title, d.enroll_type
+            ORDER BY total_completion_count DESC;
+        """
+
+    @staticmethod
+    def get_top_subjects_by_completions_query(record_count=10):
+        """
+        Get the query to fetch the completion count by subjects.
+
+        Query should fetch the top N subjects by completion count. Where N is the value of record_count.
+
+        Arguments:
+            record_count (int): Number of records to fetch.
+
+        Returns:
+            (str): Query to fetch the completion count by subjects for the top subjects by completion count.
+        """
+        return f"""
+            WITH filtered_data AS (
+                SELECT
+                    course_subject,
+                    enroll_type,
+                    passed_date
+                FROM fact_enrollment_admin_dash
+                WHERE has_passed = 1 AND
+                enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
+                passed_date BETWEEN %(start_date)s AND %(end_date)s
+            ),
+            top_10_subjects AS (
+                SELECT
+                    course_subject,
+                    COUNT(*) AS total_completion_count
+                FROM filtered_data
+                GROUP BY course_subject
+                ORDER BY total_completion_count DESC
+                LIMIT {record_count}
+            )
+            SELECT
+                d.course_subject,
+                d.enroll_type,
+                COUNT(*) AS completion_count
+            FROM filtered_data d
+            JOIN top_10_subjects ts
+                ON d.course_subject = ts.course_subject
+            GROUP BY d.course_subject, d.enroll_type
+            ORDER BY total_completion_count DESC;
+        """
+
+    @staticmethod
+    def get_completions_time_series_data_query():
+        """
+        Get the query to fetch the completion time series data.
+
+        Query should fetch the time series data with daily granularity.
+
+        Returns:
+            (str): Query to fetch the completion time series data.
+        """
+        return """
+            SELECT passed_date, enroll_type, count(course_key) as completion_count
+            FROM fact_enrollment_admin_dash
+            WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
+                has_passed=1 AND
+                passed_date BETWEEN %(start_date)s AND %(end_date)s
+            GROUP BY passed_date, enroll_type
+            ORDER BY passed_date;
         """

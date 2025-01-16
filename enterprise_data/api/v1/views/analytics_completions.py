@@ -1,6 +1,7 @@
 """
-Advance Analytics for API endpoints to fetch enterprise enrollments data.
+Views for enterprise admin completions analytics.
 """
+
 from datetime import date
 from logging import getLogger
 
@@ -16,19 +17,19 @@ from enterprise_data.admin_analytics.constants import ResponseType
 from enterprise_data.admin_analytics.database.tables import FactEnrollmentAdminDashTable
 from enterprise_data.api.v1.serializers import AdvanceAnalyticsQueryParamSerializer
 from enterprise_data.api.v1.views.base import AnalyticsPaginationMixin
-from enterprise_data.renderers import IndividualEnrollmentsCSVRenderer
+from enterprise_data.renderers import IndividualCompletionsCSVRenderer
 from enterprise_data.utils import timer
 
 LOGGER = getLogger(__name__)
 
 
-class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
+class AdvanceAnalyticsCompletionsView(AnalyticsPaginationMixin, ViewSet):
     """
-    View to handle requests for enterprise enrollments data.
+    View to handle requests for enterprise completion data.
 
     Here is the list of URLs that are handled by this view:
-    1. `enterprise_data_api_v1.enterprise-learner-enrollment-list`: Get individual enrollment data.
-    2. `enterprise_data_api_v1.enterprise-learner-enrollment-stats`: Get enrollment stats data.
+    1. `enterprise_data_api_v1.enterprise-learner-completion-list`: Get individual completion data.
+    2. `enterprise_data_api_v1.enterprise-learner-completion-stats`: Get completion stats data.
     """
     authentication_classes = (JwtAuthentication,)
     http_method_names = ('get', )
@@ -36,7 +37,7 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
     @permission_required('can_access_enterprise', fn=lambda request, enterprise_uuid: enterprise_uuid)
     def list(self, request, enterprise_uuid):
         """
-        Get individual enrollments data for the enterprise.
+        Get individual completions data for the enterprise.
         """
         # Remove hyphens from the UUID
         enterprise_uuid = enterprise_uuid.replace('-', '')
@@ -52,14 +53,14 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
         end_date = serializer.data.get('end_date', date.today())
         page = serializer.data.get('page', 1)
         page_size = serializer.data.get('page_size', 100)
-        enrollments = FactEnrollmentAdminDashTable().get_all_enrollments(
+        completions = FactEnrollmentAdminDashTable().get_all_completions(
             enterprise_customer_uuid=enterprise_uuid,
             start_date=start_date,
             end_date=end_date,
             limit=page_size,
             offset=(page - 1) * page_size,
         )
-        total_count = FactEnrollmentAdminDashTable().get_enrollment_count(
+        total_count = FactEnrollmentAdminDashTable().get_completion_count(
             enterprise_customer_uuid=enterprise_uuid,
             start_date=start_date,
             end_date=end_date,
@@ -67,17 +68,17 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
         response_type = request.query_params.get('response_type', ResponseType.JSON.value)
 
         LOGGER.info(
-            "Individual enrollments data requested for enterprise [%s] from [%s] to [%s]",
+            "Individual completions data requested for enterprise [%s] from [%s] to [%s]",
             enterprise_uuid,
             start_date,
             end_date,
         )
 
         if response_type == ResponseType.CSV.value:
-            filename = f"""Individual Enrollments, {start_date} - {end_date}.csv"""
+            filename = f"""Individual Completions, {start_date} - {end_date}.csv"""
 
             return StreamingHttpResponse(
-                IndividualEnrollmentsCSVRenderer().render(self._stream_serialized_data(
+                IndividualCompletionsCSVRenderer().render(self._stream_serialized_data(
                     enterprise_uuid, start_date, end_date, total_count
                 )),
                 content_type="text/csv",
@@ -86,7 +87,7 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
 
         return self.get_paginated_response(
             request=request,
-            records=enrollments,
+            records=completions,
             page=page,
             page_size=page_size,
             total_count=total_count,
@@ -99,26 +100,26 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
         """
         offset = 0
         while offset < total_count:
-            enrollments = FactEnrollmentAdminDashTable().get_all_enrollments(
+            completions = FactEnrollmentAdminDashTable().get_all_completions(
                 enterprise_customer_uuid=enterprise_uuid,
                 start_date=start_date,
                 end_date=end_date,
                 limit=page_size,
                 offset=offset,
             )
-            yield from enrollments
+            yield from completions
             offset += page_size
 
     @permission_required('can_access_enterprise', fn=lambda request, enterprise_uuid: enterprise_uuid)
-    @action(detail=False, methods=['get'], name='Enterprise enrollments data for charts', url_path='stats')
+    @action(detail=False, methods=['get'], name='Enterprise completions data for charts', url_path='stats')
     def stats(self, request, enterprise_uuid):
         """
-        Get data to populate enterprise enrollment charts.
+        Get data to populate enterprise completion charts.
 
         Here is the list of the charts and their corresponding data:
-        1. `enrollments_over_time`: This will show time series data of enrollments over time.
-        2. `top_courses_by_enrollments`: This will show the top courses by enrollments.
-        3. `top_subjects_by_enrollments`: This will show the top subjects by enrollments.
+        1. `completions_over_time`: This will show time series data of completions over time.
+        2. `top_courses_by_completions`: This will show the top courses by completions.
+        3. `top_subjects_by_completions`: This will show the top subjects by completions.
         """
         # Remove hyphens from the UUID
         enterprise_uuid = enterprise_uuid.replace('-', '')
@@ -132,15 +133,15 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
         # get values from query params or use default
         start_date = serializer.data.get('start_date', min_enrollment_date)
         end_date = serializer.data.get('end_date', date.today())
-        with timer('construct_enrollment_all_stats'):
+        with timer('construct_completion_all_stats'):
             data = {
-                'enrollments_over_time': FactEnrollmentAdminDashTable().get_enrolment_time_series_data(
+                'completions_over_time': FactEnrollmentAdminDashTable().get_completions_time_series_data(
                     enterprise_uuid, start_date, end_date
                 ),
-                'top_courses_by_enrollments': FactEnrollmentAdminDashTable().get_top_courses_by_enrollments(
+                'top_courses_by_completions': FactEnrollmentAdminDashTable().get_top_courses_by_completions(
                     enterprise_uuid, start_date, end_date,
                 ),
-                'top_subjects_by_enrollments': FactEnrollmentAdminDashTable().get_top_subjects_by_enrollments(
+                'top_subjects_by_completions': FactEnrollmentAdminDashTable().get_top_subjects_by_completions(
                     enterprise_uuid, start_date, end_date,
                 ),
             }

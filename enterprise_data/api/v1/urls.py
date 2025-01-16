@@ -8,13 +8,10 @@ from rest_framework.routers import DefaultRouter
 from django.urls import re_path
 
 from enterprise_data.api.v1.views import enterprise_admin as enterprise_admin_views
-from enterprise_data.api.v1.views import enterprise_completions as enterprise_completions_views
 from enterprise_data.api.v1.views import enterprise_learner as enterprise_learner_views
 from enterprise_data.api.v1.views import enterprise_offers as enterprise_offers_views
-from enterprise_data.api.v1.views.analytics_engagements import (
-    AdvanceAnalyticsEngagementStatsView,
-    AdvanceAnalyticsIndividualEngagementsView,
-)
+from enterprise_data.api.v1.views.analytics_completions import AdvanceAnalyticsCompletionsView
+from enterprise_data.api.v1.views.analytics_engagements import AdvanceAnalyticsEngagementView
 from enterprise_data.api.v1.views.analytics_enrollments import AdvanceAnalyticsEnrollmentsView
 from enterprise_data.api.v1.views.analytics_leaderboard import AdvanceAnalyticsLeaderboardView
 from enterprise_data.constants import UUID4_REGEX
@@ -61,8 +58,8 @@ urlpatterns = [
     ),
     re_path(
         fr'^admin/analytics/(?P<enterprise_uuid>{UUID4_REGEX})/leaderboard$',
-        AdvanceAnalyticsLeaderboardView.as_view(),
-        name='enterprise-admin-analytics-leaderboard'
+        AdvanceAnalyticsLeaderboardView.as_view({'get': 'list'}),
+        name='enterprise-admin-analytics-leaderboard-list'
     ),
     re_path(
         fr'^admin/analytics/(?P<enterprise_uuid>{UUID4_REGEX})/enrollments/stats$',
@@ -75,13 +72,23 @@ urlpatterns = [
         name='enterprise-admin-analytics-enrollments'
     ),
     re_path(
+        fr'^admin/analytics/(?P<enterprise_uuid>{UUID4_REGEX})/completions/stats$',
+        AdvanceAnalyticsCompletionsView.as_view({'get': 'stats'}),
+        name='enterprise-admin-analytics-completions-stats'
+    ),
+    re_path(
+        fr'^admin/analytics/(?P<enterprise_uuid>{UUID4_REGEX})/completions$',
+        AdvanceAnalyticsCompletionsView.as_view({'get': 'list'}),
+        name='enterprise-admin-analytics-completions'
+    ),
+    re_path(
         fr'^admin/analytics/(?P<enterprise_uuid>{UUID4_REGEX})/engagements/stats$',
-        AdvanceAnalyticsEngagementStatsView.as_view(),
+        AdvanceAnalyticsEngagementView.as_view({'get': 'stats'}),
         name='enterprise-admin-analytics-engagements-stats'
     ),
     re_path(
         fr'^admin/analytics/(?P<enterprise_uuid>{UUID4_REGEX})/engagements$',
-        AdvanceAnalyticsIndividualEngagementsView.as_view(),
+        AdvanceAnalyticsEngagementView.as_view({'get': 'list'}),
         name='enterprise-admin-analytics-engagements'
     ),
     re_path(
@@ -90,14 +97,14 @@ urlpatterns = [
         name='enterprise-admin-analytics-skills'
     ),
     re_path(
-        fr'^admin/analytics/(?P<enterprise_id>{UUID4_REGEX})/completions/stats$',
-        enterprise_completions_views.EnterrpiseAdminCompletionsStatsView.as_view(),
-        name='enterprise-admin-analytics-completions-stats'
+        fr'^enterprise/(?P<enterprise_uuid>{UUID4_REGEX})/budgets',
+        enterprise_admin_views.EnterpriseBudgetView.as_view(),
+        name='enterprise-budgets'
     ),
     re_path(
-        fr'^admin/analytics/(?P<enterprise_id>{UUID4_REGEX})/completions$',
-        enterprise_completions_views.EnterrpiseAdminCompletionsView.as_view(),
-        name='enterprise-admin-analytics-completions'
+        fr'^enterprise/(?P<enterprise_uuid>{UUID4_REGEX})/groups',
+        enterprise_admin_views.EnterpriseGroupMembershipView.as_view(),
+        name='enterprise-groups'
     ),
 ]
 
