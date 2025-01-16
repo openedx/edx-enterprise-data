@@ -6,25 +6,24 @@ from datetime import date, timedelta
 from logging import getLogger
 from uuid import UUID
 
-from edx_django_utils.cache import TieredCache
 from rest_framework import filters, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from django.conf import settings
 from django.core.paginator import Paginator
-from django.db.models import Count, Max, OuterRef, Prefetch, Q, Subquery, Value
+from django.db.models import Count, Exists, Max, OuterRef, Prefetch, Q, Subquery, Value
 from django.db.models.fields import IntegerField
 from django.db.models.functions import Coalesce
 from django.http import StreamingHttpResponse
 from django.utils import timezone
 
+from enterprise_data.admin_analytics.database.utils import LOGGER
 from enterprise_data.api.v1 import serializers
-from enterprise_data.filters import AuditEnrollmentsFilterBackend, AuditUsersEnrollmentFilterBackend
-from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment
+from enterprise_data.models import EnterpriseGroupMembership, EnterpriseLearner, EnterpriseLearnerEnrollment
 from enterprise_data.paginators import EnterpriseEnrollmentsPagination
 from enterprise_data.renderers import EnrollmentsCSVRenderer
-from enterprise_data.utils import get_cache_key, subtract_one_month
+from enterprise_data.utils import subtract_one_month
 
 from .base import EnterpriseViewSetMixin
 
@@ -38,7 +37,7 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
     """
     serializer_class = serializers.EnterpriseLearnerEnrollmentSerializer
     pagination_class = EnterpriseEnrollmentsPagination
-    filter_backends = (AuditEnrollmentsFilterBackend, filters.OrderingFilter,)
+    filter_backends = (filters.OrderingFilter,)
     ordering_fields = '__all__'
     ordering = ('-last_activity_date',)
     ENROLLMENT_MODE_FILTER = 'user_current_enrollment_mode'
@@ -60,9 +59,9 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         'course_primary_program', 'primary_program_type', 'course_primary_subject', 'has_passed',
         'last_activity_date', 'progress_status', 'passed_date', 'current_grade',
         'letter_grade', 'enterprise_user_id', 'user_email', 'user_account_creation_date',
-        'user_country_code', 'user_username', 'enterprise_name', 'enterprise_customer_uuid',
-        'enterprise_sso_uid', 'created', 'course_api_url', 'total_learning_time_hours', 'is_subsidy',
-        'course_product_line', 'budget_id'
+        'user_country_code', 'user_username', 'user_first_name', 'user_last_name', 'enterprise_name',
+        'enterprise_customer_uuid', 'enterprise_sso_uid', 'created', 'course_api_url', 'total_learning_time_hours',
+        'is_subsidy', 'course_product_line', 'budget_id',
     ]
 
     # TODO: Remove after we release the streaming csv changes
@@ -81,18 +80,13 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
             return EnterpriseLearnerEnrollment.objects.none()
 
         enterprise_customer_uuid = self.kwargs['enterprise_id']
-        cache_key = get_cache_key(
-            resource='enterprise-learner',
-            enterprise_customer=enterprise_customer_uuid,
-        )
-        cached_response = TieredCache.get_cached_response(cache_key)
-        if cached_response.is_found:
-            return cached_response.value
-        else:
-            enrollments = EnterpriseLearnerEnrollment.objects.filter(enterprise_customer_uuid=enterprise_customer_uuid)
-            enrollments = self.apply_filters(enrollments)
-            TieredCache.set_all_tiers(cache_key, enrollments, DEFAULT_LEARNER_CACHE_TIMEOUT)
-            return enrollments
+
+        # TODO: Created a ticket ENT0-9531 to add the cache on this viewset
+
+        enrollments = EnterpriseLearnerEnrollment.objects.filter(enterprise_customer_uuid=enterprise_customer_uuid)
+        enrollments = self.apply_filters(enrollments)
+
+        return enrollments
 
     def list(self, request, *args, **kwargs):
         """
@@ -156,6 +150,10 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         if search_start_date:
             queryset = queryset.filter(course_start_date=search_start_date)
 
+        budget_uuid = query_filters.get('budget_uuid')
+        if budget_uuid:
+            queryset = queryset.filter(budget_id=budget_uuid)
+
         offer_id = query_filters.get('offer_id')
         if offer_id:
             queryset = self.filter_by_offer_id(queryset, offer_id)
@@ -175,6 +173,15 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         is_subsidy = query_filters.get('is_subsidy')
         if is_subsidy:
             queryset = queryset.filter(is_subsidy=is_subsidy)
+
+        group_uuid = query_filters.get('group_uuid')
+        if group_uuid:
+            flex_group_exists = EnterpriseGroupMembership.objects.filter(
+                enterprise_customer_user_id=OuterRef('enterprise_user_id'),
+                enterprise_group_uuid=group_uuid,
+                group_type='flex'
+            )
+            queryset = queryset.filter(Exists(flex_group_exists))
 
         return queryset
 
@@ -302,7 +309,7 @@ class EnterpriseLearnerViewSet(EnterpriseViewSetMixin, viewsets.ReadOnlyModelVie
     """
     queryset = EnterpriseLearner.objects.all()
     serializer_class = serializers.EnterpriseLearnerSerializer
-    filter_backends = (filters.OrderingFilter, AuditUsersEnrollmentFilterBackend,)
+    filter_backends = (filters.OrderingFilter,)
     ordering_fields = '__all__'
     ordering = ('user_email',)
 

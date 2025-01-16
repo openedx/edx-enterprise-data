@@ -1,10 +1,5 @@
 """Mock data for enrollments"""
 
-import pandas as pd
-
-from enterprise_data.admin_analytics.constants import EnrollmentChart
-from enterprise_data.admin_analytics.utils import ChartType
-
 ENROLLMENTS = [
     {
         "enterprise_customer_name": "Hill Ltd",
@@ -122,64 +117,3 @@ ENROLLMENTS = [
         "has_passed": 0,
     },
 ]
-
-ENROLLMENT_STATS_CSVS = {
-    EnrollmentChart.ENROLLMENTS_OVER_TIME.value: (
-        b'enterprise_enrollment_date,certificate\n'
-        b'2020-04-03,1\n'
-        b'2020-04-08,1\n'
-        b'2021-05-11,1\n'
-        b'2021-07-03,1\n'
-        b'2021-07-04,1\n'
-    ),
-    EnrollmentChart.TOP_COURSES_BY_ENROLLMENTS.value: (
-        b'course_key,course_title,certificate\n'
-        b'NOGk+UVD31,Streamlined zero-defect attitude,1\n'
-        b'QWXx+Jqz64,Horizontal solution-oriented hub,1\n'
-        b'hEmW+tvk03,Re-engineered tangible approach,2\n'
-        b'qZJC+KFX86,Secured static capability,1\n'
-    ),
-    EnrollmentChart.TOP_SUBJECTS_BY_ENROLLMENTS.value: (
-        b'course_subject,certificate\nbusiness-management,2\ncommunication,1\nmedicine,1\nsocial-sciences,1\n'
-    )
-}
-COMPLETIONS_STATS_CSVS = {
-    ChartType.COMPLETIONS_OVER_TIME.value: (
-        b'passed_date,certificate\n'
-        b'2021-08-25,1\n'
-        b'2021-09-01,2\n'
-    ),
-    ChartType.TOP_COURSES_BY_COMPLETIONS.value: (
-        b'course_key,course_title,certificate\n'
-        b'hEmW+tvk03,Re-engineered tangible approach,2\n'
-    ),
-    ChartType.TOP_SUBJECTS_BY_COMPLETIONS.value: (
-        b'course_subject,certificate\n'
-        b'business-management,2\n'
-    )
-}
-
-
-def enrollments_dataframe():
-    """Return a DataFrame of enrollments."""
-    enrollments = pd.DataFrame(ENROLLMENTS)
-
-    enrollments['enterprise_enrollment_date'] = enrollments['enterprise_enrollment_date'].astype('datetime64[ns]')
-    enrollments['date_certificate_awarded'] = enrollments['date_certificate_awarded'].astype('datetime64[ns]')
-    enrollments['date_certificate_created_raw'] = enrollments['date_certificate_created_raw'].astype('datetime64[ns]')
-    enrollments['passed_date_raw'] = enrollments['passed_date_raw'].astype('datetime64[ns]')
-    enrollments['passed_date'] = enrollments['passed_date'].astype('datetime64[ns]')
-
-    return enrollments
-
-
-def enrollments_csv_content():
-    """Return the CSV content of enrollments."""
-    return (
-        b'email,course_title,course_subject,enroll_type,enterprise_enrollment_date\r\n'
-        b'rebeccanelson@example.com,Re-engineered tangible approach,business-management,certificate,2021-07-04\r\n'
-        b'taylorjames@example.com,Re-engineered tangible approach,business-management,certificate,2021-07-03\r\n'
-        b'ssmith@example.com,Secured static capability,medicine,certificate,2021-05-11\r\n'
-        b'amber79@example.com,Streamlined zero-defect attitude,communication,certificate,2020-04-08\r\n'
-        b'kathleenmartin@example.com,Horizontal solution-oriented hub,social-sciences,certificate,2020-04-03\r\n'
-    )

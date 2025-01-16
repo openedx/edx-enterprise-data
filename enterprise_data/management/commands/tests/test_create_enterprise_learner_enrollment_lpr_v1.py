@@ -39,6 +39,8 @@ class TestCreateEnterpriseLearnerEnrollmentCommand(TestCase):
         assert enterprise_learner_enrollment[0].letter_grade is None
         assert enterprise_learner_enrollment[0].enterprise_user_id is None
         assert enterprise_learner_enrollment[0].user_username is None
+        assert enterprise_learner_enrollment[0].user_first_name is None
+        assert enterprise_learner_enrollment[0].user_last_name is None
         assert enterprise_learner_enrollment[0].user_email is None
         assert enterprise_learner_enrollment[0].enterprise_user is None
 
@@ -62,6 +64,8 @@ class TestCreateEnterpriseLearnerEnrollmentCommand(TestCase):
         assert enterprise_learner_enrollment[0].progress_status is not None
         assert enterprise_learner_enrollment[0].enterprise_user_id is not None
         assert enterprise_learner_enrollment[0].user_username is not None
+        assert enterprise_learner_enrollment[0].user_first_name is not None
+        assert enterprise_learner_enrollment[0].user_last_name is not None
         assert enterprise_learner_enrollment[0].enterprise_user is not None
         assert enterprise_learner_enrollment[0].user_email is not None
         assert EnterpriseLearner.objects.count() == 1

@@ -15,6 +15,113 @@ Unreleased
 ----------
 
 =========================
+
+[10.7.1] - 2025-01-07
+---------------------
+  * feat: add group_membership table
+  * feat: add APIs to support LPR filtering for enterprise groups
+
+[10.7.0] - 2024-12-24
+---------------------
+  * feat: Added user's first and last name in the enterprise enrollments API and related DB table.
+
+[10.6.1] - 2024-12-10
+---------------------
+  * feat: add course_title in top courses in enrollments csv
+
+[10.6.0] - 2024-12-09
+---------------------
+  * chore: upgrade python requirements
+
+[10.5.1] - 2024-11-14
+---------------------
+  * chore: upgrade python requirements
+
+[10.5.0] - 2024-11-14
+---------------------
+  * Fix CSV file names
+  * Fix ordering of skills charts data
+
+[10.4.0] - 2024-11-14
+---------------------
+  * Updated text for null emails record of leaderboard.
+
+[10.3.0] - 2024-11-13
+---------------------
+  * Re-write top 10 charts queries for Enrollments, Engagements and Completions
+
+[10.2.0] - 2024-11-12
+---------------------
+  * Fixed null email issue for leaderboard.
+
+
+[10.1.0] - 2024-10-29
+---------------------
+  * Added management command to pre-warm analytics data.
+
+[10.0.1] - 2024-10-25
+---------------------
+  * Same as ``10.0.0``
+  * Bumping the version so a new tag can be created in the GitHub
+
+[10.0.0] - 2024-10-25
+---------------------
+  * feat!: Python 3.12 Upgrade
+  * Dropped support for ``Python<3.12``
+
+[9.7.0] - 2024-10-23
+---------------------
+  * feat: Add API to fetch enterprise budgets information
+
+[9.6.0] - 2024-10-14
+---------------------
+  * feat: Added caching for API endpoints related to advanced analytics.
+
+[9.5.2] - 2024-10-14
+---------------------
+  * feat: Transform extensions_requested field to return 0 if None
+
+[9.5.1] - 2024-10-07
+---------------------
+  * fix: Added handling for edge cases while fetching data from database.
+
+[9.5.0] - 2024-10-07
+---------------------
+  * feat: Remove audit data filtering
+
+[9.4.1] - 2024-10-03
+---------------------
+  * fix: Added guard against empty data in leaderboard queries.
+
+[9.4.0] - 2024-09-30
+---------------------
+  * chore: upgrade python requirements
+  * pin astriod and edx-lint packages
+
+[9.3.0] - 2024-09-30
+---------------------
+  * refactor: Further improvement in SQL queries for leaderboard API endpoint.
+
+[9.2.2] - 2024-09-27
+---------------------
+  * fix: remove the cache logging on EnterpriseLearnerEnrollmentViewSet.
+
+[9.2.1] - 2024-09-25
+---------------------
+  * fix: Added temporary cache logging on EnterpriseLearnerEnrollmentViewSet.
+
+[9.2.0] - 2024-09-25
+---------------------
+  * refactor: Performance optimizations for leaderboard API endpoints
+
+[9.1.1] - 2024-09-24
+---------------------
+  * fix: disable caching for EnterpriseLearnerEnrollmentViewSet
+
+[9.1.0] - 2024-09-23
+---------------------
+  * refactor: Performance optimizations for engagement and completions related API endpoints.
+
 [9.0.1] - 2024-09-23
 ---------------------
   * revert: Revert "feat!: Python 3.12 Upgrade"
