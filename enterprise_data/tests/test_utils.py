@@ -14,6 +14,7 @@ from django.contrib.auth import get_user_model
 
 from enterprise_data.models import (
     EnterpriseEnrollment,
+    EnterpriseGroupMembership,
     EnterpriseLearner,
     EnterpriseLearnerEnrollment,
     EnterpriseOffer,
@@ -180,6 +181,8 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
     enterprise_user_id = factory.Sequence(lambda n: n)
     user_email = factory.lazy_attribute(lambda x: FAKER.email())  # pylint: disable=no-member
     user_username = factory.Sequence('robot{}'.format)
+    user_first_name = factory.Sequence('Robot First {}'.format)
+    user_last_name = factory.Sequence('Robot Last {}'.format)
     user_account_creation_date = factory.lazy_attribute(lambda x: '2018-01-01')
     user_country_code = factory.lazy_attribute(lambda x: FAKER.country_code())
     is_subsidy = factory.lazy_attribute(lambda x: FAKER.boolean())  # pylint: disable=no-member
@@ -230,6 +233,8 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
             'user_account_creation_date',
             'user_country_code',
             'user_username',
+            'user_first_name',
+            'user_last_name',
         ]
         if create and not obj.is_consent_granted:
             for field in dsc_dependent_fields:
@@ -282,6 +287,27 @@ class EnterpriseSubsidyBudgetFactory(factory.django.DjangoModelFactory):
     percent_of_policy_spent = factory.lazy_attribute(
         lambda x: round(x.amount_of_policy_spent / x.starting_balance, 2)
     )
+
+
+class EnterpriseGroupMembershipFactory(factory.django.DjangoModelFactory):
+    """
+    EnterpriseGroupMembership model Factory.
+    """
+    class Meta:
+        model = EnterpriseGroupMembership
+
+    enterprise_customer_id = factory.LazyAttribute(lambda _: FAKER.uuid4())
+    enterprise_group_name = factory.LazyAttribute(lambda _: ' '.join(FAKER.words(nb=2)).title())
+    enterprise_group_uuid = factory.LazyAttribute(lambda _: FAKER.uuid4())
+    group_is_removed = factory.LazyAttribute(lambda _: FAKER.boolean())
+    group_type = factory.LazyAttribute(lambda _: 'budget')
+    activated_at = factory.LazyAttribute(lambda _: FAKER.date_time_this_decade(tzinfo=pytz.UTC))
+    enterprise_customer_user_id = factory.LazyAttribute(lambda _: FAKER.random_int(min=1, max=10000))
+    membership_is_removed = factory.LazyAttribute(lambda _: FAKER.boolean())
+    membership_status = factory.LazyAttribute(lambda _: FAKER.word())
+    enterprise_group_membership_uuid = factory.LazyAttribute(lambda _: FAKER.uuid4())
+
+    is_applies_to_all_contexts = factory.LazyAttribute(lambda _: FAKER.boolean())
 
 
 class EnterpriseOfferFactory(factory.django.DjangoModelFactory):

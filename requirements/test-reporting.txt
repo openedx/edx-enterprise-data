@@ -8,15 +8,15 @@ amqp==5.3.1
     # via kombu
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.36.4
+awscli==1.36.38
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
-bcrypt==4.2.0
+bcrypt==4.2.1
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.35.63
+boto3==1.35.97
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
-botocore==1.35.63
+botocore==1.35.97
     # via
     #   awscli
     #   boto3
@@ -25,7 +25,7 @@ cachetools==5.5.0
     # via tox
 celery==5.3.6
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
-certifi==2024.8.30
+certifi==2024.12.14
     # via
     #   py2neo
     #   requests
@@ -37,11 +37,11 @@ cffi==1.17.1
     #   snowflake-connector-python
 chardet==5.2.0
     # via tox
-charset-normalizer==3.4.0
+charset-normalizer==3.4.1
     # via
     #   requests
     #   snowflake-connector-python
-click==8.1.7
+click==8.1.8
     # via
     #   celery
     #   click-didyoumean
@@ -57,9 +57,9 @@ colorama==0.4.6
     # via
     #   awscli
     #   tox
-coverage[toml]==7.6.7
+coverage[toml]==7.6.10
     # via pytest-cov
-cryptography==43.0.3
+cryptography==44.0.0
     # via
     #   -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
     #   paramiko
@@ -110,7 +110,7 @@ pbr==6.1.0
     # via mock
 pgpy==0.6.0
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
-pillow==11.0.0
+pillow==11.1.0
     # via pansi
 platformdirs==4.3.6
     # via
@@ -131,15 +131,15 @@ pyasn1==0.6.1
     #   rsa
 pycparser==2.22
     # via cffi
-pygments==2.18.0
+pygments==2.19.1
     # via py2neo
-pyjwt==2.10.0
+pyjwt==2.10.1
     # via snowflake-connector-python
 pyminizip==0.2.6
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
 pynacl==1.5.0
     # via paramiko
-pyopenssl==24.2.1
+pyopenssl==24.3.0
     # via snowflake-connector-python
 pyproject-api==1.8.0
     # via tox
@@ -166,22 +166,22 @@ requests==2.32.3
     # via
     #   responses
     #   snowflake-connector-python
-responses==0.25.3
+responses==0.25.5
     # via -r requirements/test-reporting.in
 rsa==4.7.2
     # via awscli
-s3transfer==0.10.3
+s3transfer==0.10.4
     # via
     #   awscli
     #   boto3
-six==1.16.0
+six==1.17.0
     # via
     #   interchange
     #   mock
     #   py2neo
     #   python-dateutil
     #   vertica-python
-snowflake-connector-python==3.12.3
+snowflake-connector-python==3.12.4
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
@@ -199,6 +199,7 @@ unicodecsv==0.14.1
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
 urllib3==2.2.3
     # via
+    #   -c /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/common_constraints.txt
     #   botocore
     #   py2neo
     #   requests
@@ -210,7 +211,7 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==20.27.1
+virtualenv==20.28.1
     # via tox
 wcwidth==0.2.13
     # via prompt-toolkit

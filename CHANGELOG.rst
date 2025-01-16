@@ -16,6 +16,23 @@ Unreleased
 
 =========================
 
+[10.7.1] - 2025-01-07
+---------------------
+  * feat: add group_membership table
+  * feat: add APIs to support LPR filtering for enterprise groups
+
+[10.7.0] - 2024-12-24
+---------------------
+  * feat: Added user's first and last name in the enterprise enrollments API and related DB table.
+
+[10.6.1] - 2024-12-10
+---------------------
+  * feat: add course_title in top courses in enrollments csv
+
+[10.6.0] - 2024-12-09
+---------------------
+  * chore: upgrade python requirements
+
 [10.5.1] - 2024-11-14
 ---------------------
   * chore: upgrade python requirements
