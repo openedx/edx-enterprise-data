@@ -248,7 +248,7 @@ class EnterpriseGroupMembershipView(APIView):
         groups = EnterpriseGroupMembership.objects.filter(
             enterprise_customer_id=enterprise_uuid,
             group_type='flex',
-        )
+        ).values('enterprise_group_uuid', 'enterprise_group_name').distinct()
 
         serializer = serializers.EnterpriseGroupMembershipSerializer(groups, many=True)
         return Response(serializer.data)

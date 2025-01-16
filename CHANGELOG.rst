@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[10.7.2] - 2025-01-16
+---------------------
+  * Fixed duplicate entries for groups in enterprise groups API
+
 [10.7.1] - 2025-01-07
 ---------------------
   * feat: add group_membership table
