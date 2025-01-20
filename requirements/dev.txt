@@ -14,15 +14,15 @@ astroid==3.3.8
     # via
     #   pylint
     #   pylint-celery
-awscli==1.36.38
+awscli==1.37.2
     # via -r requirements/reporting.in
 bcrypt==4.2.1
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.35.97
+boto3==1.36.2
     # via -r requirements/reporting.in
-botocore==1.35.97
+botocore==1.36.2
     # via
     #   awscli
     #   boto3
@@ -70,7 +70,7 @@ click-plugins==1.1.1
     # via celery
 click-repl==0.3.0
     # via celery
-code-annotations==2.1.0
+code-annotations==2.2.0
     # via edx-lint
 colorama==0.4.6
     # via
@@ -92,7 +92,7 @@ dill==0.3.9
     # via pylint
 distlib==0.3.9
     # via virtualenv
-django==4.2.17
+django==4.2.18
     # via
     #   -c /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/common_constraints.txt
     #   -r requirements/base.in
@@ -218,7 +218,7 @@ mdurl==0.1.2
     # via markdown-it-py
 monotonic==1.6
     # via py2neo
-more-itertools==10.5.0
+more-itertools==10.6.0
     # via
     #   jaraco-classes
     #   jaraco-functools
@@ -228,7 +228,7 @@ newrelic==10.4.0
     # via edx-django-utils
 nh3==0.2.20
     # via readme-renderer
-numpy==2.2.1
+numpy==2.2.2
     # via
     #   -r requirements/base.in
     #   pandas
@@ -367,7 +367,7 @@ rsa==4.7.2
     # via awscli
 rules==3.5
     # via -r requirements/base.in
-s3transfer==0.10.4
+s3transfer==0.11.1
     # via
     #   awscli
     #   boto3
@@ -434,7 +434,7 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==20.28.1
+virtualenv==20.29.1
     # via tox
 wcwidth==0.2.13
     # via prompt-toolkit
