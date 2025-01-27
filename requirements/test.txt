@@ -10,15 +10,15 @@ asgiref==3.8.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.36.38
+awscli==1.37.6
     # via -r requirements/reporting.in
 bcrypt==4.2.1
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.35.97
+boto3==1.36.6
     # via -r requirements/reporting.in
-botocore==1.35.97
+botocore==1.36.6
     # via
     #   awscli
     #   boto3
@@ -67,7 +67,7 @@ cryptography==44.0.0
     #   snowflake-connector-python
 ddt==1.7.2
     # via -r requirements/test.in
-django==4.2.17
+django==4.2.18
     # via
     #   -c /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/common_constraints.txt
     #   -r requirements/base.in
@@ -132,9 +132,9 @@ factory-boy==3.3.1
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==33.3.1
+faker==35.0.0
     # via factory-boy
-filelock==3.16.1
+filelock==3.17.0
     # via snowflake-connector-python
 flaky==3.8.1
     # via -r requirements/test.in
@@ -158,11 +158,11 @@ mock==5.1.0
     # via -r requirements/test.in
 monotonic==1.6
     # via py2neo
-mysql-connector-python==9.1.0
+mysql-connector-python==9.2.0
     # via -r requirements/base.in
 newrelic==10.4.0
     # via edx-django-utils
-numpy==2.2.1
+numpy==2.2.2
     # via
     #   -r requirements/base.in
     #   pandas
@@ -187,7 +187,7 @@ platformdirs==4.3.6
     # via snowflake-connector-python
 pluggy==1.5.0
     # via pytest
-prompt-toolkit==3.0.48
+prompt-toolkit==3.0.50
     # via click-repl
 psutil==6.1.1
     # via edx-django-utils
@@ -249,13 +249,13 @@ requests==2.32.3
     #   edx-rest-api-client
     #   responses
     #   snowflake-connector-python
-responses==0.25.5
+responses==0.25.6
     # via -r requirements/test.in
 rsa==4.7.2
     # via awscli
 rules==3.5
     # via -r requirements/base.in
-s3transfer==0.10.4
+s3transfer==0.11.2
     # via
     #   awscli
     #   boto3
@@ -268,7 +268,7 @@ six==1.17.0
     #   py2neo
     #   python-dateutil
     #   vertica-python
-snowflake-connector-python==3.12.4
+snowflake-connector-python==3.13.0
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
@@ -287,7 +287,7 @@ typing-extensions==4.12.2
     #   edx-opaque-keys
     #   faker
     #   snowflake-connector-python
-tzdata==2024.2
+tzdata==2025.1
     # via
     #   celery
     #   kombu

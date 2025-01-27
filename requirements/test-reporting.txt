@@ -8,20 +8,20 @@ amqp==5.3.1
     # via kombu
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.36.38
+awscli==1.37.6
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
 bcrypt==4.2.1
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.35.97
+boto3==1.36.6
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
-botocore==1.35.97
+botocore==1.36.6
     # via
     #   awscli
     #   boto3
     #   s3transfer
-cachetools==5.5.0
+cachetools==5.5.1
     # via tox
 celery==5.3.6
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
@@ -72,7 +72,7 @@ distlib==0.3.9
     # via virtualenv
 docutils==0.16
     # via awscli
-filelock==3.16.1
+filelock==3.17.0
     # via
     #   snowflake-connector-python
     #   tox
@@ -121,7 +121,7 @@ pluggy==1.5.0
     # via
     #   pytest
     #   tox
-prompt-toolkit==3.0.48
+prompt-toolkit==3.0.50
     # via click-repl
 py2neo @ https://github.com/overhangio/py2neo/releases/download/2021.2.3/py2neo-2021.2.3.tar.gz
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
@@ -141,7 +141,7 @@ pynacl==1.5.0
     # via paramiko
 pyopenssl==24.3.0
     # via snowflake-connector-python
-pyproject-api==1.8.0
+pyproject-api==1.9.0
     # via tox
 pytest==8.0.2
     # via
@@ -166,11 +166,11 @@ requests==2.32.3
     # via
     #   responses
     #   snowflake-connector-python
-responses==0.25.5
+responses==0.25.6
     # via -r requirements/test-reporting.in
 rsa==4.7.2
     # via awscli
-s3transfer==0.10.4
+s3transfer==0.11.2
     # via
     #   awscli
     #   boto3
@@ -181,17 +181,17 @@ six==1.17.0
     #   py2neo
     #   python-dateutil
     #   vertica-python
-snowflake-connector-python==3.12.4
+snowflake-connector-python==3.13.0
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
 tomlkit==0.13.2
     # via snowflake-connector-python
-tox==4.23.2
+tox==4.24.1
     # via -r requirements/test-reporting.in
 typing-extensions==4.12.2
     # via snowflake-connector-python
-tzdata==2024.2
+tzdata==2025.1
     # via
     #   celery
     #   kombu
@@ -211,7 +211,7 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==20.28.1
+virtualenv==20.29.1
     # via tox
 wcwidth==0.2.13
     # via prompt-toolkit

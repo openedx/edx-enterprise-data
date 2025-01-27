@@ -14,22 +14,22 @@ astroid==3.3.8
     # via
     #   pylint
     #   pylint-celery
-awscli==1.36.38
+awscli==1.37.6
     # via -r requirements/reporting.in
 bcrypt==4.2.1
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.35.97
+boto3==1.36.6
     # via -r requirements/reporting.in
-botocore==1.35.97
+botocore==1.36.6
     # via
     #   awscli
     #   boto3
     #   s3transfer
 build==1.2.2.post1
     # via pip-tools
-cachetools==5.5.0
+cachetools==5.5.1
     # via tox
 celery==5.3.6
     # via -r requirements/reporting.in
@@ -70,7 +70,7 @@ click-plugins==1.1.1
     # via celery
 click-repl==0.3.0
     # via celery
-code-annotations==2.1.0
+code-annotations==2.2.0
     # via edx-lint
 colorama==0.4.6
     # via
@@ -92,7 +92,7 @@ dill==0.3.9
     # via pylint
 distlib==0.3.9
     # via virtualenv
-django==4.2.17
+django==4.2.18
     # via
     #   -c /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/common_constraints.txt
     #   -r requirements/base.in
@@ -149,7 +149,7 @@ edx-drf-extensions==10.5.0
     #   edx-rbac
 edx-i18n-tools==1.6.3
     # via -r requirements/dev-enterprise_data.in
-edx-lint==5.4.1
+edx-lint==5.6.0
     # via
     #   -r requirements/dev-enterprise_data.in
     #   -r requirements/quality.in
@@ -163,13 +163,15 @@ edx-rest-api-client==6.0.0
     # via -r requirements/base.in
 factory-boy==3.3.1
     # via -r requirements/base.in
-faker==33.3.1
+faker==35.0.0
     # via factory-boy
-filelock==3.16.1
+filelock==3.17.0
     # via
     #   snowflake-connector-python
     #   tox
     #   virtualenv
+id==1.5.0
+    # via twine
 idna==3.10
     # via
     #   requests
@@ -218,17 +220,17 @@ mdurl==0.1.2
     # via markdown-it-py
 monotonic==1.6
     # via py2neo
-more-itertools==10.5.0
+more-itertools==10.6.0
     # via
     #   jaraco-classes
     #   jaraco-functools
-mysql-connector-python==9.1.0
+mysql-connector-python==9.2.0
     # via -r requirements/base.in
 newrelic==10.4.0
     # via edx-django-utils
 nh3==0.2.20
     # via readme-renderer
-numpy==2.2.1
+numpy==2.2.2
     # via
     #   -r requirements/base.in
     #   pandas
@@ -256,8 +258,6 @@ pillow==11.1.0
     # via pansi
 pip-tools==7.4.1
     # via -r requirements/dev-enterprise_data.in
-pkginfo==1.12.0
-    # via twine
 platformdirs==4.3.6
     # via
     #   pylint
@@ -270,7 +270,7 @@ pluggy==1.5.0
     #   tox
 polib==1.2.0
     # via edx-i18n-tools
-prompt-toolkit==3.0.48
+prompt-toolkit==3.0.50
     # via click-repl
 psutil==6.1.1
     # via edx-django-utils
@@ -322,7 +322,7 @@ pynacl==1.5.0
     #   paramiko
 pyopenssl==24.3.0
     # via snowflake-connector-python
-pyproject-api==1.8.0
+pyproject-api==1.9.0
     # via tox
 pyproject-hooks==1.2.0
     # via
@@ -354,6 +354,7 @@ requests==2.32.3
     #   -r requirements/base.in
     #   edx-drf-extensions
     #   edx-rest-api-client
+    #   id
     #   requests-toolbelt
     #   snowflake-connector-python
     #   twine
@@ -367,7 +368,7 @@ rsa==4.7.2
     # via awscli
 rules==3.5
     # via -r requirements/base.in
-s3transfer==0.10.4
+s3transfer==0.11.2
     # via
     #   awscli
     #   boto3
@@ -385,7 +386,7 @@ six==1.17.0
     #   vertica-python
 snowballstemmer==2.2.0
     # via pydocstyle
-snowflake-connector-python==3.12.4
+snowflake-connector-python==3.13.0
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
@@ -404,16 +405,16 @@ tomlkit==0.13.2
     # via
     #   pylint
     #   snowflake-connector-python
-tox==4.23.2
+tox==4.24.1
     # via -r requirements/dev-enterprise_data.in
-twine==6.0.1
+twine==6.1.0
     # via -r requirements/dev-enterprise_data.in
 typing-extensions==4.12.2
     # via
     #   edx-opaque-keys
     #   faker
     #   snowflake-connector-python
-tzdata==2024.2
+tzdata==2025.1
     # via
     #   celery
     #   kombu
@@ -434,7 +435,7 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==20.28.1
+virtualenv==20.29.1
     # via tox
 wcwidth==0.2.13
     # via prompt-toolkit
