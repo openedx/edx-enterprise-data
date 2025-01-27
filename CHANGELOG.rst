@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[10.7.3] - 2025-01-21
+---------------------
+  * Fix: added timestampt in last_updated_date in enterprise enrollments API
+
 [10.7.2] - 2025-01-16
 ---------------------
   * Fixed duplicate entries for groups in enterprise groups API
