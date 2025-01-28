@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[10.7.5] - 2025-01-28
+---------------------
+  * chore: upgrade python requirements
+
 [10.7.4] - 2025-01-27
 ---------------------
   * Fix: added UTC timezone in last_updated_date in enterprise enrollments API
