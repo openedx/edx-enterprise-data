@@ -21,4 +21,4 @@ def fetch_max_enrollment_datetime():
     results = run_query(query)
     if not results:
         return None
-    return pandas.to_datetime(results[0][0])
+    return pandas.to_datetime(results[0][0], utc=True)

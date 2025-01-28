@@ -126,7 +126,7 @@ class EnterpriseAdminAnalyticsAggregatesView(APIView):
                 'completions': completions,
                 'hours': hours,
                 'sessions': sessions,
-                'last_updated_at': last_updated_at.date() if last_updated_at else None,
+                'last_updated_at': last_updated_at if last_updated_at else None,
                 'min_enrollment_date': min_enrollment_date,
                 'max_enrollment_date': max_enrollment_date,
             },
