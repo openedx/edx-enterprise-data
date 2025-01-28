@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[10.7.4] - 2025-01-27
+---------------------
+  * Fix: added UTC timezone in last_updated_date in enterprise enrollments API
+
 [10.7.3] - 2025-01-21
 ---------------------
   * Fix: added timestampt in last_updated_date in enterprise enrollments API
