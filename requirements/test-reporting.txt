@@ -8,15 +8,15 @@ amqp==5.3.1
     # via kombu
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.37.6
+awscli==1.37.11
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
 bcrypt==4.2.1
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.36.6
+boto3==1.36.11
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
-botocore==1.36.6
+botocore==1.36.11
     # via
     #   awscli
     #   boto3
@@ -25,7 +25,7 @@ cachetools==5.5.1
     # via tox
 celery==5.3.6
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
-certifi==2024.12.14
+certifi==2025.1.31
     # via
     #   py2neo
     #   requests
@@ -154,7 +154,7 @@ python-dateutil==2.9.0.post0
     #   botocore
     #   celery
     #   vertica-python
-pytz==2024.2
+pytz==2025.1
     # via
     #   interchange
     #   snowflake-connector-python
@@ -181,7 +181,7 @@ six==1.17.0
     #   py2neo
     #   python-dateutil
     #   vertica-python
-snowflake-connector-python==3.13.0
+snowflake-connector-python==3.13.2
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
