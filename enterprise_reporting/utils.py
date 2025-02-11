@@ -3,7 +3,6 @@ Utility functions for Enterprise Reporting.
 """
 
 
-import datetime
 import logging
 import os
 import re
@@ -16,7 +15,6 @@ from urllib.parse import parse_qs, urlparse
 import boto3
 import pgpy
 import pyminizip
-import pytz
 from cryptography.fernet import Fernet
 from fernet_fields.hkdf import derive_fernet_key
 
@@ -149,12 +147,11 @@ def send_email_with_attachment(subject, body, from_email, to_email, attachment_d
         LOGGER.debug(result)
 
 
-def is_current_time_in_schedule(frequency, hour_of_day, day_of_month=None, day_of_week=None):
+def is_current_time_in_schedule(current_est_time, frequency, hour_of_day, day_of_month=None, day_of_week=None):
     """
     Determine if the current time is in the range specified by this configuration's schedule.
     """
-    est_timezone = pytz.timezone('US/Eastern')
-    current_est_time = datetime.datetime.now(est_timezone)
+
     current_hour_of_day = current_est_time.hour
     current_day_of_week = current_est_time.weekday()
     current_day_of_month = current_est_time.day

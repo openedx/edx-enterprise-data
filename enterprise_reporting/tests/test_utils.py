@@ -165,6 +165,7 @@ class TestUtilities(unittest.TestCase):
         est_timezone = pytz.timezone('US/Eastern')
         current_est_time = datetime.datetime.now(est_timezone)
         assert utils.is_current_time_in_schedule(
+            current_est_time,
             utils.FREQUENCY_TYPE_DAILY,
             current_est_time.hour,
             current_est_time.day,

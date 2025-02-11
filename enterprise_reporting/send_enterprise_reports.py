@@ -4,12 +4,14 @@ Sends an Enterprise Customer's data file to a configured destination.
 """
 
 
-
 import argparse
+import datetime
 import logging
 import os
 import re
 import sys
+
+import pytz
 
 from enterprise_reporting.clients.enterprise import EnterpriseAPIClient
 from enterprise_reporting.reporter import EnterpriseReportSender
@@ -55,11 +57,13 @@ def cleanup_files(enterprise_id):
             os.remove(os.path.join(directory, f))
 
 
-def should_deliver_report(args, reporting_config):
+def should_deliver_report(args, reporting_config, current_est_time):
     """Given CLI arguments and the reporting configuration, determine if delivery should happen."""
     valid_data_type = reporting_config['data_type'] in (args.data_type or DATA_TYPES)
     enterprise_customer_specified = bool(args.enterprise_customer)
+
     meets_schedule_requirement = is_current_time_in_schedule(
+        current_est_time,
         reporting_config['frequency'],
         reporting_config['hour_of_day'],
         reporting_config['day_of_month'],
@@ -101,6 +105,12 @@ def process_reports():
         LOGGER.error(f'The enterprise {args.enterprise_customer} does not have a reporting configuration.')
         sys.exit(1)
 
+    # We are defining the current est time globally because we want the current time for a job
+    # to remain same thoughout the job. This ensures that a single report is not processed multiple times. 
+    # See this comment for more details: https://2u-internal.atlassian.net/browse/ENT-9954?focusedCommentId=5356815
+    est_timezone = pytz.timezone('US/Eastern')
+    current_est_time = datetime.datetime.now(est_timezone)
+
     error_raised = False
     for reporting_config in reporting_configs['results']:
         LOGGER.info('Checking if {}\'s reporting config for {} data in {} format is ready for processing'.format(
@@ -109,7 +119,7 @@ def process_reports():
             reporting_config['report_type'],
         ))
 
-        if should_deliver_report(args, reporting_config):
+        if should_deliver_report(args, reporting_config, current_est_time):
             if send_data(reporting_config):
                 error_raised = True
         else:
