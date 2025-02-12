@@ -33,4 +33,4 @@ class TestSendEnterpriseReports(unittest.TestCase):
 		Command = namedtuple("Command", "data_type enterprise_customer")
 		args = Command('', '')
 
-		assert should_deliver_report(args, reporting_config)
+		assert should_deliver_report(args, reporting_config, current_est_time)
