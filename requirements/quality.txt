@@ -14,15 +14,15 @@ astroid==3.3.8
     # via
     #   pylint
     #   pylint-celery
-awscli==1.37.11
+awscli==1.37.16
     # via -r requirements/reporting.in
 bcrypt==4.2.1
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.36.11
+boto3==1.36.16
     # via -r requirements/reporting.in
-botocore==1.36.11
+botocore==1.36.16
     # via
     #   awscli
     #   boto3
@@ -76,7 +76,7 @@ colorama==0.4.6
     # via
     #   awscli
     #   tox
-coverage[toml]==7.6.10
+coverage[toml]==7.6.11
     # via pytest-cov
 cryptography==44.0.0
     # via
@@ -96,7 +96,7 @@ dill==0.3.9
     # via pylint
 distlib==0.3.9
     # via virtualenv
-django==4.2.18
+django==4.2.19
     # via
     #   -c /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/common_constraints.txt
     #   -r requirements/base.in
@@ -166,7 +166,7 @@ edx-rbac==1.10.0
     # via -r requirements/base.in
 edx-rest-api-client==6.0.0
     # via -r requirements/base.in
-factory-boy==3.3.1
+factory-boy==3.3.3
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
@@ -241,7 +241,7 @@ more-itertools==10.6.0
     #   jaraco-functools
 mysql-connector-python==9.2.0
     # via -r requirements/base.in
-newrelic==10.5.0
+newrelic==10.6.0
     # via edx-django-utils
 nh3==0.2.20
     # via readme-renderer
@@ -262,11 +262,11 @@ pandas==2.2.3
     # via -r requirements/base.in
 pansi==2024.11.0
     # via py2neo
-paramiko==3.5.0
+paramiko==3.5.1
     # via -r requirements/reporting.in
 path==16.16.0
     # via edx-i18n-tools
-pbr==6.1.0
+pbr==6.1.1
     # via stevedore
 pgpy==0.6.0
     # via -r requirements/reporting.in
