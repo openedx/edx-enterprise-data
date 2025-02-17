@@ -14,15 +14,15 @@ astroid==3.3.8
     # via
     #   pylint
     #   pylint-celery
-awscli==1.37.16
+awscli==1.37.21
     # via -r requirements/reporting.in
 bcrypt==4.2.1
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.36.16
+boto3==1.36.21
     # via -r requirements/reporting.in
-botocore==1.36.16
+botocore==1.36.21
     # via
     #   awscli
     #   boto3
@@ -76,9 +76,9 @@ colorama==0.4.6
     # via
     #   awscli
     #   tox
-coverage[toml]==7.6.11
+coverage[toml]==7.6.12
     # via pytest-cov
-cryptography==44.0.0
+cryptography==44.0.1
     # via
     #   -r requirements/reporting.in
     #   django-fernet-fields-v2
@@ -117,7 +117,7 @@ django-crum==0.7.9
     #   edx-rbac
 django-fernet-fields-v2==0.9
     # via -r requirements/base.in
-django-filter==24.3
+django-filter==25.1
     # via -r requirements/base.in
 django-model-utils==5.0.0
     # via
@@ -164,13 +164,13 @@ edx-opaque-keys==2.11.0
     #   edx-drf-extensions
 edx-rbac==1.10.0
     # via -r requirements/base.in
-edx-rest-api-client==6.0.0
+edx-rest-api-client==6.1.0
     # via -r requirements/base.in
 factory-boy==3.3.3
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==35.2.0
+faker==36.1.1
     # via factory-boy
 filelock==3.17.0
     # via
@@ -217,7 +217,7 @@ keyring==25.6.0
     # via twine
 kombu==5.4.2
     # via celery
-lxml[html-clean,html_clean]==5.3.0
+lxml[html-clean,html_clean]==5.3.1
     # via
     #   edx-i18n-tools
     #   lxml-html-clean
@@ -245,7 +245,7 @@ newrelic==10.6.0
     # via edx-django-utils
 nh3==0.2.20
     # via readme-renderer
-numpy==2.2.2
+numpy==2.2.3
     # via
     #   -r requirements/base.in
     #   pandas
@@ -289,7 +289,7 @@ polib==1.2.0
     # via edx-i18n-tools
 prompt-toolkit==3.0.50
     # via click-repl
-psutil==6.1.1
+psutil==7.0.0
     # via edx-django-utils
 py2neo @ https://github.com/overhangio/py2neo/releases/download/2021.2.3/py2neo-2021.2.3.tar.gz
     # via -r requirements/reporting.in
@@ -331,7 +331,7 @@ pylint-plugin-utils==0.8.2
     #   pylint-django
 pyminizip==0.2.6
     # via -r requirements/reporting.in
-pymongo==4.11
+pymongo==4.11.1
     # via edx-opaque-keys
 pynacl==1.5.0
     # via
@@ -351,13 +351,12 @@ pytest==8.3.4
     #   pytest-django
 pytest-cov==6.0.0
     # via -r requirements/test.in
-pytest-django==4.9.0
+pytest-django==4.10.0
     # via -r requirements/test.in
 python-dateutil==2.9.0.post0
     # via
     #   botocore
     #   celery
-    #   faker
     #   freezegun
     #   pandas
     #   vertica-python
@@ -444,11 +443,11 @@ twine==6.1.0
 typing-extensions==4.12.2
     # via
     #   edx-opaque-keys
-    #   faker
     #   snowflake-connector-python
 tzdata==2025.1
     # via
     #   celery
+    #   faker
     #   kombu
     #   pandas
 unicodecsv==0.14.1
@@ -468,7 +467,7 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==20.29.1
+virtualenv==20.29.2
     # via tox
 wcwidth==0.2.13
     # via prompt-toolkit
