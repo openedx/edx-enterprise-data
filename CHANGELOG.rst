@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[10.9.0] - 2025-02-24
+---------------------
+  * feat: get groups data from membership endpoint using enterprise client.
+
 [10.8.1] - 2025-02-20
 ---------------------
   * feat: Added 2 new columns in module performance report model and exposed them via associated REST API.
