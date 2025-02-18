@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[10.7.8] - 2025-02-18
+---------------------
+  * chore: bump version from 10.7.7 to 10.7.8 for dependency upgrades
+
 [10.7.7] - 2025-02-11
 ---------------------
   * chore: upgrade python requirements
