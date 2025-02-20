@@ -558,6 +558,9 @@ class EnterpriseExecEdLCModulePerformance(models.Model):
     discussion_forum_activities_completed_count = models.PositiveIntegerField(null=True)
     discussion_forum_activities_total_count = models.PositiveIntegerField(null=True)
     pass_grade = models.DecimalField(max_digits=38, decimal_places=2, null=True)
+    question_name = models.CharField(max_length=500, null=True)
+    avg_before_lo_score = models.DecimalField(max_digits=38, decimal_places=6, null=True)
+    avg_after_lo_score = models.DecimalField(max_digits=38, decimal_places=6, null=True)
 
     def __str__(self):
         """

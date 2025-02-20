@@ -16,6 +16,7 @@ from enterprise_data.models import (
     EnterpriseOffer,
     EnterpriseSubsidyBudget,
 )
+from enterprise_data.utils import calculate_percentage_difference
 
 
 class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
@@ -231,6 +232,7 @@ class EnterpriseExecEdLCModulePerformanceSerializer(serializers.ModelSerializer)
     Serializer for EnterpriseExecEdLCModulePerformance model.
     """
     extensions_requested = serializers.SerializerMethodField()
+    avg_lo_percentage_difference = serializers.SerializerMethodField()
 
     class Meta:
         model = EnterpriseExecEdLCModulePerformance
@@ -239,6 +241,18 @@ class EnterpriseExecEdLCModulePerformanceSerializer(serializers.ModelSerializer)
     def get_extensions_requested(self, obj):
         """Return extensions_requested if not None, otherwise return 0"""
         return obj.extensions_requested if obj.extensions_requested is not None else 0
+
+    def get_avg_lo_percentage_difference(self, obj):
+        """
+        Return percentage difference between `avg_before_lo_score` and `avg_after_lo_score` if not None,
+        otherwise return None
+        """
+        if obj.avg_before_lo_score is None or obj.avg_after_lo_score is None:
+            return None
+        return round(
+            calculate_percentage_difference(obj.avg_before_lo_score, obj.avg_after_lo_score),
+            2
+        )
 
 
 class EnterpriseBudgetSerializer(serializers.ModelSerializer):
