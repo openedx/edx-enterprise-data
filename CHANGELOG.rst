@@ -16,6 +16,26 @@ Unreleased
 
 =========================
 
+[10.8.1] - 2025-02-20
+---------------------
+  * feat: Added 2 new columns in module performance report model and exposed them via associated REST API.
+
+[10.7.8] - 2025-02-18
+---------------------
+  * chore: bump version from 10.7.7 to 10.7.8 for dependency upgrades
+
+[10.7.7] - 2025-02-11
+---------------------
+  * chore: upgrade python requirements
+
+[10.7.6] - 2025-02-03
+---------------------
+  * chore: upgrade python requirements
+
+[10.7.5] - 2025-01-28
+---------------------
+  * chore: upgrade python requirements
+
 [10.7.4] - 2025-01-27
 ---------------------
   * Fix: added UTC timezone in last_updated_date in enterprise enrollments API
