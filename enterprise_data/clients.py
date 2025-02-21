@@ -101,3 +101,38 @@ class EnterpriseApiClient(OAuthAPIClient):
         TieredCache.set_all_tiers(cache_key, data, DEFAULT_REPORTING_CACHE_TIMEOUT)
 
         return data
+
+    def get_enterprise_group_learners(self, group_uuid):
+        """
+        Get the learners associated with a given enterprise group.
+
+        Returns: list of learners or None if unable to retrieve or no learners exist
+        """
+        LOGGER.info(f'[EnterpriseApiClient] getting learners for enterprise group:{group_uuid}')
+        url = urljoin(self.API_BASE_URL, f'enterprise-group/{group_uuid}/learners/')
+        all_learners = []
+
+        try:
+            while url:
+                response = self.get(url)
+                response.raise_for_status()
+                data = response.json()
+                all_learners.extend(data.get('results', []))
+                url = data.get('next')  # Get the URL for the next page, if any
+
+        except (HTTPError, RequestException) as exc:
+            LOGGER.warning(
+                "[Data Overview Failure] Unable to retrieve Enterprise Group Learners details. "
+                f"Group: {group_uuid}, Exception: {exc}"
+            )
+            raise
+
+        if not all_learners:
+            LOGGER.warning(
+                f"[Data Overview Failure] Enterprise Group Learners details could not be found. Group: {group_uuid}"
+            )
+            raise NotFound(
+                "Unable to process Enterprise Group Learners details for group {}: No Results Found".format(group_uuid)
+            )
+
+        return all_learners
