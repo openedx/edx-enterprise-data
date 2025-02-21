@@ -114,3 +114,22 @@ def find_first(iterable, condition):
         return next(item for item in iterable if condition(item))
     except StopIteration:
         return None
+
+
+def calculate_percentage_difference(first, second):
+    """
+    Calculate the percentage difference between two numbers.
+
+    It will calculate the percentage difference between the two numbers using the formula:
+    ((second - first) / (first + second)/2) * 100
+
+    Arguments:
+        first (float): The first number.
+        second (float): The second number.
+
+    Returns:
+        float: The percentage difference between the two numbers.
+    """
+    if first == 0 and second == 0:
+        return 0
+    return ((second - first) / ((first + second) / 2)) * 100

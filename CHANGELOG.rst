@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[10.8.1] - 2025-02-20
+---------------------
+  * feat: Added 2 new columns in module performance report model and exposed them via associated REST API.
+
 [10.7.8] - 2025-02-18
 ---------------------
   * chore: bump version from 10.7.7 to 10.7.8 for dependency upgrades
