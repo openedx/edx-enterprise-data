@@ -14,22 +14,22 @@ astroid==3.3.8
     # via
     #   pylint
     #   pylint-celery
-awscli==1.37.21
+awscli==1.37.26
     # via -r requirements/reporting.in
 bcrypt==4.2.1
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.36.21
+boto3==1.36.26
     # via -r requirements/reporting.in
-botocore==1.36.21
+botocore==1.36.26
     # via
     #   awscli
     #   boto3
     #   s3transfer
 build==1.2.2.post1
     # via pip-tools
-cachetools==5.5.1
+cachetools==5.5.2
     # via tox
 celery==5.3.6
     # via -r requirements/reporting.in
@@ -86,7 +86,7 @@ cryptography==44.0.1
     #   pyopenssl
     #   secretstorage
     #   snowflake-connector-python
-diff-cover==9.2.2
+diff-cover==9.2.3
     # via -r requirements/dev-enterprise_data.in
 dill==0.3.9
     # via pylint
@@ -391,7 +391,7 @@ sortedcontainers==2.4.0
     # via snowflake-connector-python
 sqlparse==0.5.3
     # via django
-stevedore==5.4.0
+stevedore==5.4.1
     # via
     #   code-annotations
     #   edx-django-utils
