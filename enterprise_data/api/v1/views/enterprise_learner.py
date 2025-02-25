@@ -8,6 +8,7 @@ from uuid import UUID
 
 from rest_framework import filters, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
 from django.conf import settings
@@ -20,6 +21,7 @@ from django.utils import timezone
 
 from enterprise_data.admin_analytics.database.utils import LOGGER
 from enterprise_data.api.v1 import serializers
+from enterprise_data.clients import EnterpriseApiClient
 from enterprise_data.models import EnterpriseGroupMembership, EnterpriseLearner, EnterpriseLearnerEnrollment
 from enterprise_data.paginators import EnterpriseEnrollmentsPagination
 from enterprise_data.renderers import EnrollmentsCSVRenderer
@@ -176,12 +178,51 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
 
         group_uuid = query_filters.get('group_uuid')
         if group_uuid:
-            flex_group_exists = EnterpriseGroupMembership.objects.filter(
-                enterprise_customer_user_id=OuterRef('enterprise_user_id'),
-                enterprise_group_uuid=group_uuid,
-                group_type='flex'
-            )
-            queryset = queryset.filter(Exists(flex_group_exists))
+            queryset = self.filter_by_group_uuid(queryset, group_uuid)
+
+        return queryset
+
+    def filter_by_group_uuid(self, queryset, group_uuid):
+        """
+        Filters the queryset based on the provided group_uuid. If no records are found,
+        it attempts to fetch group learners from the API and filter the queryset again.
+
+        Args:
+            queryset (QuerySet): The initial queryset to filter.
+            group_uuid (str): The UUID of the group to filter by.
+
+        Returns:
+            QuerySet: The filtered queryset.
+        """
+        flex_group_exists = EnterpriseGroupMembership.objects.filter(
+            enterprise_customer_user_id=OuterRef('enterprise_user_id'),
+            enterprise_group_uuid=group_uuid,
+            group_type='flex'
+        )
+
+        # First, filter the queryset using flex_group_exists
+        filtered_queryset = queryset.filter(Exists(flex_group_exists))
+
+        # If no records are found, attempt to fetch group_learners from the API
+        if not filtered_queryset.exists():
+            try:
+                enterprise_api_client = EnterpriseApiClient(
+                    settings.BACKEND_SERVICE_EDX_OAUTH2_PROVIDER_URL,
+                    settings.BACKEND_SERVICE_EDX_OAUTH2_KEY,
+                    settings.BACKEND_SERVICE_EDX_OAUTH2_SECRET,
+                )
+                group_learners = enterprise_api_client.get_enterprise_group_learners(group_uuid)
+                if group_learners:
+                    group_learners_ids = [learner['enterprise_customer_user_id'] for learner in group_learners]
+                    queryset = queryset.filter(enterprise_user_id__in=group_learners_ids)
+                else:
+                    LOGGER.warning(f"No group learners found for group: {group_uuid}")
+                    raise NotFound(f"No learners found for group: {group_uuid}")
+            except (Exception) as e:  # pylint: disable=broad-exception-caught
+                LOGGER.error("Failed to fetch group learners from API: %s", e)
+                queryset = queryset.none()  # API call failed or unexpected error, return an empty queryset
+        else:
+            queryset = filtered_queryset
 
         return queryset
 
