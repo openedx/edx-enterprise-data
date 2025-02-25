@@ -22,6 +22,10 @@ Unreleased
 
 [10.8.1] - 2025-02-20
 ---------------------
+  * fix: Limited accuracy of floating pointing numbers to 2 places.
+
+[10.8.1] - 2025-02-20
+---------------------
   * feat: Added 2 new columns in module performance report model and exposed them via associated REST API.
 
 [10.7.8] - 2025-02-18
