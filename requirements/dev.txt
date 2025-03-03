@@ -14,15 +14,15 @@ astroid==3.3.8
     # via
     #   pylint
     #   pylint-celery
-awscli==1.37.26
+awscli==1.38.4
     # via -r requirements/reporting.in
-bcrypt==4.2.1
+bcrypt==4.3.0
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.36.26
+boto3==1.37.4
     # via -r requirements/reporting.in
-botocore==1.36.26
+botocore==1.37.4
     # via
     #   awscli
     #   boto3
@@ -76,7 +76,7 @@ colorama==0.4.6
     # via
     #   awscli
     #   tox
-cryptography==44.0.1
+cryptography==44.0.2
     # via
     #   -r requirements/reporting.in
     #   django-fernet-fields-v2
@@ -138,7 +138,7 @@ docutils==0.16
     #   readme-renderer
 drf-jwt==1.19.2
     # via edx-drf-extensions
-edx-django-utils==7.1.0
+edx-django-utils==7.2.0
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
@@ -178,7 +178,7 @@ idna==3.10
     #   snowflake-connector-python
 interchange==2021.0.4
     # via py2neo
-isort==6.0.0
+isort==6.0.1
     # via
     #   -r requirements/quality.in
     #   pylint
@@ -188,7 +188,7 @@ jaraco-context==6.0.1
     # via keyring
 jaraco-functools==4.1.0
     # via keyring
-jeepney==0.8.0
+jeepney==0.9.0
     # via
     #   keyring
     #   secretstorage
@@ -228,7 +228,7 @@ mysql-connector-python==9.2.0
     # via -r requirements/base.in
 newrelic==10.6.0
     # via edx-django-utils
-nh3==0.2.20
+nh3==0.2.21
     # via readme-renderer
 numpy==2.2.3
     # via
@@ -367,7 +367,7 @@ rsa==4.7.2
     # via awscli
 rules==3.5
     # via -r requirements/base.in
-s3transfer==0.11.2
+s3transfer==0.11.3
     # via
     #   awscli
     #   boto3
