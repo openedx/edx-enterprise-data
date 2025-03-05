@@ -6,6 +6,7 @@ from uuid import UUID
 from rest_framework import serializers
 
 from enterprise_data.admin_analytics.constants import ResponseType
+from enterprise_data.cache.decorators import cache_it
 from enterprise_data.models import (
     EnterpriseAdminLearnerProgress,
     EnterpriseAdminSummarizeInsights,
@@ -26,6 +27,8 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
     course_api_url = serializers.SerializerMethodField()
     enterprise_user_id = serializers.SerializerMethodField()
     total_learning_time_hours = serializers.SerializerMethodField()
+    enterprise_flex_group_name = serializers.SerializerMethodField()
+    enterprise_flex_group_uuid = serializers.SerializerMethodField()
 
     class Meta:
         model = EnterpriseLearnerEnrollment
@@ -44,8 +47,9 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
             'last_activity_date', 'progress_status', 'passed_date', 'current_grade',
             'letter_grade', 'enterprise_user_id', 'user_email', 'user_account_creation_date',
             'user_country_code', 'user_username', 'user_first_name', 'user_last_name', 'enterprise_name',
-            'enterprise_customer_uuid', 'enterprise_sso_uid', 'created', 'course_api_url', 'total_learning_time_hours',
-            'is_subsidy', 'course_product_line', 'budget_id', 'enterprise_group_name', 'enterprise_group_uuid',
+            'enterprise_customer_uuid', 'enterprise_sso_uid', 'created', 'course_api_url',
+            'total_learning_time_hours', 'is_subsidy', 'course_product_line', 'budget_id',
+            'enterprise_flex_group_name', 'enterprise_flex_group_uuid',
         )
 
     def get_course_api_url(self, obj):
@@ -61,6 +65,51 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
     def get_total_learning_time_hours(self, obj):
         """Returns the learners total learning time in hours"""
         return round((obj.total_learning_time_seconds or 0.0)/3600.0, 2)
+
+    @cache_it()
+    def _get_flex_groups(self, obj):
+        """
+        Returns list of tuples containing group (name, uuid) pairs for the learner.
+        This is cached to prevent duplicate database queries.
+        """
+        enterprise_user_id = obj.enterprise_user_id
+
+        if not enterprise_user_id:
+            return []
+
+        # Get all group memberships for this user in a single query
+        # Order by name for consistent ordering
+        return list(
+            EnterpriseGroupMembership.objects.filter(
+                enterprise_customer_user_id=enterprise_user_id,
+                membership_is_removed=False,
+                group_is_removed=False,
+                group_type="flex",
+            )
+            .order_by("enterprise_group_name")
+            .values_list("enterprise_group_name", "enterprise_group_uuid")
+            .distinct()
+        )
+
+    def get_enterprise_flex_group_name(self, obj):
+        """Returns a comma-separated list of enterprise group names that the learner is associated with"""
+        groups = self._get_flex_groups(obj)
+
+        if not groups:
+            return obj.enterprise_group_name
+
+        # Return comma-separated list of group names (first element of each tuple)
+        return ', '.join(group[0] for group in groups)
+
+    def get_enterprise_flex_group_uuid(self, obj):
+        """Returns a comma-separated list of enterprise group UUIDs that the learner is associated with"""
+        groups = self._get_flex_groups(obj)
+
+        if not groups:
+            return obj.enterprise_group_uuid
+
+        # Return comma-separated list of group UUIDs (second element of each tuple)
+        return ', '.join(str(group[1]) for group in groups)
 
 
 class EnterpriseSubsidyBudgetSerializer(serializers.ModelSerializer):
