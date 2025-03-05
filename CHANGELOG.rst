@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[10.9.2] - 2025-03-11
+---------------------
+  * feat: support flex groups in csv report on LPR.
+
 [10.9.0] - 2025-02-24
 ---------------------
   * feat: get groups data from membership endpoint using enterprise client.
