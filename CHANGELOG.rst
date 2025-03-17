@@ -15,6 +15,9 @@ Unreleased
 ----------
 
 =========================
+[10.10.0] - 2025-02-24
+---------------------
+  * feat: Added separate handling for of SFTP transmission failures.
 
 [10.9.2] - 2025-03-11
 ---------------------
