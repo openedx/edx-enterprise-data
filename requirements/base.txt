@@ -10,15 +10,15 @@ asgiref==3.8.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.38.9
+awscli==1.38.13
     # via -r requirements/reporting.in
 bcrypt==4.3.0
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.37.9
+boto3==1.37.13
     # via -r requirements/reporting.in
-botocore==1.37.9
+botocore==1.37.13
     # via
     #   awscli
     #   boto3
@@ -127,7 +127,7 @@ factory-boy==3.3.3
     # via -r requirements/base.in
 faker==37.0.0
     # via factory-boy
-filelock==3.17.0
+filelock==3.18.0
     # via snowflake-connector-python
 idna==3.10
     # via
@@ -139,7 +139,7 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-kombu==5.4.2
+kombu==5.5.0
     # via celery
 monotonic==1.6
     # via py2neo
@@ -147,7 +147,7 @@ mysql-connector-python==9.2.0
     # via -r requirements/base.in
 newrelic==10.7.0
     # via edx-django-utils
-numpy==2.2.3
+numpy==2.2.4
     # via
     #   -r requirements/base.in
     #   pandas
