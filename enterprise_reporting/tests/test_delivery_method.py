@@ -101,7 +101,7 @@ class TestDeliveryMethod(unittest.TestCase):
             mock_send_email_with_attachment.assert_called_with(
                 subject='SFTP transmission failed for bleh-bleh',
                 body='Failed to send progress report for bleh-bleh',
-                from_email='enterprise-analytics@edx.org',
+                from_email='enterprise-integrations@edx.org',
                 to_email=['enterprise-reporting-sftp@2u-internal.opsgenie.net'],
                 attachment_data={},
             )
@@ -112,7 +112,7 @@ class TestDeliveryMethod(unittest.TestCase):
             mock_send_email_with_attachment.assert_called_with(
                 subject='SFTP transmission successful for bleh-bleh',
                 body='SFTP transmission successful for bleh-bleh',
-                from_email='enterprise-analytics@edx.org',
+                from_email='enterprise-integrations@edx.org',
                 to_email=['enterprise-reporting-sftp@2u-internal.opsgenie.net'],
                 attachment_data={},
             )
