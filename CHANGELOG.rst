@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[10.10.1] - 2025-03-18
+---------------------
+  * fix: Updated FROM email address to a provisioned email address.
+
 [10.10.0] - 2025-02-24
 ---------------------
   * feat: Added separate handling for of SFTP transmission failures.
