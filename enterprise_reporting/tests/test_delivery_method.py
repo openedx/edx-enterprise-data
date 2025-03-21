@@ -2,13 +2,12 @@
 Test delivery methods.
 """
 
-import sys
 import unittest
 
 import ddt
-import pytest
 
-from enterprise_reporting.delivery_method import DeliveryMethod, SFTPDeliveryMethod, SMTPDeliveryMethod
+from mock import patch, MagicMock
+from enterprise_reporting.delivery_method import SFTPDeliveryMethod, SMTPDeliveryMethod
 from enterprise_reporting.utils import encrypt_string
 
 from .utils import create_files, verify_compressed
@@ -73,3 +72,47 @@ class TestDeliveryMethod(unittest.TestCase):
         else:
             assert len(delivery_files) == len(delivery_files)
             assert delivery_files == [file['file'].name for file in files]
+
+    @patch('enterprise_reporting.delivery_method.send_email_with_attachment')
+    def test_verify_sftp_exception_handling(self, mock_send_email_with_attachment):
+        """
+        Verify that SFTP transmission related exceptions are being handled correctly.
+        """
+        file_data = [
+            {
+                'name': 'A History of Magic.txt',
+                'size': 1000
+            },
+            {
+                'name': 'Quidditch Through the Ages.txt',
+                'size': 500
+            },
+            {
+                'name': 'Quidditch Through the Ages.txt',
+                'size': 500
+            },
+        ]
+        files, total_original_size = create_files(file_data)
+        sftp_delivery_method = SFTPDeliveryMethod(self.reporting_config, self.password)
+
+        # Verify failed SFTP transmission.
+        with patch('paramiko.SSHClient.connect', side_effect=Exception('SFTP transmission failed')):
+            sftp_delivery_method.send([file['file'] for file in files])
+            mock_send_email_with_attachment.assert_called_with(
+                subject='SFTP transmission failed for bleh-bleh',
+                body='Failed to send progress report for bleh-bleh',
+                from_email='enterprise-integrations@edx.org',
+                to_email=['enterprise-reporting-sftp@2u-internal.opsgenie.net'],
+                attachment_data={},
+            )
+
+        # Verify successful SFTP transmission.
+        with patch('paramiko.SSHClient', MagicMock()):
+            sftp_delivery_method.send([file['file'] for file in files])
+            mock_send_email_with_attachment.assert_called_with(
+                subject='SFTP transmission successful for bleh-bleh',
+                body='SFTP transmission successful for bleh-bleh',
+                from_email='enterprise-integrations@edx.org',
+                to_email=['enterprise-reporting-sftp@2u-internal.opsgenie.net'],
+                attachment_data={},
+            )

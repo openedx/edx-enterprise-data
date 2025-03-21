@@ -2,15 +2,19 @@
 Classes that handle sending reports for enterprise customers with specific delivery methods.
 """
 
-
-
 import logging
 import os
 from smtplib import SMTPException
 
 import paramiko
 
-from enterprise_reporting.utils import compress_and_encrypt, decrypt_string, send_email_with_attachment
+from enterprise_reporting.constants import SFTP_OPS_GENIE_EMAIL_ALERT_EMAILS, SFTP_OPS_GENIE_EMAIL_ALERT_FROM_EMAIL
+from enterprise_reporting.utils import (
+    compress_and_encrypt,
+    decrypt_string,
+    retry_on_exception,
+    send_email_with_attachment,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -97,6 +101,8 @@ class SFTPDeliveryMethod(DeliveryMethod):
     """
     Class that handles sending an enterprise report file via SFTP.
     """
+    sender_email = SFTP_OPS_GENIE_EMAIL_ALERT_FROM_EMAIL
+    receiver_emails = SFTP_OPS_GENIE_EMAIL_ALERT_EMAILS
 
     def __init__(self, reporting_config, password):
         """Initialize the SFTP Delivery Method."""
@@ -106,9 +112,11 @@ class SFTPDeliveryMethod(DeliveryMethod):
         self.username = reporting_config['sftp_username']
         self.file_path = reporting_config['sftp_file_path']
 
-    def send(self, files):
-        """Send the given files through SFTP."""
-        data_reports = super().send(files)
+    @retry_on_exception(max_retries=3, delay=2, backoff=2)
+    def send_over_sftp(self, data_reports):
+        """
+        Send the reports via SFTP, retry on exception.
+        """
         LOGGER.info('Connecting via SFTP to remote host {} for {}'.format(
             self.hostname,
             self.enterprise_customer_name
@@ -129,4 +137,25 @@ class SFTPDeliveryMethod(DeliveryMethod):
             )
         sftp.close()
         ssh.close()
-        LOGGER.info(f'Successfully sent report via sftp for {self.enterprise_customer_name}')
+
+    def send(self, files):
+        """Send the given files through SFTP."""
+        try:
+            data_reports = super().send(files)
+            self.send_over_sftp(data_reports)
+        except Exception:  # pylint: disable=broad-except
+            email_subject = f'SFTP transmission failed for {self.enterprise_customer_name}'
+            email_body = f'Failed to send {self.data_type} report for {self.enterprise_customer_name}'
+            LOGGER.exception(f'SFTP transmission failed for {self.enterprise_customer_name}')
+        else:
+            LOGGER.info(f'Successfully sent report via sftp for {self.enterprise_customer_name}')
+            email_subject = f'SFTP transmission successful for {self.enterprise_customer_name}'
+            email_body = f'SFTP transmission successful for {self.enterprise_customer_name}'
+
+        send_email_with_attachment(
+            subject=email_subject,
+            body=email_body,
+            from_email=self.sender_email,
+            to_email=self.receiver_emails,
+            attachment_data={},
+        )
