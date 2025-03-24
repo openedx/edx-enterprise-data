@@ -10,15 +10,15 @@ asgiref==3.8.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.38.13
+awscli==1.38.18
     # via -r requirements/reporting.in
 bcrypt==4.3.0
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.37.13
+boto3==1.37.18
     # via -r requirements/reporting.in
-botocore==1.37.13
+botocore==1.37.18
     # via
     #   awscli
     #   boto3
@@ -54,7 +54,7 @@ click-repl==0.3.0
     # via celery
 colorama==0.4.6
     # via awscli
-coverage[toml]==7.7.0
+coverage[toml]==7.7.1
     # via pytest-cov
 cryptography==44.0.2
     # via
@@ -120,7 +120,7 @@ edx-drf-extensions==10.5.0
     # via
     #   -r requirements/base.in
     #   edx-rbac
-edx-opaque-keys==2.11.0
+edx-opaque-keys==2.12.0
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
@@ -132,7 +132,7 @@ factory-boy==3.3.3
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==37.0.0
+faker==37.0.2
     # via factory-boy
 filelock==3.18.0
     # via snowflake-connector-python
@@ -144,7 +144,7 @@ idna==3.10
     # via
     #   requests
     #   snowflake-connector-python
-iniconfig==2.0.0
+iniconfig==2.1.0
     # via pytest
 interchange==2021.0.4
     # via py2neo
@@ -183,7 +183,7 @@ pgpy==0.6.0
     # via -r requirements/reporting.in
 pillow==11.1.0
     # via pansi
-platformdirs==4.3.6
+platformdirs==4.3.7
     # via snowflake-connector-python
 pluggy==1.5.0
     # via pytest
@@ -209,7 +209,7 @@ pyjwt[crypto]==2.10.1
     #   snowflake-connector-python
 pyminizip==0.2.6
     # via -r requirements/reporting.in
-pymongo==4.11.2
+pymongo==4.11.3
     # via edx-opaque-keys
 pynacl==1.5.0
     # via
