@@ -1,6 +1,7 @@
 """
 Module containing queries for the fact_enrollment_admin_dash table.
 """
+from ..query_filters import QueryFilters
 
 
 class FactEnrollmentAdminDashQueries:
@@ -20,27 +21,25 @@ class FactEnrollmentAdminDashQueries:
         """
 
     @staticmethod
-    def get_enrollment_count_query():
+    def get_enrollment_count_query(query_filters: QueryFilters) -> str:
         """
         Get the query to fetch the total number of enrollments for an enterprise customer.
         """
-        return """
+        return f"""
             SELECT count(*)
             FROM fact_enrollment_admin_dash
-            WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
-                enterprise_enrollment_date BETWEEN %(start_date)s AND %(end_date)s;
+            WHERE {query_filters.to_sql()};
         """
 
     @staticmethod
-    def get_all_enrollments_query():
+    def get_all_enrollments_query(query_filters: QueryFilters) -> str:
         """
         Get the query to fetch all enrollments.
         """
-        return """
+        return f"""
             SELECT email, course_title, course_subject, enroll_type, enterprise_enrollment_date
             FROM fact_enrollment_admin_dash
-            WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
-                enterprise_enrollment_date BETWEEN %(start_date)s AND %(end_date)s
+            WHERE {query_filters.to_sql()}
             ORDER BY ENTERPRISE_ENROLLMENT_DATE DESC LIMIT %(limit)s OFFSET %(offset)s
         """
 
@@ -98,21 +97,21 @@ class FactEnrollmentAdminDashQueries:
         """
 
     @staticmethod
-    def get_top_courses_by_enrollments_query(record_count=10):
+    def get_top_courses_by_enrollments_query(query_filters: QueryFilters, record_count: int = 10) -> str:
         """
         Get the query to fetch the enrollment count by courses.
 
         Query will fetch the top N courses by enrollment count. Where N is the value of record_count.
 
         Arguments:
+            query_filters (QueryFilters): List of query filters.
             record_count (int): Number of records to fetch.
         """
         return f"""
             WITH filtered_data AS (
                 SELECT *
                 FROM fact_enrollment_admin_dash
-                WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
-                enterprise_enrollment_date BETWEEN %(start_date)s AND %(end_date)s
+                WHERE {query_filters.to_sql()}
             ),
             top_10_courses AS (
                 SELECT course_key
@@ -134,7 +133,7 @@ class FactEnrollmentAdminDashQueries:
         """
 
     @staticmethod
-    def get_top_subjects_by_enrollments_query(record_count=10):
+    def get_top_subjects_by_enrollments_query(query_filters: QueryFilters, record_count: int = 10) -> str:
         """
         Get the query to fetch the enrollment count by subjects.
 
@@ -142,13 +141,13 @@ class FactEnrollmentAdminDashQueries:
 
         Arguments:
             record_count (int): Number of records to fetch.
+            query_filters (QueryFilters): List of query filters.
         """
         return f"""
             WITH filtered_data AS (
                 SELECT *
                 FROM fact_enrollment_admin_dash
-                WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
-                enterprise_enrollment_date BETWEEN %(start_date)s AND %(end_date)s
+                WHERE {query_filters.to_sql()}
             ),
             top_10_subjects AS (
                 SELECT course_subject
@@ -168,15 +167,17 @@ class FactEnrollmentAdminDashQueries:
         """
 
     @staticmethod
-    def get_enrolment_time_series_data_query():
+    def get_enrolment_time_series_data_query(query_filters: QueryFilters) -> str:
         """
         Get the query to fetch the enrollment time series data with daily aggregation.
+
+        Arguments:
+            query_filters (QueryFilters): A list of filters for this query.
         """
-        return """
+        return f"""
             SELECT enterprise_enrollment_date, enroll_type, COUNT(*) as enrollment_count
             FROM fact_enrollment_admin_dash
-            WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
-                enterprise_enrollment_date BETWEEN %(start_date)s AND %(end_date)s
+            WHERE {query_filters.to_sql()}
             GROUP BY enterprise_enrollment_date, enroll_type
             ORDER BY enterprise_enrollment_date;
         """
