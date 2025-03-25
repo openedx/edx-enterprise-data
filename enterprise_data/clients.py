@@ -1,10 +1,10 @@
 """
 Clients used to connect to other systems.
 """
-
-
 import logging
+from typing import Any, List
 from urllib.parse import urljoin
+from uuid import UUID
 
 from edx_django_utils.cache import TieredCache
 from edx_rest_api_client.client import OAuthAPIClient
@@ -13,9 +13,11 @@ from rest_framework.exceptions import NotFound, ParseError
 
 from django.conf import settings
 
+from enterprise_data.exceptions import EnterpriseApiClientException
 from enterprise_data.utils import get_cache_key
 
 DEFAULT_REPORTING_CACHE_TIMEOUT = 60 * 60 * 6  # 6 hours (Value is in seconds)
+GROUP_DATA_CACHE_TIMEOUT = 60 * 60  # 1 hour (Value is in seconds)
 LOGGER = logging.getLogger('enterprise_data')
 
 
@@ -102,16 +104,28 @@ class EnterpriseApiClient(OAuthAPIClient):
 
         return data
 
-    def get_enterprise_group_learners(self, group_uuid):
+    def get_enterprise_group_learners(self, group_uuid: UUID) -> List[Any]:
         """
         Get the learners associated with a given enterprise group.
 
         Returns: list of learners or None if unable to retrieve or no learners exist
         """
-        LOGGER.info(f'[EnterpriseApiClient] getting learners for enterprise group:{group_uuid}')
+        LOGGER.info(f'[EnterpriseApiClient] getting learners for enterprise group: {group_uuid}')
+
+        cache_key = get_cache_key(
+            resource='enterprise-group-learners',
+            group_uuid=group_uuid,
+        )
+        cached_response = TieredCache.get_cached_response(cache_key)
+        if cached_response.is_found:
+            LOGGER.info(
+                f'[EnterpriseApiClient] cache info found for enterprise group: {group_uuid}'
+                f' with {cached_response.value}'
+            )
+            return cached_response.value
+
         url = urljoin(self.API_BASE_URL, f'enterprise-group/{group_uuid}/learners/')
         all_learners = []
-
         try:
             while url:
                 response = self.get(url)
@@ -119,12 +133,30 @@ class EnterpriseApiClient(OAuthAPIClient):
                 data = response.json()
                 all_learners.extend(data.get('results', []))
                 url = data.get('next')  # Get the URL for the next page, if any
-
         except (HTTPError, RequestException) as exc:
             LOGGER.warning(
                 "[Data Overview Failure] Unable to retrieve Enterprise Group Learners details. "
                 f"Group: {group_uuid}, Exception: {exc}"
             )
-            return None
+            raise EnterpriseApiClientException(
+                f'Unable to process Enterprise Group Learners details for group {group_uuid}'
+            ) from exc
 
+        TieredCache.set_all_tiers(cache_key, all_learners, GROUP_DATA_CACHE_TIMEOUT)
         return all_learners
+
+    @staticmethod
+    def get_enterprise_user_ids_in_group(group_uuid: UUID) -> List[int]:
+        """
+        Get a list of all enterprise customer user ids that belong to the given group.
+
+        Arguments:
+            group_uuid (str|UUID): The group uuid.
+        """
+        enterprise_api_client = EnterpriseApiClient(
+            settings.BACKEND_SERVICE_EDX_OAUTH2_PROVIDER_URL,
+            settings.BACKEND_SERVICE_EDX_OAUTH2_KEY,
+            settings.BACKEND_SERVICE_EDX_OAUTH2_SECRET,
+        )
+        group_learners = enterprise_api_client.get_enterprise_group_learners(group_uuid)
+        return [learner['enterprise_customer_user_id'] for learner in group_learners]
