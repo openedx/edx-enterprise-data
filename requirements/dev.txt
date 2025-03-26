@@ -14,15 +14,15 @@ astroid==3.3.9
     # via
     #   pylint
     #   pylint-celery
-awscli==1.38.13
+awscli==1.38.18
     # via -r requirements/reporting.in
 bcrypt==4.3.0
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.37.13
+boto3==1.37.18
     # via -r requirements/reporting.in
-botocore==1.37.13
+botocore==1.37.18
     # via
     #   awscli
     #   boto3
@@ -147,13 +147,13 @@ edx-drf-extensions==10.5.0
     # via
     #   -r requirements/base.in
     #   edx-rbac
-edx-i18n-tools==1.6.3
+edx-i18n-tools==1.7.0
     # via -r requirements/dev-enterprise_data.in
 edx-lint==5.6.0
     # via
     #   -r requirements/dev-enterprise_data.in
     #   -r requirements/quality.in
-edx-opaque-keys==2.11.0
+edx-opaque-keys==2.12.0
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
@@ -163,7 +163,7 @@ edx-rest-api-client==6.1.0
     # via -r requirements/base.in
 factory-boy==3.3.3
     # via -r requirements/base.in
-faker==37.0.0
+faker==37.0.2
     # via factory-boy
 filelock==3.18.0
     # via
@@ -258,7 +258,7 @@ pillow==11.1.0
     # via pansi
 pip-tools==7.4.1
     # via -r requirements/dev-enterprise_data.in
-platformdirs==4.3.6
+platformdirs==4.3.7
     # via
     #   pylint
     #   snowflake-connector-python
@@ -298,7 +298,7 @@ pyjwt[crypto]==2.10.1
     #   edx-drf-extensions
     #   edx-rest-api-client
     #   snowflake-connector-python
-pylint==3.3.5
+pylint==3.3.6
     # via
     #   edx-lint
     #   pylint-celery
@@ -314,7 +314,7 @@ pylint-plugin-utils==0.8.2
     #   pylint-django
 pyminizip==0.2.6
     # via -r requirements/reporting.in
-pymongo==4.11.2
+pymongo==4.11.3
     # via edx-opaque-keys
 pynacl==1.5.0
     # via
