@@ -23,6 +23,7 @@ ENROLLMENTS = [
         "passed_date_raw": "2021-08-25",
         "passed_date": "2021-08-25",
         "has_passed": 1,
+        "enterprise_user_id": 1,
     },
     {
         "enterprise_customer_name": "Hill Ltd",
@@ -46,6 +47,7 @@ ENROLLMENTS = [
         "passed_date_raw": "2021-09-01",
         "passed_date": "2021-09-01",
         "has_passed": 1,
+        "enterprise_user_id": 1,
     },
     {
         "enterprise_customer_name": "Hill Ltd",
@@ -69,6 +71,7 @@ ENROLLMENTS = [
         "passed_date_raw": None,
         "passed_date": '2022-08-24',
         "has_passed": 0,
+        "enterprise_user_id": 1,
     },
     {
         "enterprise_customer_name": "Hill Ltd",
@@ -92,6 +95,7 @@ ENROLLMENTS = [
         "passed_date_raw": None,
         "passed_date": "2022-08-24",
         "has_passed": 0,
+        "enterprise_user_id": 1,
     },
     {
         "enterprise_customer_name": "Hill Ltd",
@@ -115,5 +119,6 @@ ENROLLMENTS = [
         "passed_date_raw": None,
         "passed_date": "2022-08-20",
         "has_passed": 0,
+        "enterprise_user_id": 1,
     },
 ]

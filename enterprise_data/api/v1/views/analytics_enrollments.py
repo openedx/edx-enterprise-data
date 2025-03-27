@@ -52,8 +52,11 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
         end_date = serializer.data.get('end_date', date.today())
         page = serializer.data.get('page', 1)
         page_size = serializer.data.get('page_size', 100)
+        group_uuid = serializer.data.get('group_uuid')
+
         enrollments = FactEnrollmentAdminDashTable().get_all_enrollments(
             enterprise_customer_uuid=enterprise_uuid,
+            group_uuid=group_uuid,
             start_date=start_date,
             end_date=end_date,
             limit=page_size,
@@ -61,6 +64,7 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
         )
         total_count = FactEnrollmentAdminDashTable().get_enrollment_count(
             enterprise_customer_uuid=enterprise_uuid,
+            group_uuid=group_uuid,
             start_date=start_date,
             end_date=end_date,
         )
@@ -78,7 +82,7 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
 
             return StreamingHttpResponse(
                 IndividualEnrollmentsCSVRenderer().render(self._stream_serialized_data(
-                    enterprise_uuid, start_date, end_date, total_count
+                    enterprise_uuid, group_uuid, start_date, end_date, total_count
                 )),
                 content_type="text/csv",
                 headers={"Content-Disposition": f'attachment; filename="{filename}"'},
@@ -93,7 +97,7 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
         )
 
     @staticmethod
-    def _stream_serialized_data(enterprise_uuid, start_date, end_date, total_count, page_size=50000):
+    def _stream_serialized_data(enterprise_uuid, group_uuid, start_date, end_date, total_count, page_size=50000):
         """
         Stream the serialized data.
         """
@@ -101,6 +105,7 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
         while offset < total_count:
             enrollments = FactEnrollmentAdminDashTable().get_all_enrollments(
                 enterprise_customer_uuid=enterprise_uuid,
+                group_uuid=group_uuid,
                 start_date=start_date,
                 end_date=end_date,
                 limit=page_size,
@@ -132,16 +137,18 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
         # get values from query params or use default
         start_date = serializer.data.get('start_date', min_enrollment_date)
         end_date = serializer.data.get('end_date', date.today())
+        group_uuid = serializer.data.get('group_uuid')
+
         with timer('construct_enrollment_all_stats'):
             data = {
                 'enrollments_over_time': FactEnrollmentAdminDashTable().get_enrolment_time_series_data(
-                    enterprise_uuid, start_date, end_date
+                    enterprise_uuid, group_uuid, start_date, end_date
                 ),
                 'top_courses_by_enrollments': FactEnrollmentAdminDashTable().get_top_courses_by_enrollments(
-                    enterprise_uuid, start_date, end_date,
+                    enterprise_uuid, group_uuid, start_date, end_date,
                 ),
                 'top_subjects_by_enrollments': FactEnrollmentAdminDashTable().get_top_subjects_by_enrollments(
-                    enterprise_uuid, start_date, end_date,
+                    enterprise_uuid, group_uuid, start_date, end_date,
                 ),
             }
         return Response(data)
