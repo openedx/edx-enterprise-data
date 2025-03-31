@@ -8,15 +8,15 @@ amqp==5.3.1
     # via kombu
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.38.18
+awscli==1.38.23
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
 bcrypt==4.3.0
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.37.18
+boto3==1.37.23
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
-botocore==1.37.18
+botocore==1.37.23
     # via
     #   awscli
     #   boto3
@@ -57,7 +57,7 @@ colorama==0.4.6
     # via
     #   awscli
     #   tox
-coverage[toml]==7.7.1
+coverage[toml]==7.8.0
     # via pytest-cov
 cryptography==44.0.2
     # via
@@ -89,7 +89,7 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-kombu==5.5.0
+kombu==5.5.2
     # via celery
 mock==2.0.0
     # via -r requirements/test-reporting.in
@@ -154,7 +154,7 @@ python-dateutil==2.9.0.post0
     #   botocore
     #   celery
     #   vertica-python
-pytz==2025.1
+pytz==2025.2
     # via
     #   interchange
     #   snowflake-connector-python
@@ -187,13 +187,13 @@ sortedcontainers==2.4.0
     # via snowflake-connector-python
 tomlkit==0.13.2
     # via snowflake-connector-python
-tox==4.24.2
+tox==4.25.0
     # via -r requirements/test-reporting.in
-typing-extensions==4.12.2
+typing-extensions==4.13.0
     # via
     #   pyopenssl
     #   snowflake-connector-python
-tzdata==2025.1
+tzdata==2025.2
     # via
     #   celery
     #   kombu
