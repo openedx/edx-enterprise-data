@@ -2,7 +2,6 @@
 Tests for the `enterprise-data` models module.
 """
 
-
 import unittest
 
 import ddt
