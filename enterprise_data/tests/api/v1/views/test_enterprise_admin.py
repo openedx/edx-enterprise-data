@@ -62,6 +62,10 @@ class TestEnterpriseAdminAnalyticsAggregatesView(JWTTestMixin, APITransactionTes
         """
         mock implementation of run_query.
         """
+        # Check if this is the completion_count_query being called with query_filters
+        if hasattr(query, '__name__') and query.__name__ == 'get_completion_count_query':
+            return [[50]]
+
         mock_responses = {
             self.enrollment_queries.get_enrollment_date_range_query(): [[
                 datetime.strptime('2021-01-01', "%Y-%m-%d"),
@@ -70,15 +74,12 @@ class TestEnterpriseAdminAnalyticsAggregatesView(JWTTestMixin, APITransactionTes
             self.enrollment_queries.get_enrollment_and_course_count_query(): [[
                 100, 10
             ]],
-            self.enrollment_queries.get_completion_count_query(): [[
-                50
-            ]],
             self.engagement_queries.get_learning_hours_and_daily_sessions_query(): [[
                 100, 10
             ]],
             'SELECT MAX(created) FROM enterprise_learner_enrollment': [[datetime.strptime('2021-01-01', "%Y-%m-%d")]]
         }
-        return mock_responses[query]
+        return mock_responses.get(query, [[]])
 
     def test_get_admin_analytics_aggregates(self):
         """

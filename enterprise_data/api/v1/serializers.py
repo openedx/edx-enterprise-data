@@ -262,6 +262,7 @@ class AdminAnalyticsAggregatesQueryParamsSerializer(serializers.Serializer):  # 
     response_type = serializers.CharField(required=False)
     page = serializers.IntegerField(required=False)
     chart_type = serializers.CharField(required=False)
+    group_uuid = serializers.UUIDField(required=False)
 
     def validate(self, attrs):
         """
