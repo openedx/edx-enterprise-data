@@ -14,15 +14,15 @@ astroid==3.3.9
     # via
     #   pylint
     #   pylint-celery
-awscli==1.38.23
+awscli==1.38.28
     # via -r requirements/reporting.in
 bcrypt==4.3.0
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.37.23
+boto3==1.37.28
     # via -r requirements/reporting.in
-botocore==1.37.23
+botocore==1.37.28
     # via
     #   awscli
     #   boto3
@@ -143,7 +143,7 @@ edx-django-utils==7.2.0
     #   -r requirements/base.in
     #   edx-drf-extensions
     #   edx-rest-api-client
-edx-drf-extensions==10.5.0
+edx-drf-extensions==10.6.0
     # via
     #   -r requirements/base.in
     #   edx-rbac
@@ -204,7 +204,7 @@ keyring==25.6.0
     # via twine
 kombu==5.5.2
     # via celery
-lxml[html-clean,html_clean]==5.3.1
+lxml[html-clean,html_clean]==5.3.2
     # via
     #   edx-i18n-tools
     #   lxml-html-clean
@@ -226,7 +226,7 @@ more-itertools==10.6.0
     #   jaraco-functools
 mysql-connector-python==9.2.0
     # via -r requirements/base.in
-newrelic==10.8.0
+newrelic==10.8.1
     # via edx-django-utils
 nh3==0.2.21
     # via readme-renderer
@@ -408,7 +408,7 @@ tox==4.25.0
     # via -r requirements/dev-enterprise_data.in
 twine==6.1.0
     # via -r requirements/dev-enterprise_data.in
-typing-extensions==4.13.0
+typing-extensions==4.13.1
     # via
     #   edx-opaque-keys
     #   pyopenssl
@@ -435,7 +435,7 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==20.29.3
+virtualenv==20.30.0
     # via tox
 wcwidth==0.2.13
     # via prompt-toolkit
