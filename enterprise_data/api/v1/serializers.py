@@ -341,6 +341,7 @@ class AdvanceAnalyticsQueryParamSerializer(serializers.Serializer):  # pylint: d
     response_type = serializers.CharField(required=False)
     page = serializers.IntegerField(required=False, min_value=1)
     page_size = serializers.IntegerField(required=False, min_value=2)
+    group_uuid = serializers.UUIDField(required=False)
 
     def validate(self, attrs):
         """
