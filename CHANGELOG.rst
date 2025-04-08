@@ -15,6 +15,11 @@ Unreleased
 ----------
 
 =========================
+[10.11.1] - 2025-04-08
+---------------------
+  * fix: Fixed a bug in group_uuid based filtering.
+
+
 [10.11.0] - 2025-03-25
 ---------------------
   * feat: Added the ability to filter enrollments by group_uuid in the enterprise enrollments API.
