@@ -147,12 +147,14 @@ class Command(BaseCommand):
         )
         enterprise_engagement_table.get_engagement_count(
             enterprise_customer_uuid=enterprise_customer_uuid,
+            group_uuid=None,
             start_date=start_date,
             end_date=end_date,
         )
         page_size = 100
         enterprise_engagement_table.get_all_engagements(
             enterprise_customer_uuid=enterprise_customer_uuid,
+            group_uuid=None,
             start_date=start_date,
             end_date=end_date,
             limit=page_size,
@@ -160,16 +162,19 @@ class Command(BaseCommand):
         )
         enterprise_engagement_table.get_top_courses_by_engagement(
             enterprise_customer_uuid=enterprise_customer_uuid,
+            group_uuid=None,
             start_date=start_date,
             end_date=end_date,
         )
         enterprise_engagement_table.get_top_subjects_by_engagement(
             enterprise_customer_uuid=enterprise_customer_uuid,
+            group_uuid=None,
             start_date=start_date,
             end_date=end_date,
         )
         enterprise_engagement_table.get_engagement_time_series_data(
             enterprise_customer_uuid=enterprise_customer_uuid,
+            group_uuid=None,
             start_date=start_date,
             end_date=end_date,
         )
