@@ -15,10 +15,13 @@ Unreleased
 ----------
 
 =========================
+[10.12.0] - 2025-04-09
+---------------------
+  * feat: Added the ability to filter enrollments by group_uuid in the enterprise completions API
+
 [10.11.1] - 2025-04-08
 ---------------------
   * fix: Fixed a bug in group_uuid based filtering.
-
 
 [10.11.0] - 2025-03-25
 ---------------------

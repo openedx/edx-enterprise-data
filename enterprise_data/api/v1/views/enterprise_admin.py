@@ -108,12 +108,13 @@ class EnterpriseAdminAnalyticsAggregatesView(APIView):
             'start_date', min_enrollment_date
         )
         end_date = serializer.data.get('end_date', datetime.today())
+        group_uuid = serializer.data.get('group_uuid', None)
 
         enrolls, courses = FactEnrollmentAdminDashTable().get_enrollment_and_course_count(
             enterprise_id, start_date, end_date,
         )
         completions = FactEnrollmentAdminDashTable().get_completion_count(
-            enterprise_id, start_date, end_date,
+            enterprise_id, group_uuid, start_date, end_date,
         )
         hours, sessions = FactEngagementAdminDashTable().get_learning_hours_and_daily_sessions(
             enterprise_id, start_date, end_date,

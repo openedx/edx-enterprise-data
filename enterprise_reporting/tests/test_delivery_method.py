@@ -5,8 +5,8 @@ Test delivery methods.
 import unittest
 
 import ddt
+from mock import MagicMock, patch
 
-from mock import patch, MagicMock
 from enterprise_reporting.delivery_method import SFTPDeliveryMethod, SMTPDeliveryMethod
 from enterprise_reporting.utils import encrypt_string
 

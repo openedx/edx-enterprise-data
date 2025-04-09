@@ -10,7 +10,7 @@ from enterprise_data.cache.decorators import cache_it
 from enterprise_data.clients import EnterpriseApiClient
 from enterprise_data.exceptions import EnterpriseApiClientException
 
-from ..filters import FactEnrollmentAdminDashFilters
+from ..filters import FactCompletionAdminDashFilters, FactEnrollmentAdminDashFilters
 from ..queries import FactEnrollmentAdminDashQueries
 from ..query_filters import INQueryFilter, QueryFilters
 from ..utils import run_query
@@ -25,6 +25,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
     """
     queries = FactEnrollmentAdminDashQueries()
     filters = FactEnrollmentAdminDashFilters()
+    completion_filters = FactCompletionAdminDashFilters()
 
     def __get_enterprise_user_query_filter(  # pylint: disable=inconsistent-return-statements
             self, group_uuid: Optional[UUID],
@@ -75,6 +76,45 @@ class FactEnrollmentAdminDashTable(BaseTable):
         query_filters = QueryFilters([
             self.filters.enterprise_customer_uuid_filter('enterprise_customer_uuid'),
             self.filters.enterprise_enrollment_date_range_filter('start_date', 'end_date'),
+        ])
+        params = {
+            'enterprise_customer_uuid': enterprise_customer_uuid,
+            'start_date': start_date,
+            'end_date': end_date,
+        }
+
+        response = self.__get_enterprise_user_query_filter(
+            group_uuid, enterprise_customer_uuid
+        )
+        if response is not None:
+            enterprise_user_id_in_filter, enterprise_user_id_params = response
+            query_filters.append(enterprise_user_id_in_filter)
+            params.update(enterprise_user_id_params)
+
+        return query_filters, params
+
+    def __get_common_query_filters_for_completion(
+        self, enterprise_customer_uuid: UUID,
+        group_uuid: Optional[UUID],
+        start_date: date,
+        end_date: date,
+    ) -> Tuple[QueryFilters, dict]:
+        """
+        Utility method to get query filters common in most usages below.
+
+        This will return a tuple containing the query filters list and the dictionary of query parameters that
+        will be used in the query.
+
+        It will contain the following query filters.
+            1. enterprise_customer_uuid filter to filter records for an enterprise customer.
+            2. enrollment_date range filter to filter records by enrollment date.
+            3. group_uuid filter to filter records for learners who belong to the given group.
+            4. has_passed filter to filter records for successful completions.
+        """
+        query_filters = QueryFilters([
+            self.filters.enterprise_customer_uuid_filter('enterprise_customer_uuid'),
+            self.completion_filters.passed_date_range_filter('start_date', 'end_date'),
+            self.completion_filters.has_passed_filter(),
         ])
         params = {
             'enterprise_customer_uuid': enterprise_customer_uuid,
@@ -232,27 +272,31 @@ class FactEnrollmentAdminDashTable(BaseTable):
         return tuple(results[0])
 
     @cache_it()
-    def get_completion_count(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
+    def get_completion_count(
+        self, enterprise_customer_uuid: UUID, group_uuid: Optional[UUID], start_date: date, end_date: date
+    ):
         """
         Get the completion count for the given enterprise customer.
 
         Arguments:
             enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
+            group_uuid (UUID): The UUID of the group.
             start_date (date): The start date.
             end_date (date): The end date.
 
         Returns:
             int: The completion count.
         """
-        results = run_query(
-            query=self.queries.get_completion_count_query(),
-            params={
-                'enterprise_customer_uuid': enterprise_customer_uuid,
-                'start_date': start_date,
-                'end_date': end_date,
-            }
+        query_filters, query_filter_params = self.__get_common_query_filters_for_completion(
+            enterprise_customer_uuid, group_uuid, start_date, end_date
         )
-        if not results:
+        results = run_query(
+            query=self.queries.get_completion_count_query(query_filters),
+            params=query_filter_params,
+            as_dict=False,
+        )
+        # Handle empty results defensively
+        if not results or not results[0] or len(results[0]) == 0:
             return 0
 
         return int(results[0][0] or 0)
@@ -347,7 +391,13 @@ class FactEnrollmentAdminDashTable(BaseTable):
 
     @cache_it()
     def get_all_completions(
-            self, enterprise_customer_uuid: UUID, start_date: date, end_date: date, limit: int, offset: int
+        self,
+        enterprise_customer_uuid: UUID,
+        group_uuid: Optional[UUID],
+        start_date: date,
+        end_date: date,
+        limit: int,
+        offset: int,
     ):
         """
         Get all completions for the given enterprise customer.
@@ -355,6 +405,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
         Arguments:
             enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
             start_date (date): The start date.
+            group_uuid (UUID): The UUID of the group.
             end_date (date): The end date.
             limit (int): The maximum number of records to return.
             offset (int): The number of records to skip.
@@ -362,12 +413,13 @@ class FactEnrollmentAdminDashTable(BaseTable):
         Returns:
             list<dict>: A list of dictionaries containing the completions data.
         """
+        query_filters, query_filter_params = self.__get_common_query_filters_for_completion(
+            enterprise_customer_uuid, group_uuid, start_date, end_date
+        )
         return run_query(
-            query=self.queries.get_all_completions_query(),
+            query=self.queries.get_all_completions_query(query_filters),
             params={
-                'enterprise_customer_uuid': enterprise_customer_uuid,
-                'start_date': start_date,
-                'end_date': end_date,
+                **query_filter_params,
                 'limit': limit,
                 'offset': offset,
             },
@@ -375,7 +427,9 @@ class FactEnrollmentAdminDashTable(BaseTable):
         )
 
     @cache_it()
-    def get_top_courses_by_completions(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
+    def get_top_courses_by_completions(
+        self, enterprise_customer_uuid: UUID, group_uuid: Optional[UUID], start_date: date, end_date: date
+    ):
         """
         Get the top courses by completion for the given enterprise customer.
 
@@ -387,18 +441,19 @@ class FactEnrollmentAdminDashTable(BaseTable):
         Returns:
             list<dict>: A list of dictionaries containing the course key, course_title and completion count.
         """
+        query_filters, query_filter_params = self.__get_common_query_filters_for_completion(
+            enterprise_customer_uuid, group_uuid, start_date, end_date
+        )
         return run_query(
-            query=self.queries.get_top_courses_by_completions_query(),
-            params={
-                'enterprise_customer_uuid': enterprise_customer_uuid,
-                'start_date': start_date,
-                'end_date': end_date,
-            },
+            query=self.queries.get_top_courses_by_completions_query(query_filters),
+            params=query_filter_params,
             as_dict=True,
         )
 
     @cache_it()
-    def get_top_subjects_by_completions(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
+    def get_top_subjects_by_completions(
+        self, enterprise_customer_uuid: UUID, group_uuid: Optional[UUID], start_date: date, end_date: date
+    ):
         """
         Get the top subjects by completions for the given enterprise customer.
 
@@ -410,35 +465,36 @@ class FactEnrollmentAdminDashTable(BaseTable):
         Returns:
             list<dict>: A list of dictionaries containing the subject and completion count.
         """
+        query_filters, query_filter_params = self.__get_common_query_filters_for_completion(
+            enterprise_customer_uuid, group_uuid, start_date, end_date
+        )
         return run_query(
-            query=self.queries.get_top_subjects_by_completions_query(),
-            params={
-                'enterprise_customer_uuid': enterprise_customer_uuid,
-                'start_date': start_date,
-                'end_date': end_date,
-            },
+            query=self.queries.get_top_subjects_by_completions_query(query_filters),
+            params=query_filter_params,
             as_dict=True,
         )
 
     @cache_it()
-    def get_completions_time_series_data(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
+    def get_completions_time_series_data(
+        self, enterprise_customer_uuid: UUID, group_uuid: Optional[UUID], start_date: date, end_date: date
+    ):
         """
         Get the completions time series data for the given enterprise customer.
 
         Arguments:
             enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
+            group_uuid (UUID): The UUID of the group.
             start_date (date): The start date.
             end_date (date): The end date.
 
         Returns:
             list<dict>: A list of dictionaries containing the date and completion count.
         """
+        query_filters, query_filter_params = self.__get_common_query_filters_for_completion(
+            enterprise_customer_uuid, group_uuid, start_date, end_date
+        )
         return run_query(
-            query=self.queries.get_completions_time_series_data_query(),
-            params={
-                'enterprise_customer_uuid': enterprise_customer_uuid,
-                'start_date': start_date,
-                'end_date': end_date,
-            },
+            query=self.queries.get_completions_time_series_data_query(query_filters),
+            params=query_filter_params,
             as_dict=True,
         )

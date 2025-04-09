@@ -56,6 +56,7 @@ class Command(BaseCommand):
         )
         enterprise_enrollment_table.get_completion_count(
             enterprise_customer_uuid=enterprise_customer_uuid,
+            group_uuid=None,
             start_date=start_date,
             end_date=end_date,
         )
@@ -95,6 +96,7 @@ class Command(BaseCommand):
         page_size = 100
         enterprise_enrollment_table.get_all_completions(
             enterprise_customer_uuid=enterprise_customer_uuid,
+            group_uuid=None,
             start_date=start_date,
             end_date=end_date,
             limit=page_size,
@@ -102,21 +104,25 @@ class Command(BaseCommand):
         )
         enterprise_enrollment_table.get_completion_count(
             enterprise_customer_uuid=enterprise_customer_uuid,
+            group_uuid=None,
             start_date=start_date,
             end_date=end_date,
         )
         enterprise_enrollment_table.get_top_courses_by_completions(
             enterprise_customer_uuid=enterprise_customer_uuid,
+            group_uuid=None,
             start_date=start_date,
             end_date=end_date,
         )
         enterprise_enrollment_table.get_top_subjects_by_completions(
             enterprise_customer_uuid=enterprise_customer_uuid,
+            group_uuid=None,
             start_date=start_date,
             end_date=end_date,
         )
         enterprise_enrollment_table.get_completions_time_series_data(
             enterprise_customer_uuid=enterprise_customer_uuid,
+            group_uuid=None,
             start_date=start_date,
             end_date=end_date,
         )
