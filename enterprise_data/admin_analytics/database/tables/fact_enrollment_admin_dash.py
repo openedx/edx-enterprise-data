@@ -52,7 +52,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
                 enterprise_customer_uuid,
             )
         else:
-            params = {f'eu_{i}': i for i in range(len(learners_in_group))}
+            params = {f'eu_{i}': enterprise_user_id for i, enterprise_user_id in enumerate(learners_in_group)}
             return self.filters.enterprise_user_id_in_filter(list(params.keys())), params
 
     def __get_common_query_filters(
