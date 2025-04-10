@@ -2,6 +2,7 @@
 Management command for pre-warming the analytics cache for large enterprises.
 """
 from datetime import date
+from uuid import UUID
 
 from django.core.management.base import BaseCommand, CommandError
 
@@ -21,12 +22,12 @@ class Command(BaseCommand):
     help = 'Pre-warm the analytics cache for a large enterprises.'
 
     @staticmethod
-    def __cache_enrollment_data(enterprise_customer_uuid):
+    def __cache_enrollment_data(enterprise_customer_uuid: UUID):
         """
         Helper method to cache all the enrollment related data for the given enterprise.
 
         Arguments:
-            enterprise_customer_uuid (str): The UUID of the enterprise customer.
+            enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
         """
         enterprise_enrollment_table = FactEnrollmentAdminDashTable()
         start_date, _ = enterprise_enrollment_table.get_enrollment_date_range(
@@ -35,12 +36,14 @@ class Command(BaseCommand):
         end_date = date.today()
         enterprise_enrollment_table.get_enrollment_count(
             enterprise_customer_uuid=enterprise_customer_uuid,
+            group_uuid=None,
             start_date=start_date,
             end_date=end_date,
         )
         page_size = 100
         enterprise_enrollment_table.get_all_enrollments(
             enterprise_customer_uuid=enterprise_customer_uuid,
+            group_uuid=None,
             start_date=start_date,
             end_date=end_date,
             limit=page_size,
@@ -53,32 +56,36 @@ class Command(BaseCommand):
         )
         enterprise_enrollment_table.get_completion_count(
             enterprise_customer_uuid=enterprise_customer_uuid,
+            group_uuid=None,
             start_date=start_date,
             end_date=end_date,
         )
         enterprise_enrollment_table.get_top_courses_by_enrollments(
             enterprise_customer_uuid=enterprise_customer_uuid,
+            group_uuid=None,
             start_date=start_date,
             end_date=end_date,
         )
         enterprise_enrollment_table.get_top_subjects_by_enrollments(
             enterprise_customer_uuid=enterprise_customer_uuid,
+            group_uuid=None,
             start_date=start_date,
             end_date=end_date,
         )
         enterprise_enrollment_table.get_enrolment_time_series_data(
             enterprise_customer_uuid=enterprise_customer_uuid,
+            group_uuid=None,
             start_date=start_date,
             end_date=end_date,
         )
 
     @staticmethod
-    def __cache_completions_data(enterprise_customer_uuid):
+    def __cache_completions_data(enterprise_customer_uuid: UUID):
         """
         Helper method to cache all the completions related data for the given enterprise.
 
         Arguments:
-            enterprise_customer_uuid (str): The UUID of the enterprise customer.
+            enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
         """
         enterprise_enrollment_table = FactEnrollmentAdminDashTable()
         start_date, _ = enterprise_enrollment_table.get_enrollment_date_range(
@@ -89,6 +96,7 @@ class Command(BaseCommand):
         page_size = 100
         enterprise_enrollment_table.get_all_completions(
             enterprise_customer_uuid=enterprise_customer_uuid,
+            group_uuid=None,
             start_date=start_date,
             end_date=end_date,
             limit=page_size,
@@ -96,32 +104,36 @@ class Command(BaseCommand):
         )
         enterprise_enrollment_table.get_completion_count(
             enterprise_customer_uuid=enterprise_customer_uuid,
+            group_uuid=None,
             start_date=start_date,
             end_date=end_date,
         )
         enterprise_enrollment_table.get_top_courses_by_completions(
             enterprise_customer_uuid=enterprise_customer_uuid,
+            group_uuid=None,
             start_date=start_date,
             end_date=end_date,
         )
         enterprise_enrollment_table.get_top_subjects_by_completions(
             enterprise_customer_uuid=enterprise_customer_uuid,
+            group_uuid=None,
             start_date=start_date,
             end_date=end_date,
         )
         enterprise_enrollment_table.get_completions_time_series_data(
             enterprise_customer_uuid=enterprise_customer_uuid,
+            group_uuid=None,
             start_date=start_date,
             end_date=end_date,
         )
 
     @staticmethod
-    def __cache_engagement_data(enterprise_customer_uuid):
+    def __cache_engagement_data(enterprise_customer_uuid: UUID):
         """
         Helper method to cache all the engagement related data for the given enterprise.
 
         Arguments:
-            enterprise_customer_uuid (str): The UUID of the enterprise customer.
+            enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
         """
         start_date, _ = FactEnrollmentAdminDashTable().get_enrollment_date_range(
             enterprise_customer_uuid,
@@ -176,12 +188,12 @@ class Command(BaseCommand):
         )
 
     @staticmethod
-    def __cache_skills_data(enterprise_customer_uuid):
+    def __cache_skills_data(enterprise_customer_uuid: UUID):
         """
         Helper method to cache all the skills related data for the given enterprise.
 
         Arguments:
-            enterprise_customer_uuid (str): The UUID of the enterprise customer.
+            enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
         """
         start_date, _ = FactEnrollmentAdminDashTable().get_enrollment_date_range(
             enterprise_customer_uuid,
