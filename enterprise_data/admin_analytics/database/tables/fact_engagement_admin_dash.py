@@ -7,13 +7,11 @@ from typing import Optional, Tuple
 from uuid import UUID
 
 from enterprise_data.cache.decorators import cache_it
-from enterprise_data.clients import EnterpriseApiClient
-from enterprise_data.exceptions import EnterpriseApiClientException
 from enterprise_data.utils import find_first
 
-from ..filters import FactEngagementAdminDashFilters, FactEnrollmentAdminDashFilters
+from ..filters.mixins import CommonFiltersMixin
 from ..queries import FactEngagementAdminDashQueries
-from ..query_filters import INQueryFilter, QueryFilters
+from ..query_filters import QueryFilters
 from ..utils import run_query
 from .base import BaseTable
 
@@ -22,42 +20,11 @@ LOGGER = getLogger(__name__)
 NULL_EMAIL_TEXT = 'learners who have not shared consent'
 
 
-class FactEngagementAdminDashTable(BaseTable):
+class FactEngagementAdminDashTable(BaseTable, CommonFiltersMixin):
     """
     Class for communicating with the fact_enrollment_engagement_day_admin_dash table.
     """
     queries = FactEngagementAdminDashQueries()
-    enrollment_filters = FactEnrollmentAdminDashFilters()
-    engagement_filters = FactEngagementAdminDashFilters()
-
-    def __get_enterprise_user_query_filter(  # pylint: disable=inconsistent-return-statements
-            self, group_uuid: Optional[UUID],
-            enterprise_customer_uuid: UUID
-    ) -> Optional[Tuple[INQueryFilter, dict]]:
-        """
-        Get the query filter to filter enrollments for enterprise users in the given group.
-
-        Arguments:
-            group_uuid (UUID): The UUID of the group.
-            enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
-
-        Returns:
-            (INQueryFilter | None): The query filter to filter enrollments for enterprise users in the given group.
-        """
-        if not group_uuid:
-            return None
-
-        try:
-            learners_in_group = EnterpriseApiClient.get_enterprise_user_ids_in_group(group_uuid)
-        except EnterpriseApiClientException:
-            LOGGER.exception(
-                "Failed to get learners in group [%s] for enterprise [%s]",
-                group_uuid,
-                enterprise_customer_uuid,
-            )
-        else:
-            params = {f'eu_{i}': i for i in learners_in_group}
-            return self.enrollment_filters.enterprise_user_id_in_filter(list(params.keys())), params
 
     def __get_common_query_filters_for_engagement(
             self, enterprise_customer_uuid: UUID,
@@ -75,8 +42,8 @@ class FactEngagementAdminDashTable(BaseTable):
             3. group_uuid filter to filter records for learners who belong to the given group.
         """
         query_filters = QueryFilters([
-            self.enrollment_filters.enterprise_customer_uuid_filter('enterprise_customer_uuid'),
-            self.engagement_filters.enterprise_date_range_filter('start_date', 'end_date'),
+            self.enterprise_customer_uuid_filter('enterprise_customer_uuid'),
+            self.enterprise_date_range_filter('activity_date', 'start_date', 'end_date'),
         ])
         params = {
             'enterprise_customer_uuid': enterprise_customer_uuid,
@@ -84,7 +51,7 @@ class FactEngagementAdminDashTable(BaseTable):
             'end_date': end_date,
         }
 
-        response = self.__get_enterprise_user_query_filter(
+        response = self.enterprise_user_query_filter(
             group_uuid,
             enterprise_customer_uuid
         )
