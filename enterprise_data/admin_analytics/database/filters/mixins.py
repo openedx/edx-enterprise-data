@@ -31,7 +31,7 @@ class CommonFiltersMixin(BaseFilter):
         )
 
     @staticmethod
-    def enterprise_date_range_filter(
+    def date_range_filter(
         column: str,
         start_date_params_key: str,
         end_date_params_key: str
@@ -50,7 +50,8 @@ class CommonFiltersMixin(BaseFilter):
         )
 
     def enterprise_user_query_filter(  # pylint: disable=inconsistent-return-statements
-        self, group_uuid: Optional[UUID],
+        self,
+        group_uuid: Optional[UUID],
         enterprise_customer_uuid: UUID
     ) -> Optional[Tuple[INQueryFilter, dict]]:
         """

@@ -2,29 +2,27 @@
 Module for interacting with the fact_enrollment_engagement_day_admin_dash table.
 """
 from datetime import date
-from logging import getLogger
 from typing import Optional, Tuple
 from uuid import UUID
 
 from enterprise_data.cache.decorators import cache_it
 from enterprise_data.utils import find_first
 
-from ..filters.mixins import CommonFiltersMixin
+from ..filters import FactEngagementAdminDashFilters
 from ..queries import FactEngagementAdminDashQueries
 from ..query_filters import QueryFilters
 from ..utils import run_query
 from .base import BaseTable
 
-LOGGER = getLogger(__name__)
-
 NULL_EMAIL_TEXT = 'learners who have not shared consent'
 
 
-class FactEngagementAdminDashTable(BaseTable, CommonFiltersMixin):
+class FactEngagementAdminDashTable(BaseTable):
     """
     Class for communicating with the fact_enrollment_engagement_day_admin_dash table.
     """
     queries = FactEngagementAdminDashQueries()
+    engagement_filters = FactEngagementAdminDashFilters()
 
     def __get_common_query_filters_for_engagement(
             self, enterprise_customer_uuid: UUID,
@@ -42,8 +40,8 @@ class FactEngagementAdminDashTable(BaseTable, CommonFiltersMixin):
             3. group_uuid filter to filter records for learners who belong to the given group.
         """
         query_filters = QueryFilters([
-            self.enterprise_customer_uuid_filter('enterprise_customer_uuid'),
-            self.enterprise_date_range_filter('activity_date', 'start_date', 'end_date'),
+            self.engagement_filters.enterprise_customer_uuid_filter('enterprise_customer_uuid'),
+            self.engagement_filters.date_range_filter('activity_date', 'start_date', 'end_date'),
         ])
         params = {
             'enterprise_customer_uuid': enterprise_customer_uuid,
@@ -51,7 +49,7 @@ class FactEngagementAdminDashTable(BaseTable, CommonFiltersMixin):
             'end_date': end_date,
         }
 
-        response = self.enterprise_user_query_filter(
+        response = self.engagement_filters.enterprise_user_query_filter(
             group_uuid,
             enterprise_customer_uuid
         )
