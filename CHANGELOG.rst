@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[10.13.0] - 2025-04-11
+---------------------
+  * feat: Support filtering of engagement API by group_uuid
+
 [10.12.0] - 2025-04-09
 ---------------------
   * feat: Added the ability to filter enrollments by group_uuid in the enterprise completions API

@@ -1,11 +1,11 @@
 """
-Query filters for enrollments table.
+Query filters for engagments data.
 """
 from enterprise_data.admin_analytics.database.filters.base import BaseFilter
 from enterprise_data.admin_analytics.database.filters.mixins import CommonFiltersMixin
 
 
-class FactEnrollmentAdminDashFilters(CommonFiltersMixin, BaseFilter):
+class FactEngagementAdminDashFilters(CommonFiltersMixin, BaseFilter):
     """
-    Query filters for enrollments table.
+    Query filters for engagments data.
     """

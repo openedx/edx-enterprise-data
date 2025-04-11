@@ -2,21 +2,16 @@
 Module for interacting with the fact_enrollment_admin_dash table.
 """
 from datetime import date, datetime
-from logging import getLogger
 from typing import Optional, Tuple
 from uuid import UUID
 
 from enterprise_data.cache.decorators import cache_it
-from enterprise_data.clients import EnterpriseApiClient
-from enterprise_data.exceptions import EnterpriseApiClientException
 
 from ..filters import FactCompletionAdminDashFilters, FactEnrollmentAdminDashFilters
 from ..queries import FactEnrollmentAdminDashQueries
-from ..query_filters import INQueryFilter, QueryFilters
+from ..query_filters import QueryFilters
 from ..utils import run_query
 from .base import BaseTable
-
-LOGGER = getLogger(__name__)
 
 
 class FactEnrollmentAdminDashTable(BaseTable):
@@ -24,37 +19,8 @@ class FactEnrollmentAdminDashTable(BaseTable):
     Class for communicating with the fact_enrollment_admin_dash table.
     """
     queries = FactEnrollmentAdminDashQueries()
-    filters = FactEnrollmentAdminDashFilters()
+    enrollment_filters = FactEnrollmentAdminDashFilters()
     completion_filters = FactCompletionAdminDashFilters()
-
-    def __get_enterprise_user_query_filter(  # pylint: disable=inconsistent-return-statements
-            self, group_uuid: Optional[UUID],
-            enterprise_customer_uuid: UUID
-    ) -> Optional[Tuple[INQueryFilter, dict]]:
-        """
-        Get the query filter to filter enrollments for enterprise users in the given group.
-
-        Arguments:
-            group_uuid (UUID): The UUID of the group.
-            enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
-
-        Returns:
-            (INQueryFilter | None): The query filter to filter enrollments for enterprise users in the given group.
-        """
-        if not group_uuid:
-            return None
-
-        try:
-            learners_in_group = EnterpriseApiClient.get_enterprise_user_ids_in_group(group_uuid)
-        except EnterpriseApiClientException:
-            LOGGER.exception(
-                "Failed to get learners in group [%s] for enterprise [%s]",
-                group_uuid,
-                enterprise_customer_uuid,
-            )
-        else:
-            params = {f'eu_{i}': enterprise_user_id for i, enterprise_user_id in enumerate(learners_in_group)}
-            return self.filters.enterprise_user_id_in_filter(list(params.keys())), params
 
     def __get_common_query_filters(
             self, enterprise_customer_uuid: UUID,
@@ -74,8 +40,8 @@ class FactEnrollmentAdminDashTable(BaseTable):
             3. group_uuid filter to filter records for learners who belong to the given group.
         """
         query_filters = QueryFilters([
-            self.filters.enterprise_customer_uuid_filter('enterprise_customer_uuid'),
-            self.filters.enterprise_enrollment_date_range_filter('start_date', 'end_date'),
+            self.enrollment_filters.enterprise_customer_uuid_filter('enterprise_customer_uuid'),
+            self.enrollment_filters.date_range_filter('enterprise_enrollment_date', 'start_date', 'end_date'),
         ])
         params = {
             'enterprise_customer_uuid': enterprise_customer_uuid,
@@ -83,7 +49,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             'end_date': end_date,
         }
 
-        response = self.__get_enterprise_user_query_filter(
+        response = self.enrollment_filters.enterprise_user_query_filter(
             group_uuid, enterprise_customer_uuid
         )
         if response is not None:
@@ -112,8 +78,8 @@ class FactEnrollmentAdminDashTable(BaseTable):
             4. has_passed filter to filter records for successful completions.
         """
         query_filters = QueryFilters([
-            self.filters.enterprise_customer_uuid_filter('enterprise_customer_uuid'),
-            self.completion_filters.passed_date_range_filter('start_date', 'end_date'),
+            self.completion_filters.enterprise_customer_uuid_filter('enterprise_customer_uuid'),
+            self.completion_filters.date_range_filter('passed_date', 'start_date', 'end_date'),
             self.completion_filters.has_passed_filter(),
         ])
         params = {
@@ -122,7 +88,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             'end_date': end_date,
         }
 
-        response = self.__get_enterprise_user_query_filter(
+        response = self.completion_filters.enterprise_user_query_filter(
             group_uuid, enterprise_customer_uuid
         )
         if response is not None:

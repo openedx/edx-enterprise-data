@@ -2,12 +2,15 @@
 Module for interacting with the fact_enrollment_engagement_day_admin_dash table.
 """
 from datetime import date
+from typing import Optional, Tuple
 from uuid import UUID
 
 from enterprise_data.cache.decorators import cache_it
 from enterprise_data.utils import find_first
 
+from ..filters import FactEngagementAdminDashFilters
 from ..queries import FactEngagementAdminDashQueries
+from ..query_filters import QueryFilters
 from ..utils import run_query
 from .base import BaseTable
 
@@ -19,6 +22,43 @@ class FactEngagementAdminDashTable(BaseTable):
     Class for communicating with the fact_enrollment_engagement_day_admin_dash table.
     """
     queries = FactEngagementAdminDashQueries()
+    engagement_filters = FactEngagementAdminDashFilters()
+
+    def __get_common_query_filters_for_engagement(
+            self, enterprise_customer_uuid: UUID,
+            group_uuid: Optional[UUID],
+            start_date: date,
+            end_date: date,
+    ) -> Tuple[QueryFilters, dict]:
+        """
+        Utility method to get query filters common in most usages below.
+        This will return a tuple containing the query filters list and the dictionary of query parameters that
+        will be used in the query.
+        It will contain the following query filters.
+            1. enterprise_customer_uuid filter to filter records for an enterprise customer.
+            2. enrollment_date range filter to filter records by enrollment date.
+            3. group_uuid filter to filter records for learners who belong to the given group.
+        """
+        query_filters = QueryFilters([
+            self.engagement_filters.enterprise_customer_uuid_filter('enterprise_customer_uuid'),
+            self.engagement_filters.date_range_filter('activity_date', 'start_date', 'end_date'),
+        ])
+        params = {
+            'enterprise_customer_uuid': enterprise_customer_uuid,
+            'start_date': start_date,
+            'end_date': end_date,
+        }
+
+        response = self.engagement_filters.enterprise_user_query_filter(
+            group_uuid,
+            enterprise_customer_uuid
+        )
+        if response is not None:
+            enterprise_user_id_in_filter, enterprise_user_id_params = response
+            query_filters.append(enterprise_user_id_in_filter)
+            params.update(enterprise_user_id_params)
+
+        return query_filters, params
 
     @cache_it()
     def get_learning_hours_and_daily_sessions(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
@@ -47,7 +87,13 @@ class FactEngagementAdminDashTable(BaseTable):
         return tuple(results[0])
 
     @cache_it()
-    def get_engagement_count(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
+    def get_engagement_count(
+        self,
+        enterprise_customer_uuid: UUID,
+        group_uuid: Optional[UUID],
+        start_date: date,
+        end_date: date
+    ):
         """
         Get the total number of engagements for the given enterprise customer.
 
@@ -59,13 +105,13 @@ class FactEngagementAdminDashTable(BaseTable):
         Returns:
             int: The total number of engagements.
         """
+        query_filters, query_filter_params = self.__get_common_query_filters_for_engagement(
+            enterprise_customer_uuid, group_uuid, start_date, end_date
+        )
+
         results = run_query(
-            query=self.queries.get_engagement_count_query(),
-            params={
-                'enterprise_customer_uuid': enterprise_customer_uuid,
-                'start_date': start_date,
-                'end_date': end_date,
-            }
+            query=self.queries.get_engagement_count_query(query_filters),
+            params=query_filter_params,
         )
         if not results:
             return 0
@@ -73,13 +119,20 @@ class FactEngagementAdminDashTable(BaseTable):
 
     @cache_it()
     def get_all_engagements(
-            self, enterprise_customer_uuid: UUID, start_date: date, end_date: date, limit: int, offset: int
+        self,
+        enterprise_customer_uuid: UUID,
+        group_uuid: Optional[UUID],
+        start_date: date,
+        end_date: date,
+        limit: int,
+        offset: int
     ):
         """
         Get all engagement data for the given enterprise customer.
 
         Arguments:
             enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
+            group_uuid (UUID): The UUID of a group.
             start_date (date): The start date.
             end_date (date): The end date.
             limit (int): The maximum number of records to return.
@@ -88,12 +141,14 @@ class FactEngagementAdminDashTable(BaseTable):
         Returns:
             list<dict>: A list of dictionaries containing the engagement data.
         """
+        query_filters, query_filter_params = self.__get_common_query_filters_for_engagement(
+            enterprise_customer_uuid, group_uuid, start_date, end_date
+        )
+
         return run_query(
-            query=self.queries.get_all_engagement_query(),
+            query=self.queries.get_all_engagement_query(query_filters),
             params={
-                'enterprise_customer_uuid': enterprise_customer_uuid,
-                'start_date': start_date,
-                'end_date': end_date,
+                **query_filter_params,
                 'limit': limit,
                 'offset': offset,
             },
@@ -101,7 +156,13 @@ class FactEngagementAdminDashTable(BaseTable):
         )
 
     @cache_it()
-    def get_top_courses_by_engagement(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
+    def get_top_courses_by_engagement(
+        self,
+        enterprise_customer_uuid: UUID,
+        group_uuid: Optional[UUID],
+        start_date: date,
+        end_date: date
+    ):
         """
         Get the top courses by user engagement for the given enterprise customer.
 
@@ -113,18 +174,23 @@ class FactEngagementAdminDashTable(BaseTable):
         Returns:
             list<dict>: A list of dictionaries containing the course data.
         """
+        query_filters, query_filter_params = self.__get_common_query_filters_for_engagement(
+            enterprise_customer_uuid, group_uuid, start_date, end_date
+        )
         return run_query(
-            query=self.queries.get_top_courses_by_engagement_query(),
-            params={
-                'enterprise_customer_uuid': enterprise_customer_uuid,
-                'start_date': start_date,
-                'end_date': end_date,
-            },
+            query=self.queries.get_top_courses_by_engagement_query(query_filters),
+            params=query_filter_params,
             as_dict=True,
         )
 
     @cache_it()
-    def get_top_subjects_by_engagement(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
+    def get_top_subjects_by_engagement(
+        self,
+        enterprise_customer_uuid: UUID,
+        group_uuid: Optional[UUID],
+        start_date: date,
+        end_date: date
+    ):
         """
         Get the top subjects by user engagement for the given enterprise customer.
 
@@ -136,18 +202,23 @@ class FactEngagementAdminDashTable(BaseTable):
         Returns:
             list<dict>: A list of dictionaries containing the subject data.
         """
+        query_filters, query_filter_params = self.__get_common_query_filters_for_engagement(
+            enterprise_customer_uuid, group_uuid, start_date, end_date
+        )
         return run_query(
-            query=self.queries.get_top_subjects_by_engagement_query(),
-            params={
-                'enterprise_customer_uuid': enterprise_customer_uuid,
-                'start_date': start_date,
-                'end_date': end_date,
-            },
+            query=self.queries.get_top_subjects_by_engagement_query(query_filters),
+            params=query_filter_params,
             as_dict=True,
         )
 
     @cache_it()
-    def get_engagement_time_series_data(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
+    def get_engagement_time_series_data(
+        self,
+        enterprise_customer_uuid: UUID,
+        group_uuid: Optional[UUID],
+        start_date: date,
+        end_date: date
+    ):
         """
         Get the engagement time series data.
 
@@ -159,13 +230,12 @@ class FactEngagementAdminDashTable(BaseTable):
         Returns:
             list<dict>: A list of dictionaries containing the engagement time series data.
         """
+        query_filters, query_filter_params = self.__get_common_query_filters_for_engagement(
+            enterprise_customer_uuid, group_uuid, start_date, end_date
+        )
         return run_query(
-            query=self.queries.get_engagement_time_series_data_query(),
-            params={
-                'enterprise_customer_uuid': enterprise_customer_uuid,
-                'start_date': start_date,
-                'end_date': end_date,
-            },
+            query=self.queries.get_engagement_time_series_data_query(query_filters),
+            params=query_filter_params,
             as_dict=True,
         )
 
