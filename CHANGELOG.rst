@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[10.14.0] - 2025-04-16
+---------------------
+  * feat: Added support for Django 5.2
+
 [10.13.0] - 2025-04-11
 ---------------------
   * feat: Support filtering of engagement API by group_uuid
