@@ -14,15 +14,15 @@ astroid==3.3.9
     # via
     #   pylint
     #   pylint-celery
-awscli==1.38.28
+awscli==1.38.33
     # via -r requirements/reporting.in
 bcrypt==4.3.0
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.37.28
+boto3==1.37.33
     # via -r requirements/reporting.in
-botocore==1.37.28
+botocore==1.37.33
     # via
     #   awscli
     #   boto3
@@ -70,7 +70,7 @@ click-plugins==1.1.1
     # via celery
 click-repl==0.3.0
     # via celery
-code-annotations==2.2.0
+code-annotations==2.3.0
     # via edx-lint
 colorama==0.4.6
     # via
@@ -137,13 +137,13 @@ djangorestframework-csv==3.0.2
     # via -r requirements/base.in
 dnspython==2.7.0
     # via pymongo
-docutils==0.16
+docutils==0.19
     # via
     #   awscli
     #   readme-renderer
 drf-jwt==1.19.2
     # via edx-drf-extensions
-edx-django-utils==7.2.0
+edx-django-utils==7.4.0
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
@@ -164,7 +164,7 @@ edx-opaque-keys==2.12.0
     #   edx-drf-extensions
 edx-rbac==1.10.0
     # via -r requirements/base.in
-edx-rest-api-client==6.1.0
+edx-rest-api-client==6.2.0
     # via -r requirements/base.in
 factory-boy==3.3.3
     # via
@@ -221,7 +221,7 @@ lxml[html-clean,html_clean]==5.3.2
     # via
     #   edx-i18n-tools
     #   lxml-html-clean
-lxml-html-clean==0.4.1
+lxml-html-clean==0.4.2
     # via lxml
 markdown-it-py==3.0.0
     # via rich
@@ -241,7 +241,7 @@ more-itertools==10.6.0
     #   jaraco-functools
 mysql-connector-python==9.2.0
     # via -r requirements/base.in
-newrelic==10.8.1
+newrelic==10.9.0
     # via edx-django-utils
 nh3==0.2.21
     # via readme-renderer
@@ -270,7 +270,7 @@ pbr==6.1.1
     # via stevedore
 pgpy==0.6.0
     # via -r requirements/reporting.in
-pillow==11.1.0
+pillow==11.2.1
     # via pansi
 pip-tools==7.4.1
     # via -r requirements/dev-enterprise_data.in
@@ -331,7 +331,7 @@ pylint-plugin-utils==0.8.2
     #   pylint-django
 pyminizip==0.2.6
     # via -r requirements/reporting.in
-pymongo==4.11.3
+pymongo==4.12.0
     # via edx-opaque-keys
 pynacl==1.5.0
     # via
@@ -440,7 +440,7 @@ tox==4.25.0
     # via -r requirements/dev-enterprise_data.in
 twine==6.1.0
     # via -r requirements/dev-enterprise_data.in
-typing-extensions==4.13.1
+typing-extensions==4.13.2
     # via
     #   edx-opaque-keys
     #   pyopenssl
