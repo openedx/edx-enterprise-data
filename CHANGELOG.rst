@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[10.15.0] - 2025-04-25
+---------------------
+  * feat: Added support for Django 5.2
+
 [10.14.0] - 2025-04-17
 ---------------------
   * feat: Updated the ordering for EnterpriseExecEdLCModulePerformanceViewSet
