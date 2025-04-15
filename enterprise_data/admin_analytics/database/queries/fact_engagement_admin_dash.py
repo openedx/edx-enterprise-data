@@ -21,34 +21,32 @@ class FactEngagementAdminDashQueries:
         """
 
     @staticmethod
-    def get_engagement_count_query():
+    def get_engagement_count_query(query_filters):
         """
         Get the query to fetch the total number of engagements for an enterprise customer.
         """
-        return """
+        return f"""
             SELECT count(*)
             FROM fact_enrollment_engagement_day_admin_dash
-            WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
-                activity_date BETWEEN %(start_date)s AND %(end_date)s;
+            WHERE {query_filters.to_sql()};
         """
 
     @staticmethod
-    def get_all_engagement_query():
+    def get_all_engagement_query(query_filters):
         """
         Get the query to fetch all engagement data.
         """
-        return """
+        return f"""
             SELECT
                 email, course_title, course_subject, enroll_type, activity_date,
                 learning_time_seconds/3600 as learning_time_hours
             FROM fact_enrollment_engagement_day_admin_dash
-            WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
-                activity_date BETWEEN %(start_date)s AND %(end_date)s
+            WHERE {query_filters.to_sql()}
             ORDER BY activity_date DESC LIMIT %(limit)s OFFSET %(offset)s;
         """
 
     @staticmethod
-    def get_top_courses_by_engagement_query(record_count=10):
+    def get_top_courses_by_engagement_query(query_filters, record_count=10):
         """
         Get the query to fetch the learning time in hours by courses.
 
@@ -69,8 +67,7 @@ class FactEngagementAdminDashQueries:
                     (learning_time_seconds / 60.0 / 60.0) AS learning_time_hours,
                     activity_date
                 FROM fact_enrollment_engagement_day_admin_dash
-                WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
-                activity_date BETWEEN %(start_date)s AND %(end_date)s
+                WHERE {query_filters.to_sql()}
             ),
             top_10_courses AS (
                 SELECT
@@ -94,7 +91,7 @@ class FactEngagementAdminDashQueries:
         """
 
     @staticmethod
-    def get_top_subjects_by_engagement_query(record_count=10):
+    def get_top_subjects_by_engagement_query(query_filters, record_count=10):
         """
         Get the query to fetch the learning time in hours by subjects.
 
@@ -114,8 +111,7 @@ class FactEngagementAdminDashQueries:
                     (learning_time_seconds / 60.0 / 60.0) AS learning_time_hours,
                     activity_date
                 FROM fact_enrollment_engagement_day_admin_dash
-                WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
-                activity_date BETWEEN %(start_date)s AND %(end_date)s
+                WHERE {query_filters.to_sql()}
             ),
             top_10_subjects AS (
                 SELECT
@@ -138,7 +134,7 @@ class FactEngagementAdminDashQueries:
         """
 
     @staticmethod
-    def get_engagement_time_series_data_query():
+    def get_engagement_time_series_data_query(query_filters):
         """
         Get the query to fetch the completion time series data.
 
@@ -147,11 +143,10 @@ class FactEngagementAdminDashQueries:
         Returns:
             (str): Query to fetch the completion time series data.
         """
-        return """
+        return f"""
             SELECT activity_date, enroll_type, SUM(learning_time_seconds)/3600 as learning_time_hours
             FROM fact_enrollment_engagement_day_admin_dash
-            WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
-                activity_date BETWEEN %(start_date)s AND %(end_date)s
+            WHERE {query_filters.to_sql()}
             GROUP BY activity_date, enroll_type
             ORDER BY activity_date;
         """

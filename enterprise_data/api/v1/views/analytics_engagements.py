@@ -51,10 +51,12 @@ class AdvanceAnalyticsEngagementView(AnalyticsPaginationMixin, ViewSet):
         # get values from query params or use default values
         start_date = serializer.data.get('start_date', min_enrollment_date)
         end_date = serializer.data.get('end_date', date.today())
+        group_uuid = serializer.data.get('group_uuid')
         page = serializer.data.get('page', 1)
         page_size = serializer.data.get('page_size', 100)
         engagements = FactEngagementAdminDashTable().get_all_engagements(
             enterprise_customer_uuid=enterprise_uuid,
+            group_uuid=group_uuid,
             start_date=start_date,
             end_date=end_date,
             limit=page_size,
@@ -62,6 +64,7 @@ class AdvanceAnalyticsEngagementView(AnalyticsPaginationMixin, ViewSet):
         )
         total_count = FactEngagementAdminDashTable().get_engagement_count(
             enterprise_customer_uuid=enterprise_uuid,
+            group_uuid=group_uuid,
             start_date=start_date,
             end_date=end_date,
         )
@@ -79,7 +82,7 @@ class AdvanceAnalyticsEngagementView(AnalyticsPaginationMixin, ViewSet):
 
             return StreamingHttpResponse(
                 IndividualEngagementsCSVRenderer().render(self._stream_serialized_data(
-                    enterprise_uuid, start_date, end_date, total_count
+                    enterprise_uuid, group_uuid, start_date, end_date, total_count
                 )),
                 content_type="text/csv",
                 headers={"Content-Disposition": f'attachment; filename="{filename}"'},
@@ -94,7 +97,7 @@ class AdvanceAnalyticsEngagementView(AnalyticsPaginationMixin, ViewSet):
         )
 
     @staticmethod
-    def _stream_serialized_data(enterprise_uuid, start_date, end_date, total_count, page_size=50000):
+    def _stream_serialized_data(enterprise_uuid, group_uuid, start_date, end_date, total_count, page_size=50000):
         """
         Stream the serialized data.
         """
@@ -102,6 +105,7 @@ class AdvanceAnalyticsEngagementView(AnalyticsPaginationMixin, ViewSet):
         while offset < total_count:
             engagements = FactEngagementAdminDashTable().get_all_engagements(
                 enterprise_customer_uuid=enterprise_uuid,
+                group_uuid=group_uuid,
                 start_date=start_date,
                 end_date=end_date,
                 limit=page_size,
@@ -133,16 +137,17 @@ class AdvanceAnalyticsEngagementView(AnalyticsPaginationMixin, ViewSet):
         # get values from query params or use default
         start_date = serializer.data.get('start_date', min_enrollment_date)
         end_date = serializer.data.get('end_date', date.today())
+        group_uuid = serializer.data.get('group_uuid')
         with timer('construct_engagement_all_stats'):
             data = {
                 'engagement_over_time': FactEngagementAdminDashTable().get_engagement_time_series_data(
-                    enterprise_uuid, start_date, end_date
+                    enterprise_uuid, group_uuid, start_date, end_date
                 ),
                 'top_courses_by_engagement': FactEngagementAdminDashTable().get_top_courses_by_engagement(
-                    enterprise_uuid, start_date, end_date,
+                    enterprise_uuid, group_uuid, start_date, end_date,
                 ),
                 'top_subjects_by_engagement': FactEngagementAdminDashTable().get_top_subjects_by_engagement(
-                    enterprise_uuid, start_date, end_date,
+                    enterprise_uuid, group_uuid, start_date, end_date,
                 ),
             }
         return Response(data)
