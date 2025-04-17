@@ -196,7 +196,7 @@ class EnterpriseExecEdLCModulePerformanceViewSet(EnterpriseViewSetMixin, viewset
     serializer_class = serializers.EnterpriseExecEdLCModulePerformanceSerializer
     filter_backends = (filters.OrderingFilter, filters.SearchFilter)
     ordering_fields = '__all__'
-    ordering = ('last_access',)
+    ordering = ['username', 'module_name', 'last_access']
     search_fields = (
         'username',
         'course_name'
