@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[10.14.0] - 2025-04-17
+---------------------
+  * feat: Updated the ordering for EnterpriseExecEdLCModulePerformanceViewSet
+
 [10.13.0] - 2025-04-11
 ---------------------
   * feat: Support filtering of engagement API by group_uuid
