@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[10.16.0] - 2025-05-05
+---------------------
+  * chore: upgrade python requirements
+
 [10.15.0] - 2025-04-25
 ---------------------
   * feat: Added support for Django 5.2
