@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[10.16.2] - 2025-05-20
+---------------------
+  * chore: upgrade python requirements
+
 [10.16.1] - 2025-05-07
 ---------------------
   * chore: upgrade python requirements
