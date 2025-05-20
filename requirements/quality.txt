@@ -14,17 +14,17 @@ astroid==3.3.10
     # via
     #   pylint
     #   pylint-celery
-awscli==1.40.12
+awscli==1.40.17
     # via -r requirements/reporting.in
 bcrypt==4.3.0
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.38.13
+boto3==1.38.18
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.38.13
+botocore==1.38.18
     # via
     #   awscli
     #   boto3
@@ -81,7 +81,7 @@ colorama==0.4.6
     #   tox
 coverage[toml]==7.8.0
     # via pytest-cov
-cryptography==44.0.3
+cryptography==45.0.2
     # via
     #   -r requirements/reporting.in
     #   django-fernet-fields-v2
@@ -173,7 +173,7 @@ factory-boy==3.3.3
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==37.1.0
+faker==37.3.0
     # via factory-boy
 filelock==3.18.0
     # via
@@ -244,11 +244,11 @@ more-itertools==10.7.0
     #   jaraco-functools
 mysql-connector-python==9.3.0
     # via -r requirements/base.in
-newrelic==10.11.0
+newrelic==10.12.0
     # via edx-django-utils
 nh3==0.2.21
     # via readme-renderer
-numpy==2.2.5
+numpy==2.2.6
     # via
     #   -r requirements/base.in
     #   pandas
@@ -283,7 +283,7 @@ platformdirs==4.3.8
     #   snowflake-connector-python
     #   tox
     #   virtualenv
-pluggy==1.5.0
+pluggy==1.6.0
     # via
     #   diff-cover
     #   pytest
@@ -334,15 +334,15 @@ pylint-plugin-utils==0.8.2
     #   pylint-django
 pyminizip==0.2.6
     # via -r requirements/reporting.in
-pymongo==4.12.1
+pymongo==4.13.0
     # via edx-opaque-keys
 pynacl==1.5.0
     # via
     #   edx-django-utils
     #   paramiko
-pyopenssl==25.0.0
+pyopenssl==25.1.0
     # via snowflake-connector-python
-pyproject-api==1.9.0
+pyproject-api==1.9.1
     # via tox
 pyproject-hooks==1.2.0
     # via
@@ -439,7 +439,7 @@ tomlkit==0.13.2
     # via
     #   pylint
     #   snowflake-connector-python
-tox==4.25.0
+tox==4.26.0
     # via -r requirements/dev-enterprise_data.in
 twine==6.1.0
     # via -r requirements/dev-enterprise_data.in
