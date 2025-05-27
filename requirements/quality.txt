@@ -14,17 +14,17 @@ astroid==3.3.10
     # via
     #   pylint
     #   pylint-celery
-awscli==1.40.17
+awscli==1.40.22
     # via -r requirements/reporting.in
 bcrypt==4.3.0
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.38.18
+boto3==1.38.23
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.38.18
+botocore==1.38.23
     # via
     #   awscli
     #   boto3
@@ -32,7 +32,7 @@ botocore==1.38.18
     #   snowflake-connector-python
 build==1.2.2.post1
     # via pip-tools
-cachetools==5.5.2
+cachetools==6.0.0
     # via tox
 celery==5.3.6
     # via -r requirements/reporting.in
@@ -54,7 +54,7 @@ charset-normalizer==3.4.2
     # via
     #   requests
     #   snowflake-connector-python
-click==8.2.0
+click==8.2.1
     # via
     #   celery
     #   click-didyoumean
@@ -79,9 +79,9 @@ colorama==0.4.6
     # via
     #   awscli
     #   tox
-coverage[toml]==7.8.0
+coverage[toml]==7.8.2
     # via pytest-cov
-cryptography==45.0.2
+cryptography==45.0.3
     # via
     #   -r requirements/reporting.in
     #   django-fernet-fields-v2
@@ -93,7 +93,7 @@ cryptography==45.0.2
     #   snowflake-connector-python
 ddt==1.7.2
     # via -r requirements/test.in
-diff-cover==9.2.4
+diff-cover==9.3.1
     # via -r requirements/dev-enterprise_data.in
 dill==0.4.0
     # via pylint
@@ -146,7 +146,7 @@ docutils==0.19
     #   readme-renderer
 drf-jwt==1.19.2
     # via edx-drf-extensions
-edx-django-utils==7.4.0
+edx-django-utils==8.0.0
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
@@ -182,7 +182,7 @@ filelock==3.18.0
     #   virtualenv
 flaky==3.8.1
     # via -r requirements/test.in
-freezegun==1.5.1
+freezegun==1.5.2
     # via -r requirements/test.in
 id==1.5.0
     # via twine
@@ -244,8 +244,6 @@ more-itertools==10.7.0
     #   jaraco-functools
 mysql-connector-python==9.3.0
     # via -r requirements/base.in
-newrelic==10.12.0
-    # via edx-django-utils
 nh3==0.2.21
     # via readme-renderer
 numpy==2.2.6
@@ -400,7 +398,7 @@ rsa==4.7.2
     # via awscli
 rules==3.5
     # via -r requirements/base.in
-s3transfer==0.12.0
+s3transfer==0.13.0
     # via
     #   awscli
     #   boto3
