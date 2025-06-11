@@ -15,6 +15,15 @@ Unreleased
 ----------
 
 =========================
+
+[10.16.6] - 2025-06-11
+---------------------
+  * Revert last requirements upgrade due to numpy 2.3.0
+
+[10.16.5] - 2025-06-11
+---------------------
+  * chore: upgrade python requirements
+
 [10.16.4] - 2025-06-05
 ---------------------
   * chore: upgrade python requirements
