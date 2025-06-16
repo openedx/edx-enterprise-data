@@ -16,6 +16,7 @@ from enterprise_data.admin_analytics.database.queries import (
     FactEnrollmentAdminDashQueries,
 )
 from enterprise_data.tests.admin_analytics.mock_analytics_data import (
+    SKILLS_BY_LEARNING_HOURS,
     TOP_SKILLS,
     TOP_SKILLS_BY_COMPLETIONS,
     TOP_SKILLS_BY_ENROLLMENTS,
@@ -137,8 +138,10 @@ class TestSkillsStatsAPI(JWTTestMixin, APITransactionTestCase):
     @patch('enterprise_data.api.v1.views.enterprise_admin.SkillsDailyRollupAdminDashTable.get_top_skills')
     @patch('enterprise_data.api.v1.views.enterprise_admin.SkillsDailyRollupAdminDashTable.get_top_skills_by_enrollment')
     @patch('enterprise_data.api.v1.views.enterprise_admin.SkillsDailyRollupAdminDashTable.get_top_skills_by_completion')
+    @patch('enterprise_data.api.v1.views.enterprise_admin.SkillsDailyRollupAdminDashTable.get_skills_by_learning_hours')
     def test_get(
         self,
+        mock_get_skills_by_learning_hours,
         mock_get_top_skills_by_completion,
         mock_get_top_skills_by_enrollment,
         mock_get_top_skills,
@@ -151,6 +154,7 @@ class TestSkillsStatsAPI(JWTTestMixin, APITransactionTestCase):
         mock_get_top_skills.return_value = TOP_SKILLS
         mock_get_top_skills_by_enrollment.return_value = TOP_SKILLS_BY_ENROLLMENTS
         mock_get_top_skills_by_completion.return_value = TOP_SKILLS_BY_COMPLETIONS
+        mock_get_skills_by_learning_hours.return_value = SKILLS_BY_LEARNING_HOURS
 
         response = self.client.get(self.url)
         assert response.status_code == status.HTTP_200_OK
@@ -210,6 +214,20 @@ class TestSkillsStatsAPI(JWTTestMixin, APITransactionTestCase):
                     "count": 15.0,
                 },
             ],
+            "skills_by_learning_hours": [
+                {
+                    "skill_name": "Python (Programming Language)",
+                    "learning_hours": 100.0
+                },
+                {
+                    "skill_name": "Data Science",
+                    "learning_hours": 80.0
+                },
+                {
+                    "skill_name": "Algorithms",
+                    "learning_hours": 60.0
+                },
+            ]
         }
 
     @ddt.data(

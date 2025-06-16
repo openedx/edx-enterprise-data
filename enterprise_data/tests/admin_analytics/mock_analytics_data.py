@@ -470,3 +470,17 @@ TOP_SKILLS_BY_COMPLETIONS = [
         "count": 15.0
     },
 ]
+SKILLS_BY_LEARNING_HOURS = [
+    {
+        "skill_name": "Python (Programming Language)",
+        "learning_hours": 100.0
+    },
+    {
+        "skill_name": "Data Science",
+        "learning_hours": 80.0
+    },
+    {
+        "skill_name": "Algorithms",
+        "learning_hours": 60.0
+    },
+]

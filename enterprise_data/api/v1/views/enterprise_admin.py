@@ -180,10 +180,24 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
                 end_date
             )
 
+        # TODO: Handle course_key and course_type when they are provided in the request.
+        #       We have separate tickets to handle this implementation.
+        course_key = None
+        course_type = None
+        with timer('skills_by_learning_hours'):
+            skills_by_learning_hours = SkillsDailyRollupAdminDashTable().get_skills_by_learning_hours(
+                enterprise_id,
+                start_date,
+                end_date,
+                course_key,
+                course_type,
+            )
+
         response_data = {
             "top_skills": skills,
             "top_skills_by_enrollments": top_skills_by_enrollments,
             "top_skills_by_completions": top_skills_by_completions,
+            "skills_by_learning_hours": skills_by_learning_hours,
         }
 
         return Response(data=response_data, status=HTTP_200_OK)
