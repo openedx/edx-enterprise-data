@@ -1,6 +1,7 @@
 """
 Module containing queries for the skills_daily_rollup_admin_dash table.
 """
+from ..query_filters import QueryFilters
 
 
 class SkillsDailyRollupAdminDashQueries:
@@ -117,4 +118,32 @@ class SkillsDailyRollupAdminDashQueries:
                 sd.skill_name, subject_name
             ORDER BY
                 total_completion_count DESC;
+        """
+
+    @staticmethod
+    def get_skills_by_learning_hours(query_filters: QueryFilters, record_count: int = 25):
+        """
+        Get the query to fetch skills by learning hours for an enterprise customer.
+        """
+        return f"""
+            WITH filtered_data AS (
+                SELECT
+                    skill_name,
+                    total_learning_time_hours
+                FROM
+                    skills_daily_rollup_admin_dash
+                WHERE
+                    {query_filters.to_sql()}
+            )
+
+            SELECT
+                skill_name,
+                SUM(total_learning_time_hours) AS learning_hours
+            FROM
+                filtered_data
+            GROUP BY
+                skill_name
+            ORDER BY
+                learning_hours DESC
+            LIMIT {record_count};
         """
