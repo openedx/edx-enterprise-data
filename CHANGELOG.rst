@@ -16,10 +16,6 @@ Unreleased
 
 =========================
 
-[10.16.9] - 2025-06-18
----------------------
-  * chore: upgrade python requirements
-
 [10.16.8] - 2025-06-16
 ---------------------
   * feat: add skills by learning hours metric
