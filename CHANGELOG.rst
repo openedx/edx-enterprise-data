@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[10.16.8] - 2025-06-16
+---------------------
+  * feat: add skills by learning hours metric
+
 [10.16.7] - 2025-06-11
 ---------------------
   * chore: pin numpy to versions less then 2.3.0
