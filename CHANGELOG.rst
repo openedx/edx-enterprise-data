@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[10.16.11] - 2025-07-03
+---------------------
+  * chore: upgrade package version
+
 [10.16.10] - 2025-07-03
 ---------------------
   * chore: upgrade package version
