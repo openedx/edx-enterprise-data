@@ -3,7 +3,7 @@ Utility functions for fetching data from the database.
 """
 from logging import getLogger
 
-import pandas
+from django.utils import timezone
 
 from enterprise_data.admin_analytics.database import run_query
 
@@ -21,4 +21,4 @@ def fetch_max_enrollment_datetime():
     results = run_query(query)
     if not results:
         return None
-    return pandas.to_datetime(results[0][0], utc=True)
+    return results[0][0].astimezone(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
