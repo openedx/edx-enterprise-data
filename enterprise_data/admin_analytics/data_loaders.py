@@ -21,4 +21,3 @@ def fetch_max_enrollment_datetime():
     if not results:
         return None
     return results[0][0].astimezone(timezone.utc)
-  
