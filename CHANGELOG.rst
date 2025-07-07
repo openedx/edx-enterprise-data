@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[10.17.0] - 2025-07-07
+---------------------
+  * chore: remove pandas and numpy from requirements
+
 [10.16.11] - 2025-07-03
 ---------------------
   * chore: upgrade package version
