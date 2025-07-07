@@ -1,6 +1,8 @@
 """
 Test the utility functions in the admin_analytics app for data loading operations.
 """
+from datetime import datetime
+
 from mock import patch
 
 from django.test import TestCase
@@ -18,7 +20,7 @@ class TestDataLoaders(TestCase):
         Validate the fetch_max_enrollment_datetime function.
         """
         with patch('enterprise_data.admin_analytics.data_loaders.run_query') as mock_run_query:
-            mock_run_query.return_value = [['2024-07-26']]
+            mock_run_query.return_value = [[datetime(2024, 7, 26, 21, 38, 48, 298000)]]
 
             max_enrollment_date = fetch_max_enrollment_datetime()
             self.assertEqual(max_enrollment_date.strftime('%Y-%m-%d'), '2024-07-26')
