@@ -9,11 +9,11 @@ class SkillsDailyRollupAdminDashQueries:
     Queries related to the skills_daily_rollup_admin_dash table.
     """
     @staticmethod
-    def get_top_skills():
+    def get_top_skills(query_filters: QueryFilters):
         """
         Get the query to fetch the top skills for an enterprise customer.
         """
-        return """
+        return f"""
             SELECT
                 skill_name,
                 skill_type,
@@ -22,8 +22,7 @@ class SkillsDailyRollupAdminDashQueries:
             FROM
                 skills_daily_rollup_admin_dash
             WHERE
-                enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
-                date BETWEEN %(start_date)s AND %(end_date)s
+                {query_filters.to_sql()}
             GROUP BY
                 skill_name, skill_type
             ORDER BY
@@ -31,21 +30,27 @@ class SkillsDailyRollupAdminDashQueries:
         """
 
     @staticmethod
-    def get_top_skills_by_enrollment():
+    def get_top_skills_by_enrollment(query_filters: QueryFilters):
         """
         Get the query to fetch the top skills by enrollment for an enterprise customer.
         """
-        return """
-            WITH TopSkills AS (
-                -- Get top 10 skills by total enrollments
+        return f"""
+            WITH FilteredData AS (
+                SELECT
+                    skill_name,
+                    primary_subject_name,
+                    enrolls
+                FROM
+                    skills_daily_rollup_admin_dash
+                WHERE
+                    {query_filters.to_sql()}
+            ),
+            TopSkills AS (
                 SELECT
                     skill_name,
                     SUM(enrolls) AS total_enrollment_count
                 FROM
-                    skills_daily_rollup_admin_dash
-                WHERE
-                    enterprise_customer_uuid=%(enterprise_customer_uuid)s
-                    AND date BETWEEN %(start_date)s AND %(end_date)s
+                    FilteredData
                 GROUP BY
                     skill_name
                 ORDER BY
@@ -53,44 +58,48 @@ class SkillsDailyRollupAdminDashQueries:
                 LIMIT 10
             )
             SELECT
-                sd.skill_name,
+                fd.skill_name,
                 CASE
-                    WHEN sd.primary_subject_name IN (
+                    WHEN fd.primary_subject_name IN (
                         'business-management', 'computer-science',
                         'data-analysis-statistics', 'engineering', 'communication'
-                    ) THEN sd.primary_subject_name
+                    ) THEN fd.primary_subject_name
                     ELSE 'other'
                 END AS subject_name,
-                SUM(sd.enrolls) AS count
+                SUM(fd.enrolls) AS count
             FROM
-                skills_daily_rollup_admin_dash AS sd
+                FilteredData fd
             JOIN
-                TopSkills AS ts ON sd.skill_name = ts.skill_name
-            WHERE
-                sd.enterprise_customer_uuid=%(enterprise_customer_uuid)s
-                AND date BETWEEN %(start_date)s AND %(end_date)s
+                TopSkills ts ON fd.skill_name = ts.skill_name
             GROUP BY
-                sd.skill_name, subject_name
+                fd.skill_name, subject_name
             ORDER BY
-                total_enrollment_count DESC;
+                ts.total_enrollment_count DESC;
         """
 
     @staticmethod
-    def get_top_skills_by_completion():
+    def get_top_skills_by_completion(query_filters: QueryFilters):
         """
         Get the query to fetch the top skills by completion for an enterprise customer.
         """
-        return """
-            WITH TopSkills AS (
+        return f"""
+            WITH FilteredData AS (
+                SELECT
+                    skill_name,
+                    primary_subject_name,
+                    completions
+                FROM
+                    skills_daily_rollup_admin_dash
+                WHERE
+                    {query_filters.to_sql()}
+            ),
+            TopSkills AS (
                 -- Get top 10 skills by total completions
                 SELECT
                     skill_name,
                     SUM(completions) AS total_completion_count
                 FROM
-                    skills_daily_rollup_admin_dash
-                WHERE
-                    enterprise_customer_uuid=%(enterprise_customer_uuid)s
-                    AND date BETWEEN %(start_date)s AND %(end_date)s
+                    FilteredData
                 GROUP BY
                     skill_name
                 ORDER BY
@@ -98,26 +107,23 @@ class SkillsDailyRollupAdminDashQueries:
                 LIMIT 10
             )
             SELECT
-                sd.skill_name,
+                fd.skill_name,
                 CASE
-                    WHEN sd.primary_subject_name IN (
+                    WHEN fd.primary_subject_name IN (
                         'business-management', 'computer-science',
                         'data-analysis-statistics', 'engineering', 'communication'
-                    ) THEN sd.primary_subject_name
+                    ) THEN fd.primary_subject_name
                     ELSE 'other'
                 END AS subject_name,
-                SUM(sd.completions) AS count
+                SUM(fd.completions) AS count
             FROM
-                skills_daily_rollup_admin_dash AS sd
+                FilteredData AS fd
             JOIN
-                TopSkills AS ts ON sd.skill_name = ts.skill_name
-            WHERE
-                sd.enterprise_customer_uuid=%(enterprise_customer_uuid)s
-                AND date BETWEEN %(start_date)s AND %(end_date)s
+                TopSkills AS ts ON fd.skill_name = ts.skill_name
             GROUP BY
-                sd.skill_name, subject_name
+                fd.skill_name, subject_name
             ORDER BY
-                total_completion_count DESC;
+                ts.total_completion_count DESC;
         """
 
     @staticmethod

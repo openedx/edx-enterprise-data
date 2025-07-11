@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[10.17.1] - 2025-07-11
+---------------------
+  * feat: add course type filtering for skills api
+
 [10.17.0] - 2025-07-07
 ---------------------
   * chore: remove pandas and numpy from requirements
