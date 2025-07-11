@@ -163,21 +163,29 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
             start_date, _ = FactEnrollmentAdminDashTable().get_enrollment_date_range(enterprise_id)
 
         end_date = serializer.data.get('end_date', date.today())
+        course_type = serializer.data.get('course_type')
 
         with timer('top_skills'):
-            skills = SkillsDailyRollupAdminDashTable().get_top_skills(enterprise_id, start_date, end_date)
+            skills = SkillsDailyRollupAdminDashTable().get_top_skills(
+                enterprise_id,
+                start_date,
+                end_date,
+                course_type
+            )
 
         with timer('top_skills_by_enrollments'):
             top_skills_by_enrollments = SkillsDailyRollupAdminDashTable().get_top_skills_by_enrollment(
                 enterprise_id,
                 start_date,
-                end_date
+                end_date,
+                course_type
             )
         with timer('top_skills_by_completions'):
             top_skills_by_completions = SkillsDailyRollupAdminDashTable().get_top_skills_by_completion(
                 enterprise_id,
                 start_date,
-                end_date
+                end_date,
+                course_type
             )
 
         # TODO: Handle course_key and course_type when they are provided in the request.
