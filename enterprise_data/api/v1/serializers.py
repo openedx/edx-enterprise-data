@@ -5,7 +5,7 @@ from uuid import UUID
 
 from rest_framework import serializers
 
-from enterprise_data.admin_analytics.constants import ResponseType
+from enterprise_data.admin_analytics.constants import CourseType, ResponseType
 from enterprise_data.cache.decorators import cache_it
 from enterprise_data.models import (
     EnterpriseAdminLearnerProgress,
@@ -343,6 +343,12 @@ class AdvanceAnalyticsQueryParamSerializer(serializers.Serializer):  # pylint: d
     page = serializers.IntegerField(required=False, min_value=1)
     page_size = serializers.IntegerField(required=False, min_value=2)
     group_uuid = serializers.UUIDField(required=False)
+    course_type = serializers.ChoiceField(
+        choices=[course_type.value for course_type in CourseType],
+        required=False,
+        allow_blank=False,
+        allow_null=False,
+    )
 
     def validate(self, attrs):
         """
