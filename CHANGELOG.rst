@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[10.17.2] - 2025-07-17
+---------------------
+  * chore: upgrade python requirements
+
 [10.17.1] - 2025-07-11
 ---------------------
   * feat: add course type filtering for skills api
