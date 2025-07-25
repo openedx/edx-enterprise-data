@@ -47,12 +47,14 @@ class AdvanceAnalyticsLeaderboardView(AnalyticsPaginationMixin, ViewSet):
         # get values from query params or use default values
         start_date = serializer.data.get('start_date', min_enrollment_date)
         end_date = serializer.data.get('end_date', date.today())
+        course_type = serializer.data.get('course_type')
         page = serializer.data.get('page', 1)
         page_size = serializer.data.get('page_size', 100)
         total_count = FactEngagementAdminDashTable().get_leaderboard_data_count(
             enterprise_customer_uuid=enterprise_uuid,
             start_date=start_date,
             end_date=end_date,
+            course_type=course_type,
         )
         leaderboard = FactEngagementAdminDashTable().get_all_leaderboard_data(
             enterprise_customer_uuid=enterprise_uuid,
@@ -61,6 +63,7 @@ class AdvanceAnalyticsLeaderboardView(AnalyticsPaginationMixin, ViewSet):
             limit=page_size,
             offset=(page - 1) * page_size,
             total_count=total_count,
+            course_type=course_type
         )
         response_type = request.query_params.get('response_type', ResponseType.JSON.value)
 
@@ -76,7 +79,7 @@ class AdvanceAnalyticsLeaderboardView(AnalyticsPaginationMixin, ViewSet):
 
             return StreamingHttpResponse(
                 LeaderboardCSVRenderer().render(self._stream_serialized_data(
-                    enterprise_uuid, start_date, end_date, total_count
+                    enterprise_uuid, start_date, end_date, total_count, course_type
                 )),
                 content_type='text/csv',
                 headers={'Content-Disposition': f'attachment; filename="{filename}"'},
@@ -91,7 +94,14 @@ class AdvanceAnalyticsLeaderboardView(AnalyticsPaginationMixin, ViewSet):
         )
 
     @staticmethod
-    def _stream_serialized_data(enterprise_uuid, start_date, end_date, total_count, page_size=50000):
+    def _stream_serialized_data(
+        enterprise_uuid,
+        start_date,
+        end_date,
+        total_count,
+        course_type=None,
+        page_size=50000
+    ):
         """
         Stream the serialized data.
         """
@@ -104,6 +114,7 @@ class AdvanceAnalyticsLeaderboardView(AnalyticsPaginationMixin, ViewSet):
                 limit=page_size,
                 offset=offset,
                 total_count=total_count,
+                course_type=course_type
             )
             yield from leaderboard
             offset += page_size
