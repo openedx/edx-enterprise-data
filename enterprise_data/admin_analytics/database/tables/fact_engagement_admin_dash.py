@@ -5,6 +5,7 @@ from datetime import date
 from typing import Optional, Tuple
 from uuid import UUID
 
+from enterprise_data.admin_analytics.database.query_filters import EqualQueryFilter, INQueryFilter, NULLQueryFilter
 from enterprise_data.cache.decorators import cache_it
 from enterprise_data.utils import find_first
 
@@ -29,6 +30,7 @@ class FactEngagementAdminDashTable(BaseTable):
             group_uuid: Optional[UUID],
             start_date: date,
             end_date: date,
+            course_type: Optional[str] = None
     ) -> Tuple[QueryFilters, dict]:
         """
         Utility method to get query filters common in most usages below.
@@ -57,6 +59,14 @@ class FactEngagementAdminDashTable(BaseTable):
             enterprise_user_id_in_filter, enterprise_user_id_params = response
             query_filters.append(enterprise_user_id_in_filter)
             params.update(enterprise_user_id_params)
+
+        # add optional filters
+        if course_type:
+            query_filters.append(EqualQueryFilter(
+                column='course_product_line',
+                value_placeholder='course_type',
+            ))
+            params['course_type'] = course_type
 
         return query_filters, params
 
@@ -161,7 +171,8 @@ class FactEngagementAdminDashTable(BaseTable):
         enterprise_customer_uuid: UUID,
         group_uuid: Optional[UUID],
         start_date: date,
-        end_date: date
+        end_date: date,
+        course_type: Optional[str] = None
     ):
         """
         Get the top courses by user engagement for the given enterprise customer.
@@ -170,12 +181,13 @@ class FactEngagementAdminDashTable(BaseTable):
             enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
             start_date (date): The start date.
             end_date (date): The end date.
+            course_type (Optional[str]): The course type (OCM or Executive Education) to filter by (optional).
 
         Returns:
             list<dict>: A list of dictionaries containing the course data.
         """
         query_filters, query_filter_params = self.__get_common_query_filters_for_engagement(
-            enterprise_customer_uuid, group_uuid, start_date, end_date
+            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type
         )
         return run_query(
             query=self.queries.get_top_courses_by_engagement_query(query_filters),
@@ -189,7 +201,8 @@ class FactEngagementAdminDashTable(BaseTable):
         enterprise_customer_uuid: UUID,
         group_uuid: Optional[UUID],
         start_date: date,
-        end_date: date
+        end_date: date,
+        course_type: Optional[str] = None
     ):
         """
         Get the top subjects by user engagement for the given enterprise customer.
@@ -198,12 +211,13 @@ class FactEngagementAdminDashTable(BaseTable):
             enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
             start_date (date): The start date.
             end_date (date): The end date.
+            course_type (Optional[str]): The course type (OCM or Executive Education) to filter by (optional).
 
         Returns:
             list<dict>: A list of dictionaries containing the subject data.
         """
         query_filters, query_filter_params = self.__get_common_query_filters_for_engagement(
-            enterprise_customer_uuid, group_uuid, start_date, end_date
+            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type
         )
         return run_query(
             query=self.queries.get_top_subjects_by_engagement_query(query_filters),
@@ -217,7 +231,8 @@ class FactEngagementAdminDashTable(BaseTable):
         enterprise_customer_uuid: UUID,
         group_uuid: Optional[UUID],
         start_date: date,
-        end_date: date
+        end_date: date,
+        course_type: Optional[str] = None
     ):
         """
         Get the engagement time series data.
@@ -226,18 +241,92 @@ class FactEngagementAdminDashTable(BaseTable):
             enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
             start_date (date): The start date.
             end_date (date): The end date.
+            course_type (Optional[str]): The course type (OCM or Executive Education) to filter by (optional).
 
         Returns:
             list<dict>: A list of dictionaries containing the engagement time series data.
         """
         query_filters, query_filter_params = self.__get_common_query_filters_for_engagement(
-            enterprise_customer_uuid, group_uuid, start_date, end_date
+            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type
         )
         return run_query(
             query=self.queries.get_engagement_time_series_data_query(query_filters),
             params=query_filter_params,
             as_dict=True,
         )
+
+    def build_query_filters_for_leaderboard(
+        self,
+        enterprise_customer_uuid: UUID,
+        date_column: str,
+        start_date: date,
+        end_date: date,
+        equality_filters: Optional[dict] = None,
+        null_filters: Optional[list] = None,
+        in_filters: Optional[dict] = None
+    ):
+        """
+        Build query filters and parameters for enterprise analytics queries.
+
+        Arguments:
+            enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
+            start_date (date): The start date for the query.
+            end_date (date): The end date for the query.
+            equality_filters (dict, optional): Dictionary of column names and their values to filter by.
+                Example: {'course_type': 'OCM', 'is_engaged': 1}
+            null_filters (list, optional): List of columns to check for NULL or NOT NULL. Each item should be
+                a dict with 'column' and 'null_check' keys.
+                Example: [{'column': 'email', 'null_check': True}]
+            in_filters (dict, optional): Dictionary of column names and their values to filter by using IN clause.
+                Example: {'email': ['user1@example.com', 'user2@example.com']}
+
+        Returns:
+            tuple: A tuple containing:
+                - QueryFilters: The filters to apply to the query.
+                - dict: The parameters to use in the query.
+        """
+        optional_params = {}
+        default_params = {
+            'enterprise_customer_uuid': enterprise_customer_uuid,
+            'start_date': start_date,
+            'end_date': end_date,
+        }
+
+        query_filters = QueryFilters([
+            self.engagement_filters.enterprise_customer_uuid_filter('enterprise_customer_uuid'),
+            self.engagement_filters.date_range_filter(
+                column=date_column,
+                start_date_params_key='start_date',
+                end_date_params_key='end_date',
+            ),
+        ])
+
+        if equality_filters:
+            for column, value in equality_filters.items():
+                if value is not None:
+                    query_filters.append(EqualQueryFilter(
+                        column=column,
+                        value_placeholder=column,
+                    ))
+                    optional_params[column] = value
+
+        if in_filters:
+            for column, values_list in in_filters.items():
+                params = {f'{column}_{index}': value for index, value in enumerate(values_list)}
+                query_filters.append(INQueryFilter(
+                    column=column,
+                    values=values_list
+                ))
+
+        if null_filters:
+            for null_column in null_filters:
+                query_filters.append(NULLQueryFilter(
+                    column=null_column['column'],
+                    null_check=null_column['null_check']
+                ))
+
+        params = {**default_params, **optional_params}
+        return query_filters, params
 
     @cache_it()
     def _get_engagement_data_for_leaderboard(
@@ -248,7 +337,7 @@ class FactEngagementAdminDashTable(BaseTable):
             limit: int,
             offset: int,
             include_null_email: bool,
-
+            course_type: Optional[str] = None
     ):
         """
         Get the engagement data for leaderboard.
@@ -263,30 +352,51 @@ class FactEngagementAdminDashTable(BaseTable):
             limit (int): The maximum number of records to return.
             offset (int): The number of records to skip.
             include_null_email (bool): If True, only fetch data for NULL emails.
+            course_type (Optional[str]): The course type (OCM or Executive Education) to filter by (optional).
 
         Returns:
             list[dict]: The engagement data for leaderboard.
         """
+        equality_filters = {
+            'course_product_line': course_type,
+            'is_engaged': 1
+        }
+        query_filters, params = self.build_query_filters_for_leaderboard(
+            enterprise_customer_uuid=enterprise_customer_uuid,
+            date_column='activity_date',
+            start_date=start_date,
+            end_date=end_date,
+            equality_filters=equality_filters,
+        )
         engagements = run_query(
-            query=self.queries.get_engagement_data_for_leaderboard_query(),
+            query=self.queries.get_engagement_data_for_leaderboard_query(query_filters),
             params={
-                'enterprise_customer_uuid': enterprise_customer_uuid,
-                'start_date': start_date,
-                'end_date': end_date,
-                'limit': limit,
-                'offset': offset,
+                **params,
+                **{
+                    'limit': limit,
+                    'offset': offset,
+                }
             },
             as_dict=True,
         )
 
         if include_null_email:
+            null_filters = [{
+                'column': 'email',
+                'null_check': True
+            }]
+            query_filters, params = self.build_query_filters_for_leaderboard(
+                enterprise_customer_uuid=enterprise_customer_uuid,
+                date_column='activity_date',
+                start_date=start_date,
+                end_date=end_date,
+                equality_filters=equality_filters,
+                null_filters=null_filters
+            )
+
             engagement_for_null_email = run_query(
-                query=self.queries.get_engagement_data_for_leaderboard_null_email_only_query(),
-                params={
-                    'enterprise_customer_uuid': enterprise_customer_uuid,
-                    'start_date': start_date,
-                    'end_date': end_date,
-                },
+                query=self.queries.get_engagement_data_for_leaderboard_null_email_only_query(query_filters),
+                params=params,
                 as_dict=True,
             )
             engagements += engagement_for_null_email
@@ -300,6 +410,7 @@ class FactEngagementAdminDashTable(BaseTable):
             end_date: date,
             email_list: list,
             include_null_email: bool,
+            course_type: Optional[str] = None
     ):
         """
         Get the completion data for leaderboard.
@@ -313,29 +424,45 @@ class FactEngagementAdminDashTable(BaseTable):
             end_date (date): The end date.
             email_list (list<str>): List of emails of the enterprise learners.
             include_null_email (bool): If True, only fetch data for NULL emails.
+            course_type (Optional[str]): The course type (OCM or Executive Education) to filter by (optional).
 
         Returns:
             list[dict]: The engagement data for leaderboard.
         """
+        equality_filters = {
+            'course_product_line': course_type,
+            'has_passed': 1
+        }
+        in_filters = {
+            'email': email_list
+        }
+        query_filters, params = self.build_query_filters_for_leaderboard(
+            enterprise_customer_uuid=enterprise_customer_uuid,
+            date_column='passed_date',
+            start_date=start_date,
+            end_date=end_date,
+            equality_filters=equality_filters,
+            in_filters=in_filters,
+        )
 
         completions = run_query(
-            query=self.queries.get_completion_data_for_leaderboard_query(email_list),
-            params={
-                'enterprise_customer_uuid': enterprise_customer_uuid,
-                'start_date': start_date,
-                'end_date': end_date,
-            },
+            query=self.queries.get_completion_data_for_leaderboard_query(query_filters),
+            params=params,
             as_dict=True,
         )
 
         if include_null_email:
+            query_filters, params = self.build_query_filters_for_leaderboard(
+                enterprise_customer_uuid=enterprise_customer_uuid,
+                date_column='passed_date',
+                start_date=start_date,
+                end_date=end_date,
+                equality_filters=equality_filters,
+                null_filters=[{'column': 'email', 'null_check': True}]
+            )
             completions_for_null_email = run_query(
-                query=self.queries.get_completion_data_for_leaderboard_null_email_only_query(),
-                params={
-                    'enterprise_customer_uuid': enterprise_customer_uuid,
-                    'start_date': start_date,
-                    'end_date': end_date,
-                },
+                query=self.queries.get_completion_data_for_leaderboard_null_email_only_query(query_filters),
+                params=params,
                 as_dict=True,
             )
             completions += completions_for_null_email
@@ -350,6 +477,7 @@ class FactEngagementAdminDashTable(BaseTable):
             limit: int,
             offset: int,
             total_count: int,
+            course_type: Optional[str] = None
     ):
         """
         Get the leaderboard data for the given enterprise customer.
@@ -361,6 +489,7 @@ class FactEngagementAdminDashTable(BaseTable):
             limit (int): The maximum number of records to return.
             offset (int): The number of records to skip.
             total_count (int): The total number of records.
+            course_type (Optional[str]): The course type filter.
 
         Returns:
             list[dict]: The leaderboard data.
@@ -377,6 +506,7 @@ class FactEngagementAdminDashTable(BaseTable):
             limit=limit,
             offset=offset,
             include_null_email=include_null_email,
+            course_type=course_type
         )
         # If there is no data, no need to proceed.
         if not engagement_data:
@@ -391,6 +521,7 @@ class FactEngagementAdminDashTable(BaseTable):
             end_date=end_date,
             email_list=list(engagement_data_dict.keys()),
             include_null_email=include_null_email,
+            course_type=course_type
         )
         for completion in completion_data:
             email = completion['email']
@@ -406,7 +537,13 @@ class FactEngagementAdminDashTable(BaseTable):
         return list(engagement_data_dict.values())
 
     @cache_it()
-    def get_leaderboard_data_count(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
+    def get_leaderboard_data_count(
+        self,
+        enterprise_customer_uuid: UUID,
+        start_date: date,
+        end_date: date,
+        course_type: Optional[str] = None
+    ):
         """
         Get the total number of leaderboard records for the given enterprise customer.
 
@@ -414,17 +551,26 @@ class FactEngagementAdminDashTable(BaseTable):
             enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
             start_date (date): The start date.
             end_date (date): The end date.
+            course_type (Optional[str]): The course type filter.
 
         Returns:
             (int): The total number of leaderboard records.
         """
+        equality_filters = {
+            'course_product_line': course_type,
+            'is_engaged': 1
+        }
+        query_filters, params = self.build_query_filters_for_leaderboard(
+            enterprise_customer_uuid=enterprise_customer_uuid,
+            date_column='activity_date',
+            start_date=start_date,
+            end_date=end_date,
+            equality_filters=equality_filters,
+        )
+
         results = run_query(
-            query=self.queries.get_leaderboard_data_count_query(),
-            params={
-                'enterprise_customer_uuid': enterprise_customer_uuid,
-                'start_date': start_date,
-                'end_date': end_date,
-            }
+            query=self.queries.get_leaderboard_data_count_query(query_filters),
+            params=params
         )
         if not results:
             return 0

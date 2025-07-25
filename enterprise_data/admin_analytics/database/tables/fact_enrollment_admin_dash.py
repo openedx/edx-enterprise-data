@@ -5,6 +5,7 @@ from datetime import date, datetime
 from typing import Optional, Tuple
 from uuid import UUID
 
+from enterprise_data.admin_analytics.database.query_filters import EqualQueryFilter
 from enterprise_data.cache.decorators import cache_it
 
 from ..filters import FactCompletionAdminDashFilters, FactEnrollmentAdminDashFilters
@@ -27,6 +28,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             group_uuid: Optional[UUID],
             start_date: date,
             end_date: date,
+            course_type: Optional[str] = None
     ) -> (QueryFilters, dict):
         """
         Utility method to get query filters common in most usages below.
@@ -57,6 +59,14 @@ class FactEnrollmentAdminDashTable(BaseTable):
             query_filters.append(enterprise_user_id_in_filter)
             params.update(enterprise_user_id_params)
 
+        # add optional filters
+        if course_type:
+            query_filters.append(EqualQueryFilter(
+                column='course_product_line',
+                value_placeholder='course_type',
+            ))
+            params['course_type'] = course_type
+
         return query_filters, params
 
     def __get_common_query_filters_for_completion(
@@ -64,6 +74,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
         group_uuid: Optional[UUID],
         start_date: date,
         end_date: date,
+        course_type: Optional[str] = None
     ) -> Tuple[QueryFilters, dict]:
         """
         Utility method to get query filters common in most usages below.
@@ -95,6 +106,14 @@ class FactEnrollmentAdminDashTable(BaseTable):
             enterprise_user_id_in_filter, enterprise_user_id_params = response
             query_filters.append(enterprise_user_id_in_filter)
             params.update(enterprise_user_id_params)
+
+        # add optional filters
+        if course_type:
+            query_filters.append(EqualQueryFilter(
+                column='course_product_line',
+                value_placeholder='course_type',
+            ))
+            params['course_type'] = course_type
 
         return query_filters, params
 
@@ -239,7 +258,12 @@ class FactEnrollmentAdminDashTable(BaseTable):
 
     @cache_it()
     def get_completion_count(
-        self, enterprise_customer_uuid: UUID, group_uuid: Optional[UUID], start_date: date, end_date: date
+        self,
+        enterprise_customer_uuid: UUID,
+        group_uuid: Optional[UUID],
+        start_date: date,
+        end_date: date,
+        course_type: Optional[str] = None
     ):
         """
         Get the completion count for the given enterprise customer.
@@ -249,12 +273,13 @@ class FactEnrollmentAdminDashTable(BaseTable):
             group_uuid (UUID): The UUID of the group.
             start_date (date): The start date.
             end_date (date): The end date.
+            course_type (Optional[str]): The course type (OCM or Executive Education) to filter by (optional).
 
         Returns:
             int: The completion count.
         """
         query_filters, query_filter_params = self.__get_common_query_filters_for_completion(
-            enterprise_customer_uuid, group_uuid, start_date, end_date
+            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type
         )
         results = run_query(
             query=self.queries.get_completion_count_query(query_filters),
@@ -272,7 +297,8 @@ class FactEnrollmentAdminDashTable(BaseTable):
             self, enterprise_customer_uuid: UUID,
             group_uuid: Optional[UUID],
             start_date: date,
-            end_date: date
+            end_date: date,
+            course_type: Optional[str] = None
     ) -> list:
         """
         Get the top courses enrollments for the given enterprise customer.
@@ -287,7 +313,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             list<dict>: A list of dictionaries containing the course key, course_title and enrollment count.
         """
         query_filters, query_filter_params = self.__get_common_query_filters(
-            enterprise_customer_uuid, group_uuid, start_date, end_date
+            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type
         )
 
         return run_query(
@@ -303,6 +329,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             group_uuid: Optional[UUID],
             start_date: date,
             end_date: date,
+            course_type: Optional[str] = None
     ) -> list:
         """
         Get the top subjects by enrollments for the given enterprise customer.
@@ -317,7 +344,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             list<dict>: A list of dictionaries containing the subject and enrollment count.
         """
         query_filters, query_filter_params = self.__get_common_query_filters(
-            enterprise_customer_uuid, group_uuid, start_date, end_date
+            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type
         )
 
         return run_query(
@@ -331,7 +358,8 @@ class FactEnrollmentAdminDashTable(BaseTable):
             self, enterprise_customer_uuid: UUID,
             group_uuid: Optional[UUID],
             start_date: date,
-            end_date: date
+            end_date: date,
+            course_type: Optional[str] = None
     ) -> list:
         """
         Get the enrollment time series data for the given enterprise customer.
@@ -341,12 +369,13 @@ class FactEnrollmentAdminDashTable(BaseTable):
             group_uuid (UUID): The UUID of the group.
             start_date (date): The start date.
             end_date (date): The end date.
+            course_type (Optional[str]): The course type (OCM or Executive Education) to filter by (optional).
 
         Returns:
             list<dict>: A list of dictionaries containing the date and enrollment count.
         """
         query_filters, query_filter_params = self.__get_common_query_filters(
-            enterprise_customer_uuid, group_uuid, start_date, end_date
+            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type
         )
 
         return run_query(
@@ -364,6 +393,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
         end_date: date,
         limit: int,
         offset: int,
+        course_type: Optional[str] = None,
     ):
         """
         Get all completions for the given enterprise customer.
@@ -375,12 +405,13 @@ class FactEnrollmentAdminDashTable(BaseTable):
             end_date (date): The end date.
             limit (int): The maximum number of records to return.
             offset (int): The number of records to skip.
+            course_type (Optional[str]): The course type (OCM or Executive Education) to filter by (optional).
 
         Returns:
             list<dict>: A list of dictionaries containing the completions data.
         """
         query_filters, query_filter_params = self.__get_common_query_filters_for_completion(
-            enterprise_customer_uuid, group_uuid, start_date, end_date
+            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type
         )
         return run_query(
             query=self.queries.get_all_completions_query(query_filters),
@@ -394,7 +425,12 @@ class FactEnrollmentAdminDashTable(BaseTable):
 
     @cache_it()
     def get_top_courses_by_completions(
-        self, enterprise_customer_uuid: UUID, group_uuid: Optional[UUID], start_date: date, end_date: date
+        self,
+        enterprise_customer_uuid: UUID,
+        group_uuid: Optional[UUID],
+        start_date: date,
+        end_date: date,
+        course_type: Optional[str] = None
     ):
         """
         Get the top courses by completion for the given enterprise customer.
@@ -408,7 +444,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             list<dict>: A list of dictionaries containing the course key, course_title and completion count.
         """
         query_filters, query_filter_params = self.__get_common_query_filters_for_completion(
-            enterprise_customer_uuid, group_uuid, start_date, end_date
+            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type
         )
         return run_query(
             query=self.queries.get_top_courses_by_completions_query(query_filters),
@@ -418,7 +454,12 @@ class FactEnrollmentAdminDashTable(BaseTable):
 
     @cache_it()
     def get_top_subjects_by_completions(
-        self, enterprise_customer_uuid: UUID, group_uuid: Optional[UUID], start_date: date, end_date: date
+        self,
+        enterprise_customer_uuid: UUID,
+        group_uuid: Optional[UUID],
+        start_date: date,
+        end_date: date,
+        course_type: Optional[str] = None
     ):
         """
         Get the top subjects by completions for the given enterprise customer.
@@ -432,7 +473,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             list<dict>: A list of dictionaries containing the subject and completion count.
         """
         query_filters, query_filter_params = self.__get_common_query_filters_for_completion(
-            enterprise_customer_uuid, group_uuid, start_date, end_date
+            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type
         )
         return run_query(
             query=self.queries.get_top_subjects_by_completions_query(query_filters),
@@ -442,7 +483,12 @@ class FactEnrollmentAdminDashTable(BaseTable):
 
     @cache_it()
     def get_completions_time_series_data(
-        self, enterprise_customer_uuid: UUID, group_uuid: Optional[UUID], start_date: date, end_date: date
+        self,
+        enterprise_customer_uuid: UUID,
+        group_uuid: Optional[UUID],
+        start_date: date,
+        end_date: date,
+        course_type: Optional[str] = None
     ):
         """
         Get the completions time series data for the given enterprise customer.
@@ -452,12 +498,13 @@ class FactEnrollmentAdminDashTable(BaseTable):
             group_uuid (UUID): The UUID of the group.
             start_date (date): The start date.
             end_date (date): The end date.
+            course_type (Optional[str]): The course type (OCM or Executive Education) to filter by (optional).
 
         Returns:
             list<dict>: A list of dictionaries containing the date and completion count.
         """
         query_filters, query_filter_params = self.__get_common_query_filters_for_completion(
-            enterprise_customer_uuid, group_uuid, start_date, end_date
+            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type
         )
         return run_query(
             query=self.queries.get_completions_time_series_data_query(query_filters),
