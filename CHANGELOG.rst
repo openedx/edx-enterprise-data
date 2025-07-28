@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[10.18.1] - 2025-07-29
+---------------------
+  * chore: upgrade python requirements
+
 [10.18.0] - 2025-07-28
 ---------------------
   * feat: Add course type filtering for enrollments, engagements, completions and leaderboard APIs.
