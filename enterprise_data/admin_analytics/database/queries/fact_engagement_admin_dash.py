@@ -2,6 +2,8 @@
 Module containing queries for the fact_enrollment_engagement_day_admin_dash table.
 """
 
+from ..query_filters import QueryFilters
+
 
 class FactEngagementAdminDashQueries:
     """
@@ -152,17 +154,20 @@ class FactEngagementAdminDashQueries:
         """
 
     @staticmethod
-    def get_engagement_data_for_leaderboard_query():
+    def get_engagement_data_for_leaderboard_query(query_filters: QueryFilters):
         """
         Get the query to fetch the engagement data for leaderboard.
 
         Query should fetch the engagement data for like learning time, session length of
         the enterprise learners to show in the leaderboard.
 
+        Arguments:
+            query_filters (QueryFilters): The filters to apply to the query.
+
         Returns:
             (str): Query to fetch the engagement data for leaderboard.
         """
-        return """
+        return f"""
             SELECT
                 email,
                 ROUND(SUM(learning_time_seconds) / 3600, 1) as learning_time_hours,
@@ -172,16 +177,15 @@ class FactEngagementAdminDashQueries:
                     ELSE ROUND(SUM(learning_time_seconds) / 3600 / SUM(is_engaged), 1)
                 END AS average_session_length
             FROM fact_enrollment_engagement_day_admin_dash
-            WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
-                (activity_date BETWEEN %(start_date)s AND %(end_date)s) AND
-                is_engaged = 1
+            WHERE
+                {query_filters.to_sql()}
             GROUP BY email
             ORDER BY learning_time_hours DESC
             LIMIT %(limit)s OFFSET %(offset)s;
         """
 
     @staticmethod
-    def get_completion_data_for_leaderboard_query(email_list: list):
+    def get_completion_data_for_leaderboard_query(query_filters: QueryFilters):
         """
         Get the query to fetch the completions data for leaderboard.
 
@@ -189,7 +193,7 @@ class FactEngagementAdminDashQueries:
         the enterprise learners to show in the leaderboard.
 
         Arguments:
-            email_list (str): List of emails to filter the completions data.
+            query_filters (QueryFilters): The filters to apply to the query.
 
         Returns:
             (list<str>): Query to fetch the completions data for leaderboard.
@@ -197,25 +201,26 @@ class FactEngagementAdminDashQueries:
         return f"""
             SELECT email, count(course_key) as course_completion_count
             FROM fact_enrollment_admin_dash
-            WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
-                (passed_date BETWEEN %(start_date)s AND %(end_date)s) AND
-                has_passed = 1 AND
-                email IN {str(tuple(email_list))}
+            WHERE
+                {query_filters.to_sql()}
             GROUP BY email;
         """
 
     @staticmethod
-    def get_engagement_data_for_leaderboard_null_email_only_query():
+    def get_engagement_data_for_leaderboard_null_email_only_query(query_filters: QueryFilters):
         """
         Get the query to fetch the engagement data for leaderboard for NULL emails only.
 
         Query should fetch the engagement data for like learning time, session length of
         the enterprise learners to show in the leaderboard.
 
+        Arguments:
+            query_filters (QueryFilters): The filters to apply to the query.
+
         Returns:
             (str): Query to fetch the engagement data for leaderboard.
         """
-        return """
+        return f"""
             SELECT
                 email,
                 ROUND(SUM(learning_time_seconds) / 3600, 1) as learning_time_hours,
@@ -225,51 +230,52 @@ class FactEngagementAdminDashQueries:
                     ELSE ROUND(SUM(learning_time_seconds) / 3600 / SUM(is_engaged), 1)
                 END AS average_session_length
             FROM fact_enrollment_engagement_day_admin_dash
-            WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
-                (activity_date BETWEEN %(start_date)s AND %(end_date)s) AND
-                is_engaged = 1 AND
-                email is NULL
+            WHERE
+                {query_filters.to_sql()}
             GROUP BY email;
         """
 
     @staticmethod
-    def get_completion_data_for_leaderboard_null_email_only_query():
+    def get_completion_data_for_leaderboard_null_email_only_query(query_filters: QueryFilters):
         """
         Get the query to fetch the completions data for leaderboard for NULL emails.
 
         Query should fetch the completion data for like course completion count of
         the enterprise learners to show in the leaderboard.
 
+        Arguments:
+            query_filters (QueryFilters): The filters to apply to the query.
+
         Returns:
             (list<str>): Query to fetch the completions data for leaderboard.
         """
-        return """
+        return f"""
             SELECT email, count(course_key) as course_completion_count
             FROM fact_enrollment_admin_dash
-            WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
-                (passed_date BETWEEN %(start_date)s AND %(end_date)s) AND
-                has_passed = 1 AND
-                email is NULL
+            WHERE
+                {query_filters.to_sql()}
             GROUP BY email;
         """
 
     @staticmethod
-    def get_leaderboard_data_count_query():
+    def get_leaderboard_data_count_query(query_filters: QueryFilters):
         """
         Get the query to fetch the leaderboard row count and null email counter.
 
         Query should fetch the count of rows for the leaderboard data for the enterprise customer.
 
+        Arguments:
+            query_filters (QueryFilters): The filters to apply to the query.
+
         Returns:
             (str): Query to fetch the leaderboard row count.
         """
-        return """
+        return f"""
             SELECT
                 COUNT(*) OVER () AS record_count
             FROM fact_enrollment_engagement_day_admin_dash
-            WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
-                (activity_date BETWEEN %(start_date)s AND %(end_date)s) AND
-                is_engaged = 1
+            WHERE
+                {query_filters.to_sql()}
             GROUP BY email
             LIMIT 1;
         """

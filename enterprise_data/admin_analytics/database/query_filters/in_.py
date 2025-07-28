@@ -23,6 +23,6 @@ class INQueryFilter(QueryFilter):
 
     def to_sql(self) -> str:
         if self.values is not None:
-            return f'{self.column} IN {str(tuple(self.value_to_sql(self.values)))}'
+            return f'{self.column} IN {tuple(self.values)}'
         else:
             return f'{self.column} IN {tuple(f"%({item})s" for item in self.values_placeholders)}'
