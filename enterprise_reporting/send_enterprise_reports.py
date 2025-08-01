@@ -45,6 +45,21 @@ def send_data(config):
 
     return error_raised
 
+def write_enterprise_ids_to_file(eligible_enterprise_customer_uuids):
+    """
+    Write eligible enterprise customer UUIDs to a file.
+
+    Args:
+        eligible_enterprise_customer_uuids (set): A set of eligible enterprise customer UUIDs.
+    """
+    jenkins_workspace = os.environ.get('WORKSPACE')
+    if jenkins_workspace:
+        file_name = os.path.join(jenkins_workspace, 'report_eligible_enterprise_uuids.txt')
+        with open(file_name, "w") as f:
+            f.write("\n".join(eligible_enterprise_customer_uuids))
+    else:
+        LOGGER.error("WORKSPACE environment variable is not set. Skipping writing eligible enterprise IDs to file.")
+        sys.exit(1)
 
 def cleanup_files(enterprise_id):
     """
@@ -93,6 +108,9 @@ def process_reports():
                              "whether forced or not.")
     parser.add_argument('--page-size', required=False, type=int, default=1000,
                         help="The page size to use to retrieve data that comes in a paginated response.")
+    parser.add_argument('--run-mode', required=False, type=str, choices=['worker-only', 'master-worker'],
+                        help="The mode in which the report is run. 'worker-only' runs the job only on the worker instance," \
+                        " while 'master-worker' splits it to run on master and worker instances.")
     args = parser.parse_args()
 
     enterprise_api_client = EnterpriseAPIClient()
@@ -112,6 +130,7 @@ def process_reports():
     current_est_time = datetime.datetime.now(est_timezone)
 
     error_raised = False
+    eligible_enterprise_customer_uuids = set()
     for reporting_config in reporting_configs['results']:
         LOGGER.info('Checking if {}\'s reporting config for {} data in {} format is ready for processing'.format(
             reporting_config['enterprise_customer']['name'],
@@ -120,10 +139,15 @@ def process_reports():
         ))
 
         if should_deliver_report(args, reporting_config, current_est_time):
-            if send_data(reporting_config):
-                error_raised = True
+            if args.run_mode == 'worker-only':
+                if send_data(reporting_config):
+                    error_raised = True
+            else:
+                eligible_enterprise_customer_uuids.add(reporting_config['enterprise_customer']['uuid'])
         else:
             LOGGER.info('Not ready -- skipping this report.')
+
+    write_enterprise_ids_to_file(eligible_enterprise_customer_uuids)
 
     if error_raised:
         LOGGER.error(
