@@ -14,29 +14,29 @@ astroid==3.3.11
     # via
     #   pylint
     #   pylint-celery
-awscli==1.41.14
+awscli==1.42.1
     # via -r requirements/reporting.in
 bcrypt==4.3.0
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.39.14
+boto3==1.40.1
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.39.14
+botocore==1.40.1
     # via
     #   awscli
     #   boto3
     #   s3transfer
     #   snowflake-connector-python
-build==1.2.2.post1
+build==1.3.0
     # via pip-tools
 cachetools==6.1.0
     # via tox
 celery==5.3.6
     # via -r requirements/reporting.in
-certifi==2025.7.14
+certifi==2025.8.3
     # via
     #   py2neo
     #   requests
@@ -166,7 +166,7 @@ edx-rest-api-client==6.2.0
     # via -r requirements/base.in
 factory-boy==3.3.3
     # via -r requirements/base.in
-faker==37.4.2
+faker==37.5.3
     # via factory-boy
 filelock==3.18.0
     # via
@@ -181,6 +181,8 @@ idna==3.10
     #   snowflake-connector-python
 interchange==2021.0.4
     # via py2neo
+invoke==2.2.0
+    # via paramiko
 isort==6.0.1
     # via
     #   -r requirements/quality.in
@@ -242,7 +244,7 @@ packaging==25.0
     #   twine
 pansi==2024.11.0
     # via py2neo
-paramiko==3.5.1
+paramiko==4.0.0
     # via -r requirements/reporting.in
 path==16.16.0
     # via edx-i18n-tools
@@ -252,7 +254,7 @@ pgpy==0.6.0
     # via -r requirements/reporting.in
 pillow==11.3.0
     # via pansi
-pip-tools==7.4.1
+pip-tools==7.5.0
     # via -r requirements/dev-enterprise_data.in
 platformdirs==4.3.8
     # via
@@ -398,7 +400,7 @@ tomlkit==0.13.3
     # via
     #   pylint
     #   snowflake-connector-python
-tox==4.28.3
+tox==4.28.4
     # via -r requirements/dev-enterprise_data.in
 twine==6.1.0
     # via -r requirements/dev-enterprise_data.in
@@ -414,9 +416,8 @@ tzdata==2025.2
     #   kombu
 unicodecsv==0.14.1
     # via -r requirements/reporting.in
-urllib3==2.2.3
+urllib3==2.5.0
     # via
-    #   -c /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/common_constraints.txt
     #   botocore
     #   py2neo
     #   requests
@@ -428,7 +429,7 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==20.32.0
+virtualenv==20.33.0
     # via tox
 wcwidth==0.2.13
     # via prompt-toolkit

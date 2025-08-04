@@ -8,17 +8,17 @@ amqp==5.3.1
     # via kombu
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.41.14
+awscli==1.42.1
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
 bcrypt==4.3.0
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.39.14
+boto3==1.40.1
     # via
     #   -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.39.14
+botocore==1.40.1
     # via
     #   awscli
     #   boto3
@@ -28,7 +28,7 @@ cachetools==6.1.0
     # via tox
 celery==5.3.6
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
-certifi==2025.7.14
+certifi==2025.8.3
     # via
     #   py2neo
     #   requests
@@ -60,7 +60,7 @@ colorama==0.4.6
     # via
     #   awscli
     #   tox
-coverage[toml]==7.10.1
+coverage[toml]==7.10.2
     # via pytest-cov
 cryptography==45.0.5
     # via
@@ -88,6 +88,8 @@ iniconfig==2.1.0
     # via pytest
 interchange==2021.0.4
     # via py2neo
+invoke==2.2.0
+    # via paramiko
 jmespath==1.0.1
     # via
     #   boto3
@@ -108,7 +110,7 @@ packaging==25.0
     #   tox
 pansi==2024.11.0
     # via py2neo
-paramiko==3.5.1
+paramiko==4.0.0
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
 pbr==6.1.1
     # via mock
@@ -191,7 +193,7 @@ sortedcontainers==2.4.0
     # via snowflake-connector-python
 tomlkit==0.13.3
     # via snowflake-connector-python
-tox==4.28.3
+tox==4.28.4
     # via -r requirements/test-reporting.in
 typing-extensions==4.14.1
     # via
@@ -203,9 +205,8 @@ tzdata==2025.2
     #   kombu
 unicodecsv==0.14.1
     # via -r /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/reporting.in
-urllib3==2.2.3
+urllib3==2.5.0
     # via
-    #   -c /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/common_constraints.txt
     #   botocore
     #   py2neo
     #   requests
@@ -217,7 +218,7 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==20.32.0
+virtualenv==20.33.0
     # via tox
 wcwidth==0.2.13
     # via prompt-toolkit
