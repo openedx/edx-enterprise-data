@@ -14,17 +14,17 @@ astroid==3.3.11
     # via
     #   pylint
     #   pylint-celery
-awscli==1.42.1
+awscli==1.42.6
     # via -r requirements/reporting.in
 bcrypt==4.3.0
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.40.1
+boto3==1.40.6
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.40.1
+botocore==1.40.6
     # via
     #   awscli
     #   boto3
@@ -50,7 +50,7 @@ chardet==5.2.0
     # via
     #   diff-cover
     #   tox
-charset-normalizer==3.4.2
+charset-normalizer==3.4.3
     # via
     #   requests
     #   snowflake-connector-python
@@ -79,9 +79,9 @@ colorama==0.4.6
     # via
     #   awscli
     #   tox
-coverage[toml]==7.10.2
+coverage[toml]==7.10.3
     # via pytest-cov
-cryptography==45.0.5
+cryptography==45.0.6
     # via
     #   -r requirements/reporting.in
     #   django-fernet-fields-v2
@@ -101,7 +101,7 @@ distlib==0.4.0
     # via virtualenv
 django==4.2.23
     # via
-    #   -c /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/common_constraints.txt
+    #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
     #   django-crum
     #   django-fernet-fields-v2
@@ -131,7 +131,7 @@ django-waffle==5.0.0
     # via
     #   edx-django-utils
     #   edx-drf-extensions
-djangorestframework==3.16.0
+djangorestframework==3.16.1
     # via
     #   djangorestframework-csv
     #   drf-jwt
@@ -182,7 +182,7 @@ filelock==3.18.0
     #   virtualenv
 flaky==3.8.1
     # via -r requirements/test.in
-freezegun==1.5.4
+freezegun==1.5.5
     # via -r requirements/test.in
 id==1.5.0
     # via twine
@@ -222,7 +222,7 @@ keyring==25.6.0
     # via twine
 kombu==5.5.4
     # via celery
-lxml[html-clean,html_clean]==6.0.0
+lxml[html-clean]==6.0.0
     # via
     #   edx-i18n-tools
     #   lxml-html-clean
@@ -315,7 +315,7 @@ pyjwt[crypto]==2.10.1
     #   edx-drf-extensions
     #   edx-rest-api-client
     #   snowflake-connector-python
-pylint==3.3.7
+pylint==3.3.8
     # via
     #   edx-lint
     #   pylint-celery
@@ -331,7 +331,7 @@ pylint-plugin-utils==0.9.0
     #   pylint-django
 pyminizip==0.2.6
     # via -r requirements/reporting.in
-pymongo==4.13.2
+pymongo==4.14.0
     # via edx-opaque-keys
 pynacl==1.5.0
     # via
@@ -385,7 +385,7 @@ requests==2.32.4
     #   twine
 requests-toolbelt==1.0.0
     # via twine
-responses==0.25.7
+responses==0.25.8
     # via -r requirements/test.in
 rfc3986==2.0.0
     # via twine
@@ -464,7 +464,7 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==20.33.0
+virtualenv==20.33.1
     # via tox
 wcwidth==0.2.13
     # via prompt-toolkit
