@@ -2,6 +2,7 @@
 Module for interacting with the skills_daily_rollup_admin_dash table.
 """
 from datetime import date
+from typing import Optional
 from uuid import UUID
 
 from enterprise_data.admin_analytics.database.filters.mixins import CommonFiltersMixin
@@ -85,6 +86,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         start_date: date,
         end_date: date,
         course_type: str = None,
+        course_key: Optional[str] = None,
     ):
         """
         Get the top skills for the given enterprise customer.
@@ -94,6 +96,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             start_date (date): The start date.
             end_date (date): The end date.
             course_type (str): The course type (OCM or Executive Education) to filter by (optional).
+            course_key (str): The course key to filter by (optional).
 
         Returns:
             list<dict>: A list of dictionaries containing the skill_name, skill_type, enrolls and completions.
@@ -103,6 +106,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             start_date=start_date,
             end_date=end_date,
             course_type=course_type,
+            course_key=course_key,
         )
         return run_query(
             query=self.queries.get_top_skills(query_filters),
@@ -116,7 +120,8 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         enterprise_customer_uuid: UUID,
         start_date: date,
         end_date: date,
-        course_type: str = None,
+        course_type: Optional[str] = None,
+        course_key: Optional[str] = None,
     ):
         """
         Get the top skills by enrollments for the given enterprise customer.
@@ -126,6 +131,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             start_date (date): The start date.
             end_date (date): The end date.
             course_type (str): The course type (OCM or Executive Education) to filter by (optional).
+            course_key (str): The course key to filter by (optional).
 
         Returns:
             list<dict>: A list of dictionaries containing the skill_name, subject_name, count.
@@ -135,6 +141,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             start_date=start_date,
             end_date=end_date,
             course_type=course_type,
+            course_key=course_key,
         )
         return run_query(
             query=self.queries.get_top_skills_by_enrollment(query_filters),
@@ -148,7 +155,8 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         enterprise_customer_uuid: UUID,
         start_date: date,
         end_date: date,
-        course_type: str = None,
+        course_type: Optional[str] = None,
+        course_key: Optional[str] = None,
     ):
         """
         Get the top skills by completion for the given enterprise customer.
@@ -167,6 +175,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             start_date=start_date,
             end_date=end_date,
             course_type=course_type,
+            course_key=course_key,
         )
         return run_query(
             query=self.queries.get_top_skills_by_completion(query_filters),
@@ -179,8 +188,8 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         enterprise_customer_uuid: UUID,
         start_date: date,
         end_date: date,
-        course_key: str = None,
-        course_type: str = None,
+        course_key: Optional[str] = None,
+        course_type: Optional[str] = None,
     ):
         """
         Get the skills by learning hours for the given enterprise customer.

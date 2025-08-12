@@ -139,17 +139,18 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
         end_date = serializer.data.get('end_date', date.today())
         group_uuid = serializer.data.get('group_uuid')
         course_type = serializer.data.get('course_type')
+        course_key = serializer.data.get('course_key')
 
         with timer('construct_enrollment_all_stats'):
             data = {
                 'enrollments_over_time': FactEnrollmentAdminDashTable().get_enrolment_time_series_data(
-                    enterprise_uuid, group_uuid, start_date, end_date, course_type
+                    enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key
                 ),
                 'top_courses_by_enrollments': FactEnrollmentAdminDashTable().get_top_courses_by_enrollments(
-                    enterprise_uuid, group_uuid, start_date, end_date, course_type
+                    enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key
                 ),
                 'top_subjects_by_enrollments': FactEnrollmentAdminDashTable().get_top_subjects_by_enrollments(
-                    enterprise_uuid, group_uuid, start_date, end_date, course_type
+                    enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key
                 ),
             }
         return Response(data)
