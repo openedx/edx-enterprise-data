@@ -10,17 +10,17 @@ asgiref==3.9.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.42.1
+awscli==1.42.6
     # via -r requirements/reporting.in
 bcrypt==4.3.0
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.40.1
+boto3==1.40.6
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.40.1
+botocore==1.40.6
     # via
     #   awscli
     #   boto3
@@ -38,7 +38,7 @@ cffi==1.17.1
     #   cryptography
     #   pynacl
     #   snowflake-connector-python
-charset-normalizer==3.4.2
+charset-normalizer==3.4.3
     # via
     #   requests
     #   snowflake-connector-python
@@ -57,7 +57,7 @@ click-repl==0.3.0
     # via celery
 colorama==0.4.6
     # via awscli
-cryptography==45.0.5
+cryptography==45.0.6
     # via
     #   -r requirements/reporting.in
     #   django-fernet-fields-v2
@@ -68,7 +68,7 @@ cryptography==45.0.5
     #   snowflake-connector-python
 django==4.2.23
     # via
-    #   -c /home/runner/work/edx-enterprise-data/edx-enterprise-data/requirements/common_constraints.txt
+    #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
     #   django-crum
     #   django-fernet-fields-v2
@@ -96,7 +96,7 @@ django-waffle==5.0.0
     # via
     #   edx-django-utils
     #   edx-drf-extensions
-djangorestframework==3.16.0
+djangorestframework==3.16.1
     # via
     #   djangorestframework-csv
     #   drf-jwt
@@ -189,7 +189,7 @@ pyjwt[crypto]==2.10.1
     #   snowflake-connector-python
 pyminizip==0.2.6
     # via -r requirements/reporting.in
-pymongo==4.13.2
+pymongo==4.14.0
     # via edx-opaque-keys
 pynacl==1.5.0
     # via
