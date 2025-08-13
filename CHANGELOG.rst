@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[10.19.0] - 2025-08-13
+---------------------
+  * feat: reworked the send_enterprise_reports command to have master and worker run modes
+
 [10.18.2] - 2025-08-04
 ---------------------
   * chore: upgrade python requirements
