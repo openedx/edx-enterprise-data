@@ -14,17 +14,17 @@ astroid==3.3.11
     # via
     #   pylint
     #   pylint-celery
-awscli==1.42.6
+awscli==1.42.11
     # via -r requirements/reporting.in
 bcrypt==4.3.0
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.40.6
+boto3==1.40.11
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.40.6
+botocore==1.40.11
     # via
     #   awscli
     #   boto3
@@ -79,7 +79,7 @@ colorama==0.4.6
     # via
     #   awscli
     #   tox
-coverage[toml]==7.10.3
+coverage[toml]==7.10.4
     # via pytest-cov
 cryptography==45.0.6
     # via
@@ -175,7 +175,7 @@ factory-boy==3.3.3
     #   -r requirements/test.in
 faker==37.5.3
     # via factory-boy
-filelock==3.18.0
+filelock==3.19.1
     # via
     #   snowflake-connector-python
     #   tox
@@ -228,7 +228,7 @@ lxml[html-clean]==6.0.0
     #   lxml-html-clean
 lxml-html-clean==0.4.2
     # via lxml
-markdown-it-py==3.0.0
+markdown-it-py==4.0.0
     # via rich
 markupsafe==3.0.2
     # via jinja2
@@ -264,7 +264,7 @@ paramiko==4.0.0
     # via -r requirements/reporting.in
 path==16.16.0
     # via edx-i18n-tools
-pbr==6.1.1
+pbr==7.0.0
     # via stevedore
 pgpy==0.6.0
     # via -r requirements/reporting.in
@@ -413,7 +413,7 @@ six==1.17.0
     #   vertica-python
 snowballstemmer==3.0.1
     # via pydocstyle
-snowflake-connector-python==3.16.0
+snowflake-connector-python==3.17.1
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
@@ -464,7 +464,7 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==20.33.1
+virtualenv==20.34.0
     # via tox
 wcwidth==0.2.13
     # via prompt-toolkit
