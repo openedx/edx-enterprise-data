@@ -547,3 +547,36 @@ class FactEnrollmentAdminDashTable(BaseTable):
             params=query_filter_params,
             as_dict=True,
         )
+
+    @cache_it()
+    def get_all_enrolled_courses(
+        self,
+        enterprise_customer_uuid: UUID,
+        start_date: date,
+        end_date: date,
+        group_uuid: Optional[UUID] = None,
+        course_type: Optional[str] = None,
+    ):
+        """
+        Get all enrolled courses for the given enterprise customer.
+
+        Arguments:
+            enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
+            group_uuid (UUID): The UUID of the group.
+            start_date (date): The start date.
+            end_date (date): The end date.
+            course_type (Optional[str]): The course type (OCM or Executive Education) to filter by (optional).
+
+        Returns:
+            list<dict>: A list of dictionaries where each dict will contain course key and course title.
+
+        """
+        query_filters, query_filter_params = self.__get_common_query_filters(
+            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type
+        )
+
+        return run_query(
+            query=self.queries.get_enrolled_courses(query_filters),
+            params=query_filter_params,
+            as_dict=True,
+        )

@@ -301,3 +301,28 @@ class FactEnrollmentAdminDashQueries:
             GROUP BY passed_date, enroll_type
             ORDER BY passed_date;
         """
+
+    @staticmethod
+    def get_enrolled_courses(
+        query_filters: QueryFilters
+    ) -> str:
+        """
+        Get the query to fetch the enrolled courses.
+
+        Returns:
+            (str): Query to fetch the enrolled courses.
+        """
+        return f"""
+            WITH filtered_data AS (
+                SELECT
+                    DISTINCT course_key, course_title
+                FROM
+                    fact_enrollment_admin_dash
+                WHERE {query_filters.to_sql()}
+            )
+            SELECT
+                course_key,
+                course_title
+            FROM
+                filtered_data
+        """
