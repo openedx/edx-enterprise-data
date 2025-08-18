@@ -349,6 +349,7 @@ class AdvanceAnalyticsQueryParamSerializer(serializers.Serializer):  # pylint: d
         allow_blank=False,
         allow_null=False,
     )
+    course_key = serializers.CharField(required=False)
 
     def validate(self, attrs):
         """
