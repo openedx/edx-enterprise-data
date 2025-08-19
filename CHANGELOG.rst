@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[10.20.1] - 2025-08-19
+---------------------
+  * chore: Update changelog and pkg version
+
 [10.20.0] - 2025-08-13
 ---------------------
   * feat: Add course key filtering for enrollments, engagements, completions, skills and leaderboard APIs.
