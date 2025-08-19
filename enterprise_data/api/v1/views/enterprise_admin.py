@@ -275,3 +275,41 @@ class EnterpriseGroupMembershipView(APIView):
 
         serializer = serializers.EnterpriseGroupMembershipSerializer(groups, many=True)
         return Response(serializer.data)
+
+
+class EnterpriseEnrolledCoursesView(APIView):
+    """
+    View for getting enrolled courses information for an enterprise.
+    """
+    authentication_classes = (JwtAuthentication,)
+    http_method_names = ["get"]
+
+    @permission_required("can_access_enterprise", fn=lambda request, enterprise_uuid: enterprise_uuid)
+    def get(self, request, enterprise_uuid):
+        """
+        Return the queryset of EnterpriseSubsidyBudget objects.
+        """
+        # Remove hyphens from the UUID
+        enterprise_uuid = enterprise_uuid.replace('-', '')
+
+        serializer = serializers.AdvanceAnalyticsQueryParamSerializer(data=request.GET)
+        serializer.is_valid(raise_exception=True)
+
+        min_enrollment_date, _ = FactEnrollmentAdminDashTable().get_enrollment_date_range(
+            enterprise_uuid,
+        )
+        # get values from query params or use default
+        start_date = serializer.data.get('start_date', min_enrollment_date)
+        end_date = serializer.data.get('end_date', date.today())
+        group_uuid = serializer.data.get('group_uuid')
+        course_type = serializer.data.get('course_type')
+
+        enrolled_courses = FactEnrollmentAdminDashTable().get_all_enrolled_courses(
+            enterprise_customer_uuid=enterprise_uuid,
+            start_date=start_date,
+            end_date=end_date,
+            group_uuid=group_uuid,
+            course_type=course_type,
+        )
+
+        return Response(enrolled_courses, status=HTTP_200_OK)
