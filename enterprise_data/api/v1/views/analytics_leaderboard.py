@@ -49,6 +49,7 @@ class AdvanceAnalyticsLeaderboardView(AnalyticsPaginationMixin, ViewSet):
         end_date = serializer.data.get('end_date', date.today())
         course_type = serializer.data.get('course_type')
         course_key = serializer.data.get('course_key')
+        budget_uuid = serializer.data.get('budget_uuid')
         page = serializer.data.get('page', 1)
         page_size = serializer.data.get('page_size', 100)
         total_count = FactEngagementAdminDashTable().get_leaderboard_data_count(
@@ -57,6 +58,7 @@ class AdvanceAnalyticsLeaderboardView(AnalyticsPaginationMixin, ViewSet):
             end_date=end_date,
             course_type=course_type,
             course_key=course_key,
+            budget_uuid=budget_uuid,
         )
         leaderboard = FactEngagementAdminDashTable().get_all_leaderboard_data(
             enterprise_customer_uuid=enterprise_uuid,
@@ -67,6 +69,7 @@ class AdvanceAnalyticsLeaderboardView(AnalyticsPaginationMixin, ViewSet):
             total_count=total_count,
             course_type=course_type,
             course_key=course_key,
+            budget_uuid=budget_uuid,
         )
         response_type = request.query_params.get('response_type', ResponseType.JSON.value)
 

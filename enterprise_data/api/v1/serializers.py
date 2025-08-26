@@ -350,6 +350,7 @@ class AdvanceAnalyticsQueryParamSerializer(serializers.Serializer):  # pylint: d
         allow_null=False,
     )
     course_key = serializers.CharField(required=False)
+    budget_uuid = serializers.UUIDField(required=False, format='hex')
 
     def validate(self, attrs):
         """

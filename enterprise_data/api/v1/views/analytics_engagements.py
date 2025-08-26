@@ -140,17 +140,18 @@ class AdvanceAnalyticsEngagementView(AnalyticsPaginationMixin, ViewSet):
         group_uuid = serializer.data.get('group_uuid')
         course_type = serializer.data.get('course_type')
         course_key = serializer.data.get('course_key')
+        budget_uuid = serializer.data.get('budget_uuid')
 
         with timer('construct_engagement_all_stats'):
             data = {
                 'engagement_over_time': FactEngagementAdminDashTable().get_engagement_time_series_data(
-                    enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key
+                    enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
                 ),
                 'top_courses_by_engagement': FactEngagementAdminDashTable().get_top_courses_by_engagement(
-                    enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key
+                    enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
                 ),
                 'top_subjects_by_engagement': FactEngagementAdminDashTable().get_top_subjects_by_engagement(
-                    enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key
+                    enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
                 ),
             }
         return Response(data)

@@ -32,6 +32,7 @@ class FactEngagementAdminDashTable(BaseTable):
             end_date: date,
             course_type: Optional[str] = None,
             course_key: Optional[str] = None,
+            budget_uuid: Optional[str] = None,
     ) -> Tuple[QueryFilters, dict]:
         """
         Utility method to get query filters common in most usages below.
@@ -75,6 +76,13 @@ class FactEngagementAdminDashTable(BaseTable):
                 value_placeholder='course_key',
             ))
             params['course_key'] = course_key
+
+        if budget_uuid:
+            query_filters.append(EqualQueryFilter(
+                column='subsidy_access_policy_uuid',
+                value_placeholder='budget_uuid',
+            ))
+            params['budget_uuid'] = budget_uuid
 
         return query_filters, params
 
@@ -182,6 +190,7 @@ class FactEngagementAdminDashTable(BaseTable):
         end_date: date,
         course_type: Optional[str] = None,
         course_key: Optional[str] = None,
+        budget_uuid: Optional[str] = None
     ):
         """
         Get the top courses by user engagement for the given enterprise customer.
@@ -192,12 +201,13 @@ class FactEngagementAdminDashTable(BaseTable):
             end_date (date): The end date.
             course_type (Optional[str]): The course type (OCM or Executive Education) to filter by (optional).
             course_key (Optional[str]): The course key to filter by (optional).
+            budget_uuid (Optional[str]): The budget UUID to filter by (optional).
 
         Returns:
             list<dict>: A list of dictionaries containing the course data.
         """
         query_filters, query_filter_params = self.__get_common_query_filters_for_engagement(
-            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type, course_key
+            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
         )
         return run_query(
             query=self.queries.get_top_courses_by_engagement_query(query_filters),
@@ -213,7 +223,8 @@ class FactEngagementAdminDashTable(BaseTable):
         start_date: date,
         end_date: date,
         course_type: Optional[str] = None,
-        course_key: Optional[str] = None
+        course_key: Optional[str] = None,
+        budget_uuid: Optional[str] = None
     ):
         """
         Get the top subjects by user engagement for the given enterprise customer.
@@ -224,12 +235,13 @@ class FactEngagementAdminDashTable(BaseTable):
             end_date (date): The end date.
             course_type (Optional[str]): The course type (OCM or Executive Education) to filter by (optional).
             course_key (Optional[str]): The course key to filter by (optional).
+            budget_uuid (Optional[str]): The budget UUID to filter by (optional).
 
         Returns:
             list<dict>: A list of dictionaries containing the subject data.
         """
         query_filters, query_filter_params = self.__get_common_query_filters_for_engagement(
-            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type, course_key
+            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
         )
         return run_query(
             query=self.queries.get_top_subjects_by_engagement_query(query_filters),
@@ -245,7 +257,8 @@ class FactEngagementAdminDashTable(BaseTable):
         start_date: date,
         end_date: date,
         course_type: Optional[str] = None,
-        course_key: Optional[str] = None
+        course_key: Optional[str] = None,
+        budget_uuid: Optional[str] = None,
     ):
         """
         Get the engagement time series data.
@@ -256,12 +269,13 @@ class FactEngagementAdminDashTable(BaseTable):
             end_date (date): The end date.
             course_type (Optional[str]): The course type (OCM or Executive Education) to filter by (optional).
             course_key (Optional[str]): The course key to filter by (optional).
+            budget_uuid (Optional[str]): The budget UUID to filter by (optional).
 
         Returns:
             list<dict>: A list of dictionaries containing the engagement time series data.
         """
         query_filters, query_filter_params = self.__get_common_query_filters_for_engagement(
-            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type, course_key
+            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
         )
         return run_query(
             query=self.queries.get_engagement_time_series_data_query(query_filters),
@@ -352,7 +366,8 @@ class FactEngagementAdminDashTable(BaseTable):
             offset: int,
             include_null_email: bool,
             course_type: Optional[str] = None,
-            course_key: Optional[str] = None
+            course_key: Optional[str] = None,
+            budget_uuid: Optional[str] = None,
     ):
         """
         Get the engagement data for leaderboard.
@@ -369,6 +384,7 @@ class FactEngagementAdminDashTable(BaseTable):
             include_null_email (bool): If True, only fetch data for NULL emails.
             course_type (Optional[str]): The course type (OCM or Executive Education) to filter by (optional).
             course_key (Optional[str]): The course key to filter by (optional).
+            budget_uuid (Optional[str]): The budget UUID to filter by (optional).
 
         Returns:
             list[dict]: The engagement data for leaderboard.
@@ -376,6 +392,7 @@ class FactEngagementAdminDashTable(BaseTable):
         equality_filters = {
             'course_product_line': course_type,
             'course_key': course_key,
+            'subsidy_access_policy_uuid': budget_uuid,
             'is_engaged': 1
         }
         query_filters, params = self.build_query_filters_for_leaderboard(
@@ -428,7 +445,8 @@ class FactEngagementAdminDashTable(BaseTable):
             email_list: list,
             include_null_email: bool,
             course_type: Optional[str] = None,
-            course_key: Optional[str] = None
+            course_key: Optional[str] = None,
+            budget_uuid: Optional[str] = None
     ):
         """
         Get the completion data for leaderboard.
@@ -444,6 +462,7 @@ class FactEngagementAdminDashTable(BaseTable):
             include_null_email (bool): If True, only fetch data for NULL emails.
             course_type (Optional[str]): The course type (OCM or Executive Education) to filter by (optional).
             course_key (Optional[str]): The course key to filter by (optional).
+            budget_uuid (Optional[str]): The budget UUID to filter by (optional).
 
         Returns:
             list[dict]: The engagement data for leaderboard.
@@ -451,6 +470,7 @@ class FactEngagementAdminDashTable(BaseTable):
         equality_filters = {
             'course_product_line': course_type,
             'course_key': course_key,
+            'subsidy_access_policy_uuid': budget_uuid,
             'has_passed': 1
         }
         in_filters = {
@@ -499,6 +519,7 @@ class FactEngagementAdminDashTable(BaseTable):
             total_count: int,
             course_type: Optional[str] = None,
             course_key: Optional[str] = None,
+            budget_uuid: Optional[str] = None
     ):
         """
         Get the leaderboard data for the given enterprise customer.
@@ -512,6 +533,7 @@ class FactEngagementAdminDashTable(BaseTable):
             total_count (int): The total number of records.
             course_type (Optional[str]): The course type filter.
             course_key (Optional[str]): The course key filter.
+            budget_uuid (Optional[str]): The budget UUID filter.
 
         Returns:
             list[dict]: The leaderboard data.
@@ -529,7 +551,8 @@ class FactEngagementAdminDashTable(BaseTable):
             offset=offset,
             include_null_email=include_null_email,
             course_type=course_type,
-            course_key=course_key
+            course_key=course_key,
+            budget_uuid=budget_uuid,
         )
         # If there is no data, no need to proceed.
         if not engagement_data:
@@ -545,7 +568,8 @@ class FactEngagementAdminDashTable(BaseTable):
             email_list=list(engagement_data_dict.keys()),
             include_null_email=include_null_email,
             course_type=course_type,
-            course_key=course_key
+            course_key=course_key,
+            budget_uuid=budget_uuid,
         )
         for completion in completion_data:
             email = completion['email']
@@ -567,7 +591,8 @@ class FactEngagementAdminDashTable(BaseTable):
         start_date: date,
         end_date: date,
         course_type: Optional[str] = None,
-        course_key: Optional[str] = None
+        course_key: Optional[str] = None,
+        budget_uuid: Optional[str] = None
     ):
         """
         Get the total number of leaderboard records for the given enterprise customer.
@@ -578,6 +603,7 @@ class FactEngagementAdminDashTable(BaseTable):
             end_date (date): The end date.
             course_type (Optional[str]): The course type filter.
             course_key (Optional[str]): The course key filter.
+            budget_uuid (Optional[str]): The budget UUID filter.
 
         Returns:
             (int): The total number of leaderboard records.
@@ -585,6 +611,7 @@ class FactEngagementAdminDashTable(BaseTable):
         equality_filters = {
             'course_product_line': course_type,
             'course_key': course_key,
+            'subsidy_access_policy_uuid': budget_uuid,
             'is_engaged': 1
         }
         query_filters, params = self.build_query_filters_for_leaderboard(
