@@ -165,6 +165,7 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
         end_date = serializer.data.get('end_date', date.today())
         course_type = serializer.data.get('course_type')
         course_key = serializer.data.get('course_key')
+        budget_uuid = serializer.data.get('budget_uuid')
 
         with timer('top_skills'):
             skills = SkillsDailyRollupAdminDashTable().get_top_skills(
@@ -173,6 +174,7 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
                 end_date,
                 course_type,
                 course_key,
+                budget_uuid,
             )
 
         with timer('top_skills_by_enrollments'):
@@ -182,6 +184,7 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
                 end_date,
                 course_type,
                 course_key,
+                budget_uuid,
             )
         with timer('top_skills_by_completions'):
             top_skills_by_completions = SkillsDailyRollupAdminDashTable().get_top_skills_by_completion(
@@ -190,6 +193,7 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
                 end_date,
                 course_type,
                 course_key,
+                budget_uuid,
             )
 
         with timer('skills_by_learning_hours'):
@@ -199,6 +203,7 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
                 end_date,
                 course_key,
                 course_type,
+                budget_uuid,
             )
 
         response_data = {

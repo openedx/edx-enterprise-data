@@ -54,6 +54,7 @@ class AdvanceAnalyticsCompletionsView(AnalyticsPaginationMixin, ViewSet):
         group_uuid = serializer.data.get('group_uuid')
         course_type = serializer.data.get('course_type')
         course_key = serializer.data.get('course_key')
+        budget_uuid = serializer.data.get('budget_uuid')
         page = serializer.data.get('page', 1)
         page_size = serializer.data.get('page_size', 100)
         completions = FactEnrollmentAdminDashTable().get_all_completions(
@@ -63,6 +64,7 @@ class AdvanceAnalyticsCompletionsView(AnalyticsPaginationMixin, ViewSet):
             end_date=end_date,
             course_type=course_type,
             course_key=course_key,
+            budget_uuid=budget_uuid,
             limit=page_size,
             offset=(page - 1) * page_size,
         )
@@ -73,6 +75,7 @@ class AdvanceAnalyticsCompletionsView(AnalyticsPaginationMixin, ViewSet):
             end_date=end_date,
             course_type=course_type,
             course_key=course_key,
+            budget_uuid=budget_uuid,
         )
         response_type = request.query_params.get('response_type', ResponseType.JSON.value)
 
@@ -88,7 +91,7 @@ class AdvanceAnalyticsCompletionsView(AnalyticsPaginationMixin, ViewSet):
 
             return StreamingHttpResponse(
                 IndividualCompletionsCSVRenderer().render(self._stream_serialized_data(
-                    enterprise_uuid, group_uuid, start_date, end_date, total_count, course_type, course_key
+                    enterprise_uuid, group_uuid, start_date, end_date, total_count, course_type, course_key, budget_uuid
                 )),
                 content_type="text/csv",
                 headers={"Content-Disposition": f'attachment; filename="{filename}"'},
@@ -111,6 +114,7 @@ class AdvanceAnalyticsCompletionsView(AnalyticsPaginationMixin, ViewSet):
         total_count,
         course_type=None,
         course_key=None,
+        budget_uuid=None,
         page_size=50000
     ):
         """
@@ -127,6 +131,7 @@ class AdvanceAnalyticsCompletionsView(AnalyticsPaginationMixin, ViewSet):
                 offset=offset,
                 course_type=course_type,
                 course_key=course_key,
+                budget_uuid=budget_uuid,
             )
             yield from completions
             offset += page_size
@@ -157,17 +162,18 @@ class AdvanceAnalyticsCompletionsView(AnalyticsPaginationMixin, ViewSet):
         group_uuid = serializer.data.get('group_uuid')
         course_type = serializer.data.get('course_type')
         course_key = serializer.data.get('course_key')
+        budget_uuid = serializer.data.get('budget_uuid')
 
         with timer('construct_completion_all_stats'):
             data = {
                 'completions_over_time': FactEnrollmentAdminDashTable().get_completions_time_series_data(
-                    enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key
+                    enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
                 ),
                 'top_courses_by_completions': FactEnrollmentAdminDashTable().get_top_courses_by_completions(
-                    enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key
+                    enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
                 ),
                 'top_subjects_by_completions': FactEnrollmentAdminDashTable().get_top_subjects_by_completions(
-                    enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key
+                    enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
                 ),
             }
         return Response(data)
