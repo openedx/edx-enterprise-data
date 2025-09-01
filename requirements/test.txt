@@ -10,17 +10,17 @@ asgiref==3.9.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.42.6
+awscli==1.42.21
     # via -r requirements/reporting.in
 bcrypt==4.3.0
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.40.6
+boto3==1.40.21
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.40.6
+botocore==1.40.21
     # via
     #   awscli
     #   boto3
@@ -57,7 +57,7 @@ click-repl==0.3.0
     # via celery
 colorama==0.4.6
     # via awscli
-coverage[toml]==7.10.3
+coverage[toml]==7.10.6
     # via pytest-cov
 cryptography==45.0.6
     # via
@@ -135,9 +135,9 @@ factory-boy==3.3.3
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==37.5.3
+faker==37.6.0
     # via factory-boy
-filelock==3.18.0
+filelock==3.19.1
     # via snowflake-connector-python
 flaky==3.8.1
     # via -r requirements/test.in
@@ -175,19 +175,17 @@ pansi==2024.11.0
     # via py2neo
 paramiko==4.0.0
     # via -r requirements/reporting.in
-pbr==6.1.1
-    # via stevedore
 pgpy==0.6.0
     # via -r requirements/reporting.in
 pillow==11.3.0
     # via pansi
-platformdirs==4.3.8
+platformdirs==4.4.0
     # via snowflake-connector-python
 pluggy==1.6.0
     # via
     #   pytest
     #   pytest-cov
-prompt-toolkit==3.0.51
+prompt-toolkit==3.0.52
     # via click-repl
 psutil==7.0.0
     # via edx-django-utils
@@ -211,7 +209,7 @@ pyjwt[crypto]==2.10.1
     #   snowflake-connector-python
 pyminizip==0.2.6
     # via -r requirements/reporting.in
-pymongo==4.14.0
+pymongo==4.14.1
     # via edx-opaque-keys
 pynacl==1.5.0
     # via
@@ -241,7 +239,7 @@ pyyaml==6.0.2
     # via
     #   awscli
     #   responses
-requests==2.32.4
+requests==2.32.5
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
@@ -267,13 +265,13 @@ six==1.17.0
     #   py2neo
     #   python-dateutil
     #   vertica-python
-snowflake-connector-python==3.16.0
+snowflake-connector-python==3.17.2
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
 sqlparse==0.5.3
     # via django
-stevedore==5.4.1
+stevedore==5.5.0
     # via
     #   edx-django-utils
     #   edx-opaque-keys
@@ -281,7 +279,7 @@ testfixtures==9.1.0
     # via -r requirements/test.in
 tomlkit==0.13.3
     # via snowflake-connector-python
-typing-extensions==4.14.1
+typing-extensions==4.15.0
     # via
     #   edx-opaque-keys
     #   pyopenssl

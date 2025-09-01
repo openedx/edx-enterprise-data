@@ -16,6 +16,10 @@ Unreleased
 
 =========================
 
+[10.21.1] - 2025-09-01
+---------------------
+  * chore: upgrade python requirements
+
 [10.21.0] - 2025-08-27
 ---------------------
   * feat: Add course key filtering for enrollments, engagements, completions, skills and leaderboard APIs.
