@@ -14,17 +14,17 @@ astroid==3.3.11
     # via
     #   pylint
     #   pylint-celery
-awscli==1.42.21
+awscli==1.42.25
     # via -r requirements/reporting.in
 bcrypt==4.3.0
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.40.21
+boto3==1.40.25
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.40.21
+botocore==1.40.25
     # via
     #   awscli
     #   boto3
@@ -79,7 +79,7 @@ colorama==0.4.6
     # via
     #   awscli
     #   tox
-cryptography==45.0.6
+cryptography==45.0.7
     # via
     #   -r requirements/reporting.in
     #   django-fernet-fields-v2
@@ -95,7 +95,7 @@ dill==0.4.0
     # via pylint
 distlib==0.4.0
     # via virtualenv
-django==4.2.23
+django==4.2.24
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
@@ -133,7 +133,7 @@ djangorestframework==3.16.1
     #   edx-drf-extensions
 djangorestframework-csv==3.0.2
     # via -r requirements/base.in
-dnspython==2.7.0
+dnspython==2.8.0
     # via pymongo
 docutils==0.19
     # via
@@ -225,7 +225,7 @@ mdurl==0.1.2
     # via markdown-it-py
 monotonic==1.6
     # via py2neo
-more-itertools==10.7.0
+more-itertools==10.8.0
     # via
     #   jaraco-classes
     #   jaraco-functools
@@ -379,7 +379,7 @@ six==1.17.0
     #   vertica-python
 snowballstemmer==3.0.1
     # via pydocstyle
-snowflake-connector-python==3.17.2
+snowflake-connector-python==3.17.3
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
@@ -398,9 +398,9 @@ tomlkit==0.13.3
     # via
     #   pylint
     #   snowflake-connector-python
-tox==4.29.0
+tox==4.30.2
     # via -r requirements/dev-enterprise_data.in
-twine==6.1.0
+twine==6.2.0
     # via -r requirements/dev-enterprise_data.in
 typing-extensions==4.15.0
     # via
