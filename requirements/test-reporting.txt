@@ -8,17 +8,17 @@ amqp==5.3.1
     # via kombu
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.42.21
+awscli==1.42.25
     # via -r requirements/reporting.in
 bcrypt==4.3.0
     # via paramiko
 billiard==4.2.1
     # via celery
-boto3==1.40.21
+boto3==1.40.25
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.40.21
+botocore==1.40.25
     # via
     #   awscli
     #   boto3
@@ -62,7 +62,7 @@ colorama==0.4.6
     #   tox
 coverage[toml]==7.10.6
     # via pytest-cov
-cryptography==45.0.6
+cryptography==45.0.7
     # via
     #   -r requirements/reporting.in
     #   paramiko
@@ -187,13 +187,13 @@ six==1.17.0
     #   py2neo
     #   python-dateutil
     #   vertica-python
-snowflake-connector-python==3.17.2
+snowflake-connector-python==3.17.3
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
 tomlkit==0.13.3
     # via snowflake-connector-python
-tox==4.29.0
+tox==4.30.2
     # via -r requirements/test-reporting.in
 typing-extensions==4.15.0
     # via
