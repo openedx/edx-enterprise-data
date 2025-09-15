@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[10.21.3] - 2025-09-16
+---------------------
+  * feat: Add unique skills gained metric
+
 [10.21.2] - 2025-09-09
 ---------------------
   * chore: upgrade python requirements

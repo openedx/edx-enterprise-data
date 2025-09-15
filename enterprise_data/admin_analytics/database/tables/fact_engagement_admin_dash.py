@@ -87,7 +87,16 @@ class FactEngagementAdminDashTable(BaseTable):
         return query_filters, params
 
     @cache_it()
-    def get_learning_hours_and_daily_sessions(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
+    def get_learning_hours_and_daily_sessions(
+        self,
+        enterprise_customer_uuid: UUID,
+        start_date: date,
+        end_date: date,
+        group_uuid: Optional[UUID] = None,
+        course_type: Optional[str] = None,
+        course_key: Optional[str] = None,
+        budget_uuid: Optional[str] = None
+    ):
         """
         Get the learning hours and daily sessions for the given enterprise customer.
 
@@ -95,16 +104,21 @@ class FactEngagementAdminDashTable(BaseTable):
             enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
             start_date (date): The start date.
             end_date (date): The end date.
+            group_uuid (UUID): The UUID of a group.
+            course_type (str): The type of the course.
+            course_key (str): The key of the course.
+            budget_uuid (str): The UUID of the budget.
 
         Returns:
             (tuple<float, int>): The learning hours and daily sessions.
         """
+        query_filters, query_filter_params = self.__get_common_query_filters_for_engagement(
+            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
+        )
         results = run_query(
-            query=self.queries.get_learning_hours_and_daily_sessions_query(),
+            query=self.queries.get_learning_hours_and_daily_sessions_query(query_filters),
             params={
-                'enterprise_customer_uuid': enterprise_customer_uuid,
-                'start_date': start_date,
-                'end_date': end_date,
+                **query_filter_params,
             }
         )
         if not results:

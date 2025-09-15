@@ -153,3 +153,17 @@ class SkillsDailyRollupAdminDashQueries:
                 learning_hours DESC
             LIMIT {record_count};
         """
+
+    @staticmethod
+    def get_unique_skills_gained(query_filters: QueryFilters) -> str:
+        """
+        Get the query to fetch the unique skills gained for an enterprise customer.
+        """
+        return f"""
+            SELECT
+                COUNT(DISTINCT skill_name)
+            FROM
+                skills_daily_rollup_admin_dash
+            WHERE
+                {query_filters.to_sql()};
+        """
