@@ -57,16 +57,15 @@ class FactEnrollmentAdminDashQueries:
         """
 
     @staticmethod
-    def get_enrollment_and_course_count_query():
+    def get_enrollment_and_course_count_query(query_filters: QueryFilters) -> str:
         """
         Get the query to fetch the enrollment and course count.
         """
-        return """
+        return f"""
             SELECT
                 count(*) as enrolls, count(DISTINCT course_key) as courses
             FROM fact_enrollment_admin_dash
-            WHERE enterprise_customer_uuid=%(enterprise_customer_uuid)s AND
-                enterprise_enrollment_date BETWEEN %(start_date)s AND %(end_date)s;
+            WHERE {query_filters.to_sql()};
         """
 
     @staticmethod

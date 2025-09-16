@@ -94,9 +94,7 @@ class EnterpriseAdminAnalyticsAggregatesView(APIView):
         """
         # Validate the enterprise_id
         enterprise_id = enterprise_id.replace('-', '')
-        serializer = serializers.AdminAnalyticsAggregatesQueryParamsSerializer(
-            data=request.GET
-        )
+        serializer = serializers.AdvanceAnalyticsQueryParamSerializer(data=request.GET)
         serializer.is_valid(raise_exception=True)
 
         last_updated_at = fetch_max_enrollment_datetime()
@@ -104,20 +102,24 @@ class EnterpriseAdminAnalyticsAggregatesView(APIView):
             enterprise_id,
         )
 
-        start_date = serializer.data.get(
-            'start_date', min_enrollment_date
-        )
+        start_date = serializer.data.get('start_date', min_enrollment_date)
         end_date = serializer.data.get('end_date', datetime.today())
-        group_uuid = serializer.data.get('group_uuid', None)
+        group_uuid = serializer.data.get('group_uuid')
+        course_type = serializer.data.get('course_type')
+        course_key = serializer.data.get('course_key')
+        budget_uuid = serializer.data.get('budget_uuid')
 
         enrolls, courses = FactEnrollmentAdminDashTable().get_enrollment_and_course_count(
-            enterprise_id, start_date, end_date,
+            enterprise_id, start_date, end_date, group_uuid, course_type, course_key, budget_uuid
         )
         completions = FactEnrollmentAdminDashTable().get_completion_count(
-            enterprise_id, group_uuid, start_date, end_date,
+            enterprise_id, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
         )
         hours, sessions = FactEngagementAdminDashTable().get_learning_hours_and_daily_sessions(
-            enterprise_id, start_date, end_date,
+            enterprise_id, start_date, end_date, group_uuid, course_type, course_key, budget_uuid
+        )
+        unique_skills_gained = SkillsDailyRollupAdminDashTable().get_unique_skills_gained(
+            enterprise_id, start_date, end_date, course_type, course_key, budget_uuid
         )
 
         return Response(
@@ -127,6 +129,7 @@ class EnterpriseAdminAnalyticsAggregatesView(APIView):
                 'completions': completions,
                 'hours': hours,
                 'sessions': sessions,
+                'unique_skills_gained': unique_skills_gained,
                 'last_updated_at': last_updated_at if last_updated_at else None,
                 'min_enrollment_date': min_enrollment_date,
                 'max_enrollment_date': max_enrollment_date,

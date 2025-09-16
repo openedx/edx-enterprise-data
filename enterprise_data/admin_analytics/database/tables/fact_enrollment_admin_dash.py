@@ -264,7 +264,16 @@ class FactEnrollmentAdminDashTable(BaseTable):
         return min_date, max_date
 
     @cache_it()
-    def get_enrollment_and_course_count(self, enterprise_customer_uuid: UUID, start_date: date, end_date: date):
+    def get_enrollment_and_course_count(
+        self,
+        enterprise_customer_uuid: UUID,
+        start_date: date,
+        end_date: date,
+        group_uuid: Optional[UUID] = None,
+        course_type: Optional[str] = None,
+        course_key: Optional[str] = None,
+        budget_uuid: Optional[str] = None,
+    ):
         """
         Get the enrollment and course count for the given enterprise customer.
 
@@ -272,17 +281,23 @@ class FactEnrollmentAdminDashTable(BaseTable):
             enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
             start_date (date): The start date.
             end_date (date): The end date.
+            group_uuid (UUID): The UUID of the group.
+            course_type (Optional[str]): The course type (OCM or Executive Education) to filter by (optional).
+            course_key (Optional[str]): The course key to filter by (optional).
+            budget_uuid (Optional[str]): The budget UUID to filter by (optional).
 
         Returns:
             (tuple<int, int>): The enrollment and course count.
         """
+        query_filters, query_filter_params = self.__get_common_query_filters(
+            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
+        )
+
         results = run_query(
-            query=self.queries.get_enrollment_and_course_count_query(),
+            query=self.queries.get_enrollment_and_course_count_query(query_filters),
             params={
-                'enterprise_customer_uuid': enterprise_customer_uuid,
-                'start_date': start_date,
-                'end_date': end_date,
-            }
+                **query_filter_params,
+            },
         )
         if not results:
             return 0, 0

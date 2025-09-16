@@ -4,6 +4,7 @@ Query filter for equal operation.
 from .base import QueryFilter
 
 
+# TODO: Replace it with ComparisonQueryFilter
 class EqualQueryFilter(QueryFilter):
     """
     Query filter for equal operation.

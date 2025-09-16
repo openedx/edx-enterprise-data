@@ -11,10 +11,17 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITransactionTestCase
 
+from enterprise_data.admin_analytics.database.filters import (
+    FactEngagementAdminDashFilters,
+    FactEnrollmentAdminDashFilters,
+)
 from enterprise_data.admin_analytics.database.queries import (
     FactEngagementAdminDashQueries,
     FactEnrollmentAdminDashQueries,
+    SkillsDailyRollupAdminDashQueries,
 )
+from enterprise_data.admin_analytics.database.query_filters import ComparisonQueryFilter, QueryFilters
+from enterprise_data.admin_analytics.database.tables import SkillsDailyRollupAdminDashTable
 from enterprise_data.tests.admin_analytics.mock_analytics_data import (
     SKILLS_BY_LEARNING_HOURS,
     TOP_SKILLS,
@@ -58,6 +65,30 @@ class TestEnterpriseAdminAnalyticsAggregatesView(JWTTestMixin, APITransactionTes
         self.set_jwt_cookie()
         self.enrollment_queries = FactEnrollmentAdminDashQueries()
         self.engagement_queries = FactEngagementAdminDashQueries()
+        self.skills_queries = SkillsDailyRollupAdminDashQueries()
+        self.skills_table = SkillsDailyRollupAdminDashTable()
+
+        enrollment_filters = FactEnrollmentAdminDashFilters()
+        self.enrollment_query_filters = QueryFilters([
+            enrollment_filters.enterprise_customer_uuid_filter('enterprise_customer_uuid'),
+            enrollment_filters.date_range_filter('enterprise_enrollment_date', 'start_date', 'end_date'),
+        ])
+        engagement_filters = FactEngagementAdminDashFilters()
+        self.engagement_query_filters = QueryFilters([
+            engagement_filters.enterprise_customer_uuid_filter('enterprise_customer_uuid'),
+            engagement_filters.date_range_filter('activity_date', 'start_date', 'end_date'),
+        ])
+
+        self.skills_query_filters, __ = self.skills_table.build_query_filters(
+            enterprise_customer_uuid=self.enterprise_id,
+            start_date='2021-01-01',
+            end_date='2021-12-31',
+        )
+        self.skills_query_filters.append(ComparisonQueryFilter(
+            column='completions',
+            operator='>',
+            value=0
+        ))
 
     def _mock_run_query(self, query, *args, **kwargs):
         """
@@ -72,13 +103,14 @@ class TestEnterpriseAdminAnalyticsAggregatesView(JWTTestMixin, APITransactionTes
                 datetime.strptime('2021-01-01', "%Y-%m-%d"),
                 datetime.strptime('2021-12-31', "%Y-%m-%d"),
             ]],
-            self.enrollment_queries.get_enrollment_and_course_count_query(): [[
+            self.enrollment_queries.get_enrollment_and_course_count_query(self.enrollment_query_filters): [[
                 100, 10
             ]],
-            self.engagement_queries.get_learning_hours_and_daily_sessions_query(): [[
+            self.engagement_queries.get_learning_hours_and_daily_sessions_query(self.engagement_query_filters): [[
                 100, 10
             ]],
-            'SELECT MAX(created) FROM enterprise_learner_enrollment': [[datetime.strptime('2021-01-01', "%Y-%m-%d")]]
+            'SELECT MAX(created) FROM enterprise_learner_enrollment': [[datetime.strptime('2021-01-01', "%Y-%m-%d")]],
+            self.skills_queries.get_unique_skills_gained(self.skills_query_filters): [[30]],
         }
         return mock_responses.get(query, [[]])
 
@@ -96,16 +128,20 @@ class TestEnterpriseAdminAnalyticsAggregatesView(JWTTestMixin, APITransactionTes
                         'enterprise_data.admin_analytics.database.tables.fact_enrollment_admin_dash.run_query',
                         side_effect=self._mock_run_query
                 ):
-                    response = self.client.get(url)
-                    assert response.status_code == status.HTTP_200_OK
-                    assert 'enrolls' in response.json()
-                    assert 'courses' in response.json()
-                    assert 'completions' in response.json()
-                    assert 'hours' in response.json()
-                    assert 'sessions' in response.json()
-                    assert 'last_updated_at' in response.json()
-                    assert 'min_enrollment_date' in response.json()
-                    assert 'max_enrollment_date' in response.json()
+                    with patch(
+                        'enterprise_data.admin_analytics.database.tables.skills_daily_rollup_admin_dash.run_query',
+                        side_effect=self._mock_run_query
+                    ):
+                        response = self.client.get(url)
+                        assert response.status_code == status.HTTP_200_OK
+                        assert 'enrolls' in response.json()
+                        assert 'courses' in response.json()
+                        assert 'completions' in response.json()
+                        assert 'hours' in response.json()
+                        assert 'sessions' in response.json()
+                        assert 'last_updated_at' in response.json()
+                        assert 'min_enrollment_date' in response.json()
+                        assert 'max_enrollment_date' in response.json()
 
 
 @ddt.ddt
