@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[10.21.5] - 2025-09-18
+---------------------
+  * chore: create enterprise UUID files
+
 [10.21.4] - 2025-09-17
 ---------------------
   * chore: upgrade python requirements

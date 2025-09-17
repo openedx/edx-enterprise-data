@@ -9,6 +9,7 @@ import datetime
 import logging
 import os
 import re
+import shutil
 import sys
 
 import pytz
@@ -45,32 +46,40 @@ def send_data(config):
 
     return error_raised
 
-def write_enterprise_ids_to_file(eligible_enterprise_customer_uuids):
+def create_enterprise_uuid_files(eligible_enterprise_customer_uuids):
     """
-    Write eligible enterprise customer UUIDs to a file.
+    Create a file for each eligible enterprise customer UUID.
+
+    File format: {enterprise_customer_uuid}.txt
 
     Args:
         eligible_enterprise_customer_uuids (set): A set of eligible enterprise customer UUIDs.
     """
-    jenkins_workspace = os.environ.get('WORKSPACE')
-    if jenkins_workspace:
-        file_name = os.path.join(jenkins_workspace, 'report_eligible_enterprise_uuids.txt')
-        try:
-            os.remove(file_name)
-        except FileNotFoundError:
-            pass
-        except Exception as e:
-            LOGGER.error(f"An error occurred while deleting the file: {e}")
-            sys.exit(1)
-        try:
-            with open(file_name, "w") as f:
-                f.write(" ".join(eligible_enterprise_customer_uuids))
-        except Exception as e:
-            LOGGER.error(f"An error occurred while writing to the file: {e}")
-            sys.exit(1)
-    else:
-        LOGGER.error("WORKSPACE environment variable is not set. Skipping writing eligible enterprise IDs to file.")
+    jenkins_workspace = os.environ.get('WORKSPACE', '')
+
+    if not os.path.isdir(jenkins_workspace):
+        LOGGER.error(
+            "WORKSPACE env variable is not set or invalid. Skipping writing enterprise UUID files. WORKSPACE: [%s]",
+            jenkins_workspace
+        )
         sys.exit(1)
+
+    # Path to enterprises directory
+    enterprises_dir = os.path.join(jenkins_workspace, "enterprises")
+
+    # If enterprises dir exists, remove it first
+    if os.path.exists(enterprises_dir):
+        shutil.rmtree(enterprises_dir)
+
+    # Create a fresh enterprises dir
+    os.makedirs(enterprises_dir)
+
+    for enterprise_customer_uuid in eligible_enterprise_customer_uuids:
+        file_path = os.path.join(enterprises_dir, f"{enterprise_customer_uuid}.txt")
+        with open(file_path, "w") as f:
+            f.write(f"{enterprise_customer_uuid}\n")
+
+        LOGGER.info("Created enterprise UUID file for: [%s]", enterprise_customer_uuid)
 
 def cleanup_files(enterprise_id):
     """
@@ -135,7 +144,7 @@ def process_reports():
         sys.exit(1)
 
     # We are defining the current est time globally because we want the current time for a job
-    # to remain same thoughout the job. This ensures that a single report is not processed multiple times. 
+    # to remain same thoughout the job. This ensures that a single report is not processed multiple times.
     # See this comment for more details: https://2u-internal.atlassian.net/browse/ENT-9954?focusedCommentId=5356815
     est_timezone = pytz.timezone('US/Eastern')
     current_est_time = datetime.datetime.now(est_timezone)
@@ -158,7 +167,7 @@ def process_reports():
         else:
             LOGGER.info('Not ready -- skipping this report.')
     if args.run_mode == 'master':
-        write_enterprise_ids_to_file(eligible_enterprise_customer_uuids)
+        create_enterprise_uuid_files(eligible_enterprise_customer_uuids)
 
     if error_raised:
         LOGGER.error(
