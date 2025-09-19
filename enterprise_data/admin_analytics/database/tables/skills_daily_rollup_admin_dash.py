@@ -11,6 +11,7 @@ from enterprise_data.admin_analytics.database.queries.skills_daily_rollup_admin_
 )
 from enterprise_data.admin_analytics.database.query_filters import ComparisonQueryFilter, EqualQueryFilter
 from enterprise_data.admin_analytics.database.tables.base import BaseTable
+from enterprise_data.admin_analytics.database.tables.fact_enrollment_admin_dash import FactEnrollmentAdminDashTable
 from enterprise_data.admin_analytics.database.utils import run_query
 from enterprise_data.cache.decorators import cache_it
 
@@ -279,6 +280,93 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         results = run_query(
             query=self.queries.get_unique_skills_gained(query_filters),
             params=params,
+        )
+
+        return results[0][0] if results else 0
+
+    def construct_upskill_learners_query_filters(
+        self,
+        enterprise_customer_uuid: UUID,
+        start_date: date,
+        end_date: date,
+        course_type: Optional[str] = None,
+        course_key: Optional[str] = None,
+        budget_uuid: Optional[str] = None,
+    ):
+        """
+        Construct query filters and parameters for upskilled learners query.
+
+        Args:
+            enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
+            start_date (date): The start date.
+            end_date (date): The end date.
+            course_type (str): The course type (OCM or Executive Education) to filter by (optional).
+            course_key (str): The course key to filter by (optional). Defaults to None.
+            budget_uuid (str): The budget UUID to filter by (optional). Defaults to None.
+        """
+        skills_query_filters, skills_params = self.build_query_filters(
+            enterprise_customer_uuid=enterprise_customer_uuid,
+            start_date=start_date,
+            end_date=end_date,
+            course_key=course_key,
+            course_type=course_type,
+            budget_uuid=budget_uuid,
+        )
+        skills_query_filters.append(ComparisonQueryFilter(
+            column='completions',
+            operator='>',
+            value=0
+        ))
+
+        enrollment_query_filters, enrollment_params = FactEnrollmentAdminDashTable().build_query_filters(
+            enterprise_customer_uuid=enterprise_customer_uuid,
+            start_date=start_date,
+            end_date=end_date,
+            course_key=course_key,
+            course_type=course_type,
+            budget_uuid=budget_uuid,
+        )
+        enrollment_query_filters.append(ComparisonQueryFilter(
+            column='has_passed',
+            operator='=',
+            value=1
+        ))
+
+        return skills_query_filters, skills_params, enrollment_query_filters, enrollment_params
+
+    @cache_it()
+    def get_upskilled_learners_count(
+        self,
+        enterprise_customer_uuid: UUID,
+        start_date: date,
+        end_date: date,
+        course_type: Optional[str] = None,
+        course_key: Optional[str] = None,
+        budget_uuid: Optional[str] = None,
+    ):
+        """
+        Get the count of upskilled learners for the given enterprise customer.
+
+        Args:
+            enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
+            start_date (date): The start date.
+            end_date (date): The end date.
+            course_type (str): The course type (OCM or Executive Education) to filter by (optional).
+            course_key (str): The course key to filter by (optional). Defaults to None.
+            budget_uuid (str): The budget UUID to filter by (optional). Defaults to None.
+        """
+        skills_filters, skills_params, enroll_filters, enroll_params = self.construct_upskill_learners_query_filters(
+            enterprise_customer_uuid=enterprise_customer_uuid,
+            start_date=start_date,
+            end_date=end_date,
+            course_key=course_key,
+            course_type=course_type,
+            budget_uuid=budget_uuid,
+        )
+
+        results = run_query(
+            query=self.queries.get_upskilled_learners_count(skills_filters, enroll_filters),
+            params={**skills_params, **enroll_params},
         )
 
         return results[0][0] if results else 0

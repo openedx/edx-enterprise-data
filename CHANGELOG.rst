@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[10.21.5] - 2025-09-19
+---------------------
+  * feat: Add upskilled learners metric
+
 [10.21.4] - 2025-09-17
 ---------------------
   * chore: upgrade python requirements

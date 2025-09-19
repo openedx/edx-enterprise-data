@@ -167,3 +167,39 @@ class SkillsDailyRollupAdminDashQueries:
             WHERE
                 {query_filters.to_sql()};
         """
+
+    @staticmethod
+    def get_upskilled_learners_count(
+        skills_query_filters: QueryFilters,
+        enrollment_query_filters: QueryFilters
+    ) -> str:
+        """
+        Get the query to fetch the count of upskilled learners for an enterprise customer.
+        """
+        return f"""
+            WITH completed_skills AS (
+                SELECT
+                    *
+                FROM
+                    skills_daily_rollup_admin_dash
+                WHERE
+                    {skills_query_filters.to_sql()}
+            ),
+            passed_learners AS (
+                SELECT
+                    *
+                FROM
+                    fact_enrollment_admin_dash
+                WHERE
+                    {enrollment_query_filters.to_sql()}
+            )
+            SELECT
+                COUNT(DISTINCT pl.email) AS passed_learners_with_skills
+            FROM
+                passed_learners pl
+            JOIN
+                completed_skills cs
+            ON
+                pl.course_key = cs.course_key;
+
+        """
