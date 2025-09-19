@@ -23,11 +23,11 @@ class FactEnrollmentAdminDashTable(BaseTable):
     enrollment_filters = FactEnrollmentAdminDashFilters()
     completion_filters = FactCompletionAdminDashFilters()
 
-    def __get_common_query_filters(
+    def build_query_filters(
             self, enterprise_customer_uuid: UUID,
-            group_uuid: Optional[UUID],
             start_date: date,
             end_date: date,
+            group_uuid: Optional[UUID] = None,
             course_type: Optional[str] = None,
             course_key: Optional[str] = None,
             budget_uuid: Optional[str] = None
@@ -185,8 +185,8 @@ class FactEnrollmentAdminDashTable(BaseTable):
         Returns:
             (int): The total number of enrollments.
         """
-        query_filters, query_filter_params = self.__get_common_query_filters(
-            enterprise_customer_uuid, group_uuid, start_date, end_date
+        query_filters, query_filter_params = self.build_query_filters(
+            enterprise_customer_uuid, start_date, end_date, group_uuid=group_uuid
         )
 
         results = run_query(
@@ -221,8 +221,8 @@ class FactEnrollmentAdminDashTable(BaseTable):
         Returns:
             list<dict>: A list of dictionaries containing the enrollment data.
         """
-        query_filters, query_filter_params = self.__get_common_query_filters(
-            enterprise_customer_uuid, group_uuid, start_date, end_date
+        query_filters, query_filter_params = self.build_query_filters(
+            enterprise_customer_uuid, start_date, end_date, group_uuid=group_uuid
         )
 
         return run_query(
@@ -289,8 +289,14 @@ class FactEnrollmentAdminDashTable(BaseTable):
         Returns:
             (tuple<int, int>): The enrollment and course count.
         """
-        query_filters, query_filter_params = self.__get_common_query_filters(
-            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
+        query_filters, query_filter_params = self.build_query_filters(
+            enterprise_customer_uuid,
+            start_date,
+            end_date,
+            group_uuid=group_uuid,
+            course_type=course_type,
+            course_key=course_key,
+            budget_uuid=budget_uuid
         )
 
         results = run_query(
@@ -368,8 +374,14 @@ class FactEnrollmentAdminDashTable(BaseTable):
         Returns:
             list<dict>: A list of dictionaries containing the course key, course_title and enrollment count.
         """
-        query_filters, query_filter_params = self.__get_common_query_filters(
-            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
+        query_filters, query_filter_params = self.build_query_filters(
+            enterprise_customer_uuid,
+            start_date,
+            end_date,
+            group_uuid=group_uuid,
+            course_type=course_type,
+            course_key=course_key,
+            budget_uuid=budget_uuid
         )
 
         return run_query(
@@ -404,8 +416,14 @@ class FactEnrollmentAdminDashTable(BaseTable):
         Returns:
             list<dict>: A list of dictionaries containing the subject and enrollment count.
         """
-        query_filters, query_filter_params = self.__get_common_query_filters(
-            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
+        query_filters, query_filter_params = self.build_query_filters(
+            enterprise_customer_uuid,
+            start_date,
+            end_date,
+            group_uuid=group_uuid,
+            course_type=course_type,
+            course_key=course_key,
+            budget_uuid=budget_uuid
         )
 
         return run_query(
@@ -439,8 +457,14 @@ class FactEnrollmentAdminDashTable(BaseTable):
         Returns:
             list<dict>: A list of dictionaries containing the date and enrollment count.
         """
-        query_filters, query_filter_params = self.__get_common_query_filters(
-            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
+        query_filters, query_filter_params = self.build_query_filters(
+            enterprise_customer_uuid,
+            start_date,
+            end_date,
+            group_uuid=group_uuid,
+            course_type=course_type,
+            course_key=course_key,
+            budget_uuid=budget_uuid
         )
 
         return run_query(
@@ -618,8 +642,12 @@ class FactEnrollmentAdminDashTable(BaseTable):
             list<dict>: A list of dictionaries where each dict will contain course key and course title.
 
         """
-        query_filters, query_filter_params = self.__get_common_query_filters(
-            enterprise_customer_uuid, group_uuid, start_date, end_date, course_type
+        query_filters, query_filter_params = self.build_query_filters(
+            enterprise_customer_uuid,
+            start_date,
+            end_date,
+            group_uuid=group_uuid,
+            course_type=course_type
         )
 
         return run_query(

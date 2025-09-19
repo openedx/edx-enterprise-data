@@ -90,6 +90,12 @@ class TestEnterpriseAdminAnalyticsAggregatesView(JWTTestMixin, APITransactionTes
             value=0
         ))
 
+        self.skills_filters, __, self.enroll_filters, __ = self.skills_table.construct_upskill_learners_query_filters(
+            enterprise_customer_uuid=self.enterprise_id,
+            start_date='2021-01-01',
+            end_date='2021-12-31',
+        )
+
     def _mock_run_query(self, query, *args, **kwargs):
         """
         mock implementation of run_query.
@@ -111,6 +117,7 @@ class TestEnterpriseAdminAnalyticsAggregatesView(JWTTestMixin, APITransactionTes
             ]],
             'SELECT MAX(created) FROM enterprise_learner_enrollment': [[datetime.strptime('2021-01-01', "%Y-%m-%d")]],
             self.skills_queries.get_unique_skills_gained(self.skills_query_filters): [[30]],
+            self.skills_queries.get_upskilled_learners_count(self.skills_filters, self.enroll_filters): [[10]]
         }
         return mock_responses.get(query, [[]])
 
