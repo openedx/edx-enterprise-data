@@ -124,6 +124,9 @@ class EnterpriseAdminAnalyticsAggregatesView(APIView):
         upskilled_learners = SkillsDailyRollupAdminDashTable().get_upskilled_learners_count(
             enterprise_id, start_date, end_date, course_type, course_key, budget_uuid
         )
+        new_skills_learned = SkillsDailyRollupAdminDashTable().get_new_skills_learned_count(
+            enterprise_id, start_date, end_date, course_type, course_key, budget_uuid
+        )
 
         return Response(
             data={
@@ -134,6 +137,7 @@ class EnterpriseAdminAnalyticsAggregatesView(APIView):
                 'sessions': sessions,
                 'unique_skills_gained': unique_skills_gained,
                 'upskilled_learners': upskilled_learners,
+                'new_skills_learned': new_skills_learned,
                 'last_updated_at': last_updated_at if last_updated_at else None,
                 'min_enrollment_date': min_enrollment_date,
                 'max_enrollment_date': max_enrollment_date,

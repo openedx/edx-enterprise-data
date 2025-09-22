@@ -203,3 +203,41 @@ class SkillsDailyRollupAdminDashQueries:
                 pl.course_key = cs.course_key;
 
         """
+
+    @staticmethod
+    def get_new_skills_learned_count(
+        historical_skills_filters: QueryFilters,
+        current_skills_filters: QueryFilters
+    ) -> str:
+        """
+        Get the query to fetch the count of new skills learned for an enterprise customer.
+        """
+        return f"""
+            WITH historical_skills AS (
+                SELECT
+                    skill_name
+                FROM
+                    skills_daily_rollup_admin_dash
+                WHERE
+                    {historical_skills_filters.to_sql()}
+                GROUP BY skill_name
+            ),
+            current_period_skills AS (
+                SELECT
+                    skill_name
+                FROM
+                    skills_daily_rollup_admin_dash
+                WHERE
+                    {current_skills_filters.to_sql()}
+                GROUP BY skill_name
+            )
+            SELECT
+                COUNT(*)
+            FROM
+                current_period_skills c
+            LEFT JOIN
+                historical_skills h
+                ON c.skill_name = h.skill_name
+            WHERE
+                h.skill_name IS NULL;
+        """

@@ -32,6 +32,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         course_type: Optional[str] = None,
         course_key: Optional[str] = None,
         budget_uuid: Optional[str] = None,
+        include_date_range_filter: Optional[bool] = True,
     ):
         """
         Build query filters and parameters for enterprise analytics queries.
@@ -43,6 +44,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             course_type (str, optional): The course type to filter by (e.g., 'OCM', 'Executive Education').
             course_key (str, optional): The course key to filter by.
             budget_uuid (str, optional): The budget UUID to filter by.
+            include_date_range_filter (bool, optional): Whether to include the date range filter. Defaults to True.
 
         Returns:
             tuple: A tuple containing:
@@ -52,18 +54,24 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         optional_params = {}
         default_params = {
             'enterprise_customer_uuid': enterprise_customer_uuid,
-            'start_date': start_date,
-            'end_date': end_date,
         }
 
         query_filters = QueryFilters([
             self.enterprise_customer_uuid_filter('enterprise_customer_uuid'),
-            self.date_range_filter(
-                column='date',
-                start_date_params_key='start_date',
-                end_date_params_key='end_date',
-            ),
         ])
+
+        if include_date_range_filter is True:
+            query_filters.append(
+                self.date_range_filter(
+                    column='date',
+                    start_date_params_key='start_date',
+                    end_date_params_key='end_date',
+                )
+            )
+            default_params.update({
+                'start_date': start_date,
+                'end_date': end_date,
+            })
 
         if course_key:
             query_filters.append(EqualQueryFilter(
@@ -367,6 +375,106 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         results = run_query(
             query=self.queries.get_upskilled_learners_count(skills_filters, enroll_filters),
             params={**skills_params, **enroll_params},
+        )
+
+        return results[0][0] if results else 0
+
+    def construct_new_skills_learned_query_filters(
+        self,
+        enterprise_customer_uuid: UUID,
+        start_date: date,
+        end_date: date,
+        course_type: Optional[str] = None,
+        course_key: Optional[str] = None,
+        budget_uuid: Optional[str] = None,
+    ):
+        """
+        Construct query filters and parameters for new skills learned query.
+
+        Args:
+            enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
+            start_date (date): The start date.
+            end_date (date): The end date.
+            course_type (str): The course type (OCM or Executive Education) to filter by (optional).
+            course_key (str): The course key to filter by (optional). Defaults to None.
+            budget_uuid (str): The budget UUID to filter by (optional). Defaults to None.
+        """
+        common_query_filters = QueryFilters([
+            ComparisonQueryFilter(
+                column='completions',
+                operator='>',
+                value=0
+            ),
+            ComparisonQueryFilter(
+                column='confidence',
+                operator='>=',
+                value=0.8
+            )
+        ])
+
+        current_skills_filters, current_skills_params = self.build_query_filters(
+            enterprise_customer_uuid=enterprise_customer_uuid,
+            start_date=start_date,
+            end_date=end_date,
+            course_key=course_key,
+            course_type=course_type,
+            budget_uuid=budget_uuid,
+        )
+        current_skills_filters.extend(common_query_filters)
+
+        historical_skills_filters, hist_skills_params = self.build_query_filters(
+            enterprise_customer_uuid=enterprise_customer_uuid,
+            start_date=start_date,
+            end_date=end_date,
+            course_key=course_key,
+            course_type=course_type,
+            budget_uuid=budget_uuid,
+            include_date_range_filter=False,
+        )
+        historical_skills_filters.append(
+            ComparisonQueryFilter(
+                column='date',
+                operator='<',
+                value_placeholder='start_date'
+            )
+        )
+        historical_skills_filters.extend(common_query_filters)
+
+        return current_skills_filters, current_skills_params, historical_skills_filters, hist_skills_params
+
+    @cache_it()
+    def get_new_skills_learned_count(
+        self,
+        enterprise_customer_uuid: UUID,
+        start_date: date,
+        end_date: date,
+        course_type: Optional[str] = None,
+        course_key: Optional[str] = None,
+        budget_uuid: Optional[str] = None,
+    ):
+        """
+        Get the count of new skills learned for the given enterprise customer.
+
+        Args:
+            enterprise_customer_uuid (UUID): The UUID of the enterprise customer.
+            start_date (date): The start date.
+            end_date (date): The end date.
+            course_type (str): The course type (OCM or Executive Education) to filter by (optional).
+            course_key (str): The course key to filter by (optional). Defaults to None.
+            budget_uuid (str): The budget UUID to filter by (optional). Defaults to None.
+        """
+        current_filters, current_params, hist_filters, hist_params = self.construct_new_skills_learned_query_filters(
+            enterprise_customer_uuid=enterprise_customer_uuid,
+            start_date=start_date,
+            end_date=end_date,
+            course_key=course_key,
+            course_type=course_type,
+            budget_uuid=budget_uuid,
+        )
+
+        results = run_query(
+            query=self.queries.get_new_skills_learned_count(hist_filters, current_filters),
+            params={**current_params, **hist_params},
         )
 
         return results[0][0] if results else 0
