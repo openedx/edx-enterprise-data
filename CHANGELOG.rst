@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[10.21.6] - 2025-09-23
+---------------------
+  * feat: Add new skills learned metric
+
 [10.21.5] - 2025-09-19
 ---------------------
   * feat: Add upskilled learners metric

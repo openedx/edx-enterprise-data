@@ -179,7 +179,7 @@ class SkillsDailyRollupAdminDashQueries:
         return f"""
             WITH completed_skills AS (
                 SELECT
-                    *
+                    course_key
                 FROM
                     skills_daily_rollup_admin_dash
                 WHERE
@@ -187,19 +187,64 @@ class SkillsDailyRollupAdminDashQueries:
             ),
             passed_learners AS (
                 SELECT
-                    *
+                    email, course_key
                 FROM
                     fact_enrollment_admin_dash
                 WHERE
                     {enrollment_query_filters.to_sql()}
+            ),
+            all_passed_learners_with_skills AS (
+                SELECT
+                    pl.email
+                FROM
+                    passed_learners pl
+                INNER JOIN
+                    completed_skills cs
+                ON
+                    pl.course_key = cs.course_key
             )
             SELECT
-                COUNT(DISTINCT pl.email) AS passed_learners_with_skills
-            FROM
-                passed_learners pl
-            JOIN
-                completed_skills cs
-            ON
-                pl.course_key = cs.course_key;
+                COUNT(*)
+            FROM (
+                SELECT DISTINCT email
+                FROM all_passed_learners_with_skills
+            ) dedup;
+        """
 
+    @staticmethod
+    def get_new_skills_learned_count(
+        historical_skills_filters: QueryFilters,
+        current_skills_filters: QueryFilters
+    ) -> str:
+        """
+        Get the query to fetch the count of new skills learned for an enterprise customer.
+        """
+        return f"""
+            WITH historical_skills AS (
+                SELECT
+                    skill_name
+                FROM
+                    skills_daily_rollup_admin_dash
+                WHERE
+                    {historical_skills_filters.to_sql()}
+                GROUP BY skill_name
+            ),
+            current_period_skills AS (
+                SELECT
+                    skill_name
+                FROM
+                    skills_daily_rollup_admin_dash
+                WHERE
+                    {current_skills_filters.to_sql()}
+                GROUP BY skill_name
+            )
+            SELECT
+                COUNT(*)
+            FROM
+                current_period_skills c
+            LEFT JOIN
+                historical_skills h
+                ON c.skill_name = h.skill_name
+            WHERE
+                h.skill_name IS NULL;
         """
