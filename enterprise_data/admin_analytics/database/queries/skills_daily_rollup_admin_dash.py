@@ -179,7 +179,7 @@ class SkillsDailyRollupAdminDashQueries:
         return f"""
             WITH completed_skills AS (
                 SELECT
-                    *
+                    course_key
                 FROM
                     skills_daily_rollup_admin_dash
                 WHERE
@@ -187,21 +187,28 @@ class SkillsDailyRollupAdminDashQueries:
             ),
             passed_learners AS (
                 SELECT
-                    *
+                    email, course_key
                 FROM
                     fact_enrollment_admin_dash
                 WHERE
                     {enrollment_query_filters.to_sql()}
+            ),
+            all_passed_learners_with_skills AS (
+                SELECT
+                    pl.email
+                FROM
+                    passed_learners pl
+                INNER JOIN
+                    completed_skills cs
+                ON
+                    pl.course_key = cs.course_key
             )
             SELECT
-                COUNT(DISTINCT pl.email) AS passed_learners_with_skills
-            FROM
-                passed_learners pl
-            JOIN
-                completed_skills cs
-            ON
-                pl.course_key = cs.course_key;
-
+                COUNT(*)
+            FROM (
+                SELECT DISTINCT email
+                FROM all_passed_learners_with_skills
+            ) dedup;
         """
 
     @staticmethod
