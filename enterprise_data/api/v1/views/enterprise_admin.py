@@ -319,6 +319,7 @@ class EnterpriseEnrolledCoursesView(APIView):
         end_date = serializer.data.get('end_date', date.today())
         group_uuid = serializer.data.get('group_uuid')
         course_type = serializer.data.get('course_type')
+        budget_uuid = serializer.data.get('budget_uuid')
 
         enrolled_courses = FactEnrollmentAdminDashTable().get_all_enrolled_courses(
             enterprise_customer_uuid=enterprise_uuid,
@@ -326,6 +327,7 @@ class EnterpriseEnrolledCoursesView(APIView):
             end_date=end_date,
             group_uuid=group_uuid,
             course_type=course_type,
+            budget_uuid=budget_uuid,
         )
 
         return Response(enrolled_courses, status=HTTP_200_OK)

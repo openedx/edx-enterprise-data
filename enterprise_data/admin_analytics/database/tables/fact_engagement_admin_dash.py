@@ -382,6 +382,7 @@ class FactEngagementAdminDashTable(BaseTable):
             course_type: Optional[str] = None,
             course_key: Optional[str] = None,
             budget_uuid: Optional[str] = None,
+            group_uuid: Optional[UUID] = None
     ):
         """
         Get the engagement data for leaderboard.
@@ -399,6 +400,7 @@ class FactEngagementAdminDashTable(BaseTable):
             course_type (Optional[str]): The course type (OCM or Executive Education) to filter by (optional).
             course_key (Optional[str]): The course key to filter by (optional).
             budget_uuid (Optional[str]): The budget UUID to filter by (optional).
+            group_uuid (Optional[UUID]): The UUID of a group.
 
         Returns:
             list[dict]: The engagement data for leaderboard.
@@ -416,6 +418,17 @@ class FactEngagementAdminDashTable(BaseTable):
             end_date=end_date,
             equality_filters=equality_filters,
         )
+
+        # If group_uuid is provided, we need to filter by enterprise users in the group.
+        group_filter_response = self.engagement_filters.enterprise_user_query_filter(
+            group_uuid,
+            enterprise_customer_uuid
+        )
+        if group_filter_response is not None:
+            enterprise_user_id_in_filter, enterprise_user_id_params = group_filter_response
+            query_filters.append(enterprise_user_id_in_filter)
+            params.update(enterprise_user_id_params)
+
         engagements = run_query(
             query=self.queries.get_engagement_data_for_leaderboard_query(query_filters),
             params={
@@ -442,6 +455,12 @@ class FactEngagementAdminDashTable(BaseTable):
                 null_filters=null_filters
             )
 
+            # If group_uuid is provided, we need to filter by enterprise users in the group.
+            if group_filter_response is not None:
+                enterprise_user_id_in_filter, enterprise_user_id_params = group_filter_response
+                query_filters.append(enterprise_user_id_in_filter)
+                params.update(enterprise_user_id_params)
+
             engagement_for_null_email = run_query(
                 query=self.queries.get_engagement_data_for_leaderboard_null_email_only_query(query_filters),
                 params=params,
@@ -460,7 +479,8 @@ class FactEngagementAdminDashTable(BaseTable):
             include_null_email: bool,
             course_type: Optional[str] = None,
             course_key: Optional[str] = None,
-            budget_uuid: Optional[str] = None
+            budget_uuid: Optional[str] = None,
+            group_uuid: Optional[UUID] = None
     ):
         """
         Get the completion data for leaderboard.
@@ -477,6 +497,7 @@ class FactEngagementAdminDashTable(BaseTable):
             course_type (Optional[str]): The course type (OCM or Executive Education) to filter by (optional).
             course_key (Optional[str]): The course key to filter by (optional).
             budget_uuid (Optional[str]): The budget UUID to filter by (optional).
+            group_uuid (Optional[UUID]): The UUID of a group.
 
         Returns:
             list[dict]: The engagement data for leaderboard.
@@ -499,6 +520,16 @@ class FactEngagementAdminDashTable(BaseTable):
             in_filters=in_filters,
         )
 
+        # If group_uuid is provided, we need to filter by enterprise users in the group.
+        group_filter_response = self.engagement_filters.enterprise_user_query_filter(
+            group_uuid,
+            enterprise_customer_uuid
+        )
+        if group_filter_response is not None:
+            enterprise_user_id_in_filter, enterprise_user_id_params = group_filter_response
+            query_filters.append(enterprise_user_id_in_filter)
+            params.update(enterprise_user_id_params)
+
         completions = run_query(
             query=self.queries.get_completion_data_for_leaderboard_query(query_filters),
             params=params,
@@ -514,6 +545,13 @@ class FactEngagementAdminDashTable(BaseTable):
                 equality_filters=equality_filters,
                 null_filters=[{'column': 'email', 'null_check': True}]
             )
+
+            # If group_uuid is provided, we need to filter by enterprise users in the group.
+            if group_filter_response is not None:
+                enterprise_user_id_in_filter, enterprise_user_id_params = group_filter_response
+                query_filters.append(enterprise_user_id_in_filter)
+                params.update(enterprise_user_id_params)
+
             completions_for_null_email = run_query(
                 query=self.queries.get_completion_data_for_leaderboard_null_email_only_query(query_filters),
                 params=params,
@@ -533,7 +571,8 @@ class FactEngagementAdminDashTable(BaseTable):
             total_count: int,
             course_type: Optional[str] = None,
             course_key: Optional[str] = None,
-            budget_uuid: Optional[str] = None
+            budget_uuid: Optional[str] = None,
+            group_uuid: Optional[UUID] = None
     ):
         """
         Get the leaderboard data for the given enterprise customer.
@@ -548,6 +587,7 @@ class FactEngagementAdminDashTable(BaseTable):
             course_type (Optional[str]): The course type filter.
             course_key (Optional[str]): The course key filter.
             budget_uuid (Optional[str]): The budget UUID filter.
+            group_uuid (Optional[UUID]): The UUID of a group.
 
         Returns:
             list[dict]: The leaderboard data.
@@ -567,6 +607,7 @@ class FactEngagementAdminDashTable(BaseTable):
             course_type=course_type,
             course_key=course_key,
             budget_uuid=budget_uuid,
+            group_uuid=group_uuid,
         )
         # If there is no data, no need to proceed.
         if not engagement_data:
@@ -584,6 +625,7 @@ class FactEngagementAdminDashTable(BaseTable):
             course_type=course_type,
             course_key=course_key,
             budget_uuid=budget_uuid,
+            group_uuid=group_uuid,
         )
         for completion in completion_data:
             email = completion['email']
@@ -606,7 +648,8 @@ class FactEngagementAdminDashTable(BaseTable):
         end_date: date,
         course_type: Optional[str] = None,
         course_key: Optional[str] = None,
-        budget_uuid: Optional[str] = None
+        budget_uuid: Optional[str] = None,
+        group_uuid: Optional[UUID] = None
     ):
         """
         Get the total number of leaderboard records for the given enterprise customer.
@@ -618,6 +661,7 @@ class FactEngagementAdminDashTable(BaseTable):
             course_type (Optional[str]): The course type filter.
             course_key (Optional[str]): The course key filter.
             budget_uuid (Optional[str]): The budget UUID filter.
+            group_uuid (Optional[UUID]): The UUID of a group.
 
         Returns:
             (int): The total number of leaderboard records.
@@ -628,6 +672,7 @@ class FactEngagementAdminDashTable(BaseTable):
             'subsidy_access_policy_uuid': budget_uuid,
             'is_engaged': 1
         }
+
         query_filters, params = self.build_query_filters_for_leaderboard(
             enterprise_customer_uuid=enterprise_customer_uuid,
             date_column='activity_date',
@@ -635,6 +680,16 @@ class FactEngagementAdminDashTable(BaseTable):
             end_date=end_date,
             equality_filters=equality_filters,
         )
+
+        # If group_uuid is provided, we need to filter by enterprise users in the group.
+        group_filter_response = self.engagement_filters.enterprise_user_query_filter(
+            group_uuid,
+            enterprise_customer_uuid
+        )
+        if group_filter_response is not None:
+            enterprise_user_id_in_filter, enterprise_user_id_params = group_filter_response
+            query_filters.append(enterprise_user_id_in_filter)
+            params.update(enterprise_user_id_params)
 
         results = run_query(
             query=self.queries.get_leaderboard_data_count_query(query_filters),
