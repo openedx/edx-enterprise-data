@@ -31,7 +31,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             course_type: Optional[str] = None,
             course_key: Optional[str] = None,
             budget_uuid: Optional[str] = None
-    ) -> (QueryFilters, dict):
+    ) -> Tuple[QueryFilters, dict]:
         """
         Utility method to get query filters common in most usages below.
 
@@ -627,6 +627,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
         end_date: date,
         group_uuid: Optional[UUID] = None,
         course_type: Optional[str] = None,
+        budget_uuid: Optional[str] = None
     ):
         """
         Get all enrolled courses for the given enterprise customer.
@@ -637,6 +638,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             start_date (date): The start date.
             end_date (date): The end date.
             course_type (Optional[str]): The course type (OCM or Executive Education) to filter by (optional).
+            budget_uuid (Optional[str]): The budget UUID to filter by (optional).
 
         Returns:
             list<dict>: A list of dictionaries where each dict will contain course key and course title.
@@ -647,7 +649,8 @@ class FactEnrollmentAdminDashTable(BaseTable):
             start_date,
             end_date,
             group_uuid=group_uuid,
-            course_type=course_type
+            course_type=course_type,
+            budget_uuid=budget_uuid
         )
 
         return run_query(

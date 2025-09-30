@@ -15,6 +15,11 @@ Unreleased
 ----------
 
 =========================
+[10.21.7] - 2025-09-29
+---------------------
+  * feat: Filter non-skills analytics data by groups
+  * feat: Filter enrolled courses by budget_uuid
+
 [10.21.6] - 2025-09-23
 ---------------------
   * feat: Add new skills learned metric
