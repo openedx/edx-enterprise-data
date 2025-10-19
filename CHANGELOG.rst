@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[10.21.8] - 2025-10-19
+---------------------
+  * chore: upgrade python requirements
+
 [10.21.7] - 2025-09-29
 ---------------------
   * feat: Filter non-skills analytics data by groups

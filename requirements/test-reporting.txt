@@ -8,43 +8,42 @@ amqp==5.3.1
     # via kombu
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.42.30
+awscli==1.42.50
     # via -r requirements/reporting.in
-bcrypt==4.3.0
+bcrypt==5.0.0
     # via paramiko
-billiard==4.2.1
+billiard==4.2.2
     # via celery
-boto3==1.40.30
+boto3==1.40.50
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.40.30
+botocore==1.40.50
     # via
     #   awscli
     #   boto3
     #   s3transfer
     #   snowflake-connector-python
-cachetools==6.2.0
+cachetools==6.2.1
     # via tox
 celery==5.3.6
     # via -r requirements/reporting.in
-certifi==2025.8.3
+certifi==2025.10.5
     # via
     #   py2neo
     #   requests
     #   snowflake-connector-python
-cffi==1.17.1
+cffi==2.0.0
     # via
     #   cryptography
     #   pynacl
-    #   snowflake-connector-python
 chardet==5.2.0
     # via tox
 charset-normalizer==3.4.3
     # via
     #   requests
     #   snowflake-connector-python
-click==8.2.1
+click==8.3.0
     # via
     #   celery
     #   click-didyoumean
@@ -60,9 +59,9 @@ colorama==0.4.6
     # via
     #   awscli
     #   tox
-coverage[toml]==7.10.6
+coverage[toml]==7.10.7
     # via pytest-cov
-cryptography==45.0.7
+cryptography==46.0.2
     # via
     #   -r requirements/reporting.in
     #   paramiko
@@ -75,12 +74,12 @@ distlib==0.4.0
     # via virtualenv
 docutils==0.19
     # via awscli
-filelock==3.19.1
+filelock==3.20.0
     # via
     #   snowflake-connector-python
     #   tox
     #   virtualenv
-idna==3.10
+idna==3.11
     # via
     #   requests
     #   snowflake-connector-python
@@ -88,7 +87,7 @@ iniconfig==2.1.0
     # via pytest
 interchange==2021.0.4
     # via py2neo
-invoke==2.2.0
+invoke==2.2.1
     # via paramiko
 jmespath==1.0.1
     # via
@@ -118,7 +117,7 @@ pgpy==0.6.0
     # via -r requirements/reporting.in
 pillow==11.3.0
     # via pansi
-platformdirs==4.4.0
+platformdirs==4.5.0
     # via
     #   snowflake-connector-python
     #   tox
@@ -145,9 +144,9 @@ pyminizip==0.2.6
     # via -r requirements/reporting.in
 pynacl==1.6.0
     # via paramiko
-pyopenssl==25.2.0
+pyopenssl==25.3.0
     # via snowflake-connector-python
-pyproject-api==1.9.1
+pyproject-api==1.10.0
     # via tox
 pytest==8.0.2
     # via
@@ -164,7 +163,7 @@ pytz==2025.2
     # via
     #   interchange
     #   snowflake-connector-python
-pyyaml==6.0.2
+pyyaml==6.0.3
     # via
     #   awscli
     #   responses
@@ -187,13 +186,13 @@ six==1.17.0
     #   py2neo
     #   python-dateutil
     #   vertica-python
-snowflake-connector-python==3.17.3
+snowflake-connector-python==4.0.0
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
 tomlkit==0.13.3
     # via snowflake-connector-python
-tox==4.30.2
+tox==4.31.0
     # via -r requirements/test-reporting.in
 typing-extensions==4.15.0
     # via
@@ -218,9 +217,9 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==20.34.0
+virtualenv==20.35.3
     # via tox
-wcwidth==0.2.13
+wcwidth==0.2.14
     # via prompt-toolkit
 
 # The following packages are considered to be unsafe in a requirements file:

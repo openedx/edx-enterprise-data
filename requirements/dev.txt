@@ -6,7 +6,7 @@
 #
 amqp==5.3.1
     # via kombu
-asgiref==3.9.1
+asgiref==3.10.0
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
@@ -14,17 +14,17 @@ astroid==3.3.11
     # via
     #   pylint
     #   pylint-celery
-awscli==1.42.30
+awscli==1.42.50
     # via -r requirements/reporting.in
-bcrypt==4.3.0
+bcrypt==5.0.0
     # via paramiko
-billiard==4.2.1
+billiard==4.2.2
     # via celery
-boto3==1.40.30
+boto3==1.40.50
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.40.30
+botocore==1.40.50
     # via
     #   awscli
     #   boto3
@@ -32,20 +32,19 @@ botocore==1.40.30
     #   snowflake-connector-python
 build==1.3.0
     # via pip-tools
-cachetools==6.2.0
+cachetools==6.2.1
     # via tox
 celery==5.3.6
     # via -r requirements/reporting.in
-certifi==2025.8.3
+certifi==2025.10.5
     # via
     #   py2neo
     #   requests
     #   snowflake-connector-python
-cffi==1.17.1
+cffi==2.0.0
     # via
     #   cryptography
     #   pynacl
-    #   snowflake-connector-python
 chardet==5.2.0
     # via
     #   diff-cover
@@ -54,7 +53,7 @@ charset-normalizer==3.4.3
     # via
     #   requests
     #   snowflake-connector-python
-click==8.2.1
+click==8.3.0
     # via
     #   celery
     #   click-didyoumean
@@ -79,7 +78,7 @@ colorama==0.4.6
     # via
     #   awscli
     #   tox
-cryptography==45.0.7
+cryptography==46.0.2
     # via
     #   -r requirements/reporting.in
     #   django-fernet-fields-v2
@@ -89,13 +88,13 @@ cryptography==45.0.7
     #   pyopenssl
     #   secretstorage
     #   snowflake-connector-python
-diff-cover==9.6.0
+diff-cover==9.7.1
     # via -r requirements/dev-enterprise_data.in
 dill==0.4.0
     # via pylint
 distlib==0.4.0
     # via virtualenv
-django==4.2.24
+django==4.2.25
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
@@ -141,7 +140,7 @@ docutils==0.19
     #   readme-renderer
 drf-jwt==1.19.2
     # via edx-drf-extensions
-edx-django-utils==8.0.0
+edx-django-utils==8.0.1
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
@@ -166,24 +165,24 @@ edx-rest-api-client==6.2.0
     # via -r requirements/base.in
 factory-boy==3.3.3
     # via -r requirements/base.in
-faker==37.6.0
+faker==37.11.0
     # via factory-boy
-filelock==3.19.1
+filelock==3.20.0
     # via
     #   snowflake-connector-python
     #   tox
     #   virtualenv
 id==1.5.0
     # via twine
-idna==3.10
+idna==3.11
     # via
     #   requests
     #   snowflake-connector-python
 interchange==2021.0.4
     # via py2neo
-invoke==2.2.0
+invoke==2.2.1
     # via paramiko
-isort==6.0.1
+isort==6.1.0
     # via
     #   -r requirements/quality.in
     #   pylint
@@ -209,15 +208,15 @@ keyring==25.6.0
     # via twine
 kombu==5.5.4
     # via celery
-lxml[html-clean]==6.0.1
+lxml[html-clean]==6.0.2
     # via
     #   edx-i18n-tools
     #   lxml-html-clean
-lxml-html-clean==0.4.2
+lxml-html-clean==0.4.3
     # via lxml
 markdown-it-py==4.0.0
     # via rich
-markupsafe==3.0.2
+markupsafe==3.0.3
     # via jinja2
 mccabe==0.7.0
     # via pylint
@@ -231,7 +230,7 @@ more-itertools==10.8.0
     #   jaraco-functools
 mysql-connector-python==9.4.0
     # via -r requirements/base.in
-nh3==0.3.0
+nh3==0.3.1
     # via readme-renderer
 packaging==25.0
     # via
@@ -252,9 +251,9 @@ pgpy==0.6.0
     # via -r requirements/reporting.in
 pillow==11.3.0
     # via pansi
-pip-tools==7.5.0
+pip-tools==7.5.1
     # via -r requirements/dev-enterprise_data.in
-platformdirs==4.4.0
+platformdirs==4.5.0
     # via
     #   pylint
     #   snowflake-connector-python
@@ -268,7 +267,7 @@ polib==1.2.0
     # via edx-i18n-tools
 prompt-toolkit==3.0.52
     # via click-repl
-psutil==7.0.0
+psutil==7.1.0
     # via edx-django-utils
 py2neo @ https://github.com/overhangio/py2neo/releases/download/2021.2.3/py2neo-2021.2.3.tar.gz
     # via -r requirements/reporting.in
@@ -294,7 +293,7 @@ pyjwt[crypto]==2.10.1
     #   edx-drf-extensions
     #   edx-rest-api-client
     #   snowflake-connector-python
-pylint==3.3.8
+pylint==3.3.9
     # via
     #   edx-lint
     #   pylint-celery
@@ -310,15 +309,15 @@ pylint-plugin-utils==0.9.0
     #   pylint-django
 pyminizip==0.2.6
     # via -r requirements/reporting.in
-pymongo==4.15.0
+pymongo==4.15.3
     # via edx-opaque-keys
 pynacl==1.6.0
     # via
     #   edx-django-utils
     #   paramiko
-pyopenssl==25.2.0
+pyopenssl==25.3.0
     # via snowflake-connector-python
-pyproject-api==1.9.1
+pyproject-api==1.10.0
     # via tox
 pyproject-hooks==1.2.0
     # via
@@ -335,7 +334,7 @@ pytz==2025.2
     # via
     #   interchange
     #   snowflake-connector-python
-pyyaml==6.0.2
+pyyaml==6.0.3
     # via
     #   awscli
     #   code-annotations
@@ -355,7 +354,7 @@ requests-toolbelt==1.0.0
     # via twine
 rfc3986==2.0.0
     # via twine
-rich==14.1.0
+rich==14.2.0
     # via twine
 rsa==4.7.2
     # via awscli
@@ -379,7 +378,7 @@ six==1.17.0
     #   vertica-python
 snowballstemmer==3.0.1
     # via pydocstyle
-snowflake-connector-python==3.17.3
+snowflake-connector-python==4.0.0
     # via -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
@@ -398,7 +397,7 @@ tomlkit==0.13.3
     # via
     #   pylint
     #   snowflake-connector-python
-tox==4.30.2
+tox==4.31.0
     # via -r requirements/dev-enterprise_data.in
 twine==6.2.0
     # via -r requirements/dev-enterprise_data.in
@@ -427,9 +426,9 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==20.34.0
+virtualenv==20.35.3
     # via tox
-wcwidth==0.2.13
+wcwidth==0.2.14
     # via prompt-toolkit
 wheel==0.45.1
     # via
