@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[10.21.11] - 2025-10-22
+-----------------------
+  * chore: upgrade python requirements
+
 [10.21.10] - 2025-10-22
 -----------------------
   * feat: groups filtering for skills analytics data

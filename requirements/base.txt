@@ -10,17 +10,17 @@ asgiref==3.10.0
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.42.50
+awscli==1.42.55
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
 billiard==4.2.2
     # via celery
-boto3==1.40.50
+boto3==1.40.55
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.40.50
+botocore==1.40.55
     # via
     #   awscli
     #   boto3
@@ -37,7 +37,7 @@ cffi==2.0.0
     # via
     #   cryptography
     #   pynacl
-charset-normalizer==3.4.3
+charset-normalizer==3.4.4
     # via
     #   requests
     #   snowflake-connector-python
@@ -56,7 +56,7 @@ click-repl==0.3.0
     # via celery
 colorama==0.4.6
     # via awscli
-cryptography==46.0.2
+cryptography==46.0.3
     # via
     #   -r requirements/reporting.in
     #   django-fernet-fields-v2
@@ -160,13 +160,13 @@ paramiko==4.0.0
     # via -r requirements/reporting.in
 pgpy==0.6.0
     # via -r requirements/reporting.in
-pillow==11.3.0
+pillow==12.0.0
     # via pansi
 platformdirs==4.5.0
     # via snowflake-connector-python
 prompt-toolkit==3.0.52
     # via click-repl
-psutil==7.1.0
+psutil==7.1.1
     # via edx-django-utils
 py2neo @ https://github.com/overhangio/py2neo/releases/download/2021.2.3/py2neo-2021.2.3.tar.gz
     # via -r requirements/reporting.in
