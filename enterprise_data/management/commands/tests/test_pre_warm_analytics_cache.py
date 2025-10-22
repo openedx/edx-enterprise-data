@@ -56,5 +56,5 @@ class Test(TestCase):
 
         call_command('pre_warm_analytics_cache')
 
-        assert mock_get_cache.call_count == 23
-        assert mock_set_cache.call_count == 23
+        assert mock_get_cache.call_count == 26
+        assert mock_set_cache.call_count == 26
