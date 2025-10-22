@@ -119,13 +119,13 @@ class EnterpriseAdminAnalyticsAggregatesView(APIView):
             enterprise_id, start_date, end_date, group_uuid, course_type, course_key, budget_uuid
         )
         unique_skills_gained = SkillsDailyRollupAdminDashTable().get_unique_skills_gained(
-            enterprise_id, start_date, end_date, course_type, course_key, budget_uuid
+            enterprise_id, start_date, end_date, course_type, course_key, budget_uuid, group_uuid
         )
         upskilled_learners = SkillsDailyRollupAdminDashTable().get_upskilled_learners_count(
-            enterprise_id, start_date, end_date, course_type, course_key, budget_uuid
+            enterprise_id, start_date, end_date, course_type, course_key, budget_uuid, group_uuid
         )
         new_skills_learned = SkillsDailyRollupAdminDashTable().get_new_skills_learned_count(
-            enterprise_id, start_date, end_date, course_type, course_key, budget_uuid
+            enterprise_id, start_date, end_date, course_type, course_key, budget_uuid, group_uuid
         )
 
         return Response(
@@ -177,6 +177,7 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
         course_type = serializer.data.get('course_type')
         course_key = serializer.data.get('course_key')
         budget_uuid = serializer.data.get('budget_uuid')
+        group_uuid = serializer.data.get('group_uuid')
 
         with timer('top_skills'):
             skills = SkillsDailyRollupAdminDashTable().get_top_skills(
@@ -186,6 +187,7 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
                 course_type,
                 course_key,
                 budget_uuid,
+                group_uuid,
             )
 
         with timer('top_skills_by_enrollments'):
@@ -196,6 +198,7 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
                 course_type,
                 course_key,
                 budget_uuid,
+                group_uuid,
             )
         with timer('top_skills_by_completions'):
             top_skills_by_completions = SkillsDailyRollupAdminDashTable().get_top_skills_by_completion(
@@ -205,6 +208,7 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
                 course_type,
                 course_key,
                 budget_uuid,
+                group_uuid,
             )
 
         with timer('skills_by_learning_hours'):
@@ -215,6 +219,7 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
                 course_key,
                 course_type,
                 budget_uuid,
+                group_uuid,
             )
 
         response_data = {

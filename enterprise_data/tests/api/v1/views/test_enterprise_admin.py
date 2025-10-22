@@ -61,6 +61,17 @@ class TestEnterpriseAdminAnalyticsAggregatesView(JWTTestMixin, APITransactionTes
 
         self.mocked_get_enterprise_customer = mocked_get_enterprise_customer.start()
         self.addCleanup(mocked_get_enterprise_customer.stop)
+
+        mock.patch.object(SkillsDailyRollupAdminDashTable, "is_group_uuid_field_present", return_value=False)
+
+        mock_is_group_uuid_field_present = mock.patch.object(
+            SkillsDailyRollupAdminDashTable,
+            "is_group_uuid_field_present",
+            return_value=False,
+        )
+        mock_is_group_uuid_field_present.start()
+        self.addCleanup(mock_is_group_uuid_field_present.stop)
+
         self.enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
         self.set_jwt_cookie()
         self.enrollment_queries = FactEnrollmentAdminDashQueries()
@@ -156,6 +167,9 @@ class TestEnterpriseAdminAnalyticsAggregatesView(JWTTestMixin, APITransactionTes
                         assert 'last_updated_at' in response.json()
                         assert 'min_enrollment_date' in response.json()
                         assert 'max_enrollment_date' in response.json()
+                        assert 'unique_skills_gained' in response.json()
+                        assert 'upskilled_learners' in response.json()
+                        assert 'new_skills_learned' in response.json()
 
 
 @ddt.ddt
