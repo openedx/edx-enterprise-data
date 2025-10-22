@@ -24,6 +24,34 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
     """
     queries = SkillsDailyRollupAdminDashQueries()
 
+    @cache_it(timeout=120)  # Cache for 2 minutes
+    def is_group_uuid_field_present(self):
+        """
+        Check if `group_uuid` column is present in a `skills_daily_rollup_admin_dash` table schema.
+        """
+        COLUMN_NAME = 'group_uuid'
+        query = """
+            SELECT
+                distinct column_name
+            FROM
+                information_schema.columns
+            WHERE
+                table_name=%(table_name)s AND column_name=%(column_name)s;
+        """
+        params = {
+            'table_name': 'skills_daily_rollup_admin_dash',
+            'column_name': COLUMN_NAME,
+        }
+        result = run_query(
+            query=query,
+            params=params,
+            as_dict=True,
+        )
+        return (
+            bool(result) and
+            result[0].get("COLUMN_NAME") == COLUMN_NAME
+        )
+
     def build_query_filters(
         self,
         enterprise_customer_uuid: UUID,
@@ -33,6 +61,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         course_key: Optional[str] = None,
         budget_uuid: Optional[str] = None,
         include_date_range_filter: Optional[bool] = True,
+        group_uuid: Optional[UUID] = None,
     ):
         """
         Build query filters and parameters for enterprise analytics queries.
@@ -45,6 +74,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             course_key (str, optional): The course key to filter by.
             budget_uuid (str, optional): The budget UUID to filter by.
             include_date_range_filter (bool, optional): Whether to include the date range filter. Defaults to True.
+            group_uuid (UUID, optional): The group UUID to filter by. Defaults to None.
 
         Returns:
             tuple: A tuple containing:
@@ -94,6 +124,17 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             ))
             optional_params['budget_uuid'] = budget_uuid
 
+        # TODO: Remove `is_group_uuid_field_present` check and refactor this code block
+        # once we are sure that `skills_daily_rollup_admin_dash` table has `group_uuid` field.
+        if self.is_group_uuid_field_present():
+            default_group_uuid = '00000000000000000000000000000000'
+            group_uuid_value = group_uuid or default_group_uuid
+            query_filters.append(EqualQueryFilter(
+                column='group_uuid',
+                value_placeholder='group_uuid',
+            ))
+            optional_params['group_uuid'] = group_uuid_value
+
         params = {**default_params, **optional_params}
         return query_filters, params
 
@@ -106,6 +147,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         course_type: Optional[str] = None,
         course_key: Optional[str] = None,
         budget_uuid: Optional[str] = None,
+        group_uuid: Optional[str] = None,
     ):
         """
         Get the top skills for the given enterprise customer.
@@ -117,6 +159,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             course_type (str): The course type (OCM or Executive Education) to filter by (optional).
             course_key (str): The course key to filter by (optional).
             budget_uuid (str): The budget UUID to filter by (optional).
+            group_uuid (str): The group UUID to filter by (optional).
 
         Returns:
             list<dict>: A list of dictionaries containing the skill_name, skill_type, enrolls and completions.
@@ -128,6 +171,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             course_type=course_type,
             course_key=course_key,
             budget_uuid=budget_uuid,
+            group_uuid=group_uuid,
         )
         return run_query(
             query=self.queries.get_top_skills(query_filters),
@@ -144,6 +188,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         course_type: Optional[str] = None,
         course_key: Optional[str] = None,
         budget_uuid: Optional[str] = None,
+        group_uuid: Optional[str] = None,
     ):
         """
         Get the top skills by enrollments for the given enterprise customer.
@@ -155,6 +200,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             course_type (str): The course type (OCM or Executive Education) to filter by (optional).
             course_key (str): The course key to filter by (optional).
             budget_uuid (str): The budget UUID to filter by (optional).
+            group_uuid (str): The group UUID to filter by (optional).
 
         Returns:
             list<dict>: A list of dictionaries containing the skill_name, subject_name, count.
@@ -166,6 +212,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             course_type=course_type,
             course_key=course_key,
             budget_uuid=budget_uuid,
+            group_uuid=group_uuid,
         )
         return run_query(
             query=self.queries.get_top_skills_by_enrollment(query_filters),
@@ -182,6 +229,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         course_type: Optional[str] = None,
         course_key: Optional[str] = None,
         budget_uuid: Optional[str] = None,
+        group_uuid: Optional[str] = None,
     ):
         """
         Get the top skills by completion for the given enterprise customer.
@@ -193,6 +241,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             course_type (str): The course type (OCM or Executive Education) to filter by (optional).
             course_key (str): The course key to filter by (optional).
             budget_uuid (str): The budget UUID to filter by (optional).
+            group_uuid (str): The group UUID to filter by (optional).
 
         Returns:
             list<dict>: A list of dictionaries containing the skill_name, subject_name, count.
@@ -204,6 +253,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             course_type=course_type,
             course_key=course_key,
             budget_uuid=budget_uuid,
+            group_uuid=group_uuid,
         )
         return run_query(
             query=self.queries.get_top_skills_by_completion(query_filters),
@@ -220,6 +270,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         course_key: Optional[str] = None,
         course_type: Optional[str] = None,
         budget_uuid: Optional[str] = None,
+        group_uuid: Optional[str] = None,
     ):
         """
         Get the skills by learning hours for the given enterprise customer.
@@ -231,6 +282,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             course_key (str): The course key to filter by (optional).
             course_type (str): The course type (OCM or Executive Education) to filter by (optional).
             budget_uuid (str): The budget UUID to filter by (optional).
+            group_uuid (str): The group UUID to filter by (optional).
 
         Returns:
             list<dict>: A list of dictionaries containing the skill_name, subject_name, count.
@@ -242,6 +294,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             course_key=course_key,
             course_type=course_type,
             budget_uuid=budget_uuid,
+            group_uuid=group_uuid,
         )
         return run_query(
             query=self.queries.get_skills_by_learning_hours(query_filters),
@@ -258,6 +311,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         course_type: Optional[str] = None,
         course_key: Optional[str] = None,
         budget_uuid: Optional[str] = None,
+        group_uuid: Optional[str] = None,
     ):
         """
         Get the unique skills gained for the given enterprise customer.
@@ -269,6 +323,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             course_type (str): The course type (OCM or Executive Education) to filter by (optional).
             course_key (str): The course key to filter by (optional). Defaults to None.
             budget_uuid (str): The budget UUID to filter by (optional). Defaults to None.
+            group_uuid (str): The group UUID to filter by (optional). Defaults to None.
         """
         query_filters, params = self.build_query_filters(
             enterprise_customer_uuid=enterprise_customer_uuid,
@@ -277,6 +332,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             course_key=course_key,
             course_type=course_type,
             budget_uuid=budget_uuid,
+            group_uuid=group_uuid,
         )
 
         query_filters.append(ComparisonQueryFilter(
@@ -300,6 +356,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         course_type: Optional[str] = None,
         course_key: Optional[str] = None,
         budget_uuid: Optional[str] = None,
+        group_uuid: Optional[str] = None,
     ):
         """
         Construct query filters and parameters for upskilled learners query.
@@ -311,6 +368,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             course_type (str): The course type (OCM or Executive Education) to filter by (optional).
             course_key (str): The course key to filter by (optional). Defaults to None.
             budget_uuid (str): The budget UUID to filter by (optional). Defaults to None.
+            group_uuid (str): The group UUID to filter by (optional). Defaults to None.
         """
         skills_query_filters, skills_params = self.build_query_filters(
             enterprise_customer_uuid=enterprise_customer_uuid,
@@ -319,6 +377,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             course_key=course_key,
             course_type=course_type,
             budget_uuid=budget_uuid,
+            group_uuid=group_uuid,
         )
         skills_query_filters.append(ComparisonQueryFilter(
             column='completions',
@@ -351,6 +410,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         course_type: Optional[str] = None,
         course_key: Optional[str] = None,
         budget_uuid: Optional[str] = None,
+        group_uuid: Optional[str] = None,
     ):
         """
         Get the count of upskilled learners for the given enterprise customer.
@@ -362,6 +422,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             course_type (str): The course type (OCM or Executive Education) to filter by (optional).
             course_key (str): The course key to filter by (optional). Defaults to None.
             budget_uuid (str): The budget UUID to filter by (optional). Defaults to None.
+            group_uuid (str): The group UUID to filter by (optional). Defaults to None.
         """
         skills_filters, skills_params, enroll_filters, enroll_params = self.construct_upskill_learners_query_filters(
             enterprise_customer_uuid=enterprise_customer_uuid,
@@ -370,6 +431,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             course_key=course_key,
             course_type=course_type,
             budget_uuid=budget_uuid,
+            group_uuid=group_uuid,
         )
 
         results = run_query(
@@ -387,6 +449,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         course_type: Optional[str] = None,
         course_key: Optional[str] = None,
         budget_uuid: Optional[str] = None,
+        group_uuid: Optional[str] = None,
     ):
         """
         Construct query filters and parameters for new skills learned query.
@@ -398,6 +461,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             course_type (str): The course type (OCM or Executive Education) to filter by (optional).
             course_key (str): The course key to filter by (optional). Defaults to None.
             budget_uuid (str): The budget UUID to filter by (optional). Defaults to None.
+            group_uuid (str): The group UUID to filter by (optional). Defaults to None.
         """
         common_query_filters = QueryFilters([
             ComparisonQueryFilter(
@@ -419,6 +483,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             course_key=course_key,
             course_type=course_type,
             budget_uuid=budget_uuid,
+            group_uuid=group_uuid,
         )
         current_skills_filters.extend(common_query_filters)
 
@@ -451,6 +516,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         course_type: Optional[str] = None,
         course_key: Optional[str] = None,
         budget_uuid: Optional[str] = None,
+        group_uuid: Optional[str] = None,
     ):
         """
         Get the count of new skills learned for the given enterprise customer.
@@ -462,6 +528,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             course_type (str): The course type (OCM or Executive Education) to filter by (optional).
             course_key (str): The course key to filter by (optional). Defaults to None.
             budget_uuid (str): The budget UUID to filter by (optional). Defaults to None.
+            group_uuid (str): The group UUID to filter by (optional). Defaults to None.
         """
         current_filters, current_params, hist_filters, hist_params = self.construct_new_skills_learned_query_filters(
             enterprise_customer_uuid=enterprise_customer_uuid,
@@ -470,6 +537,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             course_key=course_key,
             course_type=course_type,
             budget_uuid=budget_uuid,
+            group_uuid=group_uuid,
         )
 
         results = run_query(
