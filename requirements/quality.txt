@@ -14,17 +14,17 @@ astroid==3.3.11
     # via
     #   pylint
     #   pylint-celery
-awscli==1.42.55
+awscli==1.42.59
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
 billiard==4.2.2
     # via celery
-boto3==1.40.55
+boto3==1.40.59
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.40.55
+botocore==1.40.59
     # via
     #   awscli
     #   boto3
@@ -172,7 +172,7 @@ factory-boy==3.3.3
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==37.11.0
+faker==37.12.0
     # via factory-boy
 filelock==3.20.0
     # via
@@ -243,7 +243,7 @@ more-itertools==10.8.0
     # via
     #   jaraco-classes
     #   jaraco-functools
-mysql-connector-python==9.4.0
+mysql-connector-python==9.5.0
     # via -r requirements/base.in
 nh3==0.3.1
     # via readme-renderer
@@ -285,7 +285,7 @@ polib==1.2.0
     # via edx-i18n-tools
 prompt-toolkit==3.0.52
     # via click-repl
-psutil==7.1.1
+psutil==7.1.2
     # via edx-django-utils
 py2neo @ https://github.com/overhangio/py2neo/releases/download/2021.2.3/py2neo-2021.2.3.tar.gz
     # via -r requirements/reporting.in
@@ -431,7 +431,7 @@ tomlkit==0.13.3
     # via
     #   pylint
     #   snowflake-connector-python
-tox==4.31.0
+tox==4.32.0
     # via -r requirements/dev-enterprise_data.in
 twine==6.2.0
     # via -r requirements/dev-enterprise_data.in
