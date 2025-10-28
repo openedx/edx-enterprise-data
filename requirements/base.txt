@@ -10,17 +10,17 @@ asgiref==3.10.0
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.42.55
+awscli==1.42.59
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
 billiard==4.2.2
     # via celery
-boto3==1.40.55
+boto3==1.40.59
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.40.55
+botocore==1.40.59
     # via
     #   awscli
     #   boto3
@@ -127,7 +127,7 @@ edx-rest-api-client==6.2.0
     # via -r requirements/base.in
 factory-boy==3.3.3
     # via -r requirements/base.in
-faker==37.11.0
+faker==37.12.0
     # via factory-boy
 filelock==3.20.0
     # via snowflake-connector-python
@@ -147,7 +147,7 @@ kombu==5.5.4
     # via celery
 monotonic==1.6
     # via py2neo
-mysql-connector-python==9.4.0
+mysql-connector-python==9.5.0
     # via -r requirements/base.in
 packaging==25.0
     # via
@@ -166,7 +166,7 @@ platformdirs==4.5.0
     # via snowflake-connector-python
 prompt-toolkit==3.0.52
     # via click-repl
-psutil==7.1.1
+psutil==7.1.2
     # via edx-django-utils
 py2neo @ https://github.com/overhangio/py2neo/releases/download/2021.2.3/py2neo-2021.2.3.tar.gz
     # via -r requirements/reporting.in

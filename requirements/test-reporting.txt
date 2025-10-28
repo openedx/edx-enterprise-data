@@ -8,17 +8,17 @@ amqp==5.3.1
     # via kombu
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.42.55
+awscli==1.42.59
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
 billiard==4.2.2
     # via celery
-boto3==1.40.55
+boto3==1.40.59
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.40.55
+botocore==1.40.59
     # via
     #   awscli
     #   boto3
@@ -192,7 +192,7 @@ sortedcontainers==2.4.0
     # via snowflake-connector-python
 tomlkit==0.13.3
     # via snowflake-connector-python
-tox==4.31.0
+tox==4.32.0
     # via -r requirements/test-reporting.in
 typing-extensions==4.15.0
     # via
