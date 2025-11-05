@@ -14,17 +14,17 @@ astroid==3.3.11
     # via
     #   pylint
     #   pylint-celery
-awscli==1.42.59
+awscli==1.42.66
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
 billiard==4.2.2
     # via celery
-boto3==1.40.59
+boto3==1.40.66
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.40.59
+botocore==1.40.66
     # via
     #   awscli
     #   boto3
@@ -98,7 +98,7 @@ dill==0.4.0
     # via pylint
 distlib==0.4.0
     # via virtualenv
-django==4.2.25
+django==5.2.8
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
@@ -119,7 +119,7 @@ django-crum==0.7.9
     #   edx-rbac
 django-fernet-fields-v2==0.9
     # via -r requirements/base.in
-django-filter==25.1
+django-filter==25.2
     # via -r requirements/base.in
 django-model-utils==5.0.0
     # via
@@ -219,7 +219,7 @@ jmespath==1.0.1
     #   botocore
 keyring==25.6.0
     # via twine
-kombu==5.5.4
+kombu==5.6.0
     # via celery
 lxml[html-clean]==6.0.2
     # via
@@ -245,7 +245,7 @@ more-itertools==10.8.0
     #   jaraco-functools
 mysql-connector-python==9.5.0
     # via -r requirements/base.in
-nh3==0.3.1
+nh3==0.3.2
     # via readme-renderer
 packaging==25.0
     # via
@@ -285,7 +285,7 @@ polib==1.2.0
     # via edx-i18n-tools
 prompt-toolkit==3.0.52
     # via click-repl
-psutil==7.1.2
+psutil==7.1.3
     # via edx-django-utils
 py2neo @ https://github.com/overhangio/py2neo/releases/download/2021.2.3/py2neo-2021.2.3.tar.gz
     # via -r requirements/reporting.in
@@ -421,7 +421,7 @@ stevedore==5.5.0
     #   code-annotations
     #   edx-django-utils
     #   edx-opaque-keys
-testfixtures==9.2.0
+testfixtures==10.0.0
     # via
     #   -r requirements/quality.in
     #   -r requirements/test.in
@@ -461,7 +461,7 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==20.35.3
+virtualenv==20.35.4
     # via tox
 wcwidth==0.2.14
     # via prompt-toolkit
