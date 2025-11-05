@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[10.22.0] - 2025-11-05
+-----------------------
+  * build: django 5.2 upgrade, fix python upgrade action
+
 [10.21.12] - 2025-10-28
 -----------------------
   * chore: upgrade python requirements
