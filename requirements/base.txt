@@ -10,17 +10,17 @@ asgiref==3.10.0
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.42.59
+awscli==1.42.66
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
 billiard==4.2.2
     # via celery
-boto3==1.40.59
+boto3==1.40.66
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.40.59
+botocore==1.40.66
     # via
     #   awscli
     #   boto3
@@ -65,7 +65,7 @@ cryptography==46.0.3
     #   pyjwt
     #   pyopenssl
     #   snowflake-connector-python
-django==4.2.25
+django==5.2.8
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
@@ -85,7 +85,7 @@ django-crum==0.7.9
     #   edx-rbac
 django-fernet-fields-v2==0.9
     # via -r requirements/base.in
-django-filter==25.1
+django-filter==25.2
     # via -r requirements/base.in
 django-model-utils==5.0.0
     # via
@@ -143,7 +143,7 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-kombu==5.5.4
+kombu==5.6.0
     # via celery
 monotonic==1.6
     # via py2neo
@@ -166,7 +166,7 @@ platformdirs==4.5.0
     # via snowflake-connector-python
 prompt-toolkit==3.0.52
     # via click-repl
-psutil==7.1.2
+psutil==7.1.3
     # via edx-django-utils
 py2neo @ https://github.com/overhangio/py2neo/releases/download/2021.2.3/py2neo-2021.2.3.tar.gz
     # via -r requirements/reporting.in
