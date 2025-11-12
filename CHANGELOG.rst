@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[10.21.13] - 2025-11-11
+-----------------------
+  * fix: remove temporary group_uuid field presence check
+
 [10.21.12] - 2025-10-28
 -----------------------
   * chore: upgrade python requirements

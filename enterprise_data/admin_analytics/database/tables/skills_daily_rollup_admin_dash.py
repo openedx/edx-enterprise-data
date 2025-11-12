@@ -24,34 +24,6 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
     """
     queries = SkillsDailyRollupAdminDashQueries()
 
-    @cache_it(timeout=120)  # Cache for 2 minutes
-    def is_group_uuid_field_present(self):
-        """
-        Check if `group_uuid` column is present in a `skills_daily_rollup_admin_dash` table schema.
-        """
-        COLUMN_NAME = 'group_uuid'
-        query = """
-            SELECT
-                distinct column_name
-            FROM
-                information_schema.columns
-            WHERE
-                table_name=%(table_name)s AND column_name=%(column_name)s;
-        """
-        params = {
-            'table_name': 'skills_daily_rollup_admin_dash',
-            'column_name': COLUMN_NAME,
-        }
-        result = run_query(
-            query=query,
-            params=params,
-            as_dict=True,
-        )
-        return (
-            bool(result) and
-            result[0].get("COLUMN_NAME") == COLUMN_NAME
-        )
-
     def build_query_filters(
         self,
         enterprise_customer_uuid: UUID,
@@ -124,16 +96,14 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             ))
             optional_params['budget_uuid'] = budget_uuid
 
-        # TODO: Remove `is_group_uuid_field_present` check and refactor this code block
-        # once we are sure that `skills_daily_rollup_admin_dash` table has `group_uuid` field.
-        if self.is_group_uuid_field_present():
-            default_group_uuid = '00000000000000000000000000000000'
-            group_uuid_value = group_uuid or default_group_uuid
-            query_filters.append(EqualQueryFilter(
-                column='group_uuid',
-                value_placeholder='group_uuid',
-            ))
-            optional_params['group_uuid'] = group_uuid_value
+        # See https://2u-internal.atlassian.net/browse/DPMF-994?focusedCommentId=5688616 for context on default value
+        default_group_uuid = '00000000000000000000000000000000'
+        group_uuid_value = group_uuid or default_group_uuid
+        query_filters.append(EqualQueryFilter(
+            column='enterprise_group_uuid',
+            value_placeholder='enterprise_group_uuid',
+        ))
+        optional_params['enterprise_group_uuid'] = group_uuid_value
 
         params = {**default_params, **optional_params}
         return query_filters, params
