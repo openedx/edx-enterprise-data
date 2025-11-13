@@ -342,7 +342,7 @@ class AdvanceAnalyticsQueryParamSerializer(serializers.Serializer):  # pylint: d
     response_type = serializers.CharField(required=False)
     page = serializers.IntegerField(required=False, min_value=1)
     page_size = serializers.IntegerField(required=False, min_value=2)
-    group_uuid = serializers.UUIDField(required=False)
+    group_uuid = serializers.UUIDField(required=False, format='hex')
     course_type = serializers.ChoiceField(
         choices=[course_type.value for course_type in CourseType],
         required=False,
