@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[10.21.14] - 2025-11-13
+-----------------------
+  * fix: use group uuid in hex format for filtering
+
 [10.21.13] - 2025-11-11
 -----------------------
   * fix: remove temporary group_uuid field presence check
