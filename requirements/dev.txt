@@ -14,17 +14,17 @@ astroid==3.3.11
     # via
     #   pylint
     #   pylint-celery
-awscli==1.42.59
+awscli==1.42.74
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
-billiard==4.2.2
+billiard==4.2.3
     # via celery
-boto3==1.40.59
+boto3==1.40.74
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.40.59
+botocore==1.40.74
     # via
     #   awscli
     #   boto3
@@ -32,11 +32,11 @@ botocore==1.40.59
     #   snowflake-connector-python
 build==1.3.0
     # via pip-tools
-cachetools==6.2.1
+cachetools==6.2.2
     # via tox
 celery==5.3.6
     # via -r requirements/reporting.in
-certifi==2025.10.5
+certifi==2025.11.12
     # via
     #   py2neo
     #   requests
@@ -53,7 +53,7 @@ charset-normalizer==3.4.4
     # via
     #   requests
     #   snowflake-connector-python
-click==8.3.0
+click==8.3.1
     # via
     #   celery
     #   click-didyoumean
@@ -88,13 +88,13 @@ cryptography==46.0.3
     #   pyopenssl
     #   secretstorage
     #   snowflake-connector-python
-diff-cover==9.7.1
+diff-cover==9.7.2
     # via -r requirements/dev-enterprise_data.in
 dill==0.4.0
     # via pylint
 distlib==0.4.0
     # via virtualenv
-django==4.2.25
+django==5.2.8
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
@@ -115,7 +115,7 @@ django-crum==0.7.9
     #   edx-rbac
 django-fernet-fields-v2==0.9
     # via -r requirements/base.in
-django-filter==25.1
+django-filter==25.2
     # via -r requirements/base.in
 django-model-utils==5.0.0
     # via
@@ -165,7 +165,7 @@ edx-rest-api-client==6.2.0
     # via -r requirements/base.in
 factory-boy==3.3.3
     # via -r requirements/base.in
-faker==37.12.0
+faker==38.0.0
     # via factory-boy
 filelock==3.20.0
     # via
@@ -204,9 +204,9 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-keyring==25.6.0
+keyring==25.7.0
     # via twine
-kombu==5.5.4
+kombu==5.6.0
     # via celery
 lxml[html-clean]==6.0.2
     # via
@@ -230,7 +230,7 @@ more-itertools==10.8.0
     #   jaraco-functools
 mysql-connector-python==9.5.0
     # via -r requirements/base.in
-nh3==0.3.1
+nh3==0.3.2
     # via readme-renderer
 packaging==25.0
     # via
@@ -251,7 +251,7 @@ pgpy==0.6.0
     # via -r requirements/reporting.in
 pillow==12.0.0
     # via pansi
-pip-tools==7.5.1
+pip-tools==7.5.2
     # via -r requirements/dev-enterprise_data.in
 platformdirs==4.5.0
     # via
@@ -267,7 +267,7 @@ polib==1.2.0
     # via edx-i18n-tools
 prompt-toolkit==3.0.52
     # via click-repl
-psutil==7.1.2
+psutil==7.1.3
     # via edx-django-utils
 py2neo @ https://github.com/overhangio/py2neo/releases/download/2021.2.3/py2neo-2021.2.3.tar.gz
     # via -r requirements/reporting.in
@@ -309,9 +309,9 @@ pylint-plugin-utils==0.9.0
     #   pylint-django
 pyminizip==0.2.6
     # via -r requirements/reporting.in
-pymongo==4.15.3
+pymongo==4.15.4
     # via edx-opaque-keys
-pynacl==1.6.0
+pynacl==1.6.1
     # via
     #   edx-django-utils
     #   paramiko
@@ -364,7 +364,7 @@ s3transfer==0.14.0
     # via
     #   awscli
     #   boto3
-secretstorage==3.4.0
+secretstorage==3.4.1
     # via keyring
 semantic-version==2.10.0
     # via edx-drf-extensions
@@ -389,7 +389,7 @@ stevedore==5.5.0
     #   code-annotations
     #   edx-django-utils
     #   edx-opaque-keys
-testfixtures==9.2.0
+testfixtures==10.0.0
     # via -r requirements/quality.in
 text-unidecode==1.3
     # via python-slugify
@@ -426,7 +426,7 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==20.35.3
+virtualenv==20.35.4
     # via tox
 wcwidth==0.2.14
     # via prompt-toolkit
