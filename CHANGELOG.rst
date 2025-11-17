@@ -15,6 +15,11 @@ Unreleased
 ----------
 
 =========================
+[10.21.15] - 2025-11-14
+---------------------
+* fix: pin `pip<25.3` to resolve make upgrade build failure
+* See issue https://github.com/openedx/public-engineering/issues/440 for details.
+---------------------
 [10.21.14] - 2025-11-13
 -----------------------
   * fix: use group uuid in hex format for filtering

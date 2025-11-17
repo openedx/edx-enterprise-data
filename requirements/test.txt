@@ -10,17 +10,17 @@ asgiref==3.10.0
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.42.59
+awscli==1.42.74
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
-billiard==4.2.2
+billiard==4.2.3
     # via celery
-boto3==1.40.59
+boto3==1.40.74
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.40.59
+botocore==1.40.74
     # via
     #   awscli
     #   boto3
@@ -28,7 +28,7 @@ botocore==1.40.59
     #   snowflake-connector-python
 celery==5.3.6
     # via -r requirements/reporting.in
-certifi==2025.10.5
+certifi==2025.11.12
     # via
     #   py2neo
     #   requests
@@ -41,7 +41,7 @@ charset-normalizer==3.4.4
     # via
     #   requests
     #   snowflake-connector-python
-click==8.3.0
+click==8.3.1
     # via
     #   celery
     #   click-didyoumean
@@ -56,7 +56,7 @@ click-repl==0.3.0
     # via celery
 colorama==0.4.6
     # via awscli
-coverage[toml]==7.11.0
+coverage[toml]==7.11.3
     # via pytest-cov
 cryptography==46.0.3
     # via
@@ -69,7 +69,7 @@ cryptography==46.0.3
     #   snowflake-connector-python
 ddt==1.7.2
     # via -r requirements/test.in
-django==4.2.25
+django==5.2.8
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
@@ -89,7 +89,7 @@ django-crum==0.7.9
     #   edx-rbac
 django-fernet-fields-v2==0.9
     # via -r requirements/base.in
-django-filter==25.1
+django-filter==25.2
     # via -r requirements/base.in
 django-model-utils==5.0.0
     # via
@@ -134,7 +134,7 @@ factory-boy==3.3.3
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==37.12.0
+faker==38.0.0
     # via factory-boy
 filelock==3.20.0
     # via snowflake-connector-python
@@ -156,7 +156,7 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-kombu==5.5.4
+kombu==5.6.0
     # via celery
 mock==5.2.0
     # via -r requirements/test.in
@@ -186,7 +186,7 @@ pluggy==1.6.0
     #   pytest-cov
 prompt-toolkit==3.0.52
     # via click-repl
-psutil==7.1.2
+psutil==7.1.3
     # via edx-django-utils
 py2neo @ https://github.com/overhangio/py2neo/releases/download/2021.2.3/py2neo-2021.2.3.tar.gz
     # via -r requirements/reporting.in
@@ -208,15 +208,15 @@ pyjwt[crypto]==2.10.1
     #   snowflake-connector-python
 pyminizip==0.2.6
     # via -r requirements/reporting.in
-pymongo==4.15.3
+pymongo==4.15.4
     # via edx-opaque-keys
-pynacl==1.6.0
+pynacl==1.6.1
     # via
     #   edx-django-utils
     #   paramiko
 pyopenssl==25.3.0
     # via snowflake-connector-python
-pytest==8.4.2
+pytest==9.0.1
     # via
     #   pytest-cov
     #   pytest-django
@@ -274,7 +274,7 @@ stevedore==5.5.0
     # via
     #   edx-django-utils
     #   edx-opaque-keys
-testfixtures==9.2.0
+testfixtures==10.0.0
     # via -r requirements/test.in
 tomlkit==0.13.3
     # via snowflake-connector-python
