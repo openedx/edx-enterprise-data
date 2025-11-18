@@ -181,6 +181,11 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         if group_uuid:
             queryset = self.filter_by_group_uuid(queryset, group_uuid)
 
+        search_enrollment = query_filters.get('search_enrollment')
+
+        if search_enrollment:
+            queryset = self.filter_search_enrollment(queryset, search_enrollment)
+
         return queryset
 
     def filter_by_group_uuid(self, queryset, group_uuid):
@@ -303,6 +308,17 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         created_max = queryset.aggregate(Max('created'))
         return created_max['created__max']
 
+    def filter_search_enrollment(self, queryset, search_enrollment):
+        now=timezone.localdate()
+
+        if search_enrollment == 'enrolled':
+            return queryset.filter(
+                Q(unenrollment_date__isnull=True) | Q(unenrollment_date__gt=now)
+            )
+        elif search_enrollment == 'unenrolled':
+            return queryset.filter(unenrollment_date__lte=now)
+        return queryset
+    
     @action(detail=False)
     def overview(self, request, **kwargs):
         """
