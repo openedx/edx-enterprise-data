@@ -408,143 +408,112 @@ class TestSearchEnrollmentFilter(JWTTestMixin, APITransactionTestCase):
             kwargs={'enterprise_id': self.enterprise_id}
         )
 
-    # ------------------------------------------------------
-    # TEST: enrolled = users with null unenrollment_date OR future unenrollment_date
-    # ------------------------------------------------------
+    # -----------------------------
+    # 1. Test for enrolled learners
+    # -----------------------------
     def test_filter_enrolled(self):
+        # Create enrolled learner (unenrollment_date = NULL)
         enterprise_learner = EnterpriseLearnerFactory(
             enterprise_customer_uuid=self.enterprise_id
         )
-        now = timezone.now()
 
-        enrolled_null = EnterpriseLearnerEnrollmentFactory(
+        enrolled = EnterpriseLearnerEnrollmentFactory(
+            enterprise_user=enterprise_learner, 
             enterprise_customer_uuid=self.enterprise_id,
-            enterprise_user_id=enterprise_learner.enterprise_user_id,
-            is_consent_granted=True,
-            unenrollment_date=None
+            unenrollment_date=None,
         )
-        enrolled_future = EnterpriseLearnerEnrollmentFactory(
-            enterprise_customer_uuid=self.enterprise_id,
-            enterprise_user_id=enterprise_learner.enterprise_user_id,
-            is_consent_granted=True,
-            unenrollment_date=now + datetime.timedelta(days=3)
-        )
-# Past unenrollment — should not appear
+
+        # Create unenrolled learner (unenrollment_date != NULL)
         EnterpriseLearnerEnrollmentFactory(
+            enterprise_user=enterprise_learner,
             enterprise_customer_uuid=self.enterprise_id,
-            enterprise_user_id=enterprise_learner.enterprise_user_id,
-            is_consent_granted=True,
-            unenrollment_date=now - datetime.timedelta(days=2)
+            unenrollment_date=timezone.now(),
         )
 
-        response = self.client.get(self._get_url(), data={'search_enrollment': 'enrolled'})
-        results = response.json()['results']
-
-        self.assertEqual(len(results), 2)
-        ids = [r['enrollment_id'] for r in results]
-        self.assertIn(enrolled_null.enrollment_id, ids)
-        self.assertIn(enrolled_future.enrollment_id, ids)
-        # ------------------------------------------------------
-    # TEST: unenrolled = users with unenrollment_date <= now
-    # ------------------------------------------------------
-    def test_filter_unenrolled(self):
-        enterprise_learner = EnterpriseLearnerFactory(
-            enterprise_customer_uuid=self.enterprise_id
-        )
-        now = timezone.now()
-
-        unenrolled = EnterpriseLearnerEnrollmentFactory(
-            enterprise_customer_uuid=self.enterprise_id,
-            enterprise_user_id=enterprise_learner.enterprise_user_id,
-            is_consent_granted=True,
-            unenrollment_date=now - datetime.timedelta(days=1)
-        )
-# Should be excluded
-        EnterpriseLearnerEnrollmentFactory(
-            enterprise_customer_uuid=self.enterprise_id,
-            enterprise_user_id=enterprise_learner.enterprise_user_id,
-            is_consent_granted=True,
-            unenrollment_date=None
-        )
-        EnterpriseLearnerEnrollmentFactory(
-            enterprise_customer_uuid=self.enterprise_id,
-            enterprise_user_id=enterprise_learner.enterprise_user_id,
-            is_consent_granted=True,
-            unenrollment_date=now + datetime.timedelta(days=5)
+        response = self.client.get(
+            self._get_url(),
+            data={"search_enrollment": "enrolled"}
         )
 
-        response = self.client.get(self._get_url(), data={'search_enrollment': 'unenrolled'})
-        results = response.json()['results']
-
+        results = response.json()["results"]
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0]['enrollment_id'], unenrolled.enrollment_id)
-        # ------------------------------------------------------
-    # TEST: invalid search_enrollment value returns full queryset
-    # ------------------------------------------------------
-    def test_filter_invalid_value_returns_all(self):
+        self.assertEqual(results[0]["enrollment_id"], enrolled.enrollment_id)
+    # -------------------------------
+    # 2. Test for unenrolled learners
+    # -------------------------------
+    def test_filter_unenrolled(self):
+        # Enrolled learner (NULL)
         enterprise_learner = EnterpriseLearnerFactory(
             enterprise_customer_uuid=self.enterprise_id
         )
 
-        e1 = EnterpriseLearnerEnrollmentFactory(
+        EnterpriseLearnerEnrollmentFactory(
+            enterprise_user=enterprise_learner,
             enterprise_customer_uuid=self.enterprise_id,
-            enterprise_user_id=enterprise_learner.enterprise_user_id
+            unenrollment_date=None,
         )
-        e2 = EnterpriseLearnerEnrollmentFactory(
-            enterprise_customer_uuid=self.enterprise_id,
-            enterprise_user_id=enterprise_learner.enterprise_user_id
-        )
-        e3 = EnterpriseLearnerEnrollmentFactory(
-            enterprise_customer_uuid=self.enterprise_id,
-            enterprise_user_id=enterprise_learner.enterprise_user_id
-        )
-        response = self.client.get(self._get_url(), data={'search_enrollment': 'abc'})
-        results = response.json()['results']
 
-        self.assertEqual(len(results), 3)
-        ids = [r['enrollment_id'] for r in results]
-        self.assertIn(e1.enrollment_id, ids)
-        self.assertIn(e2.enrollment_id, ids)
-        self.assertIn(e3.enrollment_id, ids)
-# ------------------------------------------------------
-    # TEST: missing search_enrollment param returns full queryset
-    # ------------------------------------------------------
-    def test_filter_missing_param_returns_all(self):
+        # Unenrolled learner (NOT NULL)
+        unenrolled = EnterpriseLearnerEnrollmentFactory(
+            enterprise_user=enterprise_learner,
+            enterprise_customer_uuid=self.enterprise_id,
+            unenrollment_date=timezone.now(),
+        )
+
+        response = self.client.get(
+            self._get_url(),
+            data={"search_enrollment": "unenrolled"}
+        )
+
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["enrollment_id"], unenrolled.enrollment_id)
+    # ------------------------------------
+    # 3. Test no filter - return all items
+    # ------------------------------------
+    def test_no_search_enrollment_filter(self):
         enterprise_learner = EnterpriseLearnerFactory(
             enterprise_customer_uuid=self.enterprise_id
         )
-
-        e1 = EnterpriseLearnerEnrollmentFactory(
+       
+        EnterpriseLearnerEnrollmentFactory(
+            enterprise_user=enterprise_learner,
             enterprise_customer_uuid=self.enterprise_id,
-            enterprise_user_id=enterprise_learner.enterprise_user_id
+            unenrollment_date=None,
         )
-        e2 = EnterpriseLearnerEnrollmentFactory(
+        EnterpriseLearnerEnrollmentFactory(
+            enterprise_user=enterprise_learner,
             enterprise_customer_uuid=self.enterprise_id,
-            enterprise_user_id=enterprise_learner.enterprise_user_id
+            unenrollment_date=timezone.now(),
         )
 
         response = self.client.get(self._get_url())
-        results = response.json()['results']
 
-        self.assertEqual(len(results), 2)
-# ------------------------------------------------------
-    # TEST: unenrollment_date exactly now → should count as unenrolled
-    # ------------------------------------------------------
-    def test_filter_unenrolled_boundary_now(self):
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["count"], 2)  
+        # -------------------------------
+    # 4. Invalid value → return all
+    # -------------------------------
+    def test_invalid_search_enrollment_value(self):
         enterprise_learner = EnterpriseLearnerFactory(
             enterprise_customer_uuid=self.enterprise_id
         )
-
-        now = timezone.now()
-
-        unenrolled_now = EnterpriseLearnerEnrollmentFactory(
+       
+        EnterpriseLearnerEnrollmentFactory(
+            enterprise_user=enterprise_learner,
             enterprise_customer_uuid=self.enterprise_id,
-            enterprise_user_id=enterprise_learner.enterprise_user_id,
-            unenrollment_date=now
+            unenrollment_date=None,
+        )
+        EnterpriseLearnerEnrollmentFactory(
+            enterprise_user=enterprise_learner,
+            enterprise_customer_uuid=self.enterprise_id,
+            unenrollment_date=timezone.now(),
         )
 
-        response = self.client.get(self._get_url(), data={'search_enrollment': 'unenrolled'})
-        results = response.json()['results']
+        response = self.client.get(
+            self._get_url(),
+            data={"search_enrollment": "not-valid"},
+        )
 
-        self.assertEqual(len(results), 1)
-        self.assertEqual(results[0]['enrollment_id'], unenrolled_now.enrollment_id)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["count"], 2)

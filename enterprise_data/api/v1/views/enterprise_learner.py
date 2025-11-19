@@ -308,15 +308,25 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         created_max = queryset.aggregate(Max('created'))
         return created_max['created__max']
 
-    def filter_search_enrollment(self, queryset, search_enrollment):
-        now=timezone.localdate()
+    def filter_search_enrollment(self, queryset, status):
+        """
+        Filter enrollments based on enrollment `status`.
 
-        if search_enrollment == 'enrolled':
-            return queryset.filter(
-                Q(unenrollment_date__isnull=True) | Q(unenrollment_date__gt=now)
-            )
-        elif search_enrollment == 'unenrolled':
-            return queryset.filter(unenrollment_date__lte=now)
+        Args:
+            status (str): Enrollment status to filter by. Can be one of:
+                'enrolled'   : unenrollment_date is NULL (currently enrolled)
+                'unenrolled' : unenrollment_date is NOT NULL (no longer enrolled)
+
+        Returns:
+            QuerySet: Filtered queryset of enrollments.
+        """
+
+        if status == "enrolled":
+            return queryset.filter(unenrollment_date__isnull=True)
+
+        if status == "unenrolled":
+            return queryset.filter(unenrollment_date__isnull=False)
+
         return queryset
     
     @action(detail=False)
