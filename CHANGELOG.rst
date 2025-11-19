@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[10.21.15] - 2025-11-19
+-----------------------
+  * feat: filter out unenrollment and update filter order in Learner Progress Report 
+
 [10.21.14] - 2025-11-13
 -----------------------
   * fix: use group uuid in hex format for filtering
