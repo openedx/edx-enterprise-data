@@ -15,9 +15,13 @@ Unreleased
 ----------
 
 =========================
-[10.21.15] - 2025-11-19
+[10.21.16] - 2025-11-21
 -----------------------
   * feat: filter out unenrollment and update filter order in Learner Progress Report 
+  
+[10.21.15] - 2025-11-21
+-----------------------
+  * fix: in operator construction for sql queries
 
 [10.21.14] - 2025-11-13
 -----------------------
