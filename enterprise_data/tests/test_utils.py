@@ -154,6 +154,10 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = EnterpriseLearnerEnrollment
 
+    enterprise_user = factory.SubFactory(
+        EnterpriseLearnerFactory,
+        enterprise_user_id=factory.Sequence(lambda n: n+1) 
+    )   
     enrollment_id = factory.lazy_attribute(
         lambda x: FAKER.random_int(min=1, max=999999)  # pylint: disable=no-member
     )
@@ -163,6 +167,7 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
     enterprise_customer_uuid = str(FAKER.uuid4())  # pylint: disable=no-member
     courserun_key = factory.lazy_attribute(lambda x: FAKER.slug())  # pylint: disable=no-member
     enrollment_date = factory.lazy_attribute(lambda x: '2018-01-01')
+    is_consent_granted = True
     user_current_enrollment_mode = factory.lazy_attribute(lambda x: 'verified')
     has_passed = factory.lazy_attribute(lambda x: FAKER.boolean())  # pylint: disable=no-member
     course_title = factory.lazy_attribute(lambda x: ' '.join(FAKER.words(nb=2)).title())  # pylint: disable=no-member

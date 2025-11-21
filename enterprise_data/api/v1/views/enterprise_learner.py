@@ -181,6 +181,11 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         if group_uuid:
             queryset = self.filter_by_group_uuid(queryset, group_uuid)
 
+        search_enrollment = query_filters.get('search_enrollment')
+
+        if search_enrollment:
+            queryset = self.filter_search_enrollment(queryset, search_enrollment)
+
         return queryset
 
     def filter_by_group_uuid(self, queryset, group_uuid):
@@ -303,6 +308,27 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         created_max = queryset.aggregate(Max('created'))
         return created_max['created__max']
 
+    def filter_search_enrollment(self, queryset, status):
+        """
+        Filter enrollments based on enrollment `status`.
+
+        Args:
+            status (str): Enrollment status to filter by. Can be one of:
+                'enrolled'   : unenrollment_date is NULL (currently enrolled)
+                'unenrolled' : unenrollment_date is NOT NULL (no longer enrolled)
+
+        Returns:
+            QuerySet: Filtered queryset of enrollments.
+        """
+
+        if status == "enrolled":
+            return queryset.filter(unenrollment_date__isnull=True)
+
+        if status == "unenrolled":
+            return queryset.filter(unenrollment_date__isnull=False)
+
+        return queryset
+    
     @action(detail=False)
     def overview(self, request, **kwargs):
         """
