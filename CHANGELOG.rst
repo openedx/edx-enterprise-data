@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[10.21.15] - 2025-11-21
+-----------------------
+  * fix: in operator construction for sql queries
+
 [10.21.14] - 2025-11-13
 -----------------------
   * fix: use group uuid in hex format for filtering
