@@ -13,6 +13,8 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITransactionTestCase
 
+from django.utils import timezone
+
 from enterprise_data.api.v1.serializers import EnterpriseOfferSerializer
 from enterprise_data.models import EnterpriseLearnerEnrollment, EnterpriseOffer
 from enterprise_data.tests.factories import (
@@ -369,3 +371,114 @@ class TestEnterpriseAdminInsightsView(JWTTestMixin, APITransactionTestCase):
         url = reverse('v1:enterprise-admin-insights', kwargs={'enterprise_id': enterprise_customer_uuid})
         response = self.client.get(url)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+@ddt.ddt
+@mark.django_db
+class TestSearchEnrollmentFilter(JWTTestMixin, APITransactionTestCase):
+    """
+    Tests for filtering enrolled vs unenrolled learners using search_enrollment param.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.user = UserFactory(is_staff=True)
+        role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
+        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
+            role=role,
+            user=self.user
+        )
+        self.client.force_authenticate(user=self.user)
+
+        mocked_get_enterprise_customer = mock.patch(
+            'enterprise_data.filters.EnterpriseApiClient.get_enterprise_customer',
+            return_value=get_dummy_enterprise_api_data()
+        )
+        self.mocked_get_enterprise_customer = mocked_get_enterprise_customer.start()
+        self.addCleanup(mocked_get_enterprise_customer.stop)
+
+        self.enterprise_id = 'fd0d9cd4-bc35-45e8-ba35-e73be3fc5a07'
+        self.url = reverse(
+            'v1:enterprise-learner-enrollment-list',
+            kwargs={'enterprise_id': self.enterprise_id}
+        )
+        self.enterprise_learner = EnterpriseLearnerFactory(
+            enterprise_customer_uuid=self.enterprise_id
+        )
+        self.set_jwt_cookie()
+
+    def tearDown(self):
+        super().tearDown()
+        EnterpriseLearnerEnrollment.objects.all().delete()
+
+    def create_enrolled(self):
+        """Enrollment with unenrollment_date = NULL"""
+        return EnterpriseLearnerEnrollmentFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            enterprise_user_id=self.enterprise_learner.enterprise_user_id,
+            unenrollment_date=None,
+        )
+
+    def create_unenrolled(self, dt=None):
+        """Enrollment with unenrollment_date != NULL"""
+        dt = dt or timezone.now()
+        return EnterpriseLearnerEnrollmentFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            enterprise_user_id=self.enterprise_learner.enterprise_user_id,
+            unenrollment_date=dt,
+        )
+
+    def test_filter_enrolled(self):
+        """Test for enrolled learners"""
+        # Create enrolled learner (unenrollment_date = NULL)
+        enrolled = self.create_enrolled()
+        # Unenrolled learner(NOT NULL)
+        self.create_unenrolled()
+
+        response = self.client.get(
+            self.url,
+            data={"search_enrollment": "enrolled"}
+        )
+
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["enrollment_id"], enrolled.enrollment_id)
+
+    def test_filter_unenrolled(self):
+        """Test for unenrolled learners"""
+        # Enrolled learner (NULL)
+        self.create_enrolled()
+        # Unenrolled learner (NOT NULL)
+        unenrolled = self.create_unenrolled()
+
+        response = self.client.get(
+            self.url,
+            data={"search_enrollment": "unenrolled"}
+        )
+
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["enrollment_id"], unenrolled.enrollment_id)
+
+    def test_no_search_enrollment_filter(self):
+        """Test no filter - return all items"""
+        self.create_enrolled()
+        self.create_unenrolled()
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["count"], 2)
+
+    def test_invalid_search_enrollment_value(self):
+        """Invalid value → return all"""
+        self.create_enrolled()
+        self.create_unenrolled()
+
+        response = self.client.get(
+            self.url,
+            data={"search_enrollment": "not-valid"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["count"], 2)

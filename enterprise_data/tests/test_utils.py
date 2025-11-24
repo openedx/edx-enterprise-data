@@ -154,6 +154,10 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = EnterpriseLearnerEnrollment
 
+    enterprise_user = factory.SubFactory(
+        EnterpriseLearnerFactory,
+        enterprise_user_id=factory.Sequence(lambda n: n+1)
+    )
     enrollment_id = factory.lazy_attribute(
         lambda x: FAKER.random_int(min=1, max=999999)  # pylint: disable=no-member
     )
@@ -179,6 +183,7 @@ class EnterpriseLearnerEnrollmentFactory(factory.django.DjangoModelFactory):
     letter_grade = factory.lazy_attribute(lambda x: ' '.join(FAKER.words(nb=2)).title())
     progress_status = factory.lazy_attribute(lambda x: ' '.join(FAKER.words(nb=2)).title())
     enterprise_user_id = factory.Sequence(lambda n: n)
+    is_consent_granted = True
     user_email = factory.lazy_attribute(lambda x: FAKER.email())  # pylint: disable=no-member
     user_username = factory.Sequence('robot{}'.format)
     user_first_name = factory.Sequence('Robot First {}'.format)
