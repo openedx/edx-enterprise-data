@@ -114,6 +114,7 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         for page_number in paginator.page_range:
             yield from serializer(paginator.page(page_number).object_list, many=True).data
 
+    # pylint: disable=too-many-statements
     def apply_filters(self, queryset):
         """
         Filters enrollments based on query params.
@@ -180,6 +181,10 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         group_uuid = query_filters.get('group_uuid')
         if group_uuid:
             queryset = self.filter_by_group_uuid(queryset, group_uuid)
+
+        search_enrollment = query_filters.get('search_enrollment')
+        if search_enrollment in ("enrolled", "unenrolled"):
+            queryset = self.filter_search_enrollment(queryset, search_enrollment)
 
         return queryset
 
@@ -302,6 +307,27 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         """
         created_max = queryset.aggregate(Max('created'))
         return created_max['created__max']
+
+    def filter_search_enrollment(self, queryset, status):
+        """
+        Filter enrollments based on enrollment `status`.
+
+        Args:
+            status (str): Enrollment status to filter by. Can be one of:
+                'enrolled'   : unenrollment_date is NULL (currently enrolled)
+                'unenrolled' : unenrollment_date is NOT NULL (no longer enrolled)
+
+        Returns:
+            QuerySet: Filtered queryset of enrollments.
+        """
+
+        if status == "enrolled":
+            return queryset.filter(unenrollment_date__isnull=True)
+
+        if status == "unenrolled":
+            return queryset.filter(unenrollment_date__isnull=False)
+
+        return queryset
 
     @action(detail=False)
     def overview(self, request, **kwargs):

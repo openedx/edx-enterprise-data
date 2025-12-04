@@ -31,6 +31,7 @@ class Command(BaseCommand):
                 )
                 for _ in range(5):
                     EnterpriseLearnerEnrollmentFactory(
+                        enterprise_user=ent_user,
                         enterprise_customer_uuid=enterprise_customer_uuid,
                         enterprise_user_id=ent_user.enterprise_user_id,
                         is_consent_granted=choice([True, False]),

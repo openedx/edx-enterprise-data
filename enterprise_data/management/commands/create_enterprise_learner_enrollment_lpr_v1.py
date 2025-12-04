@@ -8,6 +8,7 @@ import sys
 from django.core.management.base import BaseCommand, CommandError
 
 import enterprise_data.tests.test_utils
+from enterprise_data.models import EnterpriseLearner
 
 
 class Command(BaseCommand):
@@ -36,9 +37,14 @@ class Command(BaseCommand):
         is_consent_granted = options.get('consent_granted')
 
         try:
+            enterprise_learner = EnterpriseLearner.objects.get(
+                enterprise_customer_uuid=enterprise_customer_uuid,
+                enterprise_user_id=enterprise_user_id,
+            )
             enterprise_data.tests.test_utils.EnterpriseLearnerEnrollmentFactory(
                 enterprise_customer_uuid=enterprise_customer_uuid,
                 enterprise_user_id=enterprise_user_id,
+                enterprise_user=enterprise_learner,
                 is_consent_granted=is_consent_granted,
             )
             info = (
