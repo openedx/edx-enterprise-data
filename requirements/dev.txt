@@ -251,7 +251,7 @@ pgpy==0.6.0
     # via -r requirements/reporting.in
 pillow==12.0.0
     # via pansi
-pip-tools==7.5.1
+pip-tools==7.5.2
     # via -r requirements/dev-enterprise_data.in
 platformdirs==4.5.0
     # via

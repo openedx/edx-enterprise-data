@@ -15,6 +15,10 @@ Unreleased
 ----------
 
 =========================
+[10.21.17] - 2025-11-21
+-----------------------
+  * fix: update pip-tools to 7.5.2
+
 [10.21.16] - 2025-11-21
 -----------------------
   * feat: filter out unenrollment and update filter order in Learner Progress Report 
