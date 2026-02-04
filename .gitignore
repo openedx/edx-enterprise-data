@@ -81,3 +81,4 @@ geckodriver/
 
 # pyenv
 .python-version
+venv/
