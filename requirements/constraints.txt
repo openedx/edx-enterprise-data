@@ -18,8 +18,5 @@
 # dependency management hell of supporting both Django 4 and 5.
 Django<5
 
-# pip 25.3 is problematic with newer versions of pip-tools
-pip<25.3
-
 # AED 2026-02-04: No idea why we can't find version 9.6
 mysql-connector-python<9.6

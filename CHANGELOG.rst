@@ -15,6 +15,14 @@ Unreleased
 ----------
 
 =========================
+[10.22.1] - 2026-02-24
+-----------------------
+  * build: remove pinned pip now that pip-tools supports pip 26.0
+
+[10.22.0] - 2026-02-05
+-----------------------
+  * build: support only Django 4
+
 [10.21.16] - 2025-11-21
 -----------------------
   * feat: filter out unenrollment and update filter order in Learner Progress Report 
