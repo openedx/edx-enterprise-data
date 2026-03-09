@@ -10,17 +10,17 @@ asgiref==3.11.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.44.49
+awscli==1.44.53
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
 billiard==4.2.4
     # via celery
-boto3==1.42.59
+boto3==1.42.63
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.42.59
+botocore==1.42.63
     # via
     #   awscli
     #   boto3
@@ -37,7 +37,7 @@ cffi==2.0.0
     # via
     #   cryptography
     #   pynacl
-charset-normalizer==3.4.4
+charset-normalizer==3.4.5
     # via
     #   requests
     #   snowflake-connector-python
@@ -65,7 +65,7 @@ cryptography==46.0.5
     #   pyjwt
     #   pyopenssl
     #   snowflake-connector-python
-django==4.2.28
+django==4.2.29
     # via
     #   -c requirements/common_constraints.txt
     #   -c requirements/constraints.txt
@@ -128,7 +128,7 @@ edx-rest-api-client==6.2.0
     # via -r requirements/base.in
 factory-boy==3.3.3
     # via -r requirements/base.in
-faker==40.5.1
+faker==40.8.0
     # via factory-boy
 filelock==3.25.0
     # via snowflake-connector-python
@@ -165,7 +165,7 @@ pgpy==0.6.0
     # via -r requirements/reporting.in
 pillow==12.1.1
     # via pansi
-platformdirs==4.9.2
+platformdirs==4.9.4
     # via snowflake-connector-python
 prompt-toolkit==3.0.52
     # via click-repl
@@ -202,7 +202,7 @@ python-dateutil==2.9.0.post0
     #   botocore
     #   celery
     #   vertica-python
-pytz==2025.2
+pytz==2026.1.post1
     # via
     #   interchange
     #   snowflake-connector-python
