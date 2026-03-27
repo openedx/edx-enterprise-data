@@ -10,17 +10,17 @@ asgiref==3.11.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.44.58
+awscli==1.44.63
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
 billiard==4.2.4
     # via celery
-boto3==1.42.68
+boto3==1.42.73
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.42.68
+botocore==1.42.73
     # via
     #   awscli
     #   boto3
@@ -96,7 +96,7 @@ django-waffle==5.0.0
     # via
     #   edx-django-utils
     #   edx-drf-extensions
-djangorestframework==3.16.1
+djangorestframework==3.17.0
     # via
     #   djangorestframework-csv
     #   drf-jwt
@@ -173,7 +173,7 @@ psutil==7.2.2
     # via edx-django-utils
 py2neo @ https://github.com/overhangio/py2neo/releases/download/2021.2.3/py2neo-2021.2.3.tar.gz
     # via -r requirements/reporting.in
-pyasn1==0.6.2
+pyasn1==0.6.3
     # via
     #   pgpy
     #   rsa
