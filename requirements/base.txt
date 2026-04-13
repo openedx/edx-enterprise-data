@@ -10,17 +10,17 @@ asgiref==3.11.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.44.68
+awscli==1.44.78
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
 billiard==4.2.4
     # via celery
-boto3==1.42.78
+boto3==1.42.88
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.42.78
+botocore==1.42.88
     # via
     #   awscli
     #   boto3
@@ -37,11 +37,11 @@ cffi==2.0.0
     # via
     #   cryptography
     #   pynacl
-charset-normalizer==3.4.6
+charset-normalizer==3.4.7
     # via
     #   requests
     #   snowflake-connector-python
-click==8.3.1
+click==8.3.2
     # via
     #   celery
     #   click-didyoumean
@@ -56,7 +56,7 @@ click-repl==0.3.0
     # via celery
 colorama==0.4.6
     # via awscli
-cryptography==46.0.6
+cryptography==46.0.7
     # via
     #   -r requirements/reporting.in
     #   django-fernet-fields-v2
@@ -65,7 +65,7 @@ cryptography==46.0.6
     #   pyjwt
     #   pyopenssl
     #   snowflake-connector-python
-django==4.2.29
+django==4.2.30
     # via
     #   -c requirements/common_constraints.txt
     #   -c requirements/constraints.txt
@@ -118,17 +118,17 @@ edx-drf-extensions==10.6.0
     # via
     #   -r requirements/base.in
     #   edx-rbac
-edx-opaque-keys==3.1.0
+edx-opaque-keys==4.0.0
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
 edx-rbac==3.0.0
     # via -r requirements/base.in
-edx-rest-api-client==6.2.0
+edx-rest-api-client==7.0.0
     # via -r requirements/base.in
 factory-boy==3.3.3
     # via -r requirements/base.in
-faker==40.11.1
+faker==40.13.0
     # via factory-boy
 filelock==3.25.2
     # via snowflake-connector-python
@@ -138,7 +138,7 @@ idna==3.11
     #   snowflake-connector-python
 interchange==2021.0.4
     # via py2neo
-invoke==2.2.1
+invoke==3.0.3
     # via paramiko
 jmespath==1.1.0
     # via
@@ -163,9 +163,9 @@ paramiko==4.0.0
     # via -r requirements/reporting.in
 pgpy==0.6.0
     # via -r requirements/reporting.in
-pillow==12.1.1
+pillow==12.2.0
     # via pansi
-platformdirs==4.9.4
+platformdirs==4.9.6
     # via snowflake-connector-python
 prompt-toolkit==3.0.52
     # via click-repl
@@ -208,7 +208,7 @@ pytz==2026.1.post1
     #   snowflake-connector-python
 pyyaml==6.0.3
     # via awscli
-requests==2.33.0
+requests==2.33.1
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
@@ -248,7 +248,7 @@ typing-extensions==4.15.0
     #   edx-opaque-keys
     #   pyopenssl
     #   snowflake-connector-python
-tzdata==2025.3
+tzdata==2026.1
     # via
     #   celery
     #   kombu
