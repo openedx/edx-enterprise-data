@@ -9,6 +9,7 @@ from pytest import mark
 from rest_framework.test import APITransactionTestCase
 
 from enterprise_data.api.v1.serializers import EnterpriseLearnerEnrollmentSerializer, EnterpriseOfferSerializer
+from enterprise_data.renderers import EnrollmentsCSVRenderer
 from enterprise_data.tests.test_utils import (
     EnterpriseLearnerEnrollmentFactory,
     EnterpriseLearnerFactory,
@@ -41,6 +42,16 @@ class TestEnterpriseLearnerEnrollmentSerializer(APITransactionTestCase):
         self.enrollment.save()
         serializer = EnterpriseLearnerEnrollmentSerializer(self.enrollment)
         assert serializer.data['total_learning_time_hours'] == expected_total_learning_time_seconds
+
+    def test_course_progress_field_present(self):
+        self.enrollment.course_progress = 0.42
+        serializer = EnterpriseLearnerEnrollmentSerializer(self.enrollment)
+        assert serializer.data['course_progress'] == 0.42
+
+    def test_csv_renderer_header_matches_serializer_field_order(self):
+        """CSV header must exactly match serializer field order."""
+        serializer_fields = list(EnterpriseLearnerEnrollmentSerializer.Meta.fields)
+        assert EnrollmentsCSVRenderer.header == serializer_fields
 
 
 @ddt.ddt

@@ -212,6 +212,86 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()['count'], 0)
 
+    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.SnowflakeCourseProgressSource')
+    def test_list_enriches_course_progress_from_snowflake(self, mock_source_cls):
+        enterprise_learner = EnterpriseLearnerFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            user_email='johndoe@example.com',
+        )
+        enrollment = EnterpriseLearnerEnrollmentFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            is_consent_granted=True,
+            enterprise_user_id=enterprise_learner.enterprise_user_id,
+            user_email='johndoe@example.com',
+            courserun_key='course-v1:edX+Demo+2024',
+        )
+        mock_source_cls.return_value.get_course_progress_map.return_value = {
+            ('johndoe@example.com', 'course-v1:edX+Demo+2024'): 0.87,
+        }
+
+        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['results'][0]['enrollment_id'], enrollment.enrollment_id)
+        self.assertEqual(response.data['results'][0]['course_progress'], 0.87)
+
+    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.SnowflakeCourseProgressSource')
+    def test_list_returns_200_when_snowflake_enrichment_fails(self, mock_source_cls):
+        enterprise_learner = EnterpriseLearnerFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            user_email='johndoe@example.com',
+        )
+        EnterpriseLearnerEnrollmentFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            is_consent_granted=True,
+            enterprise_user_id=enterprise_learner.enterprise_user_id,
+            user_email='johndoe@example.com',
+            courserun_key='course-v1:edX+Demo+2024',
+        )
+        mock_source_cls.return_value.get_course_progress_map.side_effect = RuntimeError('Snowflake unavailable')
+
+        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsNone(response.data['results'][0]['course_progress'])
+
+    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.SnowflakeCourseProgressSource')
+    def test_enrich_course_progress_returns_when_no_results(self, mock_source_cls):
+        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['results'], [])
+        mock_source_cls.assert_not_called()
+
+    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.SnowflakeCourseProgressSource')
+    def test_stream_serialized_data_enriches_course_progress_from_snowflake(self, mock_source_cls):
+        enterprise_learner = EnterpriseLearnerFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            user_email='johndoe@example.com',
+        )
+        EnterpriseLearnerEnrollmentFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            is_consent_granted=True,
+            enterprise_user_id=enterprise_learner.enterprise_user_id,
+            user_email='johndoe@example.com',
+            courserun_key='course-v1:edX+Demo+2024',
+        )
+        mock_source_cls.return_value.get_course_progress_map.return_value = {
+            ('johndoe@example.com', 'course-v1:edX+Demo+2024'): 0.87,
+        }
+
+        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
+        response = self.client.get(url, HTTP_ACCEPT='text/csv')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = b''.join(response.streaming_content).decode('utf-8')
+        # course_progress column should appear in the CSV header and data rows
+        self.assertIn('course_progress', content)
+        self.assertIn('0.87', content)
+
 
 @ddt.ddt
 @mark.django_db
