@@ -29,6 +29,7 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
     total_learning_time_hours = serializers.SerializerMethodField()
     enterprise_flex_group_name = serializers.SerializerMethodField()
     enterprise_flex_group_uuid = serializers.SerializerMethodField()
+    course_progress = serializers.SerializerMethodField()
 
     class Meta:
         model = EnterpriseLearnerEnrollment
@@ -50,6 +51,7 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
             'enterprise_customer_uuid', 'enterprise_sso_uid', 'created', 'course_api_url',
             'total_learning_time_hours', 'is_subsidy', 'course_product_line', 'budget_id',
             'enterprise_flex_group_name', 'enterprise_flex_group_uuid',
+            'course_progress',
         )
 
     def get_course_api_url(self, obj):
@@ -65,6 +67,10 @@ class EnterpriseLearnerEnrollmentSerializer(serializers.ModelSerializer):
     def get_total_learning_time_hours(self, obj):
         """Returns the learners total learning time in hours"""
         return round((obj.total_learning_time_seconds or 0.0)/3600.0, 2)
+
+    def get_course_progress(self, obj):
+        """Returns learner course progress from selected report data."""
+        return getattr(obj, 'course_progress', None)
 
     @cache_it()
     def _get_flex_groups(self, obj):

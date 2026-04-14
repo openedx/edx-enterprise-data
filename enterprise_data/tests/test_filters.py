@@ -123,8 +123,10 @@ class TestAuditUsersEnrollmentFilterBackend(JWTTestMixin, APITestCase):
         enterprise_learner = EnterpriseLearnerFactory(enterprise_customer_uuid=enterprise_uuid)
         EnterpriseLearnerEnrollmentFactory.create_batch(
             2,
+            enterprise_customer_uuid=enterprise_uuid,
             is_consent_granted=True,
-            enterprise_user_id=enterprise_learner.enterprise_user_id
+            enterprise_user=enterprise_learner,
+            enterprise_user_id=enterprise_learner.enterprise_user_id,
         )
 
         queryset = EnterpriseLearnerEnrollment.objects.all()
@@ -147,7 +149,8 @@ class TestAuditUsersEnrollmentFilterBackend(JWTTestMixin, APITestCase):
         learner_enrollment_1 = EnterpriseLearnerEnrollmentFactory(
             enterprise_customer_uuid=enterprise_uuid,
             is_consent_granted=True,
-            enterprise_user_id=enterprise_learner_1.enterprise_user_id
+            enterprise_user=enterprise_learner_1,
+            enterprise_user_id=enterprise_learner_1.enterprise_user_id,
         )
 
         enterprise_learner_2 = EnterpriseLearnerFactory(enterprise_customer_uuid=enterprise_uuid)
@@ -155,7 +158,8 @@ class TestAuditUsersEnrollmentFilterBackend(JWTTestMixin, APITestCase):
             enterprise_customer_uuid=enterprise_uuid,
             is_consent_granted=True,
             user_current_enrollment_mode='audit',
-            enterprise_user_id=enterprise_learner_2.enterprise_user_id
+            enterprise_user=enterprise_learner_2,
+            enterprise_user_id=enterprise_learner_2.enterprise_user_id,
         )
 
         queryset = EnterpriseLearnerEnrollment.objects.all()

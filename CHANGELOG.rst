@@ -14,7 +14,10 @@ Change Log
 Unreleased
 ----------
 
-=========================
+[10.22.2] - 2026-04-21
+-----------------------
+  * feat: add ``course_progress`` field to v1 learner enrollment API and CSV export
+
 [10.22.1] - 2026-02-24
 -----------------------
   * build: remove pinned pip now that pip-tools supports pip 26.0
