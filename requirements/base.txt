@@ -232,7 +232,9 @@ six==1.17.0
     #   python-dateutil
     #   vertica-python
 snowflake-connector-python==4.4.0
-    # via -r requirements/reporting.in
+    # via
+    #   -r requirements/base.in
+    #   -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
 sqlparse==0.5.5

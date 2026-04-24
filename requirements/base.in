@@ -14,3 +14,4 @@ edx-rbac
 rules
 factory_boy
 mysql-connector-python
+snowflake-connector-python                       # Required for Snowflake LPR course_progress enrichment
