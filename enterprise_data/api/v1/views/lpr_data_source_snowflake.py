@@ -21,14 +21,21 @@ Optional Django settings (with defaults)
   LPR_SNOWFLAKE_ROLE                 = None   (omitted from connection if not set)
 """
 
+from logging import getLogger
 from types import SimpleNamespace
 
 from django.conf import settings
+
+LOGGER = getLogger(__name__)
 
 try:
     import snowflake.connector as snowflake_connector
 except ImportError:  # pragma: no cover - depends on runtime extras
     snowflake_connector = None
+    LOGGER.warning(
+        '[course_progress] snowflake-connector-python is not installed. '
+        'course_progress will be null. Add snowflake-connector-python to requirements/base.in.'
+    )
 
 snowflake = SimpleNamespace(connector=snowflake_connector)
 
@@ -55,15 +62,30 @@ class SnowflakeCourseProgressSource:
         if snowflake.connector is None:
             raise ImportError('snowflake-connector-python is required for Snowflake LPR access')
 
-        connect_kwargs = {
-            'user': settings.SNOWFLAKE_SERVICE_USER,
-            'password': settings.SNOWFLAKE_SERVICE_USER_PASSWORD,
-            'account': getattr(settings, 'SNOWFLAKE_ACCOUNT', 'edx.us-east-1'),
-        }
+        user = getattr(settings, 'SNOWFLAKE_SERVICE_USER', None)
+        password = getattr(settings, 'SNOWFLAKE_SERVICE_USER_PASSWORD', None)
+        account = getattr(settings, 'SNOWFLAKE_ACCOUNT', 'edx.us-east-1')
         warehouse = getattr(settings, 'LPR_SNOWFLAKE_WAREHOUSE', None)
+        role = getattr(settings, 'LPR_SNOWFLAKE_ROLE', None)
+
+        if not user or not password:
+            LOGGER.error(
+                '[course_progress] Snowflake credentials missing — '
+                'SNOWFLAKE_SERVICE_USER=%s, SNOWFLAKE_SERVICE_USER_PASSWORD=%s.',
+                'SET' if user else 'NOT SET',
+                'SET' if password else 'NOT SET',
+            )
+            raise ValueError(
+                'SNOWFLAKE_SERVICE_USER and SNOWFLAKE_SERVICE_USER_PASSWORD must both be configured'
+            )
+
+        connect_kwargs = {
+            'user': user,
+            'password': password,
+            'account': account,
+        }
         if warehouse:
             connect_kwargs['warehouse'] = warehouse
-        role = getattr(settings, 'LPR_SNOWFLAKE_ROLE', None)
         if role:
             connect_kwargs['role'] = role
         return snowflake.connector.connect(**connect_kwargs)
@@ -120,9 +142,16 @@ class SnowflakeCourseProgressSource:
         cs = ctx.cursor()
         try:
             cs.execute(sql, [normalized_uuid] + flat_params)
+            rows = cs.fetchall()
+            if not rows:
+                LOGGER.warning(
+                    '[course_progress] Snowflake returned 0 rows for enterprise_uuid=%s. '
+                    'Verify LEARNER_PROGRESS_REPORT_INTERNAL contains data for this enterprise.',
+                    enterprise_customer_uuid,
+                )
             return {
                 (row[0], row[1]): row[2]
-                for row in cs.fetchall()
+                for row in rows
             }
         finally:
             cs.close()
