@@ -14,29 +14,29 @@ astroid==4.0.4
     # via
     #   pylint
     #   pylint-celery
-awscli==1.44.81
+awscli==1.44.86
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
 billiard==4.2.4
     # via celery
-boto3==1.42.91
+boto3==1.42.96
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.42.91
+botocore==1.42.96
     # via
     #   awscli
     #   boto3
     #   s3transfer
     #   snowflake-connector-python
-build==1.4.3
+build==1.4.4
     # via pip-tools
-cachetools==7.0.5
+cachetools==7.0.6
     # via tox
 celery==5.3.6
     # via -r requirements/reporting.in
-certifi==2026.2.25
+certifi==2026.4.22
     # via
     #   py2neo
     #   requests
@@ -51,7 +51,7 @@ charset-normalizer==3.4.7
     # via
     #   requests
     #   snowflake-connector-python
-click==8.3.2
+click==8.3.3
     # via
     #   celery
     #   click-didyoumean
@@ -76,7 +76,7 @@ colorama==0.4.6
     # via
     #   awscli
     #   tox
-cryptography==46.0.7
+cryptography==47.0.0
     # via
     #   -r requirements/reporting.in
     #   django-fernet-fields-v2
@@ -174,7 +174,7 @@ filelock==3.29.0
     #   virtualenv
 id==1.6.1
     # via twine
-idna==3.11
+idna==3.13
     # via
     #   requests
     #   snowflake-connector-python
@@ -232,9 +232,9 @@ mysql-connector-python==9.5.0
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/base.in
-nh3==0.3.4
+nh3==0.3.5
     # via readme-renderer
-packaging==26.1
+packaging==26.2
     # via
     #   build
     #   kombu
@@ -313,13 +313,13 @@ pylint-plugin-utils==0.9.0
     #   pylint-django
 pyminizip==0.2.6
     # via -r requirements/reporting.in
-pymongo==4.16.0
+pymongo==4.17.0
     # via edx-opaque-keys
 pynacl==1.6.2
     # via
     #   edx-django-utils
     #   paramiko
-pyopenssl==26.0.0
+pyopenssl==26.1.0
     # via snowflake-connector-python
 pyproject-api==1.10.0
     # via tox
@@ -367,7 +367,7 @@ rsa==4.7.2
     # via awscli
 rules==3.5
     # via -r requirements/base.in
-s3transfer==0.16.0
+s3transfer==0.16.1
     # via
     #   awscli
     #   boto3
@@ -386,7 +386,9 @@ six==1.17.0
 snowballstemmer==3.0.1
     # via pydocstyle
 snowflake-connector-python==4.4.0
-    # via -r requirements/reporting.in
+    # via
+    #   -r requirements/base.in
+    #   -r requirements/reporting.in
 sortedcontainers==2.4.0
     # via snowflake-connector-python
 sqlparse==0.5.5
@@ -415,7 +417,7 @@ typing-extensions==4.15.0
     #   edx-opaque-keys
     #   pyopenssl
     #   snowflake-connector-python
-tzdata==2026.1
+tzdata==2026.2
     # via
     #   celery
     #   kombu
@@ -439,7 +441,7 @@ virtualenv==21.2.4
     # via tox
 wcwidth==0.6.0
     # via prompt-toolkit
-wheel==0.46.3
+wheel==0.47.0
     # via
     #   -r requirements/dev-enterprise_data.in
     #   pip-tools
