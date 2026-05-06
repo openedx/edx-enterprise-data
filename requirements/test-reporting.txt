@@ -8,23 +8,23 @@ amqp==5.3.1
     # via kombu
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.44.86
+awscli==1.45.2
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
 billiard==4.2.4
     # via celery
-boto3==1.42.96
+boto3==1.43.2
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.42.96
+botocore==1.43.2
     # via
     #   awscli
     #   boto3
     #   s3transfer
     #   snowflake-connector-python
-cachetools==7.0.6
+cachetools==7.1.1
     # via tox
 celery==5.3.6
     # via -r requirements/reporting.in
@@ -163,7 +163,7 @@ python-discovery==1.2.2
     # via
     #   tox
     #   virtualenv
-pytz==2026.1.post1
+pytz==2026.2
     # via
     #   interchange
     #   snowflake-connector-python
@@ -179,7 +179,7 @@ responses==0.26.0
     # via -r requirements/test-reporting.in
 rsa==4.7.2
     # via awscli
-s3transfer==0.16.1
+s3transfer==0.17.0
     # via
     #   awscli
     #   boto3
@@ -198,7 +198,7 @@ tomli-w==1.2.0
     # via tox
 tomlkit==0.14.0
     # via snowflake-connector-python
-tox==4.53.0
+tox==4.53.1
     # via -r requirements/test-reporting.in
 typing-extensions==4.15.0
     # via
@@ -223,9 +223,9 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==21.2.4
+virtualenv==21.3.0
     # via tox
-wcwidth==0.6.0
+wcwidth==0.7.0
     # via prompt-toolkit
 
 # The following packages are considered to be unsafe in a requirements file:
