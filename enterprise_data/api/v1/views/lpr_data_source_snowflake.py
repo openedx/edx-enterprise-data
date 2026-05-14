@@ -19,6 +19,7 @@ Optional Django settings (with defaults)
   LPR_SNOWFLAKE_INTERNAL_TABLE       = 'LEARNER_PROGRESS_REPORT_INTERNAL'
   LPR_SNOWFLAKE_WAREHOUSE            = None   (omitted from connection if not set)
   LPR_SNOWFLAKE_ROLE                 = None   (omitted from connection if not set)
+    LPR_COURSE_PROGRESS_CACHE_TIMEOUT  = 300    (5 minutes)
 """
 
 from logging import getLogger
@@ -26,7 +27,11 @@ from types import SimpleNamespace
 
 from django.conf import settings
 
+from enterprise_data import cache
+
 LOGGER = getLogger(__name__)
+
+DEFAULT_COURSE_PROGRESS_CACHE_TIMEOUT = 60 * 5
 
 try:
     import snowflake.connector as snowflake_connector
@@ -98,6 +103,33 @@ class SnowflakeCourseProgressSource:
         table = getattr(settings, 'LPR_SNOWFLAKE_INTERNAL_TABLE', 'LEARNER_PROGRESS_REPORT_INTERNAL')
         return f'{database}.{schema}.{table}'
 
+    @staticmethod
+    def _normalized_enterprise_uuid(enterprise_customer_uuid):
+        """Normalize enterprise UUIDs to the Snowflake comparison format."""
+        return str(enterprise_customer_uuid).replace('-', '').lower()
+
+    @staticmethod
+    def _normalized_row_key(user_email, courserun_key):
+        """Return a stable in-memory key for matching ORM rows to Snowflake rows."""
+        return (str(user_email).strip().lower(), str(courserun_key).strip())
+
+    def _cache_key(self, enterprise_customer_uuid):
+        """Return the enterprise-scoped cache key for Snowflake course progress."""
+        return cache.get_key(
+            'lpr_course_progress',
+            self._internal_table(),
+            self._normalized_enterprise_uuid(enterprise_customer_uuid),
+        )
+
+    @staticmethod
+    def _cache_timeout():
+        """Return the configurable TTL for Snowflake course progress cache entries."""
+        return getattr(
+            settings,
+            'LPR_COURSE_PROGRESS_CACHE_TIMEOUT',
+            DEFAULT_COURSE_PROGRESS_CACHE_TIMEOUT,
+        )
+
     # ------------------------------------------------------------------
     # Public interface
     # ------------------------------------------------------------------
@@ -106,6 +138,11 @@ class SnowflakeCourseProgressSource:
         """
         Return a ``{(user_email, courserun_key): course_progress}`` mapping for
         all rows on the current page.
+
+        The Snowflake data refreshes roughly daily, so this method keeps an
+        enterprise-scoped cache of the full Snowflake result set and returns
+        only the rows requested by the current page. This avoids repeated
+        Snowflake queries while keeping the public API unchanged.
 
         Args:
             enterprise_customer_uuid (str): The enterprise UUID to scope the query.
@@ -117,31 +154,59 @@ class SnowflakeCourseProgressSource:
             try/except so Snowflake unavailability never breaks the LPR response.
         """
         pairs = [
-            (row.get('user_email', ''), row.get('courserun_key', ''))
+            self._normalized_row_key(row.get('user_email', ''), row.get('courserun_key', ''))
             for row in enrollments
             if row.get('user_email') and row.get('courserun_key')
         ]
         if not pairs:
             return {}
 
-        table = self._internal_table()
-        normalized_uuid = str(enterprise_customer_uuid).replace('-', '').lower()
+        enterprise_progress_map = self._get_enterprise_course_progress_map(enterprise_customer_uuid)
+        return {
+            pair: enterprise_progress_map[pair]
+            for pair in pairs
+            if pair in enterprise_progress_map
+        }
 
-        # Build parameterised IN list for (user_email, courserun_key) pairs.
-        placeholders = ', '.join(['(%s, %s)'] * len(pairs))
-        flat_params = [param for pair in pairs for param in pair]
+    def _get_enterprise_course_progress_map(self, enterprise_customer_uuid):
+        """
+        Return the full enterprise course progress map from cache or Snowflake.
+        """
+        cache_key = self._cache_key(enterprise_customer_uuid)
+        cached_response = cache.get(cache_key)
+        if cached_response.is_found:
+            LOGGER.info(
+                '[course_progress] Cache hit for enterprise_uuid=%s',
+                enterprise_customer_uuid,
+            )
+            return cached_response.value
+
+        LOGGER.info(
+            '[course_progress] Cache miss for enterprise_uuid=%s; fetching from Snowflake',
+            enterprise_customer_uuid,
+        )
+        progress_map = self._fetch_enterprise_course_progress_map(enterprise_customer_uuid)
+        cache.set(cache_key, progress_map, timeout=self._cache_timeout())
+        return progress_map
+
+    def _fetch_enterprise_course_progress_map(self, enterprise_customer_uuid):
+        """
+        Fetch all course progress rows for an enterprise from Snowflake.
+        """
+
+        table = self._internal_table()
+        normalized_uuid = self._normalized_enterprise_uuid(enterprise_customer_uuid)
 
         sql = (
             f"SELECT USER_EMAIL, COURSERUN_KEY, COURSE_PROGRESS "
             f"FROM {table} "
-            f"WHERE LOWER(REPLACE(TO_VARCHAR(ENTERPRISE_CUSTOMER_UUID), '-', '')) = %s "
-            f"  AND (USER_EMAIL, COURSERUN_KEY) IN ({placeholders})"
+            f"WHERE LOWER(REPLACE(TO_VARCHAR(ENTERPRISE_CUSTOMER_UUID), '-', '')) = %s"
         )
 
         ctx = self._get_connection()
         cs = ctx.cursor()
         try:
-            cs.execute(sql, [normalized_uuid] + flat_params)
+            cs.execute(sql, [normalized_uuid])
             rows = cs.fetchall()
             if not rows:
                 LOGGER.warning(
@@ -150,7 +215,7 @@ class SnowflakeCourseProgressSource:
                     enterprise_customer_uuid,
                 )
             return {
-                (row[0], row[1]): row[2]
+                self._normalized_row_key(row[0], row[1]): row[2]
                 for row in rows
             }
         finally:
