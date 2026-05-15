@@ -212,8 +212,9 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()['count'], 0)
 
+    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.SnowflakeCoursePassingGradeSource')
     @mock.patch('enterprise_data.api.v1.views.enterprise_learner.SnowflakeCourseProgressSource')
-    def test_list_enriches_course_progress_from_snowflake(self, mock_source_cls):
+    def test_list_enriches_course_progress_from_snowflake(self, mock_progress_cls, mock_grade_cls):
         enterprise_learner = EnterpriseLearnerFactory(
             enterprise_customer_uuid=self.enterprise_id,
             user_email='johndoe@example.com',
@@ -225,8 +226,11 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
             user_email='johndoe@example.com',
             courserun_key='course-v1:edX+Demo+2024',
         )
-        mock_source_cls.return_value.get_course_progress_map.return_value = {
+        mock_progress_cls.return_value.get_course_progress_map.return_value = {
             ('johndoe@example.com', 'course-v1:edX+Demo+2024'): 0.87,
+        }
+        mock_grade_cls.return_value.get_passing_grade_map.return_value = {
+            'course-v1:edX+Demo+2024': 0.6,
         }
 
         url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
@@ -235,9 +239,11 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['results'][0]['enrollment_id'], enrollment.enrollment_id)
         self.assertEqual(response.data['results'][0]['course_progress'], 0.87)
+        self.assertEqual(response.data['results'][0]['course_passing_grade'], 0.6)
 
+    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.SnowflakeCoursePassingGradeSource')
     @mock.patch('enterprise_data.api.v1.views.enterprise_learner.SnowflakeCourseProgressSource')
-    def test_list_returns_200_when_snowflake_enrichment_fails(self, mock_source_cls):
+    def test_list_returns_200_when_snowflake_enrichment_fails(self, mock_progress_cls, mock_grade_cls):
         enterprise_learner = EnterpriseLearnerFactory(
             enterprise_customer_uuid=self.enterprise_id,
             user_email='johndoe@example.com',
@@ -249,13 +255,15 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
             user_email='johndoe@example.com',
             courserun_key='course-v1:edX+Demo+2024',
         )
-        mock_source_cls.return_value.get_course_progress_map.side_effect = RuntimeError('Snowflake unavailable')
+        mock_progress_cls.return_value.get_course_progress_map.side_effect = RuntimeError('Snowflake unavailable')
+        mock_grade_cls.return_value.get_passing_grade_map.return_value = {}
 
         url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsNone(response.data['results'][0]['course_progress'])
+        self.assertIsNone(response.data['results'][0]['course_passing_grade'])
 
     @mock.patch('enterprise_data.api.v1.views.enterprise_learner.SnowflakeCourseProgressSource')
     def test_enrich_course_progress_returns_when_no_results(self, mock_source_cls):
@@ -266,8 +274,9 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
         self.assertEqual(response.data['results'], [])
         mock_source_cls.assert_not_called()
 
+    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.SnowflakeCoursePassingGradeSource')
     @mock.patch('enterprise_data.api.v1.views.enterprise_learner.SnowflakeCourseProgressSource')
-    def test_stream_serialized_data_enriches_course_progress_from_snowflake(self, mock_source_cls):
+    def test_stream_serialized_data_enriches_course_progress_from_snowflake(self, mock_progress_cls, mock_grade_cls):
         enterprise_learner = EnterpriseLearnerFactory(
             enterprise_customer_uuid=self.enterprise_id,
             user_email='johndoe@example.com',
@@ -279,8 +288,11 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
             user_email='johndoe@example.com',
             courserun_key='course-v1:edX+Demo+2024',
         )
-        mock_source_cls.return_value.get_course_progress_map.return_value = {
+        mock_progress_cls.return_value.get_course_progress_map.return_value = {
             ('johndoe@example.com', 'course-v1:edX+Demo+2024'): 0.87,
+        }
+        mock_grade_cls.return_value.get_passing_grade_map.return_value = {
+            'course-v1:edX+Demo+2024': 0.6,
         }
 
         url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
@@ -288,9 +300,11 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = b''.join(response.streaming_content).decode('utf-8')
-        # course_progress column should appear in the CSV header and data rows
+        # course_progress and course_passing_grade columns should appear in the CSV header and data rows
         self.assertIn('course_progress', content)
+        self.assertIn('course_passing_grade', content)
         self.assertIn('0.87', content)
+        self.assertIn('0.6', content)
 
 
 @ddt.ddt

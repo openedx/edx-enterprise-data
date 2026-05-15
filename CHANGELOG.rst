@@ -14,6 +14,11 @@ Change Log
 Unreleased
 ----------
 
+[10.22.5] - 2026-04-27
+-----------------------
+  * feat: add support for Snowflake in learner progress report v1 API and CSV export
+
+
 [10.22.4] - 2026-04-27
 -----------------------
   * chore: bump package version to 10.22.4 to fix failed PyPI publish for 10.22.3 (version was not bumped in __init__.py before tagging)

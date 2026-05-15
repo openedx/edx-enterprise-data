@@ -29,7 +29,7 @@ from enterprise_data.renderers import EnrollmentsCSVRenderer
 from enterprise_data.utils import subtract_one_month
 
 from .base import EnterpriseViewSetMixin
-from .lpr_data_source_snowflake import SnowflakeCourseProgressSource
+from .lpr_data_source_snowflake import SnowflakeCoursePassingGradeSource, SnowflakeCourseProgressSource
 
 LOGGER = getLogger(__name__)
 
@@ -71,6 +71,7 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         'is_subsidy', 'course_product_line', 'budget_id',
         'enterprise_flex_group_name', 'enterprise_flex_group_uuid',
         'course_progress',
+        'course_passing_grade',
     ]
 
     # TODO: Remove after we release the streaming csv changes
@@ -100,7 +101,10 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         # always includes `course_progress`; real values are merged in later.
         enrollments = EnterpriseLearnerEnrollment.objects.filter(
             enterprise_customer_uuid=enterprise_customer_uuid
-        ).extra(select={'course_progress': 'NULL'})
+        ).extra(select={
+            'course_progress': 'NULL',
+            'course_passing_grade': 'NULL',
+        })
         enrollments = self.apply_filters(enrollments)
 
         return enrollments
@@ -157,6 +161,40 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         """
         results = response.data.get('results', [])
         self._enrich_course_progress_rows(results)
+        # Also enrich passing grade per courserun
+        try:
+            self._enrich_course_passing_grade_rows(results)
+        except Exception:  # pylint: disable=broad-exception-caught
+            LOGGER.warning('Could not enrich course_passing_grade from Snowflake', exc_info=True)
+
+    def _enrich_course_passing_grade_rows(self, rows):
+        """
+        Enrich serialized enrollment rows with ``course_passing_grade`` fetched
+        from Snowflake's course overviews table.
+
+        Accepts a list-like collection of serialized row dicts and mutates each
+        matching row in place. Silently skips enrichment on any error so the
+        ORM-backed response is always returned intact.
+        """
+        try:
+            if not rows:
+                return rows
+            courseruns = []
+            for row in rows:
+                courserun = row.get('courserun_key', '').strip()
+                if courserun:
+                    courseruns.append(courserun)
+            if not courseruns:
+                return rows
+            grades = SnowflakeCoursePassingGradeSource().get_passing_grade_map(courseruns)
+            for row in rows:
+                courserun = row.get('courserun_key', '').strip()
+                if courserun and courserun in grades:
+                    row['course_passing_grade'] = grades[courserun]
+            return rows
+        except Exception:  # pylint: disable=broad-exception-caught
+            LOGGER.warning('Could not enrich course_passing_grade from Snowflake', exc_info=True)
+            return rows
 
     def _stream_serialized_data(self):
         """
@@ -168,7 +206,15 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         paginator = Paginator(queryset, per_page=settings.ENROLLMENTS_PAGE_SIZE)
         for page_number in paginator.page_range:
             page_results = list(serializer(paginator.page(page_number).object_list, many=True).data)
-            self._enrich_course_progress_rows(page_results)
+            try:
+                # Enrich course_progress first, then passing grade per courserun for CSV streaming
+                try:
+                    self._enrich_course_progress_rows(page_results)
+                except Exception:  # pylint: disable=broad-exception-caught
+                    LOGGER.warning('Could not enrich course_progress from Snowflake', exc_info=True)
+                self._enrich_course_passing_grade_rows(page_results)
+            except Exception:  # pylint: disable=broad-exception-caught
+                LOGGER.warning('Could not enrich course_passing_grade from Snowflake', exc_info=True)
             yield from page_results
 
     # pylint: disable=too-many-statements

@@ -3,7 +3,9 @@ Caching related utility classes and functions.
 """
 import hashlib
 
-from edx_django_utils.cache import TieredCache
+from edx_django_utils.cache import DEFAULT_REQUEST_CACHE, TieredCache
+
+from django.core.cache import cache as django_cache
 
 DEFAULT_TIMEOUT = 60 * 60  # 1 hour
 
@@ -57,3 +59,58 @@ def set(key, value, timeout=DEFAULT_TIMEOUT):  # pylint: disable=redefined-built
         timeout (int): Cache timeout in seconds.
     """
     TieredCache.set_all_tiers(key, value, django_cache_timeout=timeout)
+
+
+def get_many(keys):
+    """
+    Get values from cache for the given keys.
+
+    This preserves the existing request-cache behavior while reducing round
+    trips to the backing Django cache for misses.
+
+    Arguments:
+        keys (list[str]): Cache keys.
+
+    Returns:
+        dict: Mapping of found cache keys to cached values.
+    """
+    cached_values = {}
+    missing_keys = []
+
+    for key in keys:
+        cached_response = TieredCache.get_cached_response(key)
+        if cached_response.is_found:
+            cached_values[key] = cached_response.value
+        else:
+            missing_keys.append(key)
+
+    if not missing_keys:
+        return cached_values
+
+    django_cached_values = django_cache.get_many(missing_keys)
+    for key, value in django_cached_values.items():
+        DEFAULT_REQUEST_CACHE.set(key, value)
+
+    cached_values.update(django_cached_values)
+    return cached_values
+
+
+def set_many(data, timeout=DEFAULT_TIMEOUT):
+    """
+    Set multiple key/value pairs in cache.
+
+    Arguments:
+        data (dict): Mapping of cache keys to values.
+        timeout (int): Cache timeout in seconds.
+
+    Note:
+        We intentionally use the raw django_cache.set_many API instead of TieredCache
+        because TieredCache does not provide a bulk set operation. This allows efficient
+        setting of multiple cache entries in a single operation.
+    """
+    if not data:
+        return
+
+    for key, value in data.items():
+        DEFAULT_REQUEST_CACHE.set(key, value)
+    django_cache.set_many(data, timeout)
