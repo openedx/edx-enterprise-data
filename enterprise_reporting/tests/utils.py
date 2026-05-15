@@ -1,5 +1,6 @@
 import os
 import tempfile
+import zlib
 from zipfile import ZipFile
 
 
@@ -42,5 +43,8 @@ def verify_compressed(self, delivery_files, files, original_file_size, password)
         assert len(content) == file['size']
 
         # Also verify file is not accessible with any other passwords i.e wrong passwords.
-        with self.assertRaises(RuntimeError):
+        # Different Python/zlib/libminizip combinations may raise different
+        # exceptions when decryption fails (RuntimeError or zlib.error). Accept
+        # either to keep the test robust across environments.
+        with self.assertRaises((RuntimeError, zlib.error)):
             zipfile.read(file['file'].name.split('/')[-1], b'wrong-password')

@@ -31,6 +31,7 @@ class LPRSerializerShapeMixin:
         'enterprise_customer_uuid', 'enterprise_sso_uid', 'created', 'course_api_url',
         'total_learning_time_hours', 'is_subsidy', 'course_product_line', 'budget_id',
         'enterprise_flex_group_name', 'enterprise_flex_group_uuid',
+        'course_passing_grade',
         'course_progress',
     )
 
