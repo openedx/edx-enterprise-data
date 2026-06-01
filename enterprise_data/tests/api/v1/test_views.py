@@ -3,7 +3,10 @@ Tests for views in the `enterprise_data` module.
 """
 
 import datetime
+import importlib
 import os
+import sys
+import types
 from unittest import mock
 from uuid import UUID, uuid4
 
@@ -16,6 +19,7 @@ from rest_framework.test import APITransactionTestCase
 from django.utils import timezone
 
 from enterprise_data.api.v1.serializers import EnterpriseOfferSerializer
+from enterprise_data.api.v1.views.enterprise_learner import EnterpriseLearnerEnrollmentViewSet
 from enterprise_data.models import EnterpriseLearnerEnrollment, EnterpriseOffer
 from enterprise_data.tests.factories import (
     EnterpriseAdminLearnerProgressFactory,
@@ -31,6 +35,47 @@ from enterprise_data.tests.test_utils import (
 )
 from enterprise_data_roles.constants import ENTERPRISE_DATA_ADMIN_ROLE
 from enterprise_data_roles.models import EnterpriseDataFeatureRole, EnterpriseDataRoleAssignment
+
+
+def _ensure_course_overview_import_for_tests():
+    """
+    Provide a minimal ``openedx...course_overviews.models`` shim for local
+    unit tests when full edx-platform Python dependencies are unavailable.
+    """
+    try:
+        course_overview_models = importlib.import_module(
+            'openedx.core.djangoapps.content.course_overviews.models'
+        )
+        if getattr(course_overview_models, 'CourseOverview', None) is not None:
+            return
+    except ImportError:
+        pass
+
+    module_names = [
+        'openedx',
+        'openedx.core',
+        'openedx.core.djangoapps',
+        'openedx.core.djangoapps.content',
+        'openedx.core.djangoapps.content.course_overviews',
+    ]
+    for module_name in module_names:
+        if module_name not in sys.modules:
+            sys.modules[module_name] = types.ModuleType(module_name)
+
+    models_module_name = 'openedx.core.djangoapps.content.course_overviews.models'
+    models_module = types.ModuleType(models_module_name)
+
+    class _Meta:
+        db_table = 'course_overviews_courseoverview'
+
+    class DummyCourseOverview:
+        _meta = _Meta()
+
+    models_module.CourseOverview = DummyCourseOverview
+    sys.modules[models_module_name] = models_module
+
+
+_ensure_course_overview_import_for_tests()
 
 
 @ddt.ddt
@@ -291,6 +336,97 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
         # course_progress column should appear in the CSV header and data rows
         self.assertIn('course_progress', content)
         self.assertIn('0.87', content)
+
+    def test_course_passing_grade_field_in_response(self):
+        """Test that course_passing_grade field is included in the API response"""
+        enterprise_learner = EnterpriseLearnerFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            user_email='student@example.com',
+        )
+        EnterpriseLearnerEnrollmentFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            is_consent_granted=True,
+            enterprise_user_id=enterprise_learner.enterprise_user_id,
+            user_email='student@example.com',
+            courserun_key='course-v1:edX+Demo+2024',
+        )
+
+        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()['results']
+        self.assertEqual(len(results), 1)
+        # Verify course_passing_grade field is present in the response
+        self.assertIn('course_passing_grade', results[0])
+        # The field will be null since CourseOverview is mocked in tests
+        self.assertIsNone(results[0]['course_passing_grade'])
+
+    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.CourseOverview', None)
+    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.EnterpriseLearnerEnrollment.objects.filter')
+    def test_get_enrollments_with_course_metadata_without_course_overview(self, mock_filter):
+        viewset = EnterpriseLearnerEnrollmentViewSet()
+        enrollments = mock.Mock()
+        with_progress = mock.Mock()
+        with_passing_grade = mock.Mock()
+
+        mock_filter.return_value = enrollments
+        enrollments.extra.return_value = with_progress
+        with_progress.extra.return_value = with_passing_grade
+
+        result = viewset._get_enrollments_with_course_metadata(self.enterprise_id)  # pylint: disable=protected-access
+
+        mock_filter.assert_called_once_with(enterprise_customer_uuid=self.enterprise_id)
+        enrollments.extra.assert_called_once_with(select={'course_progress': 'NULL'})
+        with_progress.extra.assert_called_once_with(select={'course_passing_grade': 'NULL'})
+        self.assertEqual(result, with_passing_grade)
+
+    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.cache')
+    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.CourseOverview')
+    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.connection.introspection.table_names')
+    def test_enrich_course_passing_grade_uses_cache(
+        self,
+        mock_table_names,
+        mock_course_overview,
+        mock_cache,
+    ):
+        viewset = EnterpriseLearnerEnrollmentViewSet()
+        mock_course_overview._meta.db_table = 'course_overviews_courseoverview'
+        mock_table_names.return_value = ['course_overviews_courseoverview']
+        mock_cache.get.return_value = mock.Mock(is_found=True, value=0.7)
+        rows = [{'courserun_key': 'course-v1:edX+Demo+2024', 'course_passing_grade': None}]
+
+        result = viewset._enrich_course_passing_grade_rows(rows)  # pylint: disable=protected-access
+
+        self.assertEqual(result[0]['course_passing_grade'], 0.7)
+        mock_table_names.assert_called_once_with()
+        mock_course_overview.objects.filter.assert_not_called()
+        mock_cache.set.assert_not_called()
+
+    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.cache')
+    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.connection.introspection.table_names')
+    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.CourseOverview')
+    def test_enrich_course_passing_grade_fetches_and_caches_missing_grade(
+        self,
+        mock_course_overview,
+        mock_table_names,
+        mock_cache,
+    ):
+        viewset = EnterpriseLearnerEnrollmentViewSet()
+        mock_course_overview._meta.db_table = 'course_overviews_courseoverview'
+        mock_table_names.return_value = ['course_overviews_courseoverview']
+        mock_cache.get.return_value = mock.Mock(is_found=False)
+        mock_course_overview.objects.filter.return_value.values_list.return_value = [
+            ('course-v1:edX+Demo+2024', 0.7),
+        ]
+        rows = [{'courserun_key': 'course-v1:edX+Demo+2024', 'course_passing_grade': None}]
+
+        result = viewset._enrich_course_passing_grade_rows(rows)  # pylint: disable=protected-access
+
+        self.assertEqual(result[0]['course_passing_grade'], 0.7)
+        mock_table_names.assert_called_once_with()
+        mock_course_overview.objects.filter.assert_called_once_with(id__in=['course-v1:edX+Demo+2024'])
+        mock_cache.set.assert_called_once()
 
 
 @ddt.ddt

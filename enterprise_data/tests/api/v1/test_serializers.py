@@ -48,6 +48,15 @@ class TestEnterpriseLearnerEnrollmentSerializer(APITransactionTestCase):
         serializer = EnterpriseLearnerEnrollmentSerializer(self.enrollment)
         assert serializer.data['course_progress'] == 0.42
 
+    def test_course_passing_grade_field_present(self):
+        self.enrollment.course_passing_grade = 0.7
+        serializer = EnterpriseLearnerEnrollmentSerializer(self.enrollment)
+        assert serializer.data['course_passing_grade'] == 0.7
+
+    def test_course_passing_grade_field_defaults_to_none(self):
+        serializer = EnterpriseLearnerEnrollmentSerializer(self.enrollment)
+        assert serializer.data['course_passing_grade'] is None
+
     def test_csv_renderer_header_matches_serializer_field_order(self):
         """CSV header must exactly match serializer field order."""
         serializer_fields = list(EnterpriseLearnerEnrollmentSerializer.Meta.fields)
