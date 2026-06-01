@@ -1,4 +1,3 @@
-
 """
 Snowflake LPR sources for course progress and passing grade.
 
@@ -48,6 +47,9 @@ LOGGER = logging.getLogger(__name__)
 DEFAULT_COURSE_PROGRESS_CACHE_TIMEOUT = 60 * 5           # 5 minutes
 DEFAULT_COURSE_PASSING_GRADE_CACHE_TIMEOUT = 60 * 60 * 24  # 24 hours
 DEFAULT_COURSE_PASSING_GRADE_NEGATIVE_CACHE_TIMEOUT = 60 * 60  # 1 hour
+
+# Batch size for Snowflake queries to avoid unbounded SQL and parameter limits.
+SNOWFLAKE_QUERY_BATCH_SIZE = 500
 
 try:
     import snowflake.connector as snowflake_connector
@@ -209,13 +211,34 @@ class SnowflakeCourseProgressSource(SnowflakeLPRBaseSource):
     # ------------------------------------------------------------------
 
     @staticmethod
-    def _log_cache_stats(requested, cache_hits, missing, snowflake_rows, enterprise_customer_uuid):
-        """Emit a structured log line summarising cache efficiency for one request."""
+    def _log_cache_stats(
+        requested,
+        cache_hits,
+        missing,
+        snowflake_rows,
+        enterprise_customer_uuid,
+        negative_cache_hits=0,
+    ):
+        """
+        Emit a structured log line summarising cache efficiency for one request.
+
+        Args:
+            requested: Total pairs requested.
+            cache_hits: Positive cache hits (pairs with non-None values served from cache).
+            missing: Pairs not found in cache, required Snowflake fetch.
+            snowflake_rows: Number of rows returned from Snowflake.
+            enterprise_customer_uuid: The enterprise UUID being logged.
+            negative_cache_hits: Negative cache hits (pairs cached as None, re-verified as absent).
+        """
         LOGGER.info(
-            '[course_progress] enterprise=%s requested=%d cache_hits=%d missing=%d snowflake_rows=%d',
+            (
+                '[course_progress] enterprise=%s requested=%d cache_hits=%d '
+                'negative_cache_hits=%d missing=%d snowflake_rows=%d'
+            ),
             enterprise_customer_uuid,
             requested,
             cache_hits,
+            negative_cache_hits,
             missing,
             snowflake_rows,
         )
@@ -231,6 +254,20 @@ class SnowflakeCourseProgressSource(SnowflakeLPRBaseSource):
         Per-pair cache is checked first; only the cache-missing pairs are sent
         to Snowflake in a single batched query filtered by both enterprise UUID
         and the exact ``(USER_EMAIL, COURSERUN_KEY)`` pairs.
+
+        Return-value contract: only pairs that have a non-``None`` progress
+        value are included in the returned mapping.  Pairs absent from
+        Snowflake (cached as ``None`` to prevent repeated round-trips) are
+        **not** present as keys in the result.  This differs from
+        ``SnowflakeCoursePassingGradeSource.get_passing_grade_map``, which
+        **does** include absent keys mapped to ``None``.
+
+        Error contract: exceptions from Snowflake or cache operations propagate
+        to the caller.  The viewset wraps this method in ``try/except Exception``
+        and gracefully degrades (returns ``None`` for the field) on failure.
+        This contract is intentionally the same as
+        ``SnowflakeCoursePassingGradeSource.get_passing_grade_map`` — both
+        sources raise on error rather than silently swallowing exceptions.
         """
         # Deduplicate while preserving order.
         requested_pairs = list(dict.fromkeys(
@@ -243,33 +280,44 @@ class SnowflakeCourseProgressSource(SnowflakeLPRBaseSource):
 
         progress_map = {}
         missing_pairs = []
+        positive_cache_hits = 0
+        negative_cache_hits = 0
 
-        for pair in requested_pairs:
-            cached_response = cache.get(self._pair_cache_key(enterprise_customer_uuid, *pair))
-            if cached_response.is_found:
-                if cached_response.value is not None:
-                    progress_map[pair] = cached_response.value
+        # Batch cache lookup: one round-trip for all pairs instead of N.
+        pair_to_cache_key = {
+            pair: self._pair_cache_key(enterprise_customer_uuid, *pair)
+            for pair in requested_pairs
+        }
+        cached_values = cache.get_many(list(pair_to_cache_key.values()))
+        for pair, ck in pair_to_cache_key.items():
+            if ck in cached_values:
+                if cached_values[ck] is not None:
+                    progress_map[pair] = cached_values[ck]
+                    positive_cache_hits += 1
+                else:
+                    # Negative cache hit: pair was queried before, not in Snowflake.
+                    negative_cache_hits += 1
             else:
                 missing_pairs.append(pair)
 
         snowflake_rows = {}
         if missing_pairs:
             snowflake_rows = self._fetch_progress_for_pairs(enterprise_customer_uuid, missing_pairs)
+            writes = {}
             for pair in missing_pairs:
                 grade = snowflake_rows.get(pair)
                 if grade is not None:
                     progress_map[pair] = grade
                 # Cache positive hits and misses (None) alike to prevent
                 # repeated Snowflake round-trips for pairs not in the table.
-                cache.set(
-                    self._pair_cache_key(enterprise_customer_uuid, *pair),
-                    grade,
-                    timeout=self._cache_timeout(),
-                )
+                writes[pair_to_cache_key[pair]] = grade
+            # Batch cache write: one round-trip for all missing pairs.
+            cache.set_many(writes, timeout=self._cache_timeout())
 
         self._log_cache_stats(
             requested=len(requested_pairs),
-            cache_hits=len(requested_pairs) - len(missing_pairs),
+            cache_hits=positive_cache_hits,
+            negative_cache_hits=negative_cache_hits,
             missing=len(missing_pairs),
             snowflake_rows=len(snowflake_rows),
             enterprise_customer_uuid=enterprise_customer_uuid,
@@ -295,46 +343,55 @@ class SnowflakeCourseProgressSource(SnowflakeLPRBaseSource):
         Returns:
             dict: ``{(user_email, courserun_key): course_progress}`` for found rows.
         """
+        if not pairs:
+            return {}
+
         table = self._internal_table()
         normalized_uuid = self._normalized_enterprise_uuid(enterprise_customer_uuid)
 
-        # Row-value constructor: ``(USER_EMAIL, COURSERUN_KEY) IN ((%s,%s), ...)
-        # Requires snowflake-connector-python >= 2.7.0.
-        placeholders = ', '.join(['(%s, %s)'] * len(pairs))
-        flat_params = [val for pair in pairs for val in pair]
-
-        # Table name from Django settings — safe to interpolate.
-        sql = (
-            f"SELECT USER_EMAIL, COURSERUN_KEY, COURSE_PROGRESS "
-            f"FROM {table} "
-            f"WHERE LOWER(REPLACE(TO_VARCHAR(ENTERPRISE_CUSTOMER_UUID), '-', '')) = %s "
-            f"  AND (USER_EMAIL, COURSERUN_KEY) IN ({placeholders})"
-        )
-
-        LOGGER.info(
-            '[course_progress] querying Snowflake table=%s enterprise=%s pairs=%d',
-            table, enterprise_customer_uuid, len(pairs),
-        )
-
+        # Chunk the pairs into fixed-size batches so that large pages do not
+        # produce unbounded SQL statements or hit Snowflake's parameter limits.
         result = {}
-        with self._snowflake_cursor() as cursor:
-            cursor.execute(sql, [normalized_uuid] + flat_params)
-            rows = cursor.fetchall()
+        for batch_start in range(0, len(pairs), SNOWFLAKE_QUERY_BATCH_SIZE):
+            batch = pairs[batch_start: batch_start + SNOWFLAKE_QUERY_BATCH_SIZE]
 
-        if not rows:
-            LOGGER.warning(
-                '[course_progress] Snowflake returned 0 rows for enterprise=%s pairs=%d. '
-                'Verify LEARNER_PROGRESS_REPORT_INTERNAL contains data for this enterprise.',
-                enterprise_customer_uuid, len(pairs),
+            # Row-value constructor: ``(USER_EMAIL, COURSERUN_KEY) IN ((%s,%s), ...)``
+            # Requires snowflake-connector-python >= 2.7.0.
+            placeholders = ', '.join(['(%s, %s)'] * len(batch))
+            flat_params = [val for pair in batch for val in pair]
+
+            # Table name from Django settings — safe to interpolate.
+            sql = (
+                f"SELECT USER_EMAIL, COURSERUN_KEY, COURSE_PROGRESS "
+                f"FROM {table} "
+                f"WHERE LOWER(REPLACE(TO_VARCHAR(ENTERPRISE_CUSTOMER_UUID), '-', '')) = %s "
+                f"  AND (USER_EMAIL, COURSERUN_KEY) IN ({placeholders})"
             )
-        else:
+
             LOGGER.info(
-                '[course_progress] Snowflake returned rows=%d for pairs=%d',
-                len(rows), len(pairs),
+                '[course_progress] querying Snowflake table=%s enterprise=%s pairs=%d (batch %d-%d)',
+                table, enterprise_customer_uuid, len(pairs), batch_start, batch_start + len(batch) - 1,
             )
 
-        for row in rows:
-            result[self._normalized_row_key(row[0], row[1])] = row[2]
+            with self._snowflake_cursor() as cursor:
+                cursor.execute(sql, [normalized_uuid] + flat_params)
+                rows = cursor.fetchall()
+
+            if not rows:
+                LOGGER.warning(
+                    '[course_progress] Snowflake returned 0 rows for enterprise=%s pairs=%d (batch %d). '
+                    'Verify LEARNER_PROGRESS_REPORT_INTERNAL contains data for this enterprise.',
+                    enterprise_customer_uuid, len(batch), batch_start,
+                )
+            else:
+                LOGGER.info(
+                    '[course_progress] Snowflake returned rows=%d for pairs=%d (batch %d)',
+                    len(rows), len(batch), batch_start,
+                )
+
+            for row in rows:
+                result[self._normalized_row_key(row[0], row[1])] = row[2]
+
         return result
 
 
@@ -351,7 +408,6 @@ class SnowflakeCoursePassingGradeSource(SnowflakeLPRBaseSource):
     Absent keys (not present in the table) are stored as ``None`` under a shorter
     negative-cache TTL so that they are re-checked sooner.
     """
-    # No __init__ needed; base class handles connection.
 
     # ------------------------------------------------------------------
     # Settings / table helpers
@@ -408,9 +464,24 @@ class SnowflakeCoursePassingGradeSource(SnowflakeLPRBaseSource):
         """Return a ``{courserun_key: lowest_passing_grade}`` mapping.
 
         Serves cached values where available and fetches the remainder from
-        Snowflake in a single batched query.  Exceptions from cache or
-        Snowflake operations propagate; callers are responsible for error
-        handling and graceful degradation.
+        Snowflake in a single batched query.  Exceptions from cache or Snowflake
+        operations propagate; callers are responsible for error handling and
+        graceful degradation (same contract as
+        ``SnowflakeCourseProgressSource.get_course_progress_map``).
+
+        Return-value contract: every requested key is present in the returned
+        mapping.  Keys absent from Snowflake are mapped to ``None`` (and cached
+        under a shorter negative TTL to prevent repeated round-trips).  This
+        differs from ``SnowflakeCourseProgressSource.get_course_progress_map``,
+        which **omits** absent keys from the result entirely.
+
+        Security note: the cache key for passing grades is **not** enterprise-
+        scoped because ``LOWEST_PASSING_GRADE`` is a course-level attribute
+        identical across all enterprises.  Callers **must** only supply
+        courserun keys that were obtained from the requesting enterprise's
+        filtered enrollment queryset; passing attacker-influenced keys that
+        do not belong to the enterprise is not supported and would return
+        that course's threshold from cache or Snowflake.
 
         Args:
             courserun_keys (list[str]): Courserun keys to look up.
@@ -431,10 +502,11 @@ class SnowflakeCoursePassingGradeSource(SnowflakeLPRBaseSource):
         passing_grade_map = {}
         missing_keys = []
 
+        # Batch cache lookup: one round-trip for all keys instead of N.
+        cached_values = cache.get_many(list(cache_key_map.values()))
         for courserun_key, ck in cache_key_map.items():
-            cached_response = cache.get(ck)
-            if cached_response.is_found:
-                passing_grade_map[courserun_key] = cached_response.value
+            if ck in cached_values:
+                passing_grade_map[courserun_key] = cached_values[ck]
             else:
                 missing_keys.append(courserun_key)
 
@@ -447,17 +519,25 @@ class SnowflakeCoursePassingGradeSource(SnowflakeLPRBaseSource):
             fetched = self._fetch_passing_grades(missing_keys)
             positive_count = 0
             negative_count = 0
+            positive_writes = {}
+            negative_writes = {}
 
             for courserun_key in missing_keys:
                 grade = fetched.get(courserun_key)  # None when absent from the table
                 passing_grade_map[courserun_key] = grade
                 ck = cache_key_map[courserun_key]
                 if grade is None:
-                    cache.set(ck, None, timeout=self._negative_cache_timeout())
+                    negative_writes[ck] = None
                     negative_count += 1
                 else:
-                    cache.set(ck, grade, timeout=self._cache_timeout())
+                    positive_writes[ck] = grade
                     positive_count += 1
+
+            # Batch cache writes: one round-trip each for positive and negative sets.
+            if positive_writes:
+                cache.set_many(positive_writes, timeout=self._cache_timeout())
+            if negative_writes:
+                cache.set_many(negative_writes, timeout=self._negative_cache_timeout())
 
             LOGGER.info(
                 '[course_passing_grade] snowflake_rows=%d positive_cached=%d negative_cached=%d',
@@ -474,33 +554,46 @@ class SnowflakeCoursePassingGradeSource(SnowflakeLPRBaseSource):
         """Fetch LOWEST_PASSING_GRADE for *courserun_keys* from Snowflake.
 
         Args:
-            courserun_keys (list[str]): Courserun keys to query.
+            courserun_keys (list[str]): Courserun keys to query.  Must be
+                non-empty (the caller ``get_passing_grade_map`` guarantees
+                this, and the method also guards itself).
 
         Returns:
             dict: ``{courserun_key: lowest_passing_grade}`` for rows found.
         """
+        if not courserun_keys:
+            return {}
+
         table = self._course_overviews_table()
-        placeholders = ', '.join(['%s'] * len(courserun_keys))
 
-        # Table name from Django settings — safe to interpolate.
-        # ID is the courserun key string (e.g. ``course-v1:org+X+1``).
-        sql = (
-            f"SELECT ID AS COURSERUN_KEY, LOWEST_PASSING_GRADE "
-            f"FROM {table} "
-            f"WHERE ID IN ({placeholders})"
-        )
+        # Chunk the keys into fixed-size batches so that large pages do not
+        # produce unbounded SQL statements or hit Snowflake's parameter limits.
+        result = {}
+        for batch_start in range(0, len(courserun_keys), SNOWFLAKE_QUERY_BATCH_SIZE):
+            batch = courserun_keys[batch_start: batch_start + SNOWFLAKE_QUERY_BATCH_SIZE]
+            placeholders = ', '.join(['%s'] * len(batch))
 
-        LOGGER.info(
-            '[course_passing_grade] querying Snowflake table=%s keys=%d',
-            table, len(courserun_keys),
-        )
+            # Table name from Django settings — safe to interpolate.
+            # ID is the courserun key string (e.g. ``course-v1:org+X+1``).
+            sql = (
+                f"SELECT ID AS COURSERUN_KEY, LOWEST_PASSING_GRADE "
+                f"FROM {table} "
+                f"WHERE ID IN ({placeholders})"
+            )
 
-        with self._snowflake_cursor() as cursor:
-            cursor.execute(sql, courserun_keys)
-            rows = cursor.fetchall()
+            LOGGER.info(
+                '[course_passing_grade] querying Snowflake table=%s keys=%d (batch %d-%d)',
+                table, len(courserun_keys), batch_start, batch_start + len(batch) - 1,
+            )
 
-        LOGGER.info(
-            '[course_passing_grade] Snowflake returned %d row(s) for %d requested key(s).',
-            len(rows), len(courserun_keys),
-        )
-        return {row[0]: row[1] for row in rows}
+            with self._snowflake_cursor() as cursor:
+                cursor.execute(sql, batch)
+                rows = cursor.fetchall()
+
+            LOGGER.info(
+                '[course_passing_grade] Snowflake returned %d row(s) for %d requested key(s) (batch %d).',
+                len(rows), len(batch), batch_start,
+            )
+            result.update({row[0]: row[1] for row in rows})
+
+        return result

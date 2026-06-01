@@ -181,15 +181,15 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
             # Deduplicate here so we pass a clean list to the source (which also
             # deduplicates internally, but being explicit avoids unnecessary work).
             courseruns = list(dict.fromkeys(
-                row.get('courserun_key', '').strip()
+                (row.get('courserun_key') or '').strip()
                 for row in rows
-                if row.get('courserun_key', '').strip()
+                if (row.get('courserun_key') or '').strip()
             ))
             if not courseruns:
                 return rows
             grades = SnowflakeCoursePassingGradeSource().get_passing_grade_map(courseruns)
             for row in rows:
-                courserun = row.get('courserun_key', '').strip()
+                courserun = (row.get('courserun_key') or '').strip()
                 if courserun and courserun in grades:
                     row['course_passing_grade'] = grades[courserun]
             return rows

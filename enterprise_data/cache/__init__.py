@@ -5,6 +5,8 @@ import hashlib
 
 from edx_django_utils.cache import TieredCache
 
+from django.core.cache import cache
+
 DEFAULT_TIMEOUT = 60 * 60  # 1 hour
 
 
@@ -51,9 +53,49 @@ def set(key, value, timeout=DEFAULT_TIMEOUT):  # pylint: disable=redefined-built
     """
     Set value in cache for given key.
 
+    Supports negative-cache entries: passing ``value=None`` will cache a negative
+    result that is later retrieved by get() with ``is_found=True``.
+
     Arguments:
         key (str): Cache key.
-        value (object): Value to be stored in cache.
+        value (object): Value to be stored in cache (can be ``None`` for negative-cache).
         timeout (int): Cache timeout in seconds.
     """
     TieredCache.set_all_tiers(key, value, django_cache_timeout=timeout)
+
+
+def get_many(keys):
+    """
+    Retrieve multiple keys from the cache in a single batched operation.
+
+    Uses Django's ``cache.get_many`` which hits the cache only once and returns
+    a dict containing only the keys that were found.  Keys whose cached value is
+    ``None`` (a deliberate negative-cache sentinel) are included in the returned
+    mapping; keys that were never stored are omitted.
+
+    Arguments:
+        keys (list[str]): Cache keys to retrieve.
+
+    Returns:
+        dict: Maps each key that is present in the cache to its cached value
+        (which may be ``None`` for a negative-cache hit).  Keys absent from
+        the cache are not present in the returned dict.
+    """
+    return cache.get_many(keys)
+
+
+def set_many(mapping, timeout=DEFAULT_TIMEOUT):
+    """
+    Store multiple key-value pairs in the cache in a single logical operation.
+
+    Uses Django's ``cache.set_many`` which writes all entries in a single call,
+    making it more efficient than individual per-key writes.  Supports
+    negative-cache entries: passing ``value=None`` caches an absence sentinel
+    that is later returned by get_many().
+
+    Arguments:
+        mapping (dict): ``{cache_key: value}`` pairs to store.  Values can be any
+            object, including ``None`` for negative-cache entries.
+        timeout (int): Cache timeout in seconds applied to every entry.
+    """
+    cache.set_many(mapping, timeout)
