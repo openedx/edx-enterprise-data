@@ -16,6 +16,7 @@ from rest_framework.test import APITransactionTestCase
 from django.utils import timezone
 
 from enterprise_data.api.v1.serializers import EnterpriseOfferSerializer
+from enterprise_data.api.v1.views.enterprise_learner import EnterpriseLearnerEnrollmentViewSet
 from enterprise_data.models import EnterpriseLearnerEnrollment, EnterpriseOffer
 from enterprise_data.tests.factories import (
     EnterpriseAdminLearnerProgressFactory,
@@ -291,6 +292,91 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
         # course_progress column should appear in the CSV header and data rows
         self.assertIn('course_progress', content)
         self.assertIn('0.87', content)
+
+    def test_course_passing_grade_field_in_response(self):
+        """Test that course_passing_grade field is included in the API response"""
+        enterprise_learner = EnterpriseLearnerFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            user_email='student@example.com',
+        )
+        EnterpriseLearnerEnrollmentFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            is_consent_granted=True,
+            enterprise_user_id=enterprise_learner.enterprise_user_id,
+            user_email='student@example.com',
+            courserun_key='course-v1:edX+Demo+2024',
+        )
+
+        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()['results']
+        self.assertEqual(len(results), 1)
+        # Verify course_passing_grade field is present in the response
+        self.assertIn('course_passing_grade', results[0])
+        # The field remains null unless passing-grade enrichment supplies a value.
+        self.assertIsNone(results[0]['course_passing_grade'])
+
+    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.EnterpriseLearnerEnrollment.objects.filter')
+    @mock.patch.object(EnterpriseLearnerEnrollmentViewSet, 'apply_filters')
+    def test_get_queryset_adds_placeholder_metadata_columns(self, mock_apply_filters, mock_filter):
+        viewset = EnterpriseLearnerEnrollmentViewSet()
+        enrollments = mock.Mock()
+        with_placeholders = mock.Mock()
+        filtered_enrollments = mock.Mock()
+
+        viewset.kwargs = {'enterprise_id': self.enterprise_id}
+        viewset.request = mock.Mock()
+        mock_filter.return_value = enrollments
+        enrollments.extra.return_value = with_placeholders
+        mock_apply_filters.return_value = filtered_enrollments
+
+        result = viewset.get_queryset()
+
+        mock_filter.assert_called_once_with(enterprise_customer_uuid=self.enterprise_id)
+        enrollments.extra.assert_called_once_with(select={
+            'course_progress': 'NULL',
+            'course_passing_grade': 'NULL',
+        })
+        mock_apply_filters.assert_called_once_with(with_placeholders)
+        self.assertEqual(result, filtered_enrollments)
+
+    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.SnowflakeCoursePassingGradeSource')
+    def test_enrich_course_passing_grade_uses_source_results(
+        self,
+        mock_grade_source_cls,
+    ):
+        viewset = EnterpriseLearnerEnrollmentViewSet()
+        viewset.kwargs = {'enterprise_id': self.enterprise_id}
+        mock_grade_source_cls.return_value.get_passing_grade_map.return_value = {
+            'course-v1:edX+Demo+2024': 0.7,
+        }
+        rows = [{'courserun_key': 'course-v1:edX+Demo+2024', 'course_passing_grade': None}]
+
+        result = viewset._enrich_course_passing_grade_rows(rows)  # pylint: disable=protected-access
+
+        self.assertEqual(result[0]['course_passing_grade'], 0.7)
+        mock_grade_source_cls.return_value.get_passing_grade_map.assert_called_once_with([
+            'course-v1:edX+Demo+2024',
+        ])
+
+    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.SnowflakeCoursePassingGradeSource')
+    def test_enrich_course_passing_grade_returns_rows_when_source_fails(
+        self,
+        mock_grade_source_cls,
+    ):
+        viewset = EnterpriseLearnerEnrollmentViewSet()
+        viewset.kwargs = {'enterprise_id': self.enterprise_id}
+        mock_grade_source_cls.return_value.get_passing_grade_map.side_effect = RuntimeError('Snowflake unavailable')
+        rows = [{'courserun_key': 'course-v1:edX+Demo+2024', 'course_passing_grade': None}]
+
+        result = viewset._enrich_course_passing_grade_rows(rows)  # pylint: disable=protected-access
+
+        self.assertIsNone(result[0]['course_passing_grade'])
+        mock_grade_source_cls.return_value.get_passing_grade_map.assert_called_once_with([
+            'course-v1:edX+Demo+2024',
+        ])
 
 
 @ddt.ddt
