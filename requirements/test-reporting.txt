@@ -8,17 +8,17 @@ amqp==5.3.1
     # via kombu
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.45.24
+awscli==1.45.29
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
 billiard==4.2.4
     # via celery
-boto3==1.43.24
+boto3==1.43.29
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.43.24
+botocore==1.43.29
     # via
     #   awscli
     #   boto3
@@ -59,7 +59,7 @@ colorama==0.4.6
     #   tox
 coverage[toml]==7.14.1
     # via pytest-cov
-cryptography==48.0.0
+cryptography==49.0.0
     # via
     #   -r requirements/reporting.in
     #   paramiko
@@ -68,11 +68,11 @@ cryptography==48.0.0
     #   snowflake-connector-python
 ddt==1.1.2
     # via -r requirements/test-reporting.in
-distlib==0.4.1
+distlib==0.4.3
     # via virtualenv
 docutils==0.19
     # via awscli
-filelock==3.29.1
+filelock==3.29.4
     # via
     #   python-discovery
     #   snowflake-connector-python
@@ -144,7 +144,7 @@ pyminizip==0.2.6
     # via -r requirements/reporting.in
 pynacl==1.6.2
     # via paramiko
-pyopenssl==26.2.0
+pyopenssl==26.3.0
     # via snowflake-connector-python
 pyproject-api==1.10.1
     # via tox
@@ -159,7 +159,7 @@ python-dateutil==2.9.0.post0
     #   botocore
     #   celery
     #   vertica-python
-python-discovery==1.4.0
+python-discovery==1.4.2
     # via
     #   tox
     #   virtualenv
@@ -223,9 +223,9 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==21.4.2
+virtualenv==21.5.0
     # via tox
-wcwidth==0.8.0
+wcwidth==0.8.1
     # via prompt-toolkit
 
 # The following packages are considered to be unsafe in a requirements file:
