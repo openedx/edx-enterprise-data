@@ -14,8 +14,11 @@ Change Log
 Unreleased
 ----------
 
+[10.22.6] - 2026-06-15
+-----------------------
+  * chore: upgrade python requirements
 
-[10.22.5] - 2026-04-27
+[10.22.5] - 2026-06-01
 -----------------------
   * feat: add passing grade column plus per-enrollment progress caching in learner progress report v1 API and CSV export
 
