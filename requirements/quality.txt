@@ -14,17 +14,17 @@ astroid==4.0.4
     # via
     #   pylint
     #   pylint-celery
-awscli==1.45.24
+awscli==1.45.29
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
 billiard==4.2.4
     # via celery
-boto3==1.43.24
+boto3==1.43.29
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.43.24
+botocore==1.43.29
     # via
     #   awscli
     #   boto3
@@ -78,7 +78,7 @@ colorama==0.4.6
     #   tox
 coverage[toml]==7.14.1
     # via pytest-cov
-cryptography==48.0.0
+cryptography==49.0.0
     # via
     #   -r requirements/reporting.in
     #   django-fernet-fields-v2
@@ -94,7 +94,7 @@ diff-cover==10.3.0
     # via -r requirements/dev-enterprise_data.in
 dill==0.4.1
     # via pylint
-distlib==0.4.1
+distlib==0.4.3
     # via virtualenv
 django==4.2.30
     # via
@@ -171,9 +171,9 @@ factory-boy==3.3.3
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==40.21.0
+faker==40.23.0
     # via factory-boy
-filelock==3.29.1
+filelock==3.29.4
     # via
     #   python-discovery
     #   snowflake-connector-python
@@ -316,7 +316,7 @@ pyjwt[crypto]==2.13.0
     #   edx-drf-extensions
     #   edx-rest-api-client
     #   snowflake-connector-python
-pylint==4.0.5
+pylint==4.0.6
     # via
     #   edx-lint
     #   pylint-celery
@@ -338,7 +338,7 @@ pynacl==1.6.2
     # via
     #   edx-django-utils
     #   paramiko
-pyopenssl==26.2.0
+pyopenssl==26.3.0
     # via snowflake-connector-python
 pyproject-api==1.10.1
     # via tox
@@ -346,7 +346,7 @@ pyproject-hooks==1.2.0
     # via
     #   build
     #   pip-tools
-pytest==9.0.3
+pytest==9.1.0
     # via
     #   pytest-cov
     #   pytest-django
@@ -360,7 +360,7 @@ python-dateutil==2.9.0.post0
     #   celery
     #   freezegun
     #   vertica-python
-python-discovery==1.4.0
+python-discovery==1.4.2
     # via
     #   tox
     #   virtualenv
@@ -430,7 +430,7 @@ stevedore==5.8.0
     #   code-annotations
     #   edx-django-utils
     #   edx-opaque-keys
-testfixtures==12.0.0
+testfixtures==12.0.1
     # via
     #   -r requirements/quality.in
     #   -r requirements/test.in
@@ -473,9 +473,9 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==21.4.2
+virtualenv==21.5.0
     # via tox
-wcwidth==0.8.0
+wcwidth==0.8.1
     # via prompt-toolkit
 wheel==0.47.0
     # via

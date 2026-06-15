@@ -10,17 +10,17 @@ asgiref==3.11.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.45.24
+awscli==1.45.29
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
 billiard==4.2.4
     # via celery
-boto3==1.43.24
+boto3==1.43.29
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.43.24
+botocore==1.43.29
     # via
     #   awscli
     #   boto3
@@ -58,7 +58,7 @@ colorama==0.4.6
     # via awscli
 coverage[toml]==7.14.1
     # via pytest-cov
-cryptography==48.0.0
+cryptography==49.0.0
     # via
     #   -r requirements/reporting.in
     #   django-fernet-fields-v2
@@ -137,9 +137,9 @@ factory-boy==3.3.3
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==40.21.0
+faker==40.23.0
     # via factory-boy
-filelock==3.29.1
+filelock==3.29.4
     # via snowflake-connector-python
 flaky==3.8.1
     # via -r requirements/test.in
@@ -219,9 +219,9 @@ pynacl==1.6.2
     # via
     #   edx-django-utils
     #   paramiko
-pyopenssl==26.2.0
+pyopenssl==26.3.0
     # via snowflake-connector-python
-pytest==9.0.3
+pytest==9.1.0
     # via
     #   pytest-cov
     #   pytest-django
@@ -281,7 +281,7 @@ stevedore==5.8.0
     # via
     #   edx-django-utils
     #   edx-opaque-keys
-testfixtures==12.0.0
+testfixtures==12.0.1
     # via -r requirements/test.in
 tomlkit==0.15.0
     # via snowflake-connector-python
@@ -309,7 +309,7 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-wcwidth==0.8.0
+wcwidth==0.8.1
     # via prompt-toolkit
 
 # The following packages are considered to be unsafe in a requirements file:
