@@ -13,6 +13,9 @@ Change Log
 
 Unreleased
 ----------
+[10.22.7] - 2026-06-16
+-----------------------
+  * feat: add private_key and passphrase authenticate snowflake connection
 
 [10.22.6] - 2026-06-15
 -----------------------
