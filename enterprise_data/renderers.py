@@ -73,6 +73,9 @@ class IndividualEngagementsCSVRenderer(CSVStreamingRenderer):
         'enroll_type',
         'activity_date',
         'learning_time_hours',
+        'is_engaged_video',
+        'is_engaged_forum',
+        'is_engaged_problem',
     ]
 
 
