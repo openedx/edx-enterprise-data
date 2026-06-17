@@ -5,7 +5,7 @@ Classes
 -------
 SnowflakeCourseProgressSource
     Fetches COURSE_PROGRESS per ``(enterprise_customer_uuid, user_email, courserun_key)``
-    from ``LEARNER_PROGRESS_REPORT_INTERNAL``.  Results are cached per (enterprise, pair).
+    from ``LEARNER_PROGRESS_REPORT_EXTERNAL``.  Results are cached per (enterprise, pair).
 
 SnowflakeCoursePassingGradeSource
     Fetches LOWEST_PASSING_GRADE per ``courserun_key`` from
@@ -16,16 +16,18 @@ SnowflakeCoursePassingGradeSource
 Required Django settings
 ------------------------
   SNOWFLAKE_SERVICE_USER
-  SNOWFLAKE_SERVICE_USER_PASSWORD
+  SNOWFLAKE_SERVICE_PRIVKEY    PEM-encoded private key string
+  SNOWFLAKE_SERVICE_PASSPHRASE Passphrase to decrypt the private key
 
 Optional Django settings (with defaults)
 -----------------------------------------
   SNOWFLAKE_ACCOUNT                          = 'edx.us-east-1'
+  SNOWFLAKE_ROLE                             = 'ENTERPRISE_SERVICE_USER_ROLE'
   LPR_SNOWFLAKE_WAREHOUSE                    = None
   LPR_SNOWFLAKE_ROLE                         = None
   LPR_SNOWFLAKE_DATABASE                     = 'PROD'
   LPR_SNOWFLAKE_SCHEMA                       = 'ENTERPRISE'
-  LPR_SNOWFLAKE_INTERNAL_TABLE               = 'LEARNER_PROGRESS_REPORT_INTERNAL'
+  LPR_SNOWFLAKE_EXTERNAL_TABLE               = 'LEARNER_PROGRESS_REPORT_EXTERNAL'
   LPR_COURSE_PROGRESS_CACHE_TIMEOUT          = 300    (5 min)
   LPR_SNOWFLAKE_LMS_DATABASE                 = 'PROD'
   LPR_SNOWFLAKE_LMS_SCHEMA                   = 'LMS'
@@ -52,69 +54,91 @@ DEFAULT_COURSE_PASSING_GRADE_NEGATIVE_CACHE_TIMEOUT = 60 * 60  # 1 hour
 SNOWFLAKE_QUERY_BATCH_SIZE = 500
 
 try:
-    import snowflake.connector as snowflake_connector
+    import snowflake.connector as _snowflake_connector
 except ImportError:  # pragma: no cover - depends on runtime extras
-    snowflake_connector = None
+    _snowflake_connector = None
     LOGGER.warning(
         '[course_progress] snowflake-connector-python is not installed. '
         'course_progress will be null. Add snowflake-connector-python to requirements/base.in.'
     )
 
-snowflake = SimpleNamespace(connector=snowflake_connector)
+_snowflake = SimpleNamespace(connector=_snowflake_connector)
+
+try:
+    from cryptography.hazmat.backends import default_backend as _default_backend
+    from cryptography.hazmat.primitives import serialization as _serialization
+except ImportError:  # pragma: no cover - optional dependency
+    _default_backend = None  # type: ignore[assignment]
+    _serialization = None  # type: ignore[assignment]
 
 
 # ---------------------------------------------------------------------------
-# Shared connection factory
+# Module-level connection factory (private-key authentication)
 # ---------------------------------------------------------------------------
 
-def _get_snowflake_connection():
+def _get_snowflake_connection(warehouse=None, role=None):
     """
-    Open and return a Snowflake connection from Django settings.
+    Open and return a Snowflake connection using private-key authentication.
 
-    The returned ``SnowflakeConnection`` object supports the context-manager
-    protocol (``__enter__`` returns ``self``), so callers should use it inside
-    a ``with`` block::
+    Credentials are read from Django settings.  The returned
+    ``SnowflakeConnection`` supports the context-manager protocol::
 
-        with _get_snowflake_connection() as conn:
+        with _get_snowflake_connection(warehouse='MY_WH') as conn:
             with conn.cursor() as cur:
                 cur.execute(...)
 
-    Required settings: SNOWFLAKE_SERVICE_USER, SNOWFLAKE_SERVICE_USER_PASSWORD.
-    Optional settings: SNOWFLAKE_ACCOUNT (default ``'edx.us-east-1'``),
-    LPR_SNOWFLAKE_WAREHOUSE, LPR_SNOWFLAKE_ROLE.
+    Args:
+        warehouse (str | None): Snowflake virtual warehouse to activate.
+        role (str | None): Snowflake role to assume.  Defaults to
+            ``settings.SNOWFLAKE_ROLE`` (fallback: ``'ENTERPRISE_SERVICE_USER_ROLE'``),
+            then overridden by the LPR-specific ``LPR_SNOWFLAKE_ROLE`` setting
+            when passed from ``_snowflake_cursor``.
 
     Raises:
         ImportError: When snowflake-connector-python is not installed.
-        ValueError: When required credentials are absent from settings.
+        ValueError: When required credential settings are absent.
     """
-    if snowflake.connector is None:
+    if _snowflake.connector is None:
         raise ImportError(
             'snowflake-connector-python is required for Snowflake LPR access'
         )
 
     user = getattr(settings, 'SNOWFLAKE_SERVICE_USER', None)
-    password = getattr(settings, 'SNOWFLAKE_SERVICE_USER_PASSWORD', None)
+    key_pem = getattr(settings, 'SNOWFLAKE_SERVICE_PRIVKEY', None)
+    passphrase = getattr(settings, 'SNOWFLAKE_SERVICE_PASSPHRASE', None)
     account = getattr(settings, 'SNOWFLAKE_ACCOUNT', 'edx.us-east-1')
-    warehouse = getattr(settings, 'LPR_SNOWFLAKE_WAREHOUSE', None)
-    role = getattr(settings, 'LPR_SNOWFLAKE_ROLE', None)
+    default_role = getattr(settings, 'SNOWFLAKE_ROLE', 'ENTERPRISE_SERVICE_USER_ROLE')
 
-    if not user or not password:
-        LOGGER.error(
-            '[lpr] Snowflake credentials missing — '
-            'SNOWFLAKE_SERVICE_USER=%s SNOWFLAKE_SERVICE_USER_PASSWORD=%s.',
-            'SET' if user else 'NOT SET',
-            'SET' if password else 'NOT SET',
-        )
-        raise ValueError(
-            'SNOWFLAKE_SERVICE_USER and SNOWFLAKE_SERVICE_USER_PASSWORD must both be configured'
-        )
+    if not user:
+        LOGGER.error('Snowflake credentials missing — SNOWFLAKE_SERVICE_USER is not set.')
+        raise ValueError('SNOWFLAKE_SERVICE_USER must be configured')
+    if not key_pem:
+        LOGGER.error('Snowflake credentials missing — SNOWFLAKE_SERVICE_PRIVKEY is not set.')
+        raise ValueError('SNOWFLAKE_SERVICE_PRIVKEY must be configured')
+    if not passphrase:
+        raise ValueError('SNOWFLAKE_SERVICE_PASSPHRASE must be configured')
 
-    connect_kwargs = {'user': user, 'password': password, 'account': account}
+    key_data = key_pem.encode() if isinstance(key_pem, str) else key_pem
+    private_key = _serialization.load_pem_private_key(
+        key_data,
+        password=passphrase.encode() if isinstance(passphrase, str) else passphrase,
+        backend=_default_backend(),
+    )
+    private_key_bytes = private_key.private_bytes(
+        encoding=_serialization.Encoding.DER,
+        format=_serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=_serialization.NoEncryption(),
+    )
+
+    connect_kwargs = {
+        'user': user,
+        'account': account,
+        'private_key': private_key_bytes,
+        'role': role or default_role,
+    }
     if warehouse:
         connect_kwargs['warehouse'] = warehouse
-    if role:
-        connect_kwargs['role'] = role
-    return snowflake.connector.connect(**connect_kwargs)
+    return _snowflake.connector.connect(**connect_kwargs)
 
 
 # ---------------------------------------------------------------------------
@@ -141,7 +165,9 @@ class SnowflakeLPRBaseSource:
         Uses ``_get_snowflake_connection()`` (module-level) so that the
         connection factory can be independently mocked in tests.
         """
-        with _get_snowflake_connection() as connection:
+        warehouse = self._get_setting('LPR_SNOWFLAKE_WAREHOUSE', None)
+        role = self._get_setting('LPR_SNOWFLAKE_ROLE', None)
+        with _get_snowflake_connection(warehouse=warehouse, role=role) as connection:
             with connection.cursor() as cursor:
                 yield cursor
 
@@ -154,7 +180,7 @@ class SnowflakeCourseProgressSource(SnowflakeLPRBaseSource):
     """
     Course progress data source backed by Snowflake.
 
-    Fetches COURSE_PROGRESS from ``LEARNER_PROGRESS_REPORT_INTERNAL`` filtered
+    Fetches COURSE_PROGRESS from ``LEARNER_PROGRESS_REPORT_EXTERNAL`` filtered
     by both ``enterprise_customer_uuid`` and the exact ``(user_email,
     courserun_key)`` pairs requested.  Results are cached per pair so that
     repeated page requests never re-query Snowflake for already-seen rows.
@@ -169,7 +195,7 @@ class SnowflakeCourseProgressSource(SnowflakeLPRBaseSource):
         """Return the fully-qualified Snowflake table name for internal LPR data."""
         database = cls._get_setting('LPR_SNOWFLAKE_DATABASE', 'PROD')
         schema = cls._get_setting('LPR_SNOWFLAKE_SCHEMA', 'ENTERPRISE')
-        table = cls._get_setting('LPR_SNOWFLAKE_INTERNAL_TABLE', 'LEARNER_PROGRESS_REPORT_INTERNAL')
+        table = cls._get_setting('LPR_SNOWFLAKE_EXTERNAL_TABLE', 'LEARNER_PROGRESS_REPORT_EXTERNAL')
         return f'{database}.{schema}.{table}'
 
     @classmethod
@@ -380,7 +406,7 @@ class SnowflakeCourseProgressSource(SnowflakeLPRBaseSource):
             if not rows:
                 LOGGER.warning(
                     '[course_progress] Snowflake returned 0 rows for enterprise=%s pairs=%d (batch %d). '
-                    'Verify LEARNER_PROGRESS_REPORT_INTERNAL contains data for this enterprise.',
+                    'Verify LEARNER_PROGRESS_REPORT_EXTERNAL contains data for this enterprise.',
                     enterprise_customer_uuid, len(batch), batch_start,
                 )
             else:
@@ -474,14 +500,6 @@ class SnowflakeCoursePassingGradeSource(SnowflakeLPRBaseSource):
         under a shorter negative TTL to prevent repeated round-trips).  This
         differs from ``SnowflakeCourseProgressSource.get_course_progress_map``,
         which **omits** absent keys from the result entirely.
-
-        Security note: the cache key for passing grades is **not** enterprise-
-        scoped because ``LOWEST_PASSING_GRADE`` is a course-level attribute
-        identical across all enterprises.  Callers **must** only supply
-        courserun keys that were obtained from the requesting enterprise's
-        filtered enrollment queryset; passing attacker-influenced keys that
-        do not belong to the enterprise is not supported and would return
-        that course's threshold from cache or Snowflake.
 
         Args:
             courserun_keys (list[str]): Courserun keys to look up.

@@ -2,13 +2,13 @@
 Tests for clients in enterprise_reporting.
 """
 from datetime import datetime, timedelta
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 from urllib.parse import urljoin
 
 import responses
 
 from django.conf import settings
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from enterprise_reporting.clients.enterprise import EnterpriseAPIClient, EnterpriseCatalogAPIClient
 
@@ -212,3 +212,120 @@ class TestEnterpriseCatalogAPIClient(TestCase):
             results = self.client.get_content_metadata(request_catalogs)
         except Exception as e:
             self.assertEqual(str(e), expected_error_message)
+
+
+class TestGetSnowflakeConnectionReporting(TestCase):
+    """Tests for the module-level _get_snowflake_connection in enterprise_reporting."""
+
+    _MODULE = 'enterprise_reporting.clients.snowflake'
+
+    def _patch_snowflake(self, connector=None):
+        """Return a context manager that replaces the module-level _snowflake namespace."""
+        from types import SimpleNamespace
+        mock_connector = connector or MagicMock()
+        mock_conn = MagicMock()
+        mock_connector.connect.return_value = mock_conn
+        ns = SimpleNamespace(connector=mock_connector)
+        return patch(f'{self._MODULE}._snowflake', ns), mock_connector, mock_conn
+
+    @patch(f'{_MODULE}._serialization')
+    @patch(f'{_MODULE}._default_backend')
+    @override_settings(
+        SNOWFLAKE_SERVICE_USER='svc_user',
+        SNOWFLAKE_SERVICE_PRIVKEY='-----BEGIN ENCRYPTED PRIVATE KEY-----\nfake\n-----END ENCRYPTED PRIVATE KEY-----',
+        SNOWFLAKE_SERVICE_PASSPHRASE='s3cr3t',
+        SNOWFLAKE_ACCOUNT='myaccount',
+        SNOWFLAKE_ROLE='MY_ROLE',
+    )
+    def test_connects_with_private_key(self, mock_backend, mock_serialization):
+        """_get_snowflake_connection loads the PEM key and calls connector.connect."""
+        from enterprise_reporting.clients.snowflake import _get_snowflake_connection
+        mock_key = MagicMock()
+        mock_serialization.load_pem_private_key.return_value = mock_key
+        mock_key.private_bytes.return_value = b'DER_BYTES'
+        mock_connector = MagicMock()
+        patcher, _, _ = self._patch_snowflake(connector=mock_connector)
+        with patcher:
+            _get_snowflake_connection()
+        mock_connector.connect.assert_called_once_with(
+            user='svc_user',
+            account='myaccount',
+            private_key=b'DER_BYTES',
+            role='MY_ROLE',
+        )
+
+    @override_settings(SNOWFLAKE_SERVICE_USER='', SNOWFLAKE_SERVICE_PRIVKEY='k', SNOWFLAKE_SERVICE_PASSPHRASE='p')
+    def test_raises_when_user_missing(self):
+        from enterprise_reporting.clients.snowflake import _get_snowflake_connection
+        with self.assertRaises(ValueError, msg='SNOWFLAKE_SERVICE_USER must be configured'):
+            _get_snowflake_connection()
+
+    @override_settings(SNOWFLAKE_SERVICE_USER='u', SNOWFLAKE_SERVICE_PRIVKEY='', SNOWFLAKE_SERVICE_PASSPHRASE='p')
+    def test_raises_when_privkey_missing(self):
+        from enterprise_reporting.clients.snowflake import _get_snowflake_connection
+        with self.assertRaises(ValueError, msg='SNOWFLAKE_SERVICE_PRIVKEY must be configured'):
+            _get_snowflake_connection()
+
+    @override_settings(SNOWFLAKE_SERVICE_USER='u', SNOWFLAKE_SERVICE_PRIVKEY='k', SNOWFLAKE_SERVICE_PASSPHRASE='')
+    def test_raises_when_passphrase_missing(self):
+        from enterprise_reporting.clients.snowflake import _get_snowflake_connection
+        with self.assertRaises(ValueError, msg='SNOWFLAKE_SERVICE_PASSPHRASE must be configured'):
+            _get_snowflake_connection()
+
+
+class TestSnowflakeClient(TestCase):
+    """Tests for the Snowflake client used in enterprise_reporting."""
+
+    _PATCH = 'enterprise_reporting.clients.snowflake._get_snowflake_connection'
+
+    def _make_connection(self, rows=None):
+        """Return a mock Snowflake connection whose cursor yields *rows*."""
+        cursor = MagicMock()
+        cursor.execute.return_value = iter(rows or [])
+        conn = MagicMock()
+        conn.cursor.return_value = cursor
+        return conn, cursor
+
+    @patch(_PATCH)
+    def test_connect_opens_connection_and_cursor(self, mock_factory):
+        """connect() stores connection and cursor on the instance."""
+        from enterprise_reporting.clients.snowflake import SnowflakeClient
+        conn, cursor = self._make_connection()
+        mock_factory.return_value = conn
+
+        client = SnowflakeClient()
+        client.connect()
+
+        mock_factory.assert_called_once_with()
+        assert client.connection is conn
+        assert client.cursor is cursor
+
+    @patch(_PATCH)
+    def test_close_connection_closes_cursor_and_connection(self, mock_factory):
+        """close_connection() closes both and resets them to None."""
+        from enterprise_reporting.clients.snowflake import SnowflakeClient
+        conn, cursor = self._make_connection()
+        mock_factory.return_value = conn
+
+        client = SnowflakeClient()
+        client.connect()
+        client.close_connection()
+
+        cursor.close.assert_called_once()
+        conn.close.assert_called_once()
+        assert client.connection is None
+        assert client.cursor is None
+
+    @patch(_PATCH)
+    def test_stream_results_yields_formatted_rows(self, mock_factory):
+        """stream_results() formats datetime values and passes others through."""
+        from enterprise_reporting.clients.snowflake import SnowflakeClient
+        dt = datetime(2024, 1, 15, 10, 30, 0)
+        conn, cursor = self._make_connection(rows=[(dt, 'hello', 42)])
+        mock_factory.return_value = conn
+
+        client = SnowflakeClient()
+        client.connect()
+        rows = list(client.stream_results('SELECT 1'))
+
+        assert rows == [['2024-01-15 10:30:00', 'hello', 42]]
