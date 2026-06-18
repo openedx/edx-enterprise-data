@@ -118,7 +118,7 @@ def _get_snowflake_connection(warehouse=None, role=None):
     if not passphrase:
         raise ValueError('SNOWFLAKE_SERVICE_PASSPHRASE must be configured')
 
-    key_data = key_pem.encode() if isinstance(key_pem, str) else key_pem
+    key_data = key_pem.replace("\\n", "\n").encode() if isinstance(key_pem, str) else key_pem
     private_key = _serialization.load_pem_private_key(
         key_data,
         password=passphrase.encode() if isinstance(passphrase, str) else passphrase,
