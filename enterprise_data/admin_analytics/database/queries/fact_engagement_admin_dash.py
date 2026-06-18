@@ -40,7 +40,8 @@ class FactEngagementAdminDashQueries:
         return f"""
             SELECT
                 email, course_title, course_subject, enroll_type, activity_date,
-                learning_time_seconds/3600 as learning_time_hours
+                learning_time_seconds/3600 as learning_time_hours,
+                is_engaged_video, is_engaged_forum, is_engaged_problem
             FROM fact_enrollment_engagement_day_admin_dash
             WHERE {query_filters.to_sql()}
             ORDER BY activity_date DESC LIMIT %(limit)s OFFSET %(offset)s;

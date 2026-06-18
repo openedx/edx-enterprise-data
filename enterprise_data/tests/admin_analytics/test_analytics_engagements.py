@@ -115,27 +115,30 @@ class TestIndividualEngagementsAPI(JWTTestMixin, APITransactionTestCase):
         assert len(content) == 5
 
         # Verify CSV header.
-        assert 'email,course_title,course_subject,enroll_type,activity_date,learning_time_hours' == content[0]
+        assert (
+            'email,course_title,course_subject,enroll_type,activity_date,learning_time_hours,'
+            'is_engaged_video,is_engaged_forum,is_engaged_problem'
+        ) == content[0]
 
         # verify the content
         assert (
                 'padillamichelle@example.org,Synergized reciprocal encoding,business-management,certificate,2021-08-05,'
-                '1.0344444444444445'
+                '1.0344444444444445,1,0,1'
                 in content
         )
         assert (
                 'yallison@example.org,Synergized reciprocal encoding,business-management,certificate,2021-07-27,'
-                '1.2041666666666666'
+                '1.2041666666666666,1,0,1'
                 in content
         )
         assert (
                 'weaverpatricia@example.net,Synergized reciprocal encoding,business-management,certificate,2021-08-05,'
-                '2.6225'
+                '2.6225,1,0,1'
                 in content
         )
         assert (
                 'seth57@example.org,Synergized reciprocal encoding,business-management,certificate,2021-08-21,'
-                '2.7494444444444444'
+                '2.7494444444444444,1,1,1'
                 in content
         )
 

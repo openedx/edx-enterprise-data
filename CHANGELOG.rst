@@ -13,6 +13,11 @@ Change Log
 
 Unreleased
 ----------
+[10.22.8] - 2026-06-17
+-----------------------
+  * feat: add segmented engagement fields to individual engagements API and CSV
+  * fix: handle escaped newlines in Snowflake private key for LPR data source authentication
+
 [10.22.7] - 2026-06-16
 -----------------------
   * feat: add private_key and passphrase authenticate snowflake connection
