@@ -8,17 +8,17 @@ amqp==5.3.1
     # via kombu
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.45.33
+awscli==1.45.36
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
 billiard==4.2.4
     # via celery
-boto3==1.43.33
+boto3==1.43.36
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.43.33
+botocore==1.43.36
     # via
     #   awscli
     #   boto3
@@ -41,7 +41,7 @@ charset-normalizer==3.4.7
     # via
     #   requests
     #   snowflake-connector-python
-click==8.4.1
+click==8.4.2
     # via
     #   celery
     #   click-didyoumean
@@ -57,7 +57,7 @@ colorama==0.4.6
     # via
     #   awscli
     #   tox
-coverage[toml]==7.14.1
+coverage[toml]==7.14.3
     # via pytest-cov
 cryptography==49.0.0
     # via
@@ -198,7 +198,7 @@ tomli-w==1.2.0
     # via tox
 tomlkit==0.15.0
     # via snowflake-connector-python
-tox==4.55.1
+tox==4.56.1
     # via -r requirements/test-reporting.in
 typing-extensions==4.15.0
     # via
