@@ -102,7 +102,7 @@ class TestLeaderboardAPI(JWTTestMixin, APITransactionTestCase):
         assert data['num_pages'] == 1
         assert data['count'] == 14
         assert data['count'] == len(LEADERBOARD_RESPONSE)
-        assert data['num_pages'] == 1 # ceil(count/page_size)
+        assert data['num_pages'] == 1  # ceil(count/page_size)
 
     @patch('enterprise_data.admin_analytics.database.tables.FactEngagementAdminDashTable.get_leaderboard_data_count')
     @patch('enterprise_data.admin_analytics.database.tables.FactEngagementAdminDashTable.get_all_leaderboard_data')
@@ -159,25 +159,21 @@ class TestLeaderboardAPI(JWTTestMixin, APITransactionTestCase):
         assert response.status_code == status.HTTP_200_OK
 
         mock_get_all_leaderboard_data.assert_called_once()
-        _, kwargs = mock_get_all_leaderboard_data.call_args
-
+        kwargs = mock_get_all_leaderboard_data.call_args.kwargs
         assert 'is_engaged' not in kwargs
         assert 'has_passed' not in kwargs
 
     @patch(
         'enterprise_data.admin_analytics.database.tables.'
-
-    'FactEngagementAdminDashTable._get_engagement_data_for_leaderboard'
+        'FactEngagementAdminDashTable._get_engagement_data_for_leaderboard'
     )
     @patch(
         'enterprise_data.admin_analytics.database.tables.'
-
-    'FactEngagementAdminDashTable._get_completion_data_for_leaderboard_query'
+        'FactEngagementAdminDashTable._get_completion_data_for_leaderboard_query'
     )
     @patch(
         'enterprise_data.admin_analytics.database.tables.'
-
-    'FactEngagementAdminDashTable.get_leaderboard_data_count'
+        'FactEngagementAdminDashTable.get_leaderboard_data_count'
     )
     def test_get_includes_non_engaged_learners(
         self, mock_count, mock_completion, mock_engagement
