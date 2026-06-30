@@ -414,18 +414,18 @@ LEADERBOARD_RESPONSE = [
         "course_completions": None,
     },
     {
-        "email": "graceperez@example.com",
-        "sessions": 0,
-        "learning_time_hours": 0.006,  # 21 seconds — previously excluded (is_engaged=0)
-        "average_session_length": 0.006,
-        "course_completion_count": None,
+    "email": "graceperez@example.com",
+    "sessions": 0,
+    "learning_time_hours": 0.006,  # 21 seconds — previously excluded (is_engaged=0)
+    "average_session_length": 0.006,
+    "course_completion_count": None,
     },
     {
-        "email": "samanthaclarke@example.org",
-        "sessions": 0,
-        "learning_time_hours": 0.008,  # 29 seconds — previously excluded (is_engaged=0)
-        "average_session_length": 0.008,
-        "course_completion_count": None,
+    "email": "samanthaclarke@example.org",
+    "sessions": 0,
+    "learning_time_hours": 0.008,  # 29 seconds — previously excluded (is_engaged=0)
+    "average_session_length": 0.008,
+    "course_completion_count": None,
     },
 ]
 
