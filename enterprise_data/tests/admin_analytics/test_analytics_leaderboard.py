@@ -89,8 +89,8 @@ class TestLeaderboardAPI(JWTTestMixin, APITransactionTestCase):
         assert data['next'] == f'http://testserver{self.url}?page=2&page_size=2'
         assert data['previous'] is None
         assert data['current_page'] == 1
-        assert data['num_pages'] == 7
-        assert data['count'] == 14
+        assert data['num_pages'] == 6
+        assert data['count'] == 12
 
         # fetch all records
         response = self.client.get(self.url + '?page_size=20')
@@ -100,7 +100,7 @@ class TestLeaderboardAPI(JWTTestMixin, APITransactionTestCase):
         assert data['previous'] is None
         assert data['current_page'] == 1
         assert data['num_pages'] == 1
-        assert data['count'] == 14
+        assert data['count'] == 12
         assert data['count'] == len(LEADERBOARD_RESPONSE)
         assert data['num_pages'] == 1  # ceil(count/page_size)
 

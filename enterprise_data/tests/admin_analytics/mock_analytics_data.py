@@ -392,11 +392,11 @@ LEADERBOARD_RESPONSE = [
         "average_session_length": 0.0,
         "course_completion_count": None,
     },
-    {
+    {   # UPDATED: was 0.0, now includes non-engaged browsing time (21 seconds)
         "email": "graceperez@example.com",
         "sessions": 0,
-        "learning_time_hours": 0.0,
-        "average_session_length": 0.0,
+        "learning_time_hours": 0.006,
+        "average_session_length": 0.006,
         "course_completion_count": None,
     },
     {
@@ -406,24 +406,10 @@ LEADERBOARD_RESPONSE = [
         "average_session_length": 0.0,
         "course_completion_count": None,
     },
-    {
+    {   # UPDATED: was 0.0, now includes non-engaged browsing time (29 seconds)
         "email": "samanthaclarke@example.org",
         "sessions": 0,
-        "learning_time_hours": 0.0,
-        "average_session_length": 0.0,
-        "course_completion_count": None,
-    },
-    {
-        "email": "graceperez@example.com",
-        "sessions": 0,
-        "learning_time_hours": 0.006,  # 21 seconds — previously excluded (is_engaged=0)
-        "average_session_length": 0.006,
-        "course_completion_count": None,
-    },
-    {
-        "email": "samanthaclarke@example.org",
-        "sessions": 0,
-        "learning_time_hours": 0.008,  # 29 seconds — previously excluded (is_engaged=0)
+        "learning_time_hours": 0.008,
         "average_session_length": 0.008,
         "course_completion_count": None,
     },
