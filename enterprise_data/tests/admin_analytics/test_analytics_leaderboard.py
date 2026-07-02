@@ -149,7 +149,7 @@ class TestLeaderboardAPI(JWTTestMixin, APITransactionTestCase):
         """
         Test leaderboard API uses unfiltered engagement data.
 
-        Leaderboard should not be filtered by is_engaged or has_passed.
+        Leaderboard should not be filtered by is_engaged.
         """
         mock_get_all_leaderboard_data.return_value = LEADERBOARD_RESPONSE
         mock_get_leaderboard_data_count.return_value = len(LEADERBOARD_RESPONSE)
@@ -161,7 +161,6 @@ class TestLeaderboardAPI(JWTTestMixin, APITransactionTestCase):
         mock_get_all_leaderboard_data.assert_called_once()
         kwargs = mock_get_all_leaderboard_data.call_args.kwargs
         assert 'is_engaged' not in kwargs
-        assert 'has_passed' not in kwargs
 
     @patch(
         'enterprise_data.admin_analytics.database.tables.'
@@ -210,34 +209,6 @@ class TestLeaderboardAPI(JWTTestMixin, APITransactionTestCase):
         emails = [r['email'] for r in data['results']]
         assert 'engaged_learner@example.com' in emails
         assert 'non_engaged_learner@example.com' in emails
-
-    @patch('enterprise_data.admin_analytics.database.tables.FactEngagementAdminDashTable.get_leaderboard_data_count')
-    @patch('enterprise_data.admin_analytics.database.tables.FactEngagementAdminDashTable.get_all_leaderboard_data')
-    def test_get_includes_non_passed_completions(
-        self, mock_get_all_leaderboard_data, mock_get_leaderboard_data_count
-    ):
-        """
-        Test that leaderboard course_completion_count includes enrollments
-        where has_passed=0. After ENT-11979, the has_passed filter is removed.
-        """
-        mock_data = [
-            {
-                "email": "learner1@example.com",
-                "sessions": 1,
-                "learning_time_hours": 3.0,
-                "average_session_length": 3.0,
-                "course_completion_count": 3,  # includes passed + not passed
-            },
-        ]
-        mock_get_all_leaderboard_data.return_value = mock_data
-        mock_get_leaderboard_data_count.return_value = 1
-
-        response = self.client.get(self.url)
-        assert response.status_code == status.HTTP_200_OK
-        data = response.json()
-
-        # course_completion_count should include all enrollments, not just passed
-        assert data['results'][0]['course_completion_count'] == 3
 
     @patch('enterprise_data.admin_analytics.database.tables.FactEngagementAdminDashTable.get_leaderboard_data_count')
     @patch('enterprise_data.admin_analytics.database.tables.FactEngagementAdminDashTable.get_all_leaderboard_data')

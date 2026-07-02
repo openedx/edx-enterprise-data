@@ -505,6 +505,7 @@ class FactEngagementAdminDashTable(BaseTable):
             'course_product_line': course_type,
             'course_key': course_key,
             'subsidy_access_policy_uuid': budget_uuid,
+            'has_passed': 1
         }
         in_filters = {
             'email': email_list
