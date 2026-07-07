@@ -1,11 +1,11 @@
 """
 Caching related utility classes and functions.
 """
+
 import hashlib
 
-from edx_django_utils.cache import TieredCache
-
 from django.core.cache import cache
+from edx_django_utils.cache import TieredCache
 
 DEFAULT_TIMEOUT = 60 * 60  # 1 hour
 
@@ -31,12 +31,11 @@ def get_key(*args, **kwargs):
     Returns:
          (str): An MD5 encoded key uniquely identified by the key word arguments.
     """
-    key = '{}__{}'.format(
-        '__'.join(map(str, args)),
-        '__'.join(['{}:{}'.format(item, str(value)) for item, value in kwargs.items()])
+    key = "{}__{}".format(
+        "__".join(map(str, args)), "__".join([f"{item}:{str(value)}" for item, value in kwargs.items()])
     )
 
-    return hashlib.md5(key.encode('utf-8')).hexdigest()
+    return hashlib.md5(key.encode("utf-8")).hexdigest()
 
 
 def get(key):

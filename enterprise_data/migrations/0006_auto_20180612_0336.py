@@ -5,20 +5,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('enterprise_data', '0005_auto_20180524_2204'),
+        ("enterprise_data", "0005_auto_20180524_2204"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='enterpriseenrollment',
-            name='last_activity_timestamp',
+            model_name="enterpriseenrollment",
+            name="last_activity_timestamp",
             field=models.DateTimeField(null=True),
         ),
         migrations.AddField(
-            model_name='enterpriseenrollment',
-            name='user_country_code',
+            model_name="enterpriseenrollment",
+            name="user_country_code",
             field=models.CharField(max_length=2, null=True),
         ),
     ]

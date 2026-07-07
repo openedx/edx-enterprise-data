@@ -17,4 +17,3 @@ class EnterpriseDataAppConfig(AppConfig):
         """
         Perform tasks when the Django application is ready.
         """
-        import enterprise_data.signals

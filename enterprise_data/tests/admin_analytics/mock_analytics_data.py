@@ -135,7 +135,7 @@ ENGAGEMENTS = [
         "is_engaged_forum": 0,
         "is_engaged_problem": 1,
         "is_active": 1,
-        "learning_time_hours": 3724/3600,
+        "learning_time_hours": 3724 / 3600,
         "learning_time_seconds": 3724,
     },
     {
@@ -152,7 +152,7 @@ ENGAGEMENTS = [
         "is_engaged_forum": 0,
         "is_engaged_problem": 1,
         "is_active": 1,
-        "learning_time_hours": 4335/3600,
+        "learning_time_hours": 4335 / 3600,
         "learning_time_seconds": 4335,
     },
     {
@@ -169,7 +169,7 @@ ENGAGEMENTS = [
         "is_engaged_forum": 0,
         "is_engaged_problem": 1,
         "is_active": 1,
-        "learning_time_hours": 9441/3600,
+        "learning_time_hours": 9441 / 3600,
         "learning_time_seconds": 9441,
     },
     {
@@ -186,7 +186,7 @@ ENGAGEMENTS = [
         "is_engaged_forum": 1,
         "is_engaged_problem": 1,
         "is_active": 1,
-        "learning_time_hours": 9898/3600,
+        "learning_time_hours": 9898 / 3600,
         "learning_time_seconds": 9898,
     },
     {
@@ -220,7 +220,7 @@ ENGAGEMENTS = [
         "is_engaged_forum": 0,
         "is_engaged_problem": 0,
         "is_active": 1,
-        "learning_time_hours": 21/3600,
+        "learning_time_hours": 21 / 3600,
         "learning_time_seconds": 21,
     },
     {
@@ -237,7 +237,7 @@ ENGAGEMENTS = [
         "is_engaged_forum": 0,
         "is_engaged_problem": 1,
         "is_active": 1,
-        "learning_time_hours": 4747/3600,
+        "learning_time_hours": 4747 / 3600,
         "learning_time_seconds": 4747,
     },
     {
@@ -271,7 +271,7 @@ ENGAGEMENTS = [
         "is_engaged_forum": 1,
         "is_engaged_problem": 1,
         "is_active": 1,
-        "learning_time_hours": 5285/3600,
+        "learning_time_hours": 5285 / 3600,
         "learning_time_seconds": 5285,
     },
     {
@@ -305,7 +305,7 @@ ENGAGEMENTS = [
         "is_engaged_forum": 1,
         "is_engaged_problem": 1,
         "is_active": 1,
-        "learning_time_hours": 15753/3600,
+        "learning_time_hours": 15753 / 3600,
         "learning_time_seconds": 15753,
     },
     {
@@ -322,9 +322,9 @@ ENGAGEMENTS = [
         "is_engaged_forum": 0,
         "is_engaged_problem": 0,
         "is_active": 1,
-        "learning_time_hours": 29/3600,
+        "learning_time_hours": 29 / 3600,
         "learning_time_seconds": 29,
-    }
+    },
 ]
 
 
@@ -421,66 +421,23 @@ TOP_SKILLS = [
         "skill_name": "Python (Programming Language)",
         "skill_type": "Specialized Skill",
         "enrolls": 19027.0,
-        "completions": 3004.0
+        "completions": 3004.0,
     },
-    {
-        "skill_name": "Data Science",
-        "skill_type": "Specialized Skill",
-        "enrolls": 13756.0,
-        "completions": 1517.0
-    },
-    {
-        "skill_name": "Algorithms",
-        "skill_type": "Specialized Skill",
-        "enrolls": 12776.0,
-        "completions": 1640.0
-    },
+    {"skill_name": "Data Science", "skill_type": "Specialized Skill", "enrolls": 13756.0, "completions": 1517.0},
+    {"skill_name": "Algorithms", "skill_type": "Specialized Skill", "enrolls": 12776.0, "completions": 1640.0},
 ]
 TOP_SKILLS_BY_ENROLLMENTS = [
-    {
-        "skill_name": "Python (Programming Language)",
-        "subject_name": "business-management",
-        "count": 313.0
-    },
-    {
-        "skill_name": "Machine Learning",
-        "subject_name": "business-management",
-        "count": 442.0
-    },
-    {
-        "skill_name": "Computer Science",
-        "subject_name": "business-management",
-        "count": 39.0
-    },
+    {"skill_name": "Python (Programming Language)", "subject_name": "business-management", "count": 313.0},
+    {"skill_name": "Machine Learning", "subject_name": "business-management", "count": 442.0},
+    {"skill_name": "Computer Science", "subject_name": "business-management", "count": 39.0},
 ]
 TOP_SKILLS_BY_COMPLETIONS = [
-    {
-        "skill_name": "Python (Programming Language)",
-        "subject_name": "business-management",
-        "count": 21.0
-    },
-    {
-        "skill_name": "SQL (Programming Language)",
-        "subject_name": "business-management",
-        "count": 11.0
-    },
-    {
-        "skill_name": "Algorithms",
-        "subject_name": "business-management",
-        "count": 15.0
-    },
+    {"skill_name": "Python (Programming Language)", "subject_name": "business-management", "count": 21.0},
+    {"skill_name": "SQL (Programming Language)", "subject_name": "business-management", "count": 11.0},
+    {"skill_name": "Algorithms", "subject_name": "business-management", "count": 15.0},
 ]
 SKILLS_BY_LEARNING_HOURS = [
-    {
-        "skill_name": "Python (Programming Language)",
-        "learning_hours": 100.0
-    },
-    {
-        "skill_name": "Data Science",
-        "learning_hours": 80.0
-    },
-    {
-        "skill_name": "Algorithms",
-        "learning_hours": 60.0
-    },
+    {"skill_name": "Python (Programming Language)", "learning_hours": 100.0},
+    {"skill_name": "Data Science", "learning_hours": 80.0},
+    {"skill_name": "Algorithms", "learning_hours": 60.0},
 ]

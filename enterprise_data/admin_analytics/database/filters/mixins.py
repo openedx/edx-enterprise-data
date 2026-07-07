@@ -1,8 +1,8 @@
 """
 Common query filters for all tables.
 """
+
 from logging import getLogger
-from typing import Optional, Tuple
 from uuid import UUID
 
 from enterprise_data.admin_analytics.database.filters.base import BaseFilter
@@ -17,6 +17,7 @@ class CommonFiltersMixin(BaseFilter):
     """
     Common filters.
     """
+
     @staticmethod
     def enterprise_customer_uuid_filter(enterprise_customer_uuid_params_key: str) -> EqualQueryFilter:
         """
@@ -26,16 +27,12 @@ class CommonFiltersMixin(BaseFilter):
             enterprise_customer_uuid_params_key: The key against which value will be passed in the query.
         """
         return EqualQueryFilter(
-            column='enterprise_customer_uuid',
+            column="enterprise_customer_uuid",
             value_placeholder=enterprise_customer_uuid_params_key,
         )
 
     @staticmethod
-    def date_range_filter(
-        column: str,
-        start_date_params_key: str,
-        end_date_params_key: str
-    ) -> BetweenQueryFilter:
+    def date_range_filter(column: str, start_date_params_key: str, end_date_params_key: str) -> BetweenQueryFilter:
         """
         Filter by a table column to be in the given date range.
 
@@ -50,10 +47,8 @@ class CommonFiltersMixin(BaseFilter):
         )
 
     def enterprise_user_query_filter(  # pylint: disable=inconsistent-return-statements
-        self,
-        group_uuid: Optional[UUID],
-        enterprise_customer_uuid: UUID
-    ) -> Optional[Tuple[INQueryFilter, dict]]:
+        self, group_uuid: UUID | None, enterprise_customer_uuid: UUID
+    ) -> tuple[INQueryFilter, dict] | None:
         """
         Get the query filter to filter enrollments for enterprise users in the given group.
 
@@ -76,9 +71,9 @@ class CommonFiltersMixin(BaseFilter):
                 enterprise_customer_uuid,
             )
         else:
-            params = {f'eu_{i}': i for i in learners_in_group}
+            params = {f"eu_{i}": i for i in learners_in_group}
             enterprise_user_id_in_filter = INQueryFilter(
-                column='enterprise_user_id',
+                column="enterprise_user_id",
                 values_placeholders=list(params.keys()),
             )
             return enterprise_user_id_in_filter, params

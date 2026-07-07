@@ -46,7 +46,7 @@ from enterprise_data import cache
 
 LOGGER = logging.getLogger(__name__)
 
-DEFAULT_COURSE_PROGRESS_CACHE_TIMEOUT = 60 * 5           # 5 minutes
+DEFAULT_COURSE_PROGRESS_CACHE_TIMEOUT = 60 * 5  # 5 minutes
 DEFAULT_COURSE_PASSING_GRADE_CACHE_TIMEOUT = 60 * 60 * 24  # 24 hours
 DEFAULT_COURSE_PASSING_GRADE_NEGATIVE_CACHE_TIMEOUT = 60 * 60  # 1 hour
 
@@ -58,8 +58,8 @@ try:
 except ImportError:  # pragma: no cover - depends on runtime extras
     _snowflake_connector = None
     LOGGER.warning(
-        '[course_progress] snowflake-connector-python is not installed. '
-        'course_progress will be null. Add snowflake-connector-python to requirements/base.in.'
+        "[course_progress] snowflake-connector-python is not installed. "
+        "course_progress will be null. Add snowflake-connector-python to requirements/base.in."
     )
 
 _snowflake = SimpleNamespace(connector=_snowflake_connector)
@@ -75,6 +75,7 @@ except ImportError:  # pragma: no cover - optional dependency
 # ---------------------------------------------------------------------------
 # Module-level connection factory (private-key authentication)
 # ---------------------------------------------------------------------------
+
 
 def _get_snowflake_connection(warehouse=None, role=None):
     """
@@ -99,24 +100,22 @@ def _get_snowflake_connection(warehouse=None, role=None):
         ValueError: When required credential settings are absent.
     """
     if _snowflake.connector is None:
-        raise ImportError(
-            'snowflake-connector-python is required for Snowflake LPR access'
-        )
+        raise ImportError("snowflake-connector-python is required for Snowflake LPR access")
 
-    user = getattr(settings, 'SNOWFLAKE_SERVICE_USER', None)
-    key_pem = getattr(settings, 'SNOWFLAKE_SERVICE_PRIVKEY', None)
-    passphrase = getattr(settings, 'SNOWFLAKE_SERVICE_PASSPHRASE', None)
-    account = getattr(settings, 'SNOWFLAKE_ACCOUNT', 'edx.us-east-1')
-    default_role = getattr(settings, 'SNOWFLAKE_ROLE', 'ENTERPRISE_SERVICE_USER_ROLE')
+    user = getattr(settings, "SNOWFLAKE_SERVICE_USER", None)
+    key_pem = getattr(settings, "SNOWFLAKE_SERVICE_PRIVKEY", None)
+    passphrase = getattr(settings, "SNOWFLAKE_SERVICE_PASSPHRASE", None)
+    account = getattr(settings, "SNOWFLAKE_ACCOUNT", "edx.us-east-1")
+    default_role = getattr(settings, "SNOWFLAKE_ROLE", "ENTERPRISE_SERVICE_USER_ROLE")
 
     if not user:
-        LOGGER.error('Snowflake credentials missing — SNOWFLAKE_SERVICE_USER is not set.')
-        raise ValueError('SNOWFLAKE_SERVICE_USER must be configured')
+        LOGGER.error("Snowflake credentials missing — SNOWFLAKE_SERVICE_USER is not set.")
+        raise ValueError("SNOWFLAKE_SERVICE_USER must be configured")
     if not key_pem:
-        LOGGER.error('Snowflake credentials missing — SNOWFLAKE_SERVICE_PRIVKEY is not set.')
-        raise ValueError('SNOWFLAKE_SERVICE_PRIVKEY must be configured')
+        LOGGER.error("Snowflake credentials missing — SNOWFLAKE_SERVICE_PRIVKEY is not set.")
+        raise ValueError("SNOWFLAKE_SERVICE_PRIVKEY must be configured")
     if not passphrase:
-        raise ValueError('SNOWFLAKE_SERVICE_PASSPHRASE must be configured')
+        raise ValueError("SNOWFLAKE_SERVICE_PASSPHRASE must be configured")
 
     key_data = key_pem.replace("\\n", "\n").encode() if isinstance(key_pem, str) else key_pem
     private_key = _serialization.load_pem_private_key(
@@ -131,19 +130,20 @@ def _get_snowflake_connection(warehouse=None, role=None):
     )
 
     connect_kwargs = {
-        'user': user,
-        'account': account,
-        'private_key': private_key_bytes,
-        'role': role or default_role,
+        "user": user,
+        "account": account,
+        "private_key": private_key_bytes,
+        "role": role or default_role,
     }
     if warehouse:
-        connect_kwargs['warehouse'] = warehouse
+        connect_kwargs["warehouse"] = warehouse
     return _snowflake.connector.connect(**connect_kwargs)
 
 
 # ---------------------------------------------------------------------------
 # Base class
 # ---------------------------------------------------------------------------
+
 
 class SnowflakeLPRBaseSource:
     """Shared base for Snowflake LPR data sources.
@@ -165,8 +165,8 @@ class SnowflakeLPRBaseSource:
         Uses ``_get_snowflake_connection()`` (module-level) so that the
         connection factory can be independently mocked in tests.
         """
-        warehouse = self._get_setting('LPR_SNOWFLAKE_WAREHOUSE', None)
-        role = self._get_setting('LPR_SNOWFLAKE_ROLE', None)
+        warehouse = self._get_setting("LPR_SNOWFLAKE_WAREHOUSE", None)
+        role = self._get_setting("LPR_SNOWFLAKE_ROLE", None)
         with _get_snowflake_connection(warehouse=warehouse, role=role) as connection:
             with connection.cursor() as cursor:
                 yield cursor
@@ -175,6 +175,7 @@ class SnowflakeLPRBaseSource:
 # ---------------------------------------------------------------------------
 # SnowflakeCourseProgressSource
 # ---------------------------------------------------------------------------
+
 
 class SnowflakeCourseProgressSource(SnowflakeLPRBaseSource):
     """
@@ -193,15 +194,15 @@ class SnowflakeCourseProgressSource(SnowflakeLPRBaseSource):
     @classmethod
     def _internal_table(cls):
         """Return the fully-qualified Snowflake table name for internal LPR data."""
-        database = cls._get_setting('LPR_SNOWFLAKE_DATABASE', 'PROD')
-        schema = cls._get_setting('LPR_SNOWFLAKE_SCHEMA', 'ENTERPRISE')
-        table = cls._get_setting('LPR_SNOWFLAKE_EXTERNAL_TABLE', 'LEARNER_PROGRESS_REPORT_EXTERNAL')
-        return f'{database}.{schema}.{table}'
+        database = cls._get_setting("LPR_SNOWFLAKE_DATABASE", "PROD")
+        schema = cls._get_setting("LPR_SNOWFLAKE_SCHEMA", "ENTERPRISE")
+        table = cls._get_setting("LPR_SNOWFLAKE_EXTERNAL_TABLE", "LEARNER_PROGRESS_REPORT_EXTERNAL")
+        return f"{database}.{schema}.{table}"
 
     @classmethod
     def _cache_timeout(cls):
         """Return the configurable TTL (seconds) for enterprise cache entries."""
-        return cls._get_setting('LPR_COURSE_PROGRESS_CACHE_TIMEOUT', DEFAULT_COURSE_PROGRESS_CACHE_TIMEOUT)
+        return cls._get_setting("LPR_COURSE_PROGRESS_CACHE_TIMEOUT", DEFAULT_COURSE_PROGRESS_CACHE_TIMEOUT)
 
     # ------------------------------------------------------------------
     # Key normalisation
@@ -210,7 +211,7 @@ class SnowflakeCourseProgressSource(SnowflakeLPRBaseSource):
     @staticmethod
     def _normalized_enterprise_uuid(enterprise_customer_uuid):
         """Normalise an enterprise UUID to the Snowflake comparison format (no hyphens, lowercase)."""
-        return str(enterprise_customer_uuid).replace('-', '').lower()
+        return str(enterprise_customer_uuid).replace("-", "").lower()
 
     @staticmethod
     def _normalized_row_key(user_email, courserun_key):
@@ -225,7 +226,7 @@ class SnowflakeCourseProgressSource(SnowflakeLPRBaseSource):
     def _pair_cache_key(cls, enterprise_customer_uuid, user_email, courserun_key):
         """Return a per-enterprise, per-``(email, courserun_key)`` cache key for course progress."""
         return cache.get_key(
-            'lpr_course_progress',
+            "lpr_course_progress",
             cls._internal_table(),
             cls._normalized_enterprise_uuid(enterprise_customer_uuid),
             str(user_email).strip(),
@@ -258,8 +259,8 @@ class SnowflakeCourseProgressSource(SnowflakeLPRBaseSource):
         """
         LOGGER.info(
             (
-                '[course_progress] enterprise=%s requested=%d cache_hits=%d '
-                'negative_cache_hits=%d missing=%d snowflake_rows=%d'
+                "[course_progress] enterprise=%s requested=%d cache_hits=%d "
+                "negative_cache_hits=%d missing=%d snowflake_rows=%d"
             ),
             enterprise_customer_uuid,
             requested,
@@ -296,11 +297,13 @@ class SnowflakeCourseProgressSource(SnowflakeLPRBaseSource):
         sources raise on error rather than silently swallowing exceptions.
         """
         # Deduplicate while preserving order.
-        requested_pairs = list(dict.fromkeys(
-            self._normalized_row_key(row.get('user_email', ''), row.get('courserun_key', ''))
-            for row in enrollments
-            if row.get('user_email') and row.get('courserun_key')
-        ))
+        requested_pairs = list(
+            dict.fromkeys(
+                self._normalized_row_key(row.get("user_email", ""), row.get("courserun_key", ""))
+                for row in enrollments
+                if row.get("user_email") and row.get("courserun_key")
+            )
+        )
         if not requested_pairs:
             return {}
 
@@ -310,10 +313,7 @@ class SnowflakeCourseProgressSource(SnowflakeLPRBaseSource):
         negative_cache_hits = 0
 
         # Batch cache lookup: one round-trip for all pairs instead of N.
-        pair_to_cache_key = {
-            pair: self._pair_cache_key(enterprise_customer_uuid, *pair)
-            for pair in requested_pairs
-        }
+        pair_to_cache_key = {pair: self._pair_cache_key(enterprise_customer_uuid, *pair) for pair in requested_pairs}
         cached_values = cache.get_many(list(pair_to_cache_key.values()))
         for pair, ck in pair_to_cache_key.items():
             if ck in cached_values:
@@ -379,11 +379,11 @@ class SnowflakeCourseProgressSource(SnowflakeLPRBaseSource):
         # produce unbounded SQL statements or hit Snowflake's parameter limits.
         result = {}
         for batch_start in range(0, len(pairs), SNOWFLAKE_QUERY_BATCH_SIZE):
-            batch = pairs[batch_start: batch_start + SNOWFLAKE_QUERY_BATCH_SIZE]
+            batch = pairs[batch_start : batch_start + SNOWFLAKE_QUERY_BATCH_SIZE]
 
             # Row-value constructor: ``(USER_EMAIL, COURSERUN_KEY) IN ((%s,%s), ...)``
             # Requires snowflake-connector-python >= 2.7.0.
-            placeholders = ', '.join(['(%s, %s)'] * len(batch))
+            placeholders = ", ".join(["(%s, %s)"] * len(batch))
             flat_params = [val for pair in batch for val in pair]
 
             # Table name from Django settings — safe to interpolate.
@@ -395,8 +395,12 @@ class SnowflakeCourseProgressSource(SnowflakeLPRBaseSource):
             )
 
             LOGGER.info(
-                '[course_progress] querying Snowflake table=%s enterprise=%s pairs=%d (batch %d-%d)',
-                table, enterprise_customer_uuid, len(pairs), batch_start, batch_start + len(batch) - 1,
+                "[course_progress] querying Snowflake table=%s enterprise=%s pairs=%d (batch %d-%d)",
+                table,
+                enterprise_customer_uuid,
+                len(pairs),
+                batch_start,
+                batch_start + len(batch) - 1,
             )
 
             with self._snowflake_cursor() as cursor:
@@ -405,14 +409,18 @@ class SnowflakeCourseProgressSource(SnowflakeLPRBaseSource):
 
             if not rows:
                 LOGGER.warning(
-                    '[course_progress] Snowflake returned 0 rows for enterprise=%s pairs=%d (batch %d). '
-                    'Verify LEARNER_PROGRESS_REPORT_EXTERNAL contains data for this enterprise.',
-                    enterprise_customer_uuid, len(batch), batch_start,
+                    "[course_progress] Snowflake returned 0 rows for enterprise=%s pairs=%d (batch %d). "
+                    "Verify LEARNER_PROGRESS_REPORT_EXTERNAL contains data for this enterprise.",
+                    enterprise_customer_uuid,
+                    len(batch),
+                    batch_start,
                 )
             else:
                 LOGGER.info(
-                    '[course_progress] Snowflake returned rows=%d for pairs=%d (batch %d)',
-                    len(rows), len(batch), batch_start,
+                    "[course_progress] Snowflake returned rows=%d for pairs=%d (batch %d)",
+                    len(rows),
+                    len(batch),
+                    batch_start,
                 )
 
             for row in rows:
@@ -442,16 +450,16 @@ class SnowflakeCoursePassingGradeSource(SnowflakeLPRBaseSource):
     @classmethod
     def _course_overviews_table(cls):
         """Return the fully-qualified Snowflake table name for course overviews."""
-        database = cls._get_setting('LPR_SNOWFLAKE_LMS_DATABASE', 'PROD')
-        schema = cls._get_setting('LPR_SNOWFLAKE_LMS_SCHEMA', 'LMS')
-        table = cls._get_setting('LPR_SNOWFLAKE_COURSE_OVERVIEWS_TABLE', 'COURSE_OVERVIEWS_COURSEOVERVIEW')
-        return f'{database}.{schema}.{table}'
+        database = cls._get_setting("LPR_SNOWFLAKE_LMS_DATABASE", "PROD")
+        schema = cls._get_setting("LPR_SNOWFLAKE_LMS_SCHEMA", "LMS")
+        table = cls._get_setting("LPR_SNOWFLAKE_COURSE_OVERVIEWS_TABLE", "COURSE_OVERVIEWS_COURSEOVERVIEW")
+        return f"{database}.{schema}.{table}"
 
     @classmethod
     def _cache_timeout(cls):
         """Return the configurable TTL (seconds) for positive passing-grade cache entries."""
         return cls._get_setting(
-            'LPR_COURSE_PASSING_GRADE_CACHE_TIMEOUT',
+            "LPR_COURSE_PASSING_GRADE_CACHE_TIMEOUT",
             DEFAULT_COURSE_PASSING_GRADE_CACHE_TIMEOUT,
         )
 
@@ -459,7 +467,7 @@ class SnowflakeCoursePassingGradeSource(SnowflakeLPRBaseSource):
     def _negative_cache_timeout(cls):
         """Return the TTL (seconds) for negative (not-found) passing-grade cache entries."""
         return cls._get_setting(
-            'LPR_COURSE_PASSING_GRADE_NEGATIVE_CACHE_TIMEOUT',
+            "LPR_COURSE_PASSING_GRADE_NEGATIVE_CACHE_TIMEOUT",
             DEFAULT_COURSE_PASSING_GRADE_NEGATIVE_CACHE_TIMEOUT,
         )
 
@@ -477,7 +485,7 @@ class SnowflakeCoursePassingGradeSource(SnowflakeLPRBaseSource):
         is the same threshold for all enterprises enrolling in that course.
         """
         return cache.get_key(
-            'lpr_course_passing_grade',
+            "lpr_course_passing_grade",
             cls._course_overviews_table(),
             courserun_key,
         )
@@ -529,8 +537,10 @@ class SnowflakeCoursePassingGradeSource(SnowflakeLPRBaseSource):
                 missing_keys.append(courserun_key)
 
         LOGGER.info(
-            '[course_passing_grade] requested=%d cache_hits=%d missing=%d',
-            len(courserun_keys), len(passing_grade_map), len(missing_keys),
+            "[course_passing_grade] requested=%d cache_hits=%d missing=%d",
+            len(courserun_keys),
+            len(passing_grade_map),
+            len(missing_keys),
         )
 
         if missing_keys:
@@ -558,8 +568,10 @@ class SnowflakeCoursePassingGradeSource(SnowflakeLPRBaseSource):
                 cache.set_many(negative_writes, timeout=self._negative_cache_timeout())
 
             LOGGER.info(
-                '[course_passing_grade] snowflake_rows=%d positive_cached=%d negative_cached=%d',
-                len(fetched), positive_count, negative_count,
+                "[course_passing_grade] snowflake_rows=%d positive_cached=%d negative_cached=%d",
+                len(fetched),
+                positive_count,
+                negative_count,
             )
 
         return passing_grade_map
@@ -588,20 +600,19 @@ class SnowflakeCoursePassingGradeSource(SnowflakeLPRBaseSource):
         # produce unbounded SQL statements or hit Snowflake's parameter limits.
         result = {}
         for batch_start in range(0, len(courserun_keys), SNOWFLAKE_QUERY_BATCH_SIZE):
-            batch = courserun_keys[batch_start: batch_start + SNOWFLAKE_QUERY_BATCH_SIZE]
-            placeholders = ', '.join(['%s'] * len(batch))
+            batch = courserun_keys[batch_start : batch_start + SNOWFLAKE_QUERY_BATCH_SIZE]
+            placeholders = ", ".join(["%s"] * len(batch))
 
             # Table name from Django settings — safe to interpolate.
             # ID is the courserun key string (e.g. ``course-v1:org+X+1``).
-            sql = (
-                f"SELECT ID AS COURSERUN_KEY, LOWEST_PASSING_GRADE "
-                f"FROM {table} "
-                f"WHERE ID IN ({placeholders})"
-            )
+            sql = f"SELECT ID AS COURSERUN_KEY, LOWEST_PASSING_GRADE FROM {table} WHERE ID IN ({placeholders})"
 
             LOGGER.info(
-                '[course_passing_grade] querying Snowflake table=%s keys=%d (batch %d-%d)',
-                table, len(courserun_keys), batch_start, batch_start + len(batch) - 1,
+                "[course_passing_grade] querying Snowflake table=%s keys=%d (batch %d-%d)",
+                table,
+                len(courserun_keys),
+                batch_start,
+                batch_start + len(batch) - 1,
             )
 
             with self._snowflake_cursor() as cursor:
@@ -609,8 +620,10 @@ class SnowflakeCoursePassingGradeSource(SnowflakeLPRBaseSource):
                 rows = cursor.fetchall()
 
             LOGGER.info(
-                '[course_passing_grade] Snowflake returned %d row(s) for %d requested key(s) (batch %d).',
-                len(rows), len(batch), batch_start,
+                "[course_passing_grade] Snowflake returned %d row(s) for %d requested key(s) (batch %d).",
+                len(rows),
+                len(batch),
+                batch_start,
             )
             result.update({row[0]: row[1] for row in rows})
 

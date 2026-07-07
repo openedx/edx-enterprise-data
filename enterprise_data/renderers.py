@@ -15,21 +15,62 @@ class EnrollmentsCSVRenderer(CSVStreamingRenderer):
     # on `admin-portal` should match `progress_v3` csv generated in `enterprise_reporting`
     # Order and field names below should match with `EnterpriseLearnerEnrollmentSerializer.fields`
     header = [
-        'enrollment_id', 'enterprise_enrollment_id', 'is_consent_granted', 'paid_by',
-        'user_current_enrollment_mode', 'enrollment_date', 'unenrollment_date',
-        'unenrollment_end_within_date', 'is_refunded', 'seat_delivery_method',
-        'offer_id', 'offer_name', 'offer_type', 'coupon_code', 'coupon_name', 'contract_id',
-        'course_list_price', 'amount_learner_paid', 'course_key', 'courserun_key',
-        'course_title', 'course_pacing_type', 'course_start_date', 'course_end_date',
-        'course_duration_weeks', 'course_max_effort', 'course_min_effort',
-        'course_primary_program', 'primary_program_type', 'course_primary_subject', 'has_passed',
-        'last_activity_date', 'progress_status', 'passed_date', 'current_grade',
-        'letter_grade', 'enterprise_user_id', 'user_email', 'user_account_creation_date',
-        'user_country_code', 'user_username', 'user_first_name', 'user_last_name', 'enterprise_name',
-        'enterprise_customer_uuid', 'enterprise_sso_uid', 'created', 'course_api_url', 'total_learning_time_hours',
-        'is_subsidy', 'course_product_line', 'budget_id', 'enterprise_flex_group_name', 'enterprise_flex_group_uuid',
-        'course_progress',
-        'course_passing_grade',
+        "enrollment_id",
+        "enterprise_enrollment_id",
+        "is_consent_granted",
+        "paid_by",
+        "user_current_enrollment_mode",
+        "enrollment_date",
+        "unenrollment_date",
+        "unenrollment_end_within_date",
+        "is_refunded",
+        "seat_delivery_method",
+        "offer_id",
+        "offer_name",
+        "offer_type",
+        "coupon_code",
+        "coupon_name",
+        "contract_id",
+        "course_list_price",
+        "amount_learner_paid",
+        "course_key",
+        "courserun_key",
+        "course_title",
+        "course_pacing_type",
+        "course_start_date",
+        "course_end_date",
+        "course_duration_weeks",
+        "course_max_effort",
+        "course_min_effort",
+        "course_primary_program",
+        "primary_program_type",
+        "course_primary_subject",
+        "has_passed",
+        "last_activity_date",
+        "progress_status",
+        "passed_date",
+        "current_grade",
+        "letter_grade",
+        "enterprise_user_id",
+        "user_email",
+        "user_account_creation_date",
+        "user_country_code",
+        "user_username",
+        "user_first_name",
+        "user_last_name",
+        "enterprise_name",
+        "enterprise_customer_uuid",
+        "enterprise_sso_uid",
+        "created",
+        "course_api_url",
+        "total_learning_time_hours",
+        "is_subsidy",
+        "course_product_line",
+        "budget_id",
+        "enterprise_flex_group_name",
+        "enterprise_flex_group_uuid",
+        "course_progress",
+        "course_passing_grade",
     ]
 
 
@@ -39,11 +80,11 @@ class IndividualEnrollmentsCSVRenderer(CSVStreamingRenderer):
     """
 
     header = [
-        'email',
-        'course_title',
-        'course_subject',
-        'enroll_type',
-        'enterprise_enrollment_date',
+        "email",
+        "course_title",
+        "course_subject",
+        "enroll_type",
+        "enterprise_enrollment_date",
     ]
 
 
@@ -53,11 +94,11 @@ class IndividualCompletionsCSVRenderer(CSVStreamingRenderer):
     """
 
     header = [
-        'email',
-        'course_title',
-        'course_subject',
-        'enroll_type',
-        'passed_date',
+        "email",
+        "course_title",
+        "course_subject",
+        "enroll_type",
+        "passed_date",
     ]
 
 
@@ -67,15 +108,15 @@ class IndividualEngagementsCSVRenderer(CSVStreamingRenderer):
     """
 
     header = [
-        'email',
-        'course_title',
-        'course_subject',
-        'enroll_type',
-        'activity_date',
-        'learning_time_hours',
-        'is_engaged_video',
-        'is_engaged_forum',
-        'is_engaged_problem',
+        "email",
+        "course_title",
+        "course_subject",
+        "enroll_type",
+        "activity_date",
+        "learning_time_hours",
+        "is_engaged_video",
+        "is_engaged_forum",
+        "is_engaged_problem",
     ]
 
 
@@ -85,9 +126,9 @@ class LeaderboardCSVRenderer(CSVStreamingRenderer):
     """
 
     header = [
-        'email',
-        'learning_time_hours',
-        'session_count',
-        'average_session_length',
-        'course_completion_count',
+        "email",
+        "learning_time_hours",
+        "session_count",
+        "average_session_length",
+        "course_completion_count",
     ]

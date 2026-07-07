@@ -1,7 +1,8 @@
 """
 Utility functions for fetching data from the database.
 """
-from datetime import timezone
+
+from datetime import UTC
 from logging import getLogger
 
 from enterprise_data.admin_analytics.database import run_query
@@ -20,4 +21,4 @@ def fetch_max_enrollment_datetime():
     results = run_query(query)
     if not results:
         return None
-    return results[0][0].astimezone(timezone.utc)
+    return results[0][0].astimezone(UTC)

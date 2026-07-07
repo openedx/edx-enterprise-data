@@ -2,7 +2,6 @@
 Enterprise Data Paginators.
 """
 
-
 from edx_rest_framework_extensions.paginators import DefaultPagination
 
 

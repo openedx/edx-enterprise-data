@@ -5,35 +5,34 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('enterprise_data', '0007_auto_20180612_0534'),
+        ("enterprise_data", "0007_auto_20180612_0534"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='enterpriseenrollment',
-            name='coupon_code',
+            model_name="enterpriseenrollment",
+            name="coupon_code",
             field=models.CharField(max_length=128, null=True),
         ),
         migrations.AddField(
-            model_name='enterpriseenrollment',
-            name='coupon_name',
+            model_name="enterpriseenrollment",
+            name="coupon_name",
             field=models.CharField(max_length=128, null=True),
         ),
         migrations.AddField(
-            model_name='enterpriseenrollment',
-            name='course_price',
+            model_name="enterpriseenrollment",
+            name="course_price",
             field=models.DecimalField(decimal_places=2, max_digits=12, null=True),
         ),
         migrations.AddField(
-            model_name='enterpriseenrollment',
-            name='discount_price',
+            model_name="enterpriseenrollment",
+            name="discount_price",
             field=models.DecimalField(decimal_places=2, max_digits=12, null=True),
         ),
         migrations.AddField(
-            model_name='enterpriseenrollment',
-            name='final_grade',
+            model_name="enterpriseenrollment",
+            name="final_grade",
             field=models.FloatField(null=True),
         ),
     ]

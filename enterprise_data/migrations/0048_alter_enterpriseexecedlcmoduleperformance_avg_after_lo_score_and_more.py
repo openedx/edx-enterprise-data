@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('enterprise_data', '0047_enterpriseexecedlcmoduleperformance_avg_after_lo_score_and_more'),
+        ("enterprise_data", "0047_enterpriseexecedlcmoduleperformance_avg_after_lo_score_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='enterpriseexecedlcmoduleperformance',
-            name='avg_after_lo_score',
+            model_name="enterpriseexecedlcmoduleperformance",
+            name="avg_after_lo_score",
             field=models.DecimalField(decimal_places=2, max_digits=38, null=True),
         ),
         migrations.AlterField(
-            model_name='enterpriseexecedlcmoduleperformance',
-            name='avg_before_lo_score',
+            model_name="enterpriseexecedlcmoduleperformance",
+            name="avg_before_lo_score",
             field=models.DecimalField(decimal_places=2, max_digits=38, null=True),
         ),
     ]

@@ -19,10 +19,11 @@ class EnterpriseAdminLearnerProgressFactory(factory.django.DjangoModelFactory):
     """
     EnterpriseAdminLearnerProgress Factory.
     """
+
     class Meta:
         model = EnterpriseAdminLearnerProgress
 
-    enterprise_customer_uuid = Faker('uuid4')
+    enterprise_customer_uuid = Faker("uuid4")
     enterprise_customer_name = FAKER.company()
     active_subscription_plan = True
     assigned_licenses = FAKER.pyint(min_value=0)
@@ -40,10 +41,11 @@ class EnterpriseAdminSummarizeInsightsFactory(factory.django.DjangoModelFactory)
     """
     EnterpriseAdminSummarizeInsights Factory.
     """
+
     class Meta:
         model = EnterpriseAdminSummarizeInsights
 
-    enterprise_customer_uuid = Faker('uuid4')
+    enterprise_customer_uuid = Faker("uuid4")
     enterprise_customer_name = FAKER.company()
     enrolls = FAKER.pyint(min_value=0)
     enrolls_prior = FAKER.pyint(min_value=0)

@@ -4,25 +4,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('enterprise_data', '0046_enterprisegroupmembership'),
+        ("enterprise_data", "0046_enterprisegroupmembership"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='enterpriseexecedlcmoduleperformance',
-            name='avg_after_lo_score',
+            model_name="enterpriseexecedlcmoduleperformance",
+            name="avg_after_lo_score",
             field=models.DecimalField(decimal_places=6, max_digits=38, null=True),
         ),
         migrations.AddField(
-            model_name='enterpriseexecedlcmoduleperformance',
-            name='avg_before_lo_score',
+            model_name="enterpriseexecedlcmoduleperformance",
+            name="avg_before_lo_score",
             field=models.DecimalField(decimal_places=6, max_digits=38, null=True),
         ),
         migrations.AddField(
-            model_name='enterpriseexecedlcmoduleperformance',
-            name='question_name',
+            model_name="enterpriseexecedlcmoduleperformance",
+            name="question_name",
             field=models.CharField(max_length=500, null=True),
         ),
     ]

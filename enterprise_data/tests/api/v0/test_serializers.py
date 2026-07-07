@@ -5,10 +5,9 @@ Tests for the `edx-enterprise` serializer module.
 from datetime import timedelta
 
 import ddt
+from django.utils import timezone
 from pytest import mark
 from rest_framework.test import APITransactionTestCase
-
-from django.utils import timezone
 
 from enterprise_data.api.v0.serializers import EnterpriseEnrollment, EnterpriseEnrollmentSerializer
 from enterprise_data.tests.test_utils import EnterpriseUserFactory
@@ -63,8 +62,8 @@ class TestEnterpriseEnrollmentSerializer(APITransactionTestCase):
             "unenrollment_end_within_date": None,
         }
 
-        self.course_api_url = '/enterprise/v1/enterprise-catalogs/{enterprise_id}/courses/{course_id}'.format(
-            enterprise_id=self.enrollment_data['enterprise_id'], course_id=self.enrollment_data['course_id']
+        self.course_api_url = "/enterprise/v1/enterprise-catalogs/{enterprise_id}/courses/{course_id}".format(
+            enterprise_id=self.enrollment_data["enterprise_id"], course_id=self.enrollment_data["course_id"]
         )
 
     def test_enrollment_serialization(self):
@@ -75,67 +74,66 @@ class TestEnterpriseEnrollmentSerializer(APITransactionTestCase):
         serializer.save()
 
         enterprise_enrollment_id = EnterpriseEnrollment.objects.first().id
-        expected_serialized_data['id'] = enterprise_enrollment_id
+        expected_serialized_data["id"] = enterprise_enrollment_id
         assert serializer.data == expected_serialized_data
 
     @ddt.data(
         # No course start date
-        (None, '2016-12-01T00:00:00Z', '2016-12-01T00:00:00Z', True),
+        (None, "2016-12-01T00:00:00Z", "2016-12-01T00:00:00Z", True),
         # Same day enroll/un-enroll
-        ('2016-12-14T00:00:00Z', '2016-12-01T00:00:00Z', '2016-12-01T01:00:00Z', True),
+        ("2016-12-14T00:00:00Z", "2016-12-01T00:00:00Z", "2016-12-01T01:00:00Z", True),
         # Un-enroll on next day of enrollment
-        ('2016-12-14T00:00:00Z', '2016-12-01T00:00:00Z', '2016-12-02T01:00:00Z', True),
+        ("2016-12-14T00:00:00Z", "2016-12-01T00:00:00Z", "2016-12-02T01:00:00Z", True),
         # Un-enroll on same day as course start
-        ('2016-12-14T00:00:00Z', '2016-12-01T00:00:00Z', '2016-12-14T01:00:00Z', True),
+        ("2016-12-14T00:00:00Z", "2016-12-01T00:00:00Z", "2016-12-14T01:00:00Z", True),
         # Un-enroll on same day as course start and enrollment
-        ('2016-12-14T00:00:00Z', '2016-12-14T00:00:00Z', '2016-12-14T01:00:00Z', True),
+        ("2016-12-14T00:00:00Z", "2016-12-14T00:00:00Z", "2016-12-14T01:00:00Z", True),
         # Un-enroll on 14th day of course start
-        ('2016-12-14T00:00:00Z', '2016-12-01T00:00:00Z', '2016-12-28T01:00:00Z', True),
+        ("2016-12-14T00:00:00Z", "2016-12-01T00:00:00Z", "2016-12-28T01:00:00Z", True),
         # Un-enroll on 15th day of course start
-        ('2016-12-14T00:00:00Z', '2016-12-01T00:00:00Z', '2016-12-29T00:00:00Z', False),
+        ("2016-12-14T00:00:00Z", "2016-12-01T00:00:00Z", "2016-12-29T00:00:00Z", False),
         # Un-enroll on 14th day of enrollment
-        ('2016-12-14T00:00:00Z', '2016-12-15T00:00:00Z', '2016-12-29T00:00:00Z', True),
+        ("2016-12-14T00:00:00Z", "2016-12-15T00:00:00Z", "2016-12-29T00:00:00Z", True),
         # Un-enroll on 15th day of enrollment
-        ('2016-12-14T00:00:00Z', '2016-12-15T00:00:00Z', '2016-12-30T00:00:00Z', False),
+        ("2016-12-14T00:00:00Z", "2016-12-15T00:00:00Z", "2016-12-30T00:00:00Z", False),
         # Un-enroll earlier than enrollment
-        ('2016-12-14T00:00:00Z', '2016-12-15T00:00:00Z', '2016-12-14T00:00:00Z', True),
+        ("2016-12-14T00:00:00Z", "2016-12-15T00:00:00Z", "2016-12-14T00:00:00Z", True),
     )
     @ddt.unpack
     def test_unenrollment_end_within_date(
-            self, course_start, enrollment_created_timestamp, unenrollment_timestamp,
-            expected_unenrollment_end_within_date
+        self, course_start, enrollment_created_timestamp, unenrollment_timestamp, expected_unenrollment_end_within_date
     ):
-        self.enrollment_data['course_start'] = course_start
-        self.enrollment_data['unenrollment_timestamp'] = unenrollment_timestamp
-        self.enrollment_data['enrollment_created_timestamp'] = enrollment_created_timestamp
+        self.enrollment_data["course_start"] = course_start
+        self.enrollment_data["unenrollment_timestamp"] = unenrollment_timestamp
+        self.enrollment_data["enrollment_created_timestamp"] = enrollment_created_timestamp
 
         serializer = EnterpriseEnrollmentSerializer(data=self.enrollment_data)
         serializer.is_valid()
         serializer.save()
-        self.assertEqual(expected_unenrollment_end_within_date, serializer.data['unenrollment_end_within_date'])
+        self.assertEqual(expected_unenrollment_end_within_date, serializer.data["unenrollment_end_within_date"])
 
     @ddt.data(
         # No course end date and has_passed is False
-        (None, False, 'In Progress'),
+        (None, False, "In Progress"),
         # No course end date and has_passed is True
-        (None, True, 'Passed'),
+        (None, True, "Passed"),
         # Course not ended and has_passed is False
-        (timezone.now() + timedelta(days=1), False, 'In Progress'),
+        (timezone.now() + timedelta(days=1), False, "In Progress"),
         # Course about to end today and has_passed is False
-        (timezone.now(), False, 'In Progress'),
+        (timezone.now(), False, "In Progress"),
         # Course already ended and has_passed is False
-        (timezone.now() + timedelta(days=-1), False, 'Failed'),
+        (timezone.now() + timedelta(days=-1), False, "Failed"),
         # Course already ended and has_passed is True
-        (timezone.now() + timedelta(days=-1), True, 'Passed'),
+        (timezone.now() + timedelta(days=-1), True, "Passed"),
         # Course not ended and has_passed is True
-        (timezone.now() + timedelta(days=1), True, 'Passed'),
+        (timezone.now() + timedelta(days=1), True, "Passed"),
     )
     @ddt.unpack
     def test_progress_status(self, course_end, has_passed, expected_progress_status):
-        self.enrollment_data['course_end'] = course_end
-        self.enrollment_data['has_passed'] = has_passed
+        self.enrollment_data["course_end"] = course_end
+        self.enrollment_data["has_passed"] = has_passed
 
         serializer = EnterpriseEnrollmentSerializer(data=self.enrollment_data)
         serializer.is_valid()
         serializer.save()
-        self.assertEqual(expected_progress_status, serializer.data['progress_status'])
+        self.assertEqual(expected_progress_status, serializer.data["progress_status"])

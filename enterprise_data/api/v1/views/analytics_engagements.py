@@ -5,13 +5,12 @@ Views for handling REST endpoints related to Engagements analytics.
 from datetime import date
 from logging import getLogger
 
+from django.http import StreamingHttpResponse
 from edx_rbac.decorators import permission_required
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
-
-from django.http import StreamingHttpResponse
 
 from enterprise_data.admin_analytics.constants import ResponseType
 from enterprise_data.admin_analytics.database.tables import FactEngagementAdminDashTable, FactEnrollmentAdminDashTable
@@ -31,16 +30,17 @@ class AdvanceAnalyticsEngagementView(AnalyticsPaginationMixin, ViewSet):
     1. `enterprise_data_api_v1.enterprise-learner-engagement-list`: Get individual engagement data.
     2. `enterprise_data_api_v1.enterprise-learner-engagement-stats`: Get engagement stats data.
     """
-    authentication_classes = (JwtAuthentication,)
-    http_method_names = ('get', )
 
-    @permission_required('can_access_enterprise', fn=lambda request, enterprise_uuid: enterprise_uuid)
+    authentication_classes = (JwtAuthentication,)
+    http_method_names = ("get",)
+
+    @permission_required("can_access_enterprise", fn=lambda request, enterprise_uuid: enterprise_uuid)
     def list(self, request, enterprise_uuid):
         """
         Get individual engagements data for the enterprise.
         """
         # Remove hyphens from the UUID
-        enterprise_uuid = enterprise_uuid.replace('-', '')
+        enterprise_uuid = enterprise_uuid.replace("-", "")
 
         serializer = AdvanceAnalyticsQueryParamSerializer(data=request.GET)
         serializer.is_valid(raise_exception=True)
@@ -49,11 +49,11 @@ class AdvanceAnalyticsEngagementView(AnalyticsPaginationMixin, ViewSet):
         )
 
         # get values from query params or use default values
-        start_date = serializer.data.get('start_date', min_enrollment_date)
-        end_date = serializer.data.get('end_date', date.today())
-        group_uuid = serializer.data.get('group_uuid')
-        page = serializer.data.get('page', 1)
-        page_size = serializer.data.get('page_size', 100)
+        start_date = serializer.data.get("start_date", min_enrollment_date)
+        end_date = serializer.data.get("end_date", date.today())
+        group_uuid = serializer.data.get("group_uuid")
+        page = serializer.data.get("page", 1)
+        page_size = serializer.data.get("page_size", 100)
         engagements = FactEngagementAdminDashTable().get_all_engagements(
             enterprise_customer_uuid=enterprise_uuid,
             group_uuid=group_uuid,
@@ -68,7 +68,7 @@ class AdvanceAnalyticsEngagementView(AnalyticsPaginationMixin, ViewSet):
             start_date=start_date,
             end_date=end_date,
         )
-        response_type = request.query_params.get('response_type', ResponseType.JSON.value)
+        response_type = request.query_params.get("response_type", ResponseType.JSON.value)
 
         LOGGER.info(
             "Individual engagements data requested for enterprise [%s] from [%s] to [%s]",
@@ -81,9 +81,9 @@ class AdvanceAnalyticsEngagementView(AnalyticsPaginationMixin, ViewSet):
             filename = f"""Individual Engagements, {start_date} - {end_date}.csv"""
 
             return StreamingHttpResponse(
-                IndividualEngagementsCSVRenderer().render(self._stream_serialized_data(
-                    enterprise_uuid, group_uuid, start_date, end_date, total_count
-                )),
+                IndividualEngagementsCSVRenderer().render(
+                    self._stream_serialized_data(enterprise_uuid, group_uuid, start_date, end_date, total_count)
+                ),
                 content_type="text/csv",
                 headers={"Content-Disposition": f'attachment; filename="{filename}"'},
             )
@@ -114,8 +114,8 @@ class AdvanceAnalyticsEngagementView(AnalyticsPaginationMixin, ViewSet):
             yield from engagements
             offset += page_size
 
-    @permission_required('can_access_enterprise', fn=lambda request, enterprise_uuid: enterprise_uuid)
-    @action(detail=False, methods=['get'], name='Enterprise engagements data for charts', url_path='stats')
+    @permission_required("can_access_enterprise", fn=lambda request, enterprise_uuid: enterprise_uuid)
+    @action(detail=False, methods=["get"], name="Enterprise engagements data for charts", url_path="stats")
     def stats(self, request, enterprise_uuid):
         """
         Get data to populate enterprise engagement charts.
@@ -126,7 +126,7 @@ class AdvanceAnalyticsEngagementView(AnalyticsPaginationMixin, ViewSet):
         3. `top_subjects_by_engagement`: This will show the top subjects by engagements.
         """
         # Remove hyphens from the UUID
-        enterprise_uuid = enterprise_uuid.replace('-', '')
+        enterprise_uuid = enterprise_uuid.replace("-", "")
 
         serializer = AdvanceAnalyticsQueryParamSerializer(data=request.GET)
         serializer.is_valid(raise_exception=True)
@@ -135,22 +135,22 @@ class AdvanceAnalyticsEngagementView(AnalyticsPaginationMixin, ViewSet):
             enterprise_uuid,
         )
         # get values from query params or use default
-        start_date = serializer.data.get('start_date', min_enrollment_date)
-        end_date = serializer.data.get('end_date', date.today())
-        group_uuid = serializer.data.get('group_uuid')
-        course_type = serializer.data.get('course_type')
-        course_key = serializer.data.get('course_key')
-        budget_uuid = serializer.data.get('budget_uuid')
+        start_date = serializer.data.get("start_date", min_enrollment_date)
+        end_date = serializer.data.get("end_date", date.today())
+        group_uuid = serializer.data.get("group_uuid")
+        course_type = serializer.data.get("course_type")
+        course_key = serializer.data.get("course_key")
+        budget_uuid = serializer.data.get("budget_uuid")
 
-        with timer('construct_engagement_all_stats'):
+        with timer("construct_engagement_all_stats"):
             data = {
-                'engagement_over_time': FactEngagementAdminDashTable().get_engagement_time_series_data(
+                "engagement_over_time": FactEngagementAdminDashTable().get_engagement_time_series_data(
                     enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
                 ),
-                'top_courses_by_engagement': FactEngagementAdminDashTable().get_top_courses_by_engagement(
+                "top_courses_by_engagement": FactEngagementAdminDashTable().get_top_courses_by_engagement(
                     enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
                 ),
-                'top_subjects_by_engagement': FactEngagementAdminDashTable().get_top_subjects_by_engagement(
+                "top_subjects_by_engagement": FactEngagementAdminDashTable().get_top_subjects_by_engagement(
                     enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
                 ),
             }

@@ -1,6 +1,7 @@
 """
 Query filter for between operation.
 """
+
 from .base import QueryFilter
 
 
@@ -24,7 +25,7 @@ class BetweenQueryFilter(QueryFilter):
     def to_sql(self) -> str:
         if self.range:
             lower, upper = self.range
-            return f'{self.column} BETWEEN {self.value_to_sql(lower)} AND {self.value_to_sql(upper)}'
+            return f"{self.column} BETWEEN {self.value_to_sql(lower)} AND {self.value_to_sql(upper)}"
         else:
             lower_placeholder, upper_placeholder = self.range_placeholders
-            return f'{self.column} BETWEEN %({lower_placeholder})s AND %({upper_placeholder})s'
+            return f"{self.column} BETWEEN %({lower_placeholder})s AND %({upper_placeholder})s"

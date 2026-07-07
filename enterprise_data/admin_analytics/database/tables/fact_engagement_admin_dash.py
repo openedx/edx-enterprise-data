@@ -1,8 +1,8 @@
 """
 Module for interacting with the fact_enrollment_engagement_day_admin_dash table.
 """
+
 from datetime import date
-from typing import Optional, Tuple
 from uuid import UUID
 
 from enterprise_data.admin_analytics.database.query_filters import EqualQueryFilter, INQueryFilter, NULLQueryFilter
@@ -15,25 +15,27 @@ from ..query_filters import QueryFilters
 from ..utils import run_query
 from .base import BaseTable
 
-NULL_EMAIL_TEXT = 'learners who have not shared consent'
+NULL_EMAIL_TEXT = "learners who have not shared consent"
 
 
 class FactEngagementAdminDashTable(BaseTable):
     """
     Class for communicating with the fact_enrollment_engagement_day_admin_dash table.
     """
+
     queries = FactEngagementAdminDashQueries()
     engagement_filters = FactEngagementAdminDashFilters()
 
     def __get_common_query_filters_for_engagement(
-            self, enterprise_customer_uuid: UUID,
-            group_uuid: Optional[UUID],
-            start_date: date,
-            end_date: date,
-            course_type: Optional[str] = None,
-            course_key: Optional[str] = None,
-            budget_uuid: Optional[str] = None,
-    ) -> Tuple[QueryFilters, dict]:
+        self,
+        enterprise_customer_uuid: UUID,
+        group_uuid: UUID | None,
+        start_date: date,
+        end_date: date,
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
+    ) -> tuple[QueryFilters, dict]:
         """
         Utility method to get query filters common in most usages below.
         This will return a tuple containing the query filters list and the dictionary of query parameters that
@@ -43,20 +45,19 @@ class FactEngagementAdminDashTable(BaseTable):
             2. enrollment_date range filter to filter records by enrollment date.
             3. group_uuid filter to filter records for learners who belong to the given group.
         """
-        query_filters = QueryFilters([
-            self.engagement_filters.enterprise_customer_uuid_filter('enterprise_customer_uuid'),
-            self.engagement_filters.date_range_filter('activity_date', 'start_date', 'end_date'),
-        ])
+        query_filters = QueryFilters(
+            [
+                self.engagement_filters.enterprise_customer_uuid_filter("enterprise_customer_uuid"),
+                self.engagement_filters.date_range_filter("activity_date", "start_date", "end_date"),
+            ]
+        )
         params = {
-            'enterprise_customer_uuid': enterprise_customer_uuid,
-            'start_date': start_date,
-            'end_date': end_date,
+            "enterprise_customer_uuid": enterprise_customer_uuid,
+            "start_date": start_date,
+            "end_date": end_date,
         }
 
-        response = self.engagement_filters.enterprise_user_query_filter(
-            group_uuid,
-            enterprise_customer_uuid
-        )
+        response = self.engagement_filters.enterprise_user_query_filter(group_uuid, enterprise_customer_uuid)
         if response is not None:
             enterprise_user_id_in_filter, enterprise_user_id_params = response
             query_filters.append(enterprise_user_id_in_filter)
@@ -64,25 +65,31 @@ class FactEngagementAdminDashTable(BaseTable):
 
         # add optional filters
         if course_type:
-            query_filters.append(EqualQueryFilter(
-                column='course_product_line',
-                value_placeholder='course_type',
-            ))
-            params['course_type'] = course_type
+            query_filters.append(
+                EqualQueryFilter(
+                    column="course_product_line",
+                    value_placeholder="course_type",
+                )
+            )
+            params["course_type"] = course_type
 
         if course_key:
-            query_filters.append(EqualQueryFilter(
-                column='course_key',
-                value_placeholder='course_key',
-            ))
-            params['course_key'] = course_key
+            query_filters.append(
+                EqualQueryFilter(
+                    column="course_key",
+                    value_placeholder="course_key",
+                )
+            )
+            params["course_key"] = course_key
 
         if budget_uuid:
-            query_filters.append(EqualQueryFilter(
-                column='subsidy_access_policy_uuid',
-                value_placeholder='budget_uuid',
-            ))
-            params['budget_uuid'] = budget_uuid
+            query_filters.append(
+                EqualQueryFilter(
+                    column="subsidy_access_policy_uuid",
+                    value_placeholder="budget_uuid",
+                )
+            )
+            params["budget_uuid"] = budget_uuid
 
         return query_filters, params
 
@@ -92,10 +99,10 @@ class FactEngagementAdminDashTable(BaseTable):
         enterprise_customer_uuid: UUID,
         start_date: date,
         end_date: date,
-        group_uuid: Optional[UUID] = None,
-        course_type: Optional[str] = None,
-        course_key: Optional[str] = None,
-        budget_uuid: Optional[str] = None
+        group_uuid: UUID | None = None,
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
     ):
         """
         Get the learning hours and daily sessions for the given enterprise customer.
@@ -119,7 +126,7 @@ class FactEngagementAdminDashTable(BaseTable):
             query=self.queries.get_learning_hours_and_daily_sessions_query(query_filters),
             params={
                 **query_filter_params,
-            }
+            },
         )
         if not results:
             return 0.0, 0
@@ -128,11 +135,7 @@ class FactEngagementAdminDashTable(BaseTable):
 
     @cache_it()
     def get_engagement_count(
-        self,
-        enterprise_customer_uuid: UUID,
-        group_uuid: Optional[UUID],
-        start_date: date,
-        end_date: date
+        self, enterprise_customer_uuid: UUID, group_uuid: UUID | None, start_date: date, end_date: date
     ):
         """
         Get the total number of engagements for the given enterprise customer.
@@ -161,11 +164,11 @@ class FactEngagementAdminDashTable(BaseTable):
     def get_all_engagements(
         self,
         enterprise_customer_uuid: UUID,
-        group_uuid: Optional[UUID],
+        group_uuid: UUID | None,
         start_date: date,
         end_date: date,
         limit: int,
-        offset: int
+        offset: int,
     ):
         """
         Get all engagement data for the given enterprise customer.
@@ -189,8 +192,8 @@ class FactEngagementAdminDashTable(BaseTable):
             query=self.queries.get_all_engagement_query(query_filters),
             params={
                 **query_filter_params,
-                'limit': limit,
-                'offset': offset,
+                "limit": limit,
+                "offset": offset,
             },
             as_dict=True,
         )
@@ -199,12 +202,12 @@ class FactEngagementAdminDashTable(BaseTable):
     def get_top_courses_by_engagement(
         self,
         enterprise_customer_uuid: UUID,
-        group_uuid: Optional[UUID],
+        group_uuid: UUID | None,
         start_date: date,
         end_date: date,
-        course_type: Optional[str] = None,
-        course_key: Optional[str] = None,
-        budget_uuid: Optional[str] = None
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
     ):
         """
         Get the top courses by user engagement for the given enterprise customer.
@@ -233,12 +236,12 @@ class FactEngagementAdminDashTable(BaseTable):
     def get_top_subjects_by_engagement(
         self,
         enterprise_customer_uuid: UUID,
-        group_uuid: Optional[UUID],
+        group_uuid: UUID | None,
         start_date: date,
         end_date: date,
-        course_type: Optional[str] = None,
-        course_key: Optional[str] = None,
-        budget_uuid: Optional[str] = None
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
     ):
         """
         Get the top subjects by user engagement for the given enterprise customer.
@@ -267,12 +270,12 @@ class FactEngagementAdminDashTable(BaseTable):
     def get_engagement_time_series_data(
         self,
         enterprise_customer_uuid: UUID,
-        group_uuid: Optional[UUID],
+        group_uuid: UUID | None,
         start_date: date,
         end_date: date,
-        course_type: Optional[str] = None,
-        course_key: Optional[str] = None,
-        budget_uuid: Optional[str] = None,
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
     ):
         """
         Get the engagement time series data.
@@ -303,9 +306,9 @@ class FactEngagementAdminDashTable(BaseTable):
         date_column: str,
         start_date: date,
         end_date: date,
-        equality_filters: Optional[dict] = None,
-        null_filters: Optional[list] = None,
-        in_filters: Optional[dict] = None
+        equality_filters: dict | None = None,
+        null_filters: list | None = None,
+        in_filters: dict | None = None,
     ):
         """
         Build query filters and parameters for enterprise analytics queries.
@@ -329,60 +332,60 @@ class FactEngagementAdminDashTable(BaseTable):
         """
         optional_params = {}
         default_params = {
-            'enterprise_customer_uuid': enterprise_customer_uuid,
-            'start_date': start_date,
-            'end_date': end_date,
+            "enterprise_customer_uuid": enterprise_customer_uuid,
+            "start_date": start_date,
+            "end_date": end_date,
         }
 
-        query_filters = QueryFilters([
-            self.engagement_filters.enterprise_customer_uuid_filter('enterprise_customer_uuid'),
-            self.engagement_filters.date_range_filter(
-                column=date_column,
-                start_date_params_key='start_date',
-                end_date_params_key='end_date',
-            ),
-        ])
+        query_filters = QueryFilters(
+            [
+                self.engagement_filters.enterprise_customer_uuid_filter("enterprise_customer_uuid"),
+                self.engagement_filters.date_range_filter(
+                    column=date_column,
+                    start_date_params_key="start_date",
+                    end_date_params_key="end_date",
+                ),
+            ]
+        )
 
         if equality_filters:
             for column, value in equality_filters.items():
                 if value is not None:
-                    query_filters.append(EqualQueryFilter(
-                        column=column,
-                        value_placeholder=column,
-                    ))
+                    query_filters.append(
+                        EqualQueryFilter(
+                            column=column,
+                            value_placeholder=column,
+                        )
+                    )
                     optional_params[column] = value
 
         if in_filters:
             for column, values_list in in_filters.items():
-                params = {f'{column}_{index}': value for index, value in enumerate(values_list)}
-                query_filters.append(INQueryFilter(
-                    column=column,
-                    values=values_list
-                ))
+                params = {f"{column}_{index}": value for index, value in enumerate(values_list)}
+                query_filters.append(INQueryFilter(column=column, values=values_list))
 
         if null_filters:
             for null_column in null_filters:
-                query_filters.append(NULLQueryFilter(
-                    column=null_column['column'],
-                    null_check=null_column['null_check']
-                ))
+                query_filters.append(
+                    NULLQueryFilter(column=null_column["column"], null_check=null_column["null_check"])
+                )
 
         params = {**default_params, **optional_params}
         return query_filters, params
 
     @cache_it()
     def _get_engagement_data_for_leaderboard(
-            self,
-            enterprise_customer_uuid: UUID,
-            start_date: date,
-            end_date: date,
-            limit: int,
-            offset: int,
-            include_null_email: bool,
-            course_type: Optional[str] = None,
-            course_key: Optional[str] = None,
-            budget_uuid: Optional[str] = None,
-            group_uuid: Optional[UUID] = None
+        self,
+        enterprise_customer_uuid: UUID,
+        start_date: date,
+        end_date: date,
+        limit: int,
+        offset: int,
+        include_null_email: bool,
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
+        group_uuid: UUID | None = None,
     ):
         """
         Get the engagement data for leaderboard.
@@ -406,14 +409,14 @@ class FactEngagementAdminDashTable(BaseTable):
             list[dict]: The engagement data for leaderboard.
         """
         equality_filters = {
-            'course_product_line': course_type,
-            'course_key': course_key,
-            'subsidy_access_policy_uuid': budget_uuid,
-            'is_engaged': 1
+            "course_product_line": course_type,
+            "course_key": course_key,
+            "subsidy_access_policy_uuid": budget_uuid,
+            "is_engaged": 1,
         }
         query_filters, params = self.build_query_filters_for_leaderboard(
             enterprise_customer_uuid=enterprise_customer_uuid,
-            date_column='activity_date',
+            date_column="activity_date",
             start_date=start_date,
             end_date=end_date,
             equality_filters=equality_filters,
@@ -421,8 +424,7 @@ class FactEngagementAdminDashTable(BaseTable):
 
         # If group_uuid is provided, we need to filter by enterprise users in the group.
         group_filter_response = self.engagement_filters.enterprise_user_query_filter(
-            group_uuid,
-            enterprise_customer_uuid
+            group_uuid, enterprise_customer_uuid
         )
         if group_filter_response is not None:
             enterprise_user_id_in_filter, enterprise_user_id_params = group_filter_response
@@ -434,25 +436,22 @@ class FactEngagementAdminDashTable(BaseTable):
             params={
                 **params,
                 **{
-                    'limit': limit,
-                    'offset': offset,
-                }
+                    "limit": limit,
+                    "offset": offset,
+                },
             },
             as_dict=True,
         )
 
         if include_null_email:
-            null_filters = [{
-                'column': 'email',
-                'null_check': True
-            }]
+            null_filters = [{"column": "email", "null_check": True}]
             query_filters, params = self.build_query_filters_for_leaderboard(
                 enterprise_customer_uuid=enterprise_customer_uuid,
-                date_column='activity_date',
+                date_column="activity_date",
                 start_date=start_date,
                 end_date=end_date,
                 equality_filters=equality_filters,
-                null_filters=null_filters
+                null_filters=null_filters,
             )
 
             # If group_uuid is provided, we need to filter by enterprise users in the group.
@@ -471,16 +470,16 @@ class FactEngagementAdminDashTable(BaseTable):
 
     @cache_it()
     def _get_completion_data_for_leaderboard_query(
-            self,
-            enterprise_customer_uuid: UUID,
-            start_date: date,
-            end_date: date,
-            email_list: list,
-            include_null_email: bool,
-            course_type: Optional[str] = None,
-            course_key: Optional[str] = None,
-            budget_uuid: Optional[str] = None,
-            group_uuid: Optional[UUID] = None
+        self,
+        enterprise_customer_uuid: UUID,
+        start_date: date,
+        end_date: date,
+        email_list: list,
+        include_null_email: bool,
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
+        group_uuid: UUID | None = None,
     ):
         """
         Get the completion data for leaderboard.
@@ -503,17 +502,15 @@ class FactEngagementAdminDashTable(BaseTable):
             list[dict]: The engagement data for leaderboard.
         """
         equality_filters = {
-            'course_product_line': course_type,
-            'course_key': course_key,
-            'subsidy_access_policy_uuid': budget_uuid,
-            'has_passed': 1
+            "course_product_line": course_type,
+            "course_key": course_key,
+            "subsidy_access_policy_uuid": budget_uuid,
+            "has_passed": 1,
         }
-        in_filters = {
-            'email': email_list
-        }
+        in_filters = {"email": email_list}
         query_filters, params = self.build_query_filters_for_leaderboard(
             enterprise_customer_uuid=enterprise_customer_uuid,
-            date_column='passed_date',
+            date_column="passed_date",
             start_date=start_date,
             end_date=end_date,
             equality_filters=equality_filters,
@@ -522,8 +519,7 @@ class FactEngagementAdminDashTable(BaseTable):
 
         # If group_uuid is provided, we need to filter by enterprise users in the group.
         group_filter_response = self.engagement_filters.enterprise_user_query_filter(
-            group_uuid,
-            enterprise_customer_uuid
+            group_uuid, enterprise_customer_uuid
         )
         if group_filter_response is not None:
             enterprise_user_id_in_filter, enterprise_user_id_params = group_filter_response
@@ -539,11 +535,11 @@ class FactEngagementAdminDashTable(BaseTable):
         if include_null_email:
             query_filters, params = self.build_query_filters_for_leaderboard(
                 enterprise_customer_uuid=enterprise_customer_uuid,
-                date_column='passed_date',
+                date_column="passed_date",
                 start_date=start_date,
                 end_date=end_date,
                 equality_filters=equality_filters,
-                null_filters=[{'column': 'email', 'null_check': True}]
+                null_filters=[{"column": "email", "null_check": True}],
             )
 
             # If group_uuid is provided, we need to filter by enterprise users in the group.
@@ -562,17 +558,17 @@ class FactEngagementAdminDashTable(BaseTable):
         return completions
 
     def get_all_leaderboard_data(
-            self,
-            enterprise_customer_uuid: UUID,
-            start_date: date,
-            end_date: date,
-            limit: int,
-            offset: int,
-            total_count: int,
-            course_type: Optional[str] = None,
-            course_key: Optional[str] = None,
-            budget_uuid: Optional[str] = None,
-            group_uuid: Optional[UUID] = None
+        self,
+        enterprise_customer_uuid: UUID,
+        start_date: date,
+        end_date: date,
+        limit: int,
+        offset: int,
+        total_count: int,
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
+        group_uuid: UUID | None = None,
     ):
         """
         Get the leaderboard data for the given enterprise customer.
@@ -614,7 +610,7 @@ class FactEngagementAdminDashTable(BaseTable):
             return []
 
         engagement_data_dict = {
-            engagement['email']: engagement for engagement in engagement_data if engagement['email']
+            engagement["email"]: engagement for engagement in engagement_data if engagement["email"]
         }
         completion_data = self._get_completion_data_for_leaderboard_query(
             enterprise_customer_uuid=enterprise_customer_uuid,
@@ -628,15 +624,14 @@ class FactEngagementAdminDashTable(BaseTable):
             group_uuid=group_uuid,
         )
         for completion in completion_data:
-            email = completion['email']
-            engagement_data_dict[email]['course_completion_count'] = completion['course_completion_count']
+            email = completion["email"]
+            engagement_data_dict[email]["course_completion_count"] = completion["course_completion_count"]
 
         if include_null_email:
-            engagement_data_dict['None'] = find_first(engagement_data, lambda x: x['email'] is None) or {}
-            completion = find_first(completion_data, lambda x: x['email'] is None) or \
-                {'course_completion_count': ''}
-            engagement_data_dict['None']['course_completion_count'] = completion['course_completion_count']
-            engagement_data_dict['None']['email'] = NULL_EMAIL_TEXT
+            engagement_data_dict["None"] = find_first(engagement_data, lambda x: x["email"] is None) or {}
+            completion = find_first(completion_data, lambda x: x["email"] is None) or {"course_completion_count": ""}
+            engagement_data_dict["None"]["course_completion_count"] = completion["course_completion_count"]
+            engagement_data_dict["None"]["email"] = NULL_EMAIL_TEXT
 
         return list(engagement_data_dict.values())
 
@@ -646,10 +641,10 @@ class FactEngagementAdminDashTable(BaseTable):
         enterprise_customer_uuid: UUID,
         start_date: date,
         end_date: date,
-        course_type: Optional[str] = None,
-        course_key: Optional[str] = None,
-        budget_uuid: Optional[str] = None,
-        group_uuid: Optional[UUID] = None
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
+        group_uuid: UUID | None = None,
     ):
         """
         Get the total number of leaderboard records for the given enterprise customer.
@@ -667,15 +662,15 @@ class FactEngagementAdminDashTable(BaseTable):
             (int): The total number of leaderboard records.
         """
         equality_filters = {
-            'course_product_line': course_type,
-            'course_key': course_key,
-            'subsidy_access_policy_uuid': budget_uuid,
-            'is_engaged': 1
+            "course_product_line": course_type,
+            "course_key": course_key,
+            "subsidy_access_policy_uuid": budget_uuid,
+            "is_engaged": 1,
         }
 
         query_filters, params = self.build_query_filters_for_leaderboard(
             enterprise_customer_uuid=enterprise_customer_uuid,
-            date_column='activity_date',
+            date_column="activity_date",
             start_date=start_date,
             end_date=end_date,
             equality_filters=equality_filters,
@@ -683,18 +678,14 @@ class FactEngagementAdminDashTable(BaseTable):
 
         # If group_uuid is provided, we need to filter by enterprise users in the group.
         group_filter_response = self.engagement_filters.enterprise_user_query_filter(
-            group_uuid,
-            enterprise_customer_uuid
+            group_uuid, enterprise_customer_uuid
         )
         if group_filter_response is not None:
             enterprise_user_id_in_filter, enterprise_user_id_params = group_filter_response
             query_filters.append(enterprise_user_id_in_filter)
             params.update(enterprise_user_id_params)
 
-        results = run_query(
-            query=self.queries.get_leaderboard_data_count_query(query_filters),
-            params=params
-        )
+        results = run_query(query=self.queries.get_leaderboard_data_count_query(query_filters), params=params)
         if not results:
             return 0
         return results[0][0]

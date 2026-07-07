@@ -6,7 +6,6 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from django.test import override_settings
 
 import enterprise_data.api.v1.views.lpr_data_source_snowflake as _lpr_module
@@ -84,9 +83,7 @@ def _progress_pair_cache_key(enterprise_customer_uuid, user_email, courserun_key
     return get_key(
         "lpr_course_progress",
         SnowflakeCourseProgressSource._internal_table(),
-        SnowflakeCourseProgressSource._normalized_enterprise_uuid(
-            enterprise_customer_uuid
-        ),
+        SnowflakeCourseProgressSource._normalized_enterprise_uuid(enterprise_customer_uuid),
         str(user_email).strip(),
         str(courserun_key).strip(),
     )
@@ -113,10 +110,7 @@ class TestInternalTable:
         mock_settings.LPR_SNOWFLAKE_DATABASE = "STAGING"
         mock_settings.LPR_SNOWFLAKE_SCHEMA = "REPORTING"
         mock_settings.LPR_SNOWFLAKE_EXTERNAL_TABLE = "COURSE_PROGRESS"
-        assert (
-            SnowflakeCourseProgressSource._internal_table()
-            == "STAGING.REPORTING.COURSE_PROGRESS"
-        )
+        assert SnowflakeCourseProgressSource._internal_table() == "STAGING.REPORTING.COURSE_PROGRESS"
 
 
 # ===========================================================================
@@ -186,12 +180,8 @@ class TestGetCourseProgressMap:
         """All pairs in cache → Snowflake must not be called."""
         mock_cache.get_key.side_effect = get_key
 
-        alice_key = _progress_pair_cache_key(
-            ENTERPRISE_UUID, "alice@example.com", "course1"
-        )
-        bob_key = _progress_pair_cache_key(
-            ENTERPRISE_UUID, "bob@example.com", "course2"
-        )
+        alice_key = _progress_pair_cache_key(ENTERPRISE_UUID, "alice@example.com", "course1")
+        bob_key = _progress_pair_cache_key(ENTERPRISE_UUID, "bob@example.com", "course2")
 
         mock_cache.get_many.return_value = {
             alice_key: 0.8,
@@ -239,27 +229,15 @@ class TestGetCourseProgressMap:
         call_args = mock_cache.set_many.call_args
         cache_writes = call_args[0][0]  # First positional argument
         assert len(cache_writes) == 2
-        assert (
-            cache_writes[
-                _progress_pair_cache_key(ENTERPRISE_UUID, "alice@example.com", "run1")
-            ]
-            == 0.9
-        )
-        assert (
-            cache_writes[
-                _progress_pair_cache_key(ENTERPRISE_UUID, "bob@example.com", "run2")
-            ]
-            == 0.7
-        )
+        assert cache_writes[_progress_pair_cache_key(ENTERPRISE_UUID, "alice@example.com", "run1")] == 0.9
+        assert cache_writes[_progress_pair_cache_key(ENTERPRISE_UUID, "bob@example.com", "run2")] == 0.7
         assert call_args[1]["timeout"] == DEFAULT_COURSE_PROGRESS_CACHE_TIMEOUT
 
     @patch("enterprise_data.api.v1.views.lpr_data_source_snowflake.cache")
     def test_cache_lookup_uses_enterprise_scoped_keys(self, mock_cache):
         """Cache reads must include the enterprise UUID to avoid cross-enterprise leakage."""
         mock_cache.get_key.side_effect = get_key
-        alice_key = _progress_pair_cache_key(
-            ENTERPRISE_UUID, "alice@example.com", "course1"
-        )
+        alice_key = _progress_pair_cache_key(ENTERPRISE_UUID, "alice@example.com", "course1")
         mock_cache.get_many.return_value = {alice_key: 0.8}
 
         _source().get_course_progress_map(
@@ -268,9 +246,7 @@ class TestGetCourseProgressMap:
         )
 
         mock_cache.get_many.assert_called_once()
-        call_args = mock_cache.get_many.call_args[0][
-            0
-        ]  # First positional argument - list of keys
+        call_args = mock_cache.get_many.call_args[0][0]  # First positional argument - list of keys
         assert alice_key in call_args
 
     @patch("enterprise_data.api.v1.views.lpr_data_source_snowflake.cache")
@@ -278,9 +254,7 @@ class TestGetCourseProgressMap:
         """Only the requested pairs are returned; extra cached pairs are excluded."""
         mock_cache.get_key.side_effect = get_key
         # alice is cached, bob is cached, carol is NOT requested
-        alice_key = _progress_pair_cache_key(
-            ENTERPRISE_UUID, "alice@example.com", "run1"
-        )
+        alice_key = _progress_pair_cache_key(ENTERPRISE_UUID, "alice@example.com", "run1")
         bob_key = _progress_pair_cache_key(ENTERPRISE_UUID, "bob@example.com", "run2")
         mock_cache.get_many.return_value = {
             alice_key: 0.9,
@@ -298,26 +272,18 @@ class TestGetCourseProgressMap:
             ("bob@example.com", "run2"): 0.7,
         }
 
-    @patch(
-        "enterprise_data.api.v1.views.lpr_data_source_snowflake._get_snowflake_connection"
-    )
+    @patch("enterprise_data.api.v1.views.lpr_data_source_snowflake._get_snowflake_connection")
     def test_cursor_and_connection_closed_on_success(self, mock_connection_factory):
         """Both cursor and connection must be closed after a successful fetch."""
         ctx, cursor = _mock_ctx_and_cursor()
         mock_connection_factory.return_value = ctx
 
-        _source()._fetch_progress_for_pairs(
-            ENTERPRISE_UUID, [("alice@example.com", "run1")]
-        )
+        _source()._fetch_progress_for_pairs(ENTERPRISE_UUID, [("alice@example.com", "run1")])
         cursor.close.assert_called_once()
         ctx.close.assert_called_once()
 
-    @patch(
-        "enterprise_data.api.v1.views.lpr_data_source_snowflake._get_snowflake_connection"
-    )
-    def test_cursor_and_connection_closed_on_execute_error(
-        self, mock_connection_factory
-    ):
+    @patch("enterprise_data.api.v1.views.lpr_data_source_snowflake._get_snowflake_connection")
+    def test_cursor_and_connection_closed_on_execute_error(self, mock_connection_factory):
         """Both cursor and connection must be closed even when execute raises."""
         ctx, cursor = _mock_ctx_and_cursor()
 
@@ -328,9 +294,7 @@ class TestGetCourseProgressMap:
         mock_connection_factory.return_value = ctx
 
         with pytest.raises(RuntimeError, match="Snowflake error"):
-            _source()._fetch_progress_for_pairs(
-                ENTERPRISE_UUID, [("alice@example.com", "run1")]
-            )
+            _source()._fetch_progress_for_pairs(ENTERPRISE_UUID, [("alice@example.com", "run1")])
         cursor.close.assert_called_once()
         ctx.close.assert_called_once()
 
@@ -395,9 +359,7 @@ class TestCoursePassingGradeCacheConfiguration:
 
     def test_cache_key_includes_prefix_and_courserun(self):
         key = SnowflakeCoursePassingGradeSource._cache_key("course-v1:Org+Run")
-        expected = get_key(
-            "lpr_course_passing_grade", DEFAULT_OVERVIEWS_TABLE, "course-v1:Org+Run"
-        )
+        expected = get_key("lpr_course_passing_grade", DEFAULT_OVERVIEWS_TABLE, "course-v1:Org+Run")
         assert key == expected
 
 
@@ -425,17 +387,13 @@ class TestGetPassingGradeMap:
         mock_cache.set_many.assert_not_called()
 
     @patch("enterprise_data.api.v1.views.lpr_data_source_snowflake.cache")
-    @patch(
-        "enterprise_data.api.v1.views.lpr_data_source_snowflake._get_snowflake_connection"
-    )
+    @patch("enterprise_data.api.v1.views.lpr_data_source_snowflake._get_snowflake_connection")
     @patch.object(
         SnowflakeCoursePassingGradeSource,
         "_course_overviews_table",
         return_value=DEFAULT_OVERVIEWS_TABLE,
     )
-    def test_absent_keys_stored_as_none_under_negative_ttl(
-        self, _table, mock_connection_factory, mock_cache
-    ):
+    def test_absent_keys_stored_as_none_under_negative_ttl(self, _table, mock_connection_factory, mock_cache):
         """Keys not returned by Snowflake are stored as None with the negative TTL."""
         mock_cache.get_key.side_effect = get_key
         mock_cache.get_many.return_value = {}  # Cache miss
@@ -451,23 +409,16 @@ class TestGetPassingGradeMap:
         cache_writes = call_args[0][0]  # First positional argument
         run_key = _passing_grade_cache_key("course-v1:Org+Course+Run")
         assert cache_writes[run_key] is None
-        assert (
-            call_args[1]["timeout"]
-            == DEFAULT_COURSE_PASSING_GRADE_NEGATIVE_CACHE_TIMEOUT
-        )
+        assert call_args[1]["timeout"] == DEFAULT_COURSE_PASSING_GRADE_NEGATIVE_CACHE_TIMEOUT
 
     @patch("enterprise_data.api.v1.views.lpr_data_source_snowflake.cache")
-    @patch(
-        "enterprise_data.api.v1.views.lpr_data_source_snowflake._get_snowflake_connection"
-    )
+    @patch("enterprise_data.api.v1.views.lpr_data_source_snowflake._get_snowflake_connection")
     @patch.object(
         SnowflakeCoursePassingGradeSource,
         "_course_overviews_table",
         return_value=DEFAULT_OVERVIEWS_TABLE,
     )
-    def test_mixed_cache_hit_and_miss(
-        self, _table, mock_connection_factory, mock_cache
-    ):
+    def test_mixed_cache_hit_and_miss(self, _table, mock_connection_factory, mock_cache):
         """Cached and fetched values are merged correctly."""
         mock_cache.get_key.side_effect = get_key
 
@@ -492,17 +443,13 @@ class TestGetPassingGradeMap:
         assert call_args[1]["timeout"] == DEFAULT_COURSE_PASSING_GRADE_CACHE_TIMEOUT
 
     @patch("enterprise_data.api.v1.views.lpr_data_source_snowflake.cache")
-    @patch(
-        "enterprise_data.api.v1.views.lpr_data_source_snowflake._get_snowflake_connection"
-    )
+    @patch("enterprise_data.api.v1.views.lpr_data_source_snowflake._get_snowflake_connection")
     @patch.object(
         SnowflakeCoursePassingGradeSource,
         "_course_overviews_table",
         return_value=DEFAULT_OVERVIEWS_TABLE,
     )
-    def test_positive_values_use_24h_timeout(
-        self, _table, mock_connection_factory, mock_cache
-    ):
+    def test_positive_values_use_24h_timeout(self, _table, mock_connection_factory, mock_cache):
         """Positive cache writes must use the 24-hour TTL."""
         mock_cache.get_key.side_effect = get_key
         mock_cache.get_many.return_value = {}  # Cache miss
@@ -517,17 +464,13 @@ class TestGetPassingGradeMap:
         assert timeout_arg == DEFAULT_COURSE_PASSING_GRADE_CACHE_TIMEOUT
 
     @patch("enterprise_data.api.v1.views.lpr_data_source_snowflake.cache")
-    @patch(
-        "enterprise_data.api.v1.views.lpr_data_source_snowflake._get_snowflake_connection"
-    )
+    @patch("enterprise_data.api.v1.views.lpr_data_source_snowflake._get_snowflake_connection")
     @patch.object(
         SnowflakeCoursePassingGradeSource,
         "_course_overviews_table",
         return_value=DEFAULT_OVERVIEWS_TABLE,
     )
-    def test_single_key_cache_operations_used(
-        self, _table, mock_connection_factory, mock_cache
-    ):
+    def test_single_key_cache_operations_used(self, _table, mock_connection_factory, mock_cache):
         """Each missing key should be cached through the batch cache API."""
         mock_cache.get_key.side_effect = get_key
         mock_cache.get_many.return_value = {}  # Cache miss
@@ -541,17 +484,13 @@ class TestGetPassingGradeMap:
         mock_cache.set_many.assert_called_once()
 
     @patch("enterprise_data.api.v1.views.lpr_data_source_snowflake.cache")
-    @patch(
-        "enterprise_data.api.v1.views.lpr_data_source_snowflake._get_snowflake_connection"
-    )
+    @patch("enterprise_data.api.v1.views.lpr_data_source_snowflake._get_snowflake_connection")
     @patch.object(
         SnowflakeCoursePassingGradeSource,
         "_course_overviews_table",
         return_value=DEFAULT_OVERVIEWS_TABLE,
     )
-    def test_large_key_set_uses_single_query(
-        self, _table, mock_connection_factory, mock_cache
-    ):
+    def test_large_key_set_uses_single_query(self, _table, mock_connection_factory, mock_cache):
         """All keys must be fetched in one SQL statement regardless of batch size."""
         mock_cache.get_key.side_effect = get_key
         mock_cache.get.return_value = MagicMock(is_found=False, value=None)
@@ -567,17 +506,13 @@ class TestGetPassingGradeMap:
         assert cursor.execute.call_count == 1
 
     @patch("enterprise_data.api.v1.views.lpr_data_source_snowflake.cache")
-    @patch(
-        "enterprise_data.api.v1.views.lpr_data_source_snowflake._get_snowflake_connection"
-    )
+    @patch("enterprise_data.api.v1.views.lpr_data_source_snowflake._get_snowflake_connection")
     @patch.object(
         SnowflakeCoursePassingGradeSource,
         "_course_overviews_table",
         return_value=DEFAULT_OVERVIEWS_TABLE,
     )
-    def test_duplicate_keys_deduplicated(
-        self, _table, mock_connection_factory, mock_cache
-    ):
+    def test_duplicate_keys_deduplicated(self, _table, mock_connection_factory, mock_cache):
         """Duplicate courserun keys must be deduplicated before querying."""
         mock_cache.get_key.side_effect = get_key
         mock_cache.get.return_value = MagicMock(is_found=False, value=None)
@@ -585,25 +520,19 @@ class TestGetPassingGradeMap:
         ctx, cursor = _mock_ctx_and_cursor(fetchall=[("course-1", 0.6)])
         mock_connection_factory.return_value = ctx
 
-        result = _grade_source().get_passing_grade_map(
-            ["course-1", "course-1", "course-1"]
-        )
+        result = _grade_source().get_passing_grade_map(["course-1", "course-1", "course-1"])
 
         assert result == {"course-1": 0.6}
         _, params = cursor.execute.call_args[0]
         assert params.count("course-1") == 1
 
-    @patch(
-        "enterprise_data.api.v1.views.lpr_data_source_snowflake._get_snowflake_connection"
-    )
+    @patch("enterprise_data.api.v1.views.lpr_data_source_snowflake._get_snowflake_connection")
     @patch.object(
         SnowflakeCoursePassingGradeSource,
         "_course_overviews_table",
         return_value=DEFAULT_OVERVIEWS_TABLE,
     )
-    def test_cursor_and_connection_closed_on_success(
-        self, _table, mock_connection_factory
-    ):
+    def test_cursor_and_connection_closed_on_success(self, _table, mock_connection_factory):
         ctx, cursor = _mock_ctx_and_cursor(fetchall=[])
         mock_connection_factory.return_value = ctx
 
@@ -612,17 +541,13 @@ class TestGetPassingGradeMap:
         cursor.close.assert_called_once()
         ctx.close.assert_called_once()
 
-    @patch(
-        "enterprise_data.api.v1.views.lpr_data_source_snowflake._get_snowflake_connection"
-    )
+    @patch("enterprise_data.api.v1.views.lpr_data_source_snowflake._get_snowflake_connection")
     @patch.object(
         SnowflakeCoursePassingGradeSource,
         "_course_overviews_table",
         return_value=DEFAULT_OVERVIEWS_TABLE,
     )
-    def test_cursor_and_connection_closed_on_execute_error(
-        self, _table, mock_connection_factory
-    ):
+    def test_cursor_and_connection_closed_on_execute_error(self, _table, mock_connection_factory):
         ctx, cursor = _mock_ctx_and_cursor()
         cursor.execute.side_effect = RuntimeError("Snowflake error")
         mock_connection_factory.return_value = ctx
@@ -635,17 +560,13 @@ class TestGetPassingGradeMap:
 
     @patch("enterprise_data.api.v1.views.lpr_data_source_snowflake.LOGGER")
     @patch("enterprise_data.api.v1.views.lpr_data_source_snowflake.cache")
-    @patch(
-        "enterprise_data.api.v1.views.lpr_data_source_snowflake._get_snowflake_connection"
-    )
+    @patch("enterprise_data.api.v1.views.lpr_data_source_snowflake._get_snowflake_connection")
     @patch.object(
         SnowflakeCoursePassingGradeSource,
         "_course_overviews_table",
         return_value=DEFAULT_OVERVIEWS_TABLE,
     )
-    def test_logs_cache_and_fetch_observability(
-        self, _table, mock_connection_factory, mock_cache, mock_logger
-    ):
+    def test_logs_cache_and_fetch_observability(self, _table, mock_connection_factory, mock_cache, mock_logger):
         """At least three LOGGER.info calls expected (requested/cached/missing + fetched stats)."""
         mock_cache.get_key.side_effect = get_key
 

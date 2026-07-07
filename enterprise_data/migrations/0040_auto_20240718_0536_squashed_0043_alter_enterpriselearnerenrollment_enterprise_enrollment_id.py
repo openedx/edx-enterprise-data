@@ -6,45 +6,46 @@ import enterprise_data.utils
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('enterprise_data', '0039_auto_20240212_1403'),
+        ("enterprise_data", "0039_auto_20240212_1403"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='enterpriselearnerenrollment',
-            name='enterprise_group_name',
+            model_name="enterpriselearnerenrollment",
+            name="enterprise_group_name",
             field=models.CharField(max_length=25, null=True),
         ),
         migrations.AddField(
-            model_name='enterpriselearnerenrollment',
-            name='enterprise_group_uuid',
+            model_name="enterpriselearnerenrollment",
+            name="enterprise_group_uuid",
             field=models.UUIDField(null=True),
         ),
         migrations.AddField(
-            model_name='enterpriselearnerenrollment',
-            name='is_included_in_utilization',
+            model_name="enterpriselearnerenrollment",
+            name="is_included_in_utilization",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='enterpriselearnerenrollment',
-            name='subscription_license_uuid',
+            model_name="enterpriselearnerenrollment",
+            name="subscription_license_uuid",
             field=models.UUIDField(null=True),
         ),
         migrations.AlterField(
-            model_name='enterpriselearnerenrollment',
-            name='enterprise_enrollment_id',
+            model_name="enterpriselearnerenrollment",
+            name="enterprise_enrollment_id",
             field=models.PositiveIntegerField(unique=True),
         ),
         migrations.AddField(
-            model_name='enterpriselearnerenrollment',
-            name='lpr_unique_id',
-            field=models.PositiveBigIntegerField(default=enterprise_data.utils.get_unique_id, primary_key=True, serialize=False),
+            model_name="enterpriselearnerenrollment",
+            name="lpr_unique_id",
+            field=models.PositiveBigIntegerField(
+                default=enterprise_data.utils.get_unique_id, primary_key=True, serialize=False
+            ),
         ),
         migrations.AlterField(
-            model_name='enterpriselearnerenrollment',
-            name='enterprise_enrollment_id',
+            model_name="enterpriselearnerenrollment",
+            name="enterprise_enrollment_id",
             field=models.PositiveIntegerField(null=True),
         ),
     ]

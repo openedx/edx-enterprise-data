@@ -5,20 +5,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('enterprise_data', '0001_initial'),
+        ("enterprise_data", "0001_initial"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='enterpriseenrollment',
-            old_name='enterprise_sso_user_id',
-            new_name='enterprise_sso_uid',
+            model_name="enterpriseenrollment",
+            old_name="enterprise_sso_user_id",
+            new_name="enterprise_sso_uid",
         ),
         migrations.AddField(
-            model_name='enterpriseenrollment',
-            name='enterprise_sso_site_id',
+            model_name="enterpriseenrollment",
+            name="enterprise_sso_site_id",
             field=models.PositiveIntegerField(null=True),
         ),
     ]

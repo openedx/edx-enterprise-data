@@ -1,8 +1,8 @@
 """
 Module for interacting with the fact_enrollment_admin_dash table.
 """
+
 from datetime import date, datetime
-from typing import Optional, Tuple
 from uuid import UUID
 
 from enterprise_data.admin_analytics.database.query_filters import EqualQueryFilter
@@ -19,19 +19,21 @@ class FactEnrollmentAdminDashTable(BaseTable):
     """
     Class for communicating with the fact_enrollment_admin_dash table.
     """
+
     queries = FactEnrollmentAdminDashQueries()
     enrollment_filters = FactEnrollmentAdminDashFilters()
     completion_filters = FactCompletionAdminDashFilters()
 
     def build_query_filters(
-            self, enterprise_customer_uuid: UUID,
-            start_date: date,
-            end_date: date,
-            group_uuid: Optional[UUID] = None,
-            course_type: Optional[str] = None,
-            course_key: Optional[str] = None,
-            budget_uuid: Optional[str] = None
-    ) -> Tuple[QueryFilters, dict]:
+        self,
+        enterprise_customer_uuid: UUID,
+        start_date: date,
+        end_date: date,
+        group_uuid: UUID | None = None,
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
+    ) -> tuple[QueryFilters, dict]:
         """
         Utility method to get query filters common in most usages below.
 
@@ -43,19 +45,19 @@ class FactEnrollmentAdminDashTable(BaseTable):
             2. enrollment_date range filter to filter records by enrollment date.
             3. group_uuid filter to filter records for learners who belong to the given group.
         """
-        query_filters = QueryFilters([
-            self.enrollment_filters.enterprise_customer_uuid_filter('enterprise_customer_uuid'),
-            self.enrollment_filters.date_range_filter('enterprise_enrollment_date', 'start_date', 'end_date'),
-        ])
+        query_filters = QueryFilters(
+            [
+                self.enrollment_filters.enterprise_customer_uuid_filter("enterprise_customer_uuid"),
+                self.enrollment_filters.date_range_filter("enterprise_enrollment_date", "start_date", "end_date"),
+            ]
+        )
         params = {
-            'enterprise_customer_uuid': enterprise_customer_uuid,
-            'start_date': start_date,
-            'end_date': end_date,
+            "enterprise_customer_uuid": enterprise_customer_uuid,
+            "start_date": start_date,
+            "end_date": end_date,
         }
 
-        response = self.enrollment_filters.enterprise_user_query_filter(
-            group_uuid, enterprise_customer_uuid
-        )
+        response = self.enrollment_filters.enterprise_user_query_filter(group_uuid, enterprise_customer_uuid)
         if response is not None:
             enterprise_user_id_in_filter, enterprise_user_id_params = response
             query_filters.append(enterprise_user_id_in_filter)
@@ -63,37 +65,44 @@ class FactEnrollmentAdminDashTable(BaseTable):
 
         # add optional filters
         if course_type:
-            query_filters.append(EqualQueryFilter(
-                column='course_product_line',
-                value_placeholder='course_type',
-            ))
-            params['course_type'] = course_type
+            query_filters.append(
+                EqualQueryFilter(
+                    column="course_product_line",
+                    value_placeholder="course_type",
+                )
+            )
+            params["course_type"] = course_type
 
         if course_key:
-            query_filters.append(EqualQueryFilter(
-                column='course_key',
-                value_placeholder='course_key',
-            ))
-            params['course_key'] = course_key
+            query_filters.append(
+                EqualQueryFilter(
+                    column="course_key",
+                    value_placeholder="course_key",
+                )
+            )
+            params["course_key"] = course_key
 
         if budget_uuid:
-            query_filters.append(EqualQueryFilter(
-                column='subsidy_access_policy_uuid',
-                value_placeholder='budget_uuid',
-            ))
-            params['budget_uuid'] = budget_uuid
+            query_filters.append(
+                EqualQueryFilter(
+                    column="subsidy_access_policy_uuid",
+                    value_placeholder="budget_uuid",
+                )
+            )
+            params["budget_uuid"] = budget_uuid
 
         return query_filters, params
 
     def __get_common_query_filters_for_completion(
-        self, enterprise_customer_uuid: UUID,
-        group_uuid: Optional[UUID],
+        self,
+        enterprise_customer_uuid: UUID,
+        group_uuid: UUID | None,
         start_date: date,
         end_date: date,
-        course_type: Optional[str] = None,
-        course_key: Optional[str] = None,
-        budget_uuid: Optional[str] = None,
-    ) -> Tuple[QueryFilters, dict]:
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
+    ) -> tuple[QueryFilters, dict]:
         """
         Utility method to get query filters common in most usages below.
 
@@ -106,20 +115,20 @@ class FactEnrollmentAdminDashTable(BaseTable):
             3. group_uuid filter to filter records for learners who belong to the given group.
             4. has_passed filter to filter records for successful completions.
         """
-        query_filters = QueryFilters([
-            self.completion_filters.enterprise_customer_uuid_filter('enterprise_customer_uuid'),
-            self.completion_filters.date_range_filter('passed_date', 'start_date', 'end_date'),
-            self.completion_filters.has_passed_filter(),
-        ])
+        query_filters = QueryFilters(
+            [
+                self.completion_filters.enterprise_customer_uuid_filter("enterprise_customer_uuid"),
+                self.completion_filters.date_range_filter("passed_date", "start_date", "end_date"),
+                self.completion_filters.has_passed_filter(),
+            ]
+        )
         params = {
-            'enterprise_customer_uuid': enterprise_customer_uuid,
-            'start_date': start_date,
-            'end_date': end_date,
+            "enterprise_customer_uuid": enterprise_customer_uuid,
+            "start_date": start_date,
+            "end_date": end_date,
         }
 
-        response = self.completion_filters.enterprise_user_query_filter(
-            group_uuid, enterprise_customer_uuid
-        )
+        response = self.completion_filters.enterprise_user_query_filter(group_uuid, enterprise_customer_uuid)
         if response is not None:
             enterprise_user_id_in_filter, enterprise_user_id_params = response
             query_filters.append(enterprise_user_id_in_filter)
@@ -127,25 +136,31 @@ class FactEnrollmentAdminDashTable(BaseTable):
 
         # add optional filters
         if course_type:
-            query_filters.append(EqualQueryFilter(
-                column='course_product_line',
-                value_placeholder='course_type',
-            ))
-            params['course_type'] = course_type
+            query_filters.append(
+                EqualQueryFilter(
+                    column="course_product_line",
+                    value_placeholder="course_type",
+                )
+            )
+            params["course_type"] = course_type
 
         if course_key:
-            query_filters.append(EqualQueryFilter(
-                column='course_key',
-                value_placeholder='course_key',
-            ))
-            params['course_key'] = course_key
+            query_filters.append(
+                EqualQueryFilter(
+                    column="course_key",
+                    value_placeholder="course_key",
+                )
+            )
+            params["course_key"] = course_key
 
         if budget_uuid:
-            query_filters.append(EqualQueryFilter(
-                column='subsidy_access_policy_uuid',
-                value_placeholder='budget_uuid',
-            ))
-            params['budget_uuid'] = budget_uuid
+            query_filters.append(
+                EqualQueryFilter(
+                    column="subsidy_access_policy_uuid",
+                    value_placeholder="budget_uuid",
+                )
+            )
+            params["budget_uuid"] = budget_uuid
 
         return query_filters, params
 
@@ -167,11 +182,11 @@ class FactEnrollmentAdminDashTable(BaseTable):
 
     @cache_it()
     def get_enrollment_count(
-            self,
-            enterprise_customer_uuid: UUID,
-            group_uuid: Optional[UUID],
-            start_date: date,
-            end_date: date,
+        self,
+        enterprise_customer_uuid: UUID,
+        group_uuid: UUID | None,
+        start_date: date,
+        end_date: date,
     ) -> int:
         """
         Get the total number of enrollments for the given enterprise customer.
@@ -189,23 +204,20 @@ class FactEnrollmentAdminDashTable(BaseTable):
             enterprise_customer_uuid, start_date, end_date, group_uuid=group_uuid
         )
 
-        results = run_query(
-            query=self.queries.get_enrollment_count_query(query_filters),
-            params=query_filter_params
-        )
+        results = run_query(query=self.queries.get_enrollment_count_query(query_filters), params=query_filter_params)
         if not results:
             return 0
         return int(results[0][0] or 0)
 
     @cache_it()
     def get_all_enrollments(
-            self,
-            enterprise_customer_uuid: UUID,
-            group_uuid: Optional[UUID],
-            start_date: date,
-            end_date: date,
-            limit: int,
-            offset: int,
+        self,
+        enterprise_customer_uuid: UUID,
+        group_uuid: UUID | None,
+        start_date: date,
+        end_date: date,
+        limit: int,
+        offset: int,
     ) -> list:
         """
         Get all enrollments for the given enterprise customer.
@@ -229,8 +241,8 @@ class FactEnrollmentAdminDashTable(BaseTable):
             query=self.queries.get_all_enrollments_query(query_filters),
             params={
                 **query_filter_params,
-                'limit': limit,
-                'offset': offset,
+                "limit": limit,
+                "offset": offset,
             },
             as_dict=True,
         )
@@ -248,7 +260,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
         """
         results = run_query(
             query=self.queries.get_enrollment_date_range_query(),
-            params={'enterprise_customer_uuid': enterprise_customer_uuid}
+            params={"enterprise_customer_uuid": enterprise_customer_uuid},
         )
         if not results:
             return None, None
@@ -269,10 +281,10 @@ class FactEnrollmentAdminDashTable(BaseTable):
         enterprise_customer_uuid: UUID,
         start_date: date,
         end_date: date,
-        group_uuid: Optional[UUID] = None,
-        course_type: Optional[str] = None,
-        course_key: Optional[str] = None,
-        budget_uuid: Optional[str] = None,
+        group_uuid: UUID | None = None,
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
     ):
         """
         Get the enrollment and course count for the given enterprise customer.
@@ -296,7 +308,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             group_uuid=group_uuid,
             course_type=course_type,
             course_key=course_key,
-            budget_uuid=budget_uuid
+            budget_uuid=budget_uuid,
         )
 
         results = run_query(
@@ -313,12 +325,12 @@ class FactEnrollmentAdminDashTable(BaseTable):
     def get_completion_count(
         self,
         enterprise_customer_uuid: UUID,
-        group_uuid: Optional[UUID],
+        group_uuid: UUID | None,
         start_date: date,
         end_date: date,
-        course_type: Optional[str] = None,
-        course_key: Optional[str] = None,
-        budget_uuid: Optional[str] = None,
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
     ):
         """
         Get the completion count for the given enterprise customer.
@@ -351,13 +363,14 @@ class FactEnrollmentAdminDashTable(BaseTable):
 
     @cache_it()
     def get_top_courses_by_enrollments(
-            self, enterprise_customer_uuid: UUID,
-            group_uuid: Optional[UUID],
-            start_date: date,
-            end_date: date,
-            course_type: Optional[str] = None,
-            course_key: Optional[str] = None,
-            budget_uuid: Optional[str] = None
+        self,
+        enterprise_customer_uuid: UUID,
+        group_uuid: UUID | None,
+        start_date: date,
+        end_date: date,
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
     ) -> list:
         """
         Get the top courses enrollments for the given enterprise customer.
@@ -381,7 +394,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             group_uuid=group_uuid,
             course_type=course_type,
             course_key=course_key,
-            budget_uuid=budget_uuid
+            budget_uuid=budget_uuid,
         )
 
         return run_query(
@@ -392,14 +405,14 @@ class FactEnrollmentAdminDashTable(BaseTable):
 
     @cache_it()
     def get_top_subjects_by_enrollments(
-            self,
-            enterprise_customer_uuid: UUID,
-            group_uuid: Optional[UUID],
-            start_date: date,
-            end_date: date,
-            course_type: Optional[str] = None,
-            course_key: Optional[str] = None,
-            budget_uuid: Optional[str] = None
+        self,
+        enterprise_customer_uuid: UUID,
+        group_uuid: UUID | None,
+        start_date: date,
+        end_date: date,
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
     ) -> list:
         """
         Get the top subjects by enrollments for the given enterprise customer.
@@ -423,7 +436,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             group_uuid=group_uuid,
             course_type=course_type,
             course_key=course_key,
-            budget_uuid=budget_uuid
+            budget_uuid=budget_uuid,
         )
 
         return run_query(
@@ -434,13 +447,14 @@ class FactEnrollmentAdminDashTable(BaseTable):
 
     @cache_it()
     def get_enrolment_time_series_data(
-            self, enterprise_customer_uuid: UUID,
-            group_uuid: Optional[UUID],
-            start_date: date,
-            end_date: date,
-            course_type: Optional[str] = None,
-            course_key: Optional[str] = None,
-            budget_uuid: Optional[str] = None
+        self,
+        enterprise_customer_uuid: UUID,
+        group_uuid: UUID | None,
+        start_date: date,
+        end_date: date,
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
     ) -> list:
         """
         Get the enrollment time series data for the given enterprise customer.
@@ -464,7 +478,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             group_uuid=group_uuid,
             course_type=course_type,
             course_key=course_key,
-            budget_uuid=budget_uuid
+            budget_uuid=budget_uuid,
         )
 
         return run_query(
@@ -477,14 +491,14 @@ class FactEnrollmentAdminDashTable(BaseTable):
     def get_all_completions(
         self,
         enterprise_customer_uuid: UUID,
-        group_uuid: Optional[UUID],
+        group_uuid: UUID | None,
         start_date: date,
         end_date: date,
         limit: int,
         offset: int,
-        course_type: Optional[str] = None,
-        course_key: Optional[str] = None,
-        budget_uuid: Optional[str] = None,
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
     ):
         """
         Get all completions for the given enterprise customer.
@@ -510,8 +524,8 @@ class FactEnrollmentAdminDashTable(BaseTable):
             query=self.queries.get_all_completions_query(query_filters),
             params={
                 **query_filter_params,
-                'limit': limit,
-                'offset': offset,
+                "limit": limit,
+                "offset": offset,
             },
             as_dict=True,
         )
@@ -520,12 +534,12 @@ class FactEnrollmentAdminDashTable(BaseTable):
     def get_top_courses_by_completions(
         self,
         enterprise_customer_uuid: UUID,
-        group_uuid: Optional[UUID],
+        group_uuid: UUID | None,
         start_date: date,
         end_date: date,
-        course_type: Optional[str] = None,
-        course_key: Optional[str] = None,
-        budget_uuid: Optional[str] = None
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
     ):
         """
         Get the top courses by completion for the given enterprise customer.
@@ -554,12 +568,12 @@ class FactEnrollmentAdminDashTable(BaseTable):
     def get_top_subjects_by_completions(
         self,
         enterprise_customer_uuid: UUID,
-        group_uuid: Optional[UUID],
+        group_uuid: UUID | None,
         start_date: date,
         end_date: date,
-        course_type: Optional[str] = None,
-        course_key: Optional[str] = None,
-        budget_uuid: Optional[str] = None
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
     ):
         """
         Get the top subjects by completions for the given enterprise customer.
@@ -588,12 +602,12 @@ class FactEnrollmentAdminDashTable(BaseTable):
     def get_completions_time_series_data(
         self,
         enterprise_customer_uuid: UUID,
-        group_uuid: Optional[UUID],
+        group_uuid: UUID | None,
         start_date: date,
         end_date: date,
-        course_type: Optional[str] = None,
-        course_key: Optional[str] = None,
-        budget_uuid: Optional[str] = None
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
     ):
         """
         Get the completions time series data for the given enterprise customer.
@@ -625,9 +639,9 @@ class FactEnrollmentAdminDashTable(BaseTable):
         enterprise_customer_uuid: UUID,
         start_date: date,
         end_date: date,
-        group_uuid: Optional[UUID] = None,
-        course_type: Optional[str] = None,
-        budget_uuid: Optional[str] = None
+        group_uuid: UUID | None = None,
+        course_type: str | None = None,
+        budget_uuid: str | None = None,
     ):
         """
         Get all enrolled courses for the given enterprise customer.
@@ -650,7 +664,7 @@ class FactEnrollmentAdminDashTable(BaseTable):
             end_date,
             group_uuid=group_uuid,
             course_type=course_type,
-            budget_uuid=budget_uuid
+            budget_uuid=budget_uuid,
         )
 
         return run_query(

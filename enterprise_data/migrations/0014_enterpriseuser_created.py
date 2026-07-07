@@ -5,15 +5,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('enterprise_data', '0013_auto_20180831_1931'),
+        ("enterprise_data", "0013_auto_20180831_1931"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='enterpriseuser',
-            name='created',
+            model_name="enterpriseuser",
+            name="created",
             field=models.DateTimeField(null=True),
         ),
     ]

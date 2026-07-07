@@ -1,4 +1,5 @@
 """
 This module contains the database queries for the admin analytics.
 """
-from .utils import run_query
+
+from .utils import run_query as run_query

@@ -1,11 +1,12 @@
 """
 Test cases for enterprise_admin views
 """
+
 from datetime import datetime
 from unittest import mock
+from unittest.mock import patch
 
 import ddt
-from mock import patch
 from pytest import mark
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -48,21 +49,18 @@ class TestEnterpriseAdminAnalyticsAggregatesView(JWTTestMixin, APITransactionTes
         super().setUp()
         self.user = UserFactory(is_staff=True)
         role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
-        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
-            role=role,
-            user=self.user
-        )
+        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(role=role, user=self.user)
         self.client.force_authenticate(user=self.user)
 
         mocked_get_enterprise_customer = mock.patch(
-            'enterprise_data.filters.EnterpriseApiClient.get_enterprise_customer',
-            return_value=get_dummy_enterprise_api_data()
+            "enterprise_data.filters.EnterpriseApiClient.get_enterprise_customer",
+            return_value=get_dummy_enterprise_api_data(),
         )
 
         self.mocked_get_enterprise_customer = mocked_get_enterprise_customer.start()
         self.addCleanup(mocked_get_enterprise_customer.stop)
 
-        self.enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
+        self.enterprise_id = "ee5e6b3a-069a-4947-bb8d-d2dbc323396c"
         self.set_jwt_cookie()
         self.enrollment_queries = FactEnrollmentAdminDashQueries()
         self.engagement_queries = FactEngagementAdminDashQueries()
@@ -70,37 +68,37 @@ class TestEnterpriseAdminAnalyticsAggregatesView(JWTTestMixin, APITransactionTes
         self.skills_table = SkillsDailyRollupAdminDashTable()
 
         enrollment_filters = FactEnrollmentAdminDashFilters()
-        self.enrollment_query_filters = QueryFilters([
-            enrollment_filters.enterprise_customer_uuid_filter('enterprise_customer_uuid'),
-            enrollment_filters.date_range_filter('enterprise_enrollment_date', 'start_date', 'end_date'),
-        ])
+        self.enrollment_query_filters = QueryFilters(
+            [
+                enrollment_filters.enterprise_customer_uuid_filter("enterprise_customer_uuid"),
+                enrollment_filters.date_range_filter("enterprise_enrollment_date", "start_date", "end_date"),
+            ]
+        )
         engagement_filters = FactEngagementAdminDashFilters()
-        self.engagement_query_filters = QueryFilters([
-            engagement_filters.enterprise_customer_uuid_filter('enterprise_customer_uuid'),
-            engagement_filters.date_range_filter('activity_date', 'start_date', 'end_date'),
-        ])
+        self.engagement_query_filters = QueryFilters(
+            [
+                engagement_filters.enterprise_customer_uuid_filter("enterprise_customer_uuid"),
+                engagement_filters.date_range_filter("activity_date", "start_date", "end_date"),
+            ]
+        )
 
         self.skills_query_filters, __ = self.skills_table.build_query_filters(
             enterprise_customer_uuid=self.enterprise_id,
-            start_date='2021-01-01',
-            end_date='2021-12-31',
+            start_date="2021-01-01",
+            end_date="2021-12-31",
         )
-        self.skills_query_filters.append(ComparisonQueryFilter(
-            column='completions',
-            operator='>',
-            value=0
-        ))
+        self.skills_query_filters.append(ComparisonQueryFilter(column="completions", operator=">", value=0))
 
         self.skills_filters, __, self.enroll_filters, __ = self.skills_table.construct_upskill_learners_query_filters(
             enterprise_customer_uuid=self.enterprise_id,
-            start_date='2021-01-01',
-            end_date='2021-12-31',
+            start_date="2021-01-01",
+            end_date="2021-12-31",
         )
 
         self.current_filters, __, self.hist_filters, __ = self.skills_table.construct_new_skills_learned_query_filters(
             enterprise_customer_uuid=self.enterprise_id,
-            start_date='2021-01-01',
-            end_date='2021-12-31',
+            start_date="2021-01-01",
+            end_date="2021-12-31",
         )
 
     def _mock_run_query(self, query, *args, **kwargs):
@@ -108,21 +106,21 @@ class TestEnterpriseAdminAnalyticsAggregatesView(JWTTestMixin, APITransactionTes
         mock implementation of run_query.
         """
         # Check if this is the completion_count_query being called with query_filters
-        if hasattr(query, '__name__') and query.__name__ == 'get_completion_count_query':
+        if hasattr(query, "__name__") and query.__name__ == "get_completion_count_query":
             return [[50]]
 
         mock_responses = {
-            self.enrollment_queries.get_enrollment_date_range_query(): [[
-                datetime.strptime('2021-01-01', "%Y-%m-%d"),
-                datetime.strptime('2021-12-31', "%Y-%m-%d"),
-            ]],
-            self.enrollment_queries.get_enrollment_and_course_count_query(self.enrollment_query_filters): [[
-                100, 10
-            ]],
-            self.engagement_queries.get_learning_hours_and_daily_sessions_query(self.engagement_query_filters): [[
-                100, 10
-            ]],
-            'SELECT MAX(created) FROM enterprise_learner_enrollment': [[datetime.strptime('2021-01-01', "%Y-%m-%d")]],
+            self.enrollment_queries.get_enrollment_date_range_query(): [
+                [
+                    datetime.strptime("2021-01-01", "%Y-%m-%d"),
+                    datetime.strptime("2021-12-31", "%Y-%m-%d"),
+                ]
+            ],
+            self.enrollment_queries.get_enrollment_and_course_count_query(self.enrollment_query_filters): [[100, 10]],
+            self.engagement_queries.get_learning_hours_and_daily_sessions_query(self.engagement_query_filters): [
+                [100, 10]
+            ],
+            "SELECT MAX(created) FROM enterprise_learner_enrollment": [[datetime.strptime("2021-01-01", "%Y-%m-%d")]],
             self.skills_queries.get_unique_skills_gained(self.skills_query_filters): [[30]],
             self.skills_queries.get_upskilled_learners_count(self.skills_filters, self.enroll_filters): [[10]],
             self.skills_queries.get_new_skills_learned_count(self.hist_filters, self.current_filters): [[100]],
@@ -133,33 +131,33 @@ class TestEnterpriseAdminAnalyticsAggregatesView(JWTTestMixin, APITransactionTes
         """
         Test to get admin analytics aggregates.
         """
-        url = reverse('v1:enterprise-admin-analytics-aggregates', kwargs={'enterprise_id': self.enterprise_id})
-        with patch('enterprise_data.admin_analytics.data_loaders.run_query', side_effect=self._mock_run_query):
+        url = reverse("v1:enterprise-admin-analytics-aggregates", kwargs={"enterprise_id": self.enterprise_id})
+        with patch("enterprise_data.admin_analytics.data_loaders.run_query", side_effect=self._mock_run_query):
             with patch(
-                    'enterprise_data.admin_analytics.database.tables.fact_engagement_admin_dash.run_query',
-                    side_effect=self._mock_run_query
+                "enterprise_data.admin_analytics.database.tables.fact_engagement_admin_dash.run_query",
+                side_effect=self._mock_run_query,
             ):
                 with patch(
-                        'enterprise_data.admin_analytics.database.tables.fact_enrollment_admin_dash.run_query',
-                        side_effect=self._mock_run_query
+                    "enterprise_data.admin_analytics.database.tables.fact_enrollment_admin_dash.run_query",
+                    side_effect=self._mock_run_query,
                 ):
                     with patch(
-                        'enterprise_data.admin_analytics.database.tables.skills_daily_rollup_admin_dash.run_query',
-                        side_effect=self._mock_run_query
+                        "enterprise_data.admin_analytics.database.tables.skills_daily_rollup_admin_dash.run_query",
+                        side_effect=self._mock_run_query,
                     ):
                         response = self.client.get(url)
                         assert response.status_code == status.HTTP_200_OK
-                        assert 'enrolls' in response.json()
-                        assert 'courses' in response.json()
-                        assert 'completions' in response.json()
-                        assert 'hours' in response.json()
-                        assert 'sessions' in response.json()
-                        assert 'last_updated_at' in response.json()
-                        assert 'min_enrollment_date' in response.json()
-                        assert 'max_enrollment_date' in response.json()
-                        assert 'unique_skills_gained' in response.json()
-                        assert 'upskilled_learners' in response.json()
-                        assert 'new_skills_learned' in response.json()
+                        assert "enrolls" in response.json()
+                        assert "courses" in response.json()
+                        assert "completions" in response.json()
+                        assert "hours" in response.json()
+                        assert "sessions" in response.json()
+                        assert "last_updated_at" in response.json()
+                        assert "min_enrollment_date" in response.json()
+                        assert "max_enrollment_date" in response.json()
+                        assert "unique_skills_gained" in response.json()
+                        assert "upskilled_learners" in response.json()
+                        assert "new_skills_learned" in response.json()
 
 
 @ddt.ddt
@@ -172,12 +170,8 @@ class TestSkillsStatsAPI(JWTTestMixin, APITransactionTestCase):
         """
         super().setUp()
         self.user = UserFactory(is_staff=True)
-        role, __ = EnterpriseDataFeatureRole.objects.get_or_create(
-            name=ENTERPRISE_DATA_ADMIN_ROLE
-        )
-        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
-            role=role, user=self.user
-        )
+        role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
+        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(role=role, user=self.user)
         self.client.force_authenticate(user=self.user)
 
         self.enterprise_uuid = "ee5e6b3a069a4947bb8dd2dbc323396c"
@@ -188,18 +182,18 @@ class TestSkillsStatsAPI(JWTTestMixin, APITransactionTestCase):
             kwargs={"enterprise_id": self.enterprise_uuid},
         )
 
-    @patch('enterprise_data.api.v1.views.enterprise_admin.FactEnrollmentAdminDashTable.get_enrollment_date_range')
-    @patch('enterprise_data.api.v1.views.enterprise_admin.SkillsDailyRollupAdminDashTable.get_top_skills')
-    @patch('enterprise_data.api.v1.views.enterprise_admin.SkillsDailyRollupAdminDashTable.get_top_skills_by_enrollment')
-    @patch('enterprise_data.api.v1.views.enterprise_admin.SkillsDailyRollupAdminDashTable.get_top_skills_by_completion')
-    @patch('enterprise_data.api.v1.views.enterprise_admin.SkillsDailyRollupAdminDashTable.get_skills_by_learning_hours')
+    @patch("enterprise_data.api.v1.views.enterprise_admin.FactEnrollmentAdminDashTable.get_enrollment_date_range")
+    @patch("enterprise_data.api.v1.views.enterprise_admin.SkillsDailyRollupAdminDashTable.get_top_skills")
+    @patch("enterprise_data.api.v1.views.enterprise_admin.SkillsDailyRollupAdminDashTable.get_top_skills_by_enrollment")
+    @patch("enterprise_data.api.v1.views.enterprise_admin.SkillsDailyRollupAdminDashTable.get_top_skills_by_completion")
+    @patch("enterprise_data.api.v1.views.enterprise_admin.SkillsDailyRollupAdminDashTable.get_skills_by_learning_hours")
     def test_get(
         self,
         mock_get_skills_by_learning_hours,
         mock_get_top_skills_by_completion,
         mock_get_top_skills_by_enrollment,
         mock_get_top_skills,
-        mock_get_enrollment_date_range
+        mock_get_enrollment_date_range,
     ):
         """
         Test the GET method for the EnterpriseAdminAnalyticsSkillsView works.
@@ -269,45 +263,24 @@ class TestSkillsStatsAPI(JWTTestMixin, APITransactionTestCase):
                 },
             ],
             "skills_by_learning_hours": [
-                {
-                    "skill_name": "Python (Programming Language)",
-                    "learning_hours": 100.0
-                },
-                {
-                    "skill_name": "Data Science",
-                    "learning_hours": 80.0
-                },
-                {
-                    "skill_name": "Algorithms",
-                    "learning_hours": 60.0
-                },
-            ]
+                {"skill_name": "Python (Programming Language)", "learning_hours": 100.0},
+                {"skill_name": "Data Science", "learning_hours": 80.0},
+                {"skill_name": "Algorithms", "learning_hours": 60.0},
+            ],
         }
 
     @ddt.data(
         {
             "params": {"start_date": 1},
-            "error": {
-                "start_date": [
-                    "Date has wrong format. Use one of these formats instead: YYYY-MM-DD."
-                ]
-            },
+            "error": {"start_date": ["Date has wrong format. Use one of these formats instead: YYYY-MM-DD."]},
         },
         {
             "params": {"end_date": 2},
-            "error": {
-                "end_date": [
-                    "Date has wrong format. Use one of these formats instead: YYYY-MM-DD."
-                ]
-            },
+            "error": {"end_date": ["Date has wrong format. Use one of these formats instead: YYYY-MM-DD."]},
         },
         {
             "params": {"start_date": "2024-01-01", "end_date": "2023-01-01"},
-            "error": {
-                "non_field_errors": [
-                    "start_date should be less than or equal to end_date."
-                ]
-            },
+            "error": {"non_field_errors": ["start_date should be less than or equal to end_date."]},
         },
     )
     @ddt.unpack
@@ -330,12 +303,8 @@ class TestEnterpriseBudgetAPI(JWTTestMixin, APITransactionTestCase):
         """
         super().setUp()
         self.user = UserFactory(is_staff=True)
-        role, __ = EnterpriseDataFeatureRole.objects.get_or_create(
-            name=ENTERPRISE_DATA_ADMIN_ROLE
-        )
-        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
-            role=role, user=self.user
-        )
+        role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
+        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(role=role, user=self.user)
         self.client.force_authenticate(user=self.user)
 
         self.enterprise_uuid = "ee5e6b3a069a4947bb8dd2dbc323396c"
@@ -348,8 +317,8 @@ class TestEnterpriseBudgetAPI(JWTTestMixin, APITransactionTestCase):
 
         self.enterprise_subsidy_budget = EnterpriseSubsidyBudgetFactory(
             enterprise_customer_uuid=self.enterprise_uuid,
-            subsidy_access_policy_uuid='8d6503dd-e40d-42b8-442b-37dd4c5450e3',
-            subsidy_access_policy_display_name='test-budget'
+            subsidy_access_policy_uuid="8d6503dd-e40d-42b8-442b-37dd4c5450e3",
+            subsidy_access_policy_display_name="test-budget",
         )
 
     def test_get(self):
@@ -360,7 +329,7 @@ class TestEnterpriseBudgetAPI(JWTTestMixin, APITransactionTestCase):
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == [
             {
-                'subsidy_access_policy_uuid': '8d6503dd-e40d-42b8-442b-37dd4c5450e3',
-                'subsidy_access_policy_display_name': 'test-budget',
+                "subsidy_access_policy_uuid": "8d6503dd-e40d-42b8-442b-37dd4c5450e3",
+                "subsidy_access_policy_display_name": "test-budget",
             }
         ]

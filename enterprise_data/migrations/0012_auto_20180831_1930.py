@@ -6,20 +6,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('enterprise_data', '0011_enterpriseuser'),
+        ("enterprise_data", "0011_enterpriseuser"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='enterpriseenrollment',
-            name='enterprise_user_id',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='enrollments', to='enterprise_data.EnterpriseUser', to_field='enterprise_user_id'),
+            model_name="enterpriseenrollment",
+            name="enterprise_user_id",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="enrollments",
+                to="enterprise_data.EnterpriseUser",
+                to_field="enterprise_user_id",
+            ),
         ),
         migrations.AlterField(
-            model_name='enterpriseuser',
-            name='enterprise_user_id',
+            model_name="enterpriseuser",
+            name="enterprise_user_id",
             field=models.PositiveIntegerField(unique=True),
         ),
     ]

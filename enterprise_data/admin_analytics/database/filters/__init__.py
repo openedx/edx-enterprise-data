@@ -2,6 +2,6 @@
 Query Filters for database tables.
 """
 
-from .fact_completion_admin_dash import FactCompletionAdminDashFilters
-from .fact_engagement_admin_dash import FactEngagementAdminDashFilters
-from .fact_enrollment_admin_dash import FactEnrollmentAdminDashFilters
+from .fact_completion_admin_dash import FactCompletionAdminDashFilters as FactCompletionAdminDashFilters
+from .fact_engagement_admin_dash import FactEngagementAdminDashFilters as FactEngagementAdminDashFilters
+from .fact_enrollment_admin_dash import FactEnrollmentAdminDashFilters as FactEnrollmentAdminDashFilters

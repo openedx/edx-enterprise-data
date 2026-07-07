@@ -38,20 +38,20 @@ def _get_snowflake_connection():
         ValueError: When required credential settings are absent.
     """
     if _snowflake.connector is None:
-        raise ImportError('snowflake-connector-python is required')
+        raise ImportError("snowflake-connector-python is required")
 
-    user = getattr(settings, 'SNOWFLAKE_SERVICE_USER', None)
-    key_pem = getattr(settings, 'SNOWFLAKE_SERVICE_PRIVKEY', None)
-    passphrase = getattr(settings, 'SNOWFLAKE_SERVICE_PASSPHRASE', None)
-    account = getattr(settings, 'SNOWFLAKE_ACCOUNT', 'edx.us-east-1')
-    role = getattr(settings, 'SNOWFLAKE_ROLE', 'ENTERPRISE_SERVICE_USER_ROLE')
+    user = getattr(settings, "SNOWFLAKE_SERVICE_USER", None)
+    key_pem = getattr(settings, "SNOWFLAKE_SERVICE_PRIVKEY", None)
+    passphrase = getattr(settings, "SNOWFLAKE_SERVICE_PASSPHRASE", None)
+    account = getattr(settings, "SNOWFLAKE_ACCOUNT", "edx.us-east-1")
+    role = getattr(settings, "SNOWFLAKE_ROLE", "ENTERPRISE_SERVICE_USER_ROLE")
 
     if not user:
-        raise ValueError('SNOWFLAKE_SERVICE_USER must be configured')
+        raise ValueError("SNOWFLAKE_SERVICE_USER must be configured")
     if not key_pem:
-        raise ValueError('SNOWFLAKE_SERVICE_PRIVKEY must be configured')
+        raise ValueError("SNOWFLAKE_SERVICE_PRIVKEY must be configured")
     if not passphrase:
-        raise ValueError('SNOWFLAKE_SERVICE_PASSPHRASE must be configured')
+        raise ValueError("SNOWFLAKE_SERVICE_PASSPHRASE must be configured")
 
     key_data = key_pem.encode() if isinstance(key_pem, str) else key_pem
     private_key = _serialization.load_pem_private_key(
@@ -110,7 +110,7 @@ class SnowflakeClient:
             formatted_row = []
             for value in row:
                 if isinstance(value, datetime.datetime):
-                    formatted_row.append(value.strftime('%Y-%m-%d %H:%M:%S'))
+                    formatted_row.append(value.strftime("%Y-%m-%d %H:%M:%S"))
                 else:
                     formatted_row.append(value)
             yield formatted_row

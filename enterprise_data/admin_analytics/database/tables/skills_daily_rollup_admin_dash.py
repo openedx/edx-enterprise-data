@@ -1,8 +1,8 @@
 """
 Module for interacting with the skills_daily_rollup_admin_dash table.
 """
+
 from datetime import date
-from typing import Optional
 from uuid import UUID
 
 from enterprise_data.admin_analytics.database.filters.mixins import CommonFiltersMixin
@@ -22,6 +22,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
     """
     Class for communicating with the skills_daily_rollup_admin_dash table.
     """
+
     queries = SkillsDailyRollupAdminDashQueries()
 
     def build_query_filters(
@@ -29,11 +30,11 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         enterprise_customer_uuid: UUID,
         start_date: date,
         end_date: date,
-        course_type: Optional[str] = None,
-        course_key: Optional[str] = None,
-        budget_uuid: Optional[str] = None,
-        include_date_range_filter: Optional[bool] = True,
-        group_uuid: Optional[UUID] = None,
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
+        include_date_range_filter: bool | None = True,
+        group_uuid: UUID | None = None,
     ):
         """
         Build query filters and parameters for enterprise analytics queries.
@@ -55,55 +56,67 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         """
         optional_params = {}
         default_params = {
-            'enterprise_customer_uuid': enterprise_customer_uuid,
+            "enterprise_customer_uuid": enterprise_customer_uuid,
         }
 
-        query_filters = QueryFilters([
-            self.enterprise_customer_uuid_filter('enterprise_customer_uuid'),
-        ])
+        query_filters = QueryFilters(
+            [
+                self.enterprise_customer_uuid_filter("enterprise_customer_uuid"),
+            ]
+        )
 
         if include_date_range_filter is True:
             query_filters.append(
                 self.date_range_filter(
-                    column='date',
-                    start_date_params_key='start_date',
-                    end_date_params_key='end_date',
+                    column="date",
+                    start_date_params_key="start_date",
+                    end_date_params_key="end_date",
                 )
             )
-            default_params.update({
-                'start_date': start_date,
-                'end_date': end_date,
-            })
+            default_params.update(
+                {
+                    "start_date": start_date,
+                    "end_date": end_date,
+                }
+            )
 
         if course_key:
-            query_filters.append(EqualQueryFilter(
-                column='course_key',
-                value_placeholder='course_key',
-            ))
-            optional_params['course_key'] = course_key
+            query_filters.append(
+                EqualQueryFilter(
+                    column="course_key",
+                    value_placeholder="course_key",
+                )
+            )
+            optional_params["course_key"] = course_key
 
         if course_type:
-            query_filters.append(EqualQueryFilter(
-                column='course_product_line',
-                value_placeholder='course_type',
-            ))
-            optional_params['course_type'] = course_type
+            query_filters.append(
+                EqualQueryFilter(
+                    column="course_product_line",
+                    value_placeholder="course_type",
+                )
+            )
+            optional_params["course_type"] = course_type
 
         if budget_uuid:
-            query_filters.append(EqualQueryFilter(
-                column='subsidy_access_policy_uuid',
-                value_placeholder='budget_uuid',
-            ))
-            optional_params['budget_uuid'] = budget_uuid
+            query_filters.append(
+                EqualQueryFilter(
+                    column="subsidy_access_policy_uuid",
+                    value_placeholder="budget_uuid",
+                )
+            )
+            optional_params["budget_uuid"] = budget_uuid
 
         # See https://2u-internal.atlassian.net/browse/DPMF-994?focusedCommentId=5688616 for context on default value
-        default_group_uuid = '00000000000000000000000000000000'
+        default_group_uuid = "00000000000000000000000000000000"
         group_uuid_value = group_uuid or default_group_uuid
-        query_filters.append(EqualQueryFilter(
-            column='enterprise_group_uuid',
-            value_placeholder='enterprise_group_uuid',
-        ))
-        optional_params['enterprise_group_uuid'] = group_uuid_value
+        query_filters.append(
+            EqualQueryFilter(
+                column="enterprise_group_uuid",
+                value_placeholder="enterprise_group_uuid",
+            )
+        )
+        optional_params["enterprise_group_uuid"] = group_uuid_value
 
         params = {**default_params, **optional_params}
         return query_filters, params
@@ -114,10 +127,10 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         enterprise_customer_uuid: UUID,
         start_date: date,
         end_date: date,
-        course_type: Optional[str] = None,
-        course_key: Optional[str] = None,
-        budget_uuid: Optional[str] = None,
-        group_uuid: Optional[str] = None,
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
+        group_uuid: str | None = None,
     ):
         """
         Get the top skills for the given enterprise customer.
@@ -155,10 +168,10 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         enterprise_customer_uuid: UUID,
         start_date: date,
         end_date: date,
-        course_type: Optional[str] = None,
-        course_key: Optional[str] = None,
-        budget_uuid: Optional[str] = None,
-        group_uuid: Optional[str] = None,
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
+        group_uuid: str | None = None,
     ):
         """
         Get the top skills by enrollments for the given enterprise customer.
@@ -196,10 +209,10 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         enterprise_customer_uuid: UUID,
         start_date: date,
         end_date: date,
-        course_type: Optional[str] = None,
-        course_key: Optional[str] = None,
-        budget_uuid: Optional[str] = None,
-        group_uuid: Optional[str] = None,
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
+        group_uuid: str | None = None,
     ):
         """
         Get the top skills by completion for the given enterprise customer.
@@ -237,10 +250,10 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         enterprise_customer_uuid: UUID,
         start_date: date,
         end_date: date,
-        course_key: Optional[str] = None,
-        course_type: Optional[str] = None,
-        budget_uuid: Optional[str] = None,
-        group_uuid: Optional[str] = None,
+        course_key: str | None = None,
+        course_type: str | None = None,
+        budget_uuid: str | None = None,
+        group_uuid: str | None = None,
     ):
         """
         Get the skills by learning hours for the given enterprise customer.
@@ -278,10 +291,10 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         enterprise_customer_uuid: UUID,
         start_date: date,
         end_date: date,
-        course_type: Optional[str] = None,
-        course_key: Optional[str] = None,
-        budget_uuid: Optional[str] = None,
-        group_uuid: Optional[str] = None,
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
+        group_uuid: str | None = None,
     ):
         """
         Get the unique skills gained for the given enterprise customer.
@@ -305,11 +318,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             group_uuid=group_uuid,
         )
 
-        query_filters.append(ComparisonQueryFilter(
-            column='completions',
-            operator='>',
-            value=0
-        ))
+        query_filters.append(ComparisonQueryFilter(column="completions", operator=">", value=0))
 
         results = run_query(
             query=self.queries.get_unique_skills_gained(query_filters),
@@ -323,10 +332,10 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         enterprise_customer_uuid: UUID,
         start_date: date,
         end_date: date,
-        course_type: Optional[str] = None,
-        course_key: Optional[str] = None,
-        budget_uuid: Optional[str] = None,
-        group_uuid: Optional[str] = None,
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
+        group_uuid: str | None = None,
     ):
         """
         Construct query filters and parameters for upskilled learners query.
@@ -349,11 +358,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             budget_uuid=budget_uuid,
             group_uuid=group_uuid,
         )
-        skills_query_filters.append(ComparisonQueryFilter(
-            column='completions',
-            operator='>',
-            value=0
-        ))
+        skills_query_filters.append(ComparisonQueryFilter(column="completions", operator=">", value=0))
 
         enrollment_query_filters, enrollment_params = FactEnrollmentAdminDashTable().build_query_filters(
             enterprise_customer_uuid=enterprise_customer_uuid,
@@ -363,11 +368,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             course_type=course_type,
             budget_uuid=budget_uuid,
         )
-        enrollment_query_filters.append(ComparisonQueryFilter(
-            column='has_passed',
-            operator='=',
-            value=1
-        ))
+        enrollment_query_filters.append(ComparisonQueryFilter(column="has_passed", operator="=", value=1))
 
         return skills_query_filters, skills_params, enrollment_query_filters, enrollment_params
 
@@ -377,10 +378,10 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         enterprise_customer_uuid: UUID,
         start_date: date,
         end_date: date,
-        course_type: Optional[str] = None,
-        course_key: Optional[str] = None,
-        budget_uuid: Optional[str] = None,
-        group_uuid: Optional[str] = None,
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
+        group_uuid: str | None = None,
     ):
         """
         Get the count of upskilled learners for the given enterprise customer.
@@ -416,10 +417,10 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         enterprise_customer_uuid: UUID,
         start_date: date,
         end_date: date,
-        course_type: Optional[str] = None,
-        course_key: Optional[str] = None,
-        budget_uuid: Optional[str] = None,
-        group_uuid: Optional[str] = None,
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
+        group_uuid: str | None = None,
     ):
         """
         Construct query filters and parameters for new skills learned query.
@@ -433,18 +434,12 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             budget_uuid (str): The budget UUID to filter by (optional). Defaults to None.
             group_uuid (str): The group UUID to filter by (optional). Defaults to None.
         """
-        common_query_filters = QueryFilters([
-            ComparisonQueryFilter(
-                column='completions',
-                operator='>',
-                value=0
-            ),
-            ComparisonQueryFilter(
-                column='confidence',
-                operator='>=',
-                value=0.8
-            )
-        ])
+        common_query_filters = QueryFilters(
+            [
+                ComparisonQueryFilter(column="completions", operator=">", value=0),
+                ComparisonQueryFilter(column="confidence", operator=">=", value=0.8),
+            ]
+        )
 
         current_skills_filters, current_skills_params = self.build_query_filters(
             enterprise_customer_uuid=enterprise_customer_uuid,
@@ -467,11 +462,7 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
             include_date_range_filter=False,
         )
         historical_skills_filters.append(
-            ComparisonQueryFilter(
-                column='date',
-                operator='<',
-                value_placeholder='start_date'
-            )
+            ComparisonQueryFilter(column="date", operator="<", value_placeholder="start_date")
         )
         historical_skills_filters.extend(common_query_filters)
 
@@ -483,10 +474,10 @@ class SkillsDailyRollupAdminDashTable(CommonFiltersMixin, BaseTable):
         enterprise_customer_uuid: UUID,
         start_date: date,
         end_date: date,
-        course_type: Optional[str] = None,
-        course_key: Optional[str] = None,
-        budget_uuid: Optional[str] = None,
-        group_uuid: Optional[str] = None,
+        course_type: str | None = None,
+        course_key: str | None = None,
+        budget_uuid: str | None = None,
+        group_uuid: str | None = None,
     ):
         """
         Get the count of new skills learned for the given enterprise customer.

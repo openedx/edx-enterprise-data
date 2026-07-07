@@ -2,7 +2,6 @@
 Database models for enterprise data.
 """
 
-
 from logging import getLogger
 
 from django.conf import settings
@@ -37,11 +36,11 @@ class EnterpriseLearner(models.Model):
     objects = EnterpriseReportingModelManager()
 
     class Meta:
-        app_label = 'enterprise_data'
-        db_table = 'enterprise_learner'
+        app_label = "enterprise_data"
+        db_table = "enterprise_learner"
         verbose_name = _("Enterprise Learner")
         verbose_name_plural = _("Enterprise Learner")
-        ordering = ['-user_email']
+        ordering = ["-user_email"]
 
     enterprise_user_id = models.PositiveIntegerField(primary_key=True)
     enterprise_customer_uuid = models.UUIDField(db_index=True, null=False)
@@ -68,16 +67,16 @@ class EnterpriseLearnerEnrollment(models.Model):
     objects = EnterpriseReportingModelManager()
 
     class Meta:
-        app_label = 'enterprise_data'
-        db_table = 'enterprise_learner_enrollment'
+        app_label = "enterprise_data"
+        db_table = "enterprise_learner_enrollment"
         verbose_name = _("Enterprise Learner Enrollment")
         verbose_name_plural = _("Enterprise Learner Enrollments")
         indexes = [
-            models.Index(fields=['enterprise_customer_uuid', 'enterprise_user_id', 'user_current_enrollment_mode']),
-            models.Index(fields=['enterprise_customer_uuid', 'offer_id', 'budget_id']),
-            models.Index(fields=[
-                'enterprise_customer_uuid', 'user_current_enrollment_mode', 'coupon_code', 'offer_type'
-            ]),
+            models.Index(fields=["enterprise_customer_uuid", "enterprise_user_id", "user_current_enrollment_mode"]),
+            models.Index(fields=["enterprise_customer_uuid", "offer_id", "budget_id"]),
+            models.Index(
+                fields=["enterprise_customer_uuid", "user_current_enrollment_mode", "coupon_code", "offer_type"]
+            ),
         ]
 
     enterprise_enrollment_id = models.PositiveIntegerField(null=True)
@@ -118,9 +117,9 @@ class EnterpriseLearnerEnrollment(models.Model):
     current_grade = models.FloatField(null=True)
     letter_grade = models.CharField(max_length=64, null=True)
     enterprise_user = models.ForeignKey(
-        'EnterpriseLearner',
-        related_name='enrollments',
-        to_field='enterprise_user_id',
+        "EnterpriseLearner",
+        related_name="enrollments",
+        to_field="enterprise_user_id",
         on_delete=models.CASCADE,
         null=True,
     )
@@ -152,41 +151,33 @@ class EnterpriseAdminLearnerProgress(models.Model):
     objects = EnterpriseReportingModelManager()
 
     class Meta:
-        app_label = 'enterprise_data'
-        db_table = 'enterprise_admin_learner_progress'
+        app_label = "enterprise_data"
+        db_table = "enterprise_admin_learner_progress"
         verbose_name = _("Enterprise Admin Learner Progress")
         verbose_name_plural = _("Enterprise Admin Learner Progress")
 
     enterprise_customer_uuid = models.UUIDField(primary_key=True)
     enterprise_customer_name = models.CharField(max_length=255)
-    active_subscription_plan = models.BooleanField(
-        help_text='Whether the subscription plan is active or nor?'
-    )
-    assigned_licenses = models.PositiveIntegerField(
-        help_text='Number of assigned licenses'
-    )
-    activated_licenses = models.PositiveIntegerField(
-        help_text='Number of active licenses'
-    )
+    active_subscription_plan = models.BooleanField(help_text="Whether the subscription plan is active or nor?")
+    assigned_licenses = models.PositiveIntegerField(help_text="Number of assigned licenses")
+    activated_licenses = models.PositiveIntegerField(help_text="Number of active licenses")
     assigned_licenses_percentage = models.FloatField(
-        help_text='Float representation of percentage of assigned licenses out of total'
+        help_text="Float representation of percentage of assigned licenses out of total"
     )
     activated_licenses_percentage = models.FloatField(
-        help_text='Float representation of percentage of active licenses out of total'
+        help_text="Float representation of percentage of active licenses out of total"
     )
-    active_enrollments = models.PositiveIntegerField(
-        help_text='Number of enrollments in active courses'
-    )
+    active_enrollments = models.PositiveIntegerField(help_text="Number of enrollments in active courses")
     at_risk_enrollment_less_than_one_hour = models.PositiveIntegerField(
-        help_text='Number of enrollments from the past 30 days that have not yet achieved 1 hour of learning time'
+        help_text="Number of enrollments from the past 30 days that have not yet achieved 1 hour of learning time"
     )
     at_risk_enrollment_end_date_soon = models.PositiveIntegerField(
         help_text=(
-            'Number of enrollments have end dates coming up in the next 30 days. Course complete time is almost up'
+            "Number of enrollments have end dates coming up in the next 30 days. Course complete time is almost up"
         )
     )
     at_risk_enrollment_dormant = models.PositiveIntegerField(
-        help_text='Number of dormant enrollments in the past 30 days'
+        help_text="Number of dormant enrollments in the past 30 days"
     )
     created_at = models.DateTimeField()
 
@@ -199,25 +190,25 @@ class EnterpriseAdminSummarizeInsights(models.Model):
     objects = EnterpriseReportingModelManager()
 
     class Meta:
-        app_label = 'enterprise_data'
-        db_table = 'enterprise_admin_summarize_insights'
+        app_label = "enterprise_data"
+        db_table = "enterprise_admin_summarize_insights"
         verbose_name = _("Enterprise Admin Summarize Insights")
         verbose_name_plural = _("Enterprise Admin Summarize Insights")
 
     enterprise_customer_uuid = models.UUIDField(primary_key=True)
     enterprise_customer_name = models.CharField(max_length=255)
-    enrolls = models.PositiveIntegerField(help_text='Total number of enrollments in last 30 days')
-    enrolls_prior = models.PositiveIntegerField(help_text='Total number of enrollments in last 31-60 days')
-    passed = models.PositiveIntegerField(help_text='Total number of completions in last 30 days')
-    passed_prior = models.PositiveIntegerField(help_text='Total number of completions in last 31-60 days')
-    engage = models.PositiveIntegerField(help_text='Total number of daily sessions/engagements in last 30 days')
+    enrolls = models.PositiveIntegerField(help_text="Total number of enrollments in last 30 days")
+    enrolls_prior = models.PositiveIntegerField(help_text="Total number of enrollments in last 31-60 days")
+    passed = models.PositiveIntegerField(help_text="Total number of completions in last 30 days")
+    passed_prior = models.PositiveIntegerField(help_text="Total number of completions in last 31-60 days")
+    engage = models.PositiveIntegerField(help_text="Total number of daily sessions/engagements in last 30 days")
     engage_prior = models.PositiveIntegerField(
-        help_text='Total number of daily sessions/engagements in last 31-60 days'
+        help_text="Total number of daily sessions/engagements in last 31-60 days"
     )
-    hours = models.PositiveIntegerField(help_text='Total number of learning hours in last 30 days')
-    hours_prior = models.PositiveIntegerField(help_text='Total number of learning hours in last 31-60 days')
-    contract_end_date = models.DateTimeField(help_text='Contract end date')
-    active_contract = models.BooleanField(help_text='Whether or not the customer has a contract?')
+    hours = models.PositiveIntegerField(help_text="Total number of learning hours in last 30 days")
+    hours_prior = models.PositiveIntegerField(help_text="Total number of learning hours in last 31-60 days")
+    contract_end_date = models.DateTimeField(help_text="Contract end date")
+    active_contract = models.BooleanField(help_text="Whether or not the customer has a contract?")
     created_at = models.DateTimeField()
 
 
@@ -233,8 +224,8 @@ class EnterpriseEnrollment(models.Model):
     """
 
     class Meta:
-        app_label = 'enterprise_data'
-        db_table = 'enterprise_enrollment'
+        app_label = "enterprise_data"
+        db_table = "enterprise_enrollment"
         verbose_name = _("Enterprise Enrollment")
         verbose_name_plural = _("Enterprise Enrollments")
 
@@ -242,12 +233,12 @@ class EnterpriseEnrollment(models.Model):
     enterprise_name = models.CharField(max_length=255)
     lms_user_id = models.PositiveIntegerField()
     enterprise_user = models.ForeignKey(
-        'EnterpriseUser',
-        related_name='enrollments',
-        to_field='enterprise_user_id',
+        "EnterpriseUser",
+        related_name="enrollments",
+        to_field="enterprise_user_id",
         on_delete=models.CASCADE,
     )
-    course_id = models.CharField(max_length=255, help_text='The course the learner is enrolled in.')
+    course_id = models.CharField(max_length=255, help_text="The course the learner is enrolled in.")
     enrollment_created_timestamp = models.DateTimeField()
     user_current_enrollment_mode = models.CharField(max_length=32)
     consent_granted = models.BooleanField(default=None, null=True)
@@ -282,10 +273,7 @@ class EnterpriseEnrollment(models.Model):
         """
         Return a human-readable string representation of the object.
         """
-        return "<Enterprise Enrollment for user {user} in {course}>".format(
-            user=self.enterprise_user_id,
-            course=self.course_id
-        )
+        return f"<Enterprise Enrollment for user {self.enterprise_user_id} in {self.course_id}>"
 
     def __repr__(self):
         """
@@ -303,8 +291,8 @@ class EnterpriseOffer(models.Model):
     objects = EnterpriseReportingModelManager()
 
     class Meta:
-        app_label = 'enterprise_data'
-        db_table = 'enterprise_offer_aggregates'
+        app_label = "enterprise_data"
+        db_table = "enterprise_offer_aggregates"
         verbose_name = _("Enterprise Offer")
         verbose_name_plural = _("Enterprise Offers")
 
@@ -332,7 +320,7 @@ class EnterpriseOffer(models.Model):
         """
         Return a human-readable string representation of the object.
         """
-        return f'<Enterprise Offer {self.offer_id} for {self.enterprise_name}>'
+        return f"<Enterprise Offer {self.offer_id} for {self.enterprise_name}>"
 
     def __repr__(self):
         """
@@ -350,8 +338,8 @@ class EnterpriseSubsidyBudget(models.Model):
     objects = EnterpriseReportingModelManager()
 
     class Meta:
-        app_label = 'enterprise_data'
-        db_table = 'ent_subsidy_access_policy_aggregates'
+        app_label = "enterprise_data"
+        db_table = "ent_subsidy_access_policy_aggregates"
         verbose_name = _("Enterprise Subsidy Budget")
         verbose_name_plural = _("Enterprise Subsidy Budgets")
 
@@ -359,7 +347,7 @@ class EnterpriseSubsidyBudget(models.Model):
         db_index=True,
         primary_key=True,
         max_length=32,
-        help_text="Hashed surrogate key based on subsidy_access_policy_uuid and subsidy_uuid"
+        help_text="Hashed surrogate key based on subsidy_access_policy_uuid and subsidy_uuid",
     )
     subsidy_access_policy_uuid = models.UUIDField(help_text="Budget Id")
     subsidy_uuid = models.UUIDField()
@@ -388,8 +376,10 @@ class EnterpriseSubsidyBudget(models.Model):
         """
         Return a human-readable string representation of the object.
         """
-        return (f'<Enterprise Budget {self.subsidy_access_policy_uuid} for '
-                f'Subsidy {self.subsidy_uuid} for {self.enterprise_customer_name}>')
+        return (
+            f"<Enterprise Budget {self.subsidy_access_policy_uuid} for "
+            f"Subsidy {self.subsidy_uuid} for {self.enterprise_customer_name}>"
+        )
 
     def __repr__(self):
         """
@@ -406,12 +396,12 @@ class EnterpriseGroupMembership(models.Model):
     objects = EnterpriseReportingModelManager()
 
     class Meta:
-        app_label = 'enterprise_data'
-        db_table = 'group_membership'
+        app_label = "enterprise_data"
+        db_table = "group_membership"
         verbose_name = _("Group Membership")
         verbose_name_plural = _("Group Memberships")
         indexes = [
-            models.Index(fields=['enterprise_group_uuid', 'group_type', 'enterprise_customer_user_id']),
+            models.Index(fields=["enterprise_group_uuid", "group_type", "enterprise_customer_user_id"]),
         ]
 
     group_membership_unique_id = models.CharField(max_length=64, primary_key=True)
@@ -431,9 +421,11 @@ class EnterpriseGroupMembership(models.Model):
         """
         Return a human-readable string representation of the object.
         """
-        return (f'<Enterprise Group Membership: {self.enterprise_group_name} '
-                f'(Group UUID: {self.enterprise_group_uuid}) '
-                f'for Customer ID {self.enterprise_customer_id}>')
+        return (
+            f"<Enterprise Group Membership: {self.enterprise_group_name} "
+            f"(Group UUID: {self.enterprise_group_uuid}) "
+            f"for Customer ID {self.enterprise_customer_id}>"
+        )
 
     def __repr__(self):
         """
@@ -449,11 +441,11 @@ class EnterpriseUser(models.Model):
     """
 
     class Meta:
-        app_label = 'enterprise_data'
-        db_table = 'enterprise_user'
+        app_label = "enterprise_data"
+        db_table = "enterprise_user"
         verbose_name = _("Enterprise User")
         verbose_name_plural = _("Enterprise Users")
-        ordering = ['-user_email']
+        ordering = ["-user_email"]
 
     enterprise_id = models.UUIDField()
     lms_user_id = models.PositiveIntegerField()
@@ -470,10 +462,7 @@ class EnterpriseUser(models.Model):
         """
         Return a human-readable string representation of the object.
         """
-        return "<Enterprise User {user} in {enterprise}>".format(
-            user=self.lms_user_id,
-            enterprise=self.enterprise_id
-        )
+        return f"<Enterprise User {self.lms_user_id} in {self.enterprise_id}>"
 
     def __repr__(self):
         """
@@ -490,8 +479,8 @@ class EnterpriseExecEdLCModulePerformance(models.Model):
     objects = EnterpriseReportingModelManager()
 
     class Meta:
-        app_label = 'enterprise_data'
-        db_table = 'exec_ed_lc_module_performance'
+        app_label = "enterprise_data"
+        db_table = "exec_ed_lc_module_performance"
         verbose_name = _("Exec Ed LC Module Performance")
         verbose_name_plural = _("Exec Ed LC Module Performance")
 
@@ -566,11 +555,7 @@ class EnterpriseExecEdLCModulePerformance(models.Model):
         """
         Return a human-readable string representation of the object.
         """
-        return "<EnterpriseExecEdLCModulePerformance User {user} of {enterprise} in module {module}>".format(
-            user=self.ocm_lms_user_id,
-            enterprise=self.enterprise_customer_uuid,
-            module=self.module_number,
-        )
+        return f"<EnterpriseExecEdLCModulePerformance User {self.ocm_lms_user_id} of {self.enterprise_customer_uuid} in module {self.module_number}>"
 
     def __repr__(self):
         """

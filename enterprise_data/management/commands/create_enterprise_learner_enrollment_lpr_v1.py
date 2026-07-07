@@ -2,7 +2,6 @@
 Management command for creating enterprise learner enrollments
 """
 
-
 import sys
 
 from django.core.management.base import BaseCommand, CommandError
@@ -12,29 +11,22 @@ from enterprise_data.models import EnterpriseLearner
 
 
 class Command(BaseCommand):
-    """ Management command for creating dummy `EnterpriseLearnerEnrollment` instances for (LPR) V1."""
+    """Management command for creating dummy `EnterpriseLearnerEnrollment` instances for (LPR) V1."""
 
-    help = 'Creates an EnterpriseLearnerEnrollment with randomized attributes'
+    help = "Creates an EnterpriseLearnerEnrollment with randomized attributes"
 
     def add_arguments(self, parser):
+        parser.add_argument("enterprise_customer_uuid", type=str, help="UUID for an enterprise")
         parser.add_argument(
-            'enterprise_customer_uuid',
-            type=str,
-            help='UUID for an enterprise'
-        )
-        parser.add_argument(
-            'enterprise_user_id',
-            type=int,
-            default=None,
-            help='enterprise_user_id for an enterprise_user'
+            "enterprise_user_id", type=int, default=None, help="enterprise_user_id for an enterprise_user"
         )
         # this is optional and will be marked as False if not available in argumnets.
-        parser.add_argument('--consent_granted', action='store_true')
+        parser.add_argument("--consent_granted", action="store_true")
 
     def handle(self, *args, **options):
-        enterprise_customer_uuid = options['enterprise_customer_uuid']
-        enterprise_user_id = options.get('enterprise_user_id')
-        is_consent_granted = options.get('consent_granted')
+        enterprise_customer_uuid = options["enterprise_customer_uuid"]
+        enterprise_user_id = options.get("enterprise_user_id")
+        is_consent_granted = options.get("consent_granted")
 
         try:
             enterprise_learner = EnterpriseLearner.objects.get(
@@ -48,17 +40,10 @@ class Command(BaseCommand):
                 is_consent_granted=is_consent_granted,
             )
             info = (
-                '\nCreated EnterpriseLearnerEnrollment with enterprise_customer_uuid '
-                '{} for EnterpriseUser with enterprise_user_id of {} and consent {}\n\n'.format(
-                    enterprise_customer_uuid,
-                    enterprise_user_id,
-                    is_consent_granted,
-                )
+                "\nCreated EnterpriseLearnerEnrollment with enterprise_customer_uuid "
+                f"{enterprise_customer_uuid} for EnterpriseUser with enterprise_user_id of {enterprise_user_id} and consent {is_consent_granted}\n\n"
             )
             sys.stdout.write(info)
         except Exception as exc:
-            info = (
-                'Error trying to create EnterpriseUser with uuid '
-                '{}: {}'.format(enterprise_customer_uuid, exc)
-            )
+            info = f"Error trying to create EnterpriseUser with uuid {enterprise_customer_uuid}: {exc}"
             raise CommandError(info) from exc

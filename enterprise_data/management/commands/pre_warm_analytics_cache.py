@@ -1,6 +1,7 @@
 """
 Management command for pre-warming the analytics cache for large enterprises.
 """
+
 from datetime import date
 from uuid import UUID
 
@@ -19,7 +20,8 @@ class Command(BaseCommand):
 
     The top enterprises will be the ones with the most enrollments.
     """
-    help = 'Pre-warm the analytics cache for a large enterprises.'
+
+    help = "Pre-warm the analytics cache for a large enterprises."
 
     @staticmethod
     def __cache_enrollment_data(enterprise_customer_uuid: UUID):
@@ -229,8 +231,5 @@ class Command(BaseCommand):
                 self.__cache_engagement_data(enterprise_customer_uuid)
                 self.__cache_skills_data(enterprise_customer_uuid)
             except Exception as exc:
-                info = (
-                    'Error trying to add cache entries for enterprise '
-                    '{}: {}'.format(enterprise_customer_uuid, exc)
-                )
+                info = f"Error trying to add cache entries for enterprise {enterprise_customer_uuid}: {exc}"
                 raise CommandError(info) from exc

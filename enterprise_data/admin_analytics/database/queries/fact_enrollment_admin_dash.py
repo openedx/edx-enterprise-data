@@ -1,6 +1,7 @@
 """
 Module containing queries for the fact_enrollment_admin_dash table.
 """
+
 from ..query_filters import QueryFilters
 
 
@@ -8,6 +9,7 @@ class FactEnrollmentAdminDashQueries:
     """
     Queries related to the fact_enrollment_admin_dash table.
     """
+
     @staticmethod
     def get_top_enterprises_query(count=10):
         """
@@ -302,9 +304,7 @@ class FactEnrollmentAdminDashQueries:
         """
 
     @staticmethod
-    def get_enrolled_courses(
-        query_filters: QueryFilters
-    ) -> str:
+    def get_enrolled_courses(query_filters: QueryFilters) -> str:
         """
         Get the query to fetch the enrolled courses.
 

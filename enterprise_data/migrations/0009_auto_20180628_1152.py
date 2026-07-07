@@ -5,20 +5,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('enterprise_data', '0008_auto_20180614_0108'),
+        ("enterprise_data", "0008_auto_20180614_0108"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='enterpriseenrollment',
-            old_name='final_grade',
-            new_name='current_grade',
+            model_name="enterpriseenrollment",
+            old_name="final_grade",
+            new_name="current_grade",
         ),
         migrations.AddField(
-            model_name='enterpriseenrollment',
-            name='offer',
+            model_name="enterpriseenrollment",
+            name="offer",
             field=models.CharField(max_length=128, null=True),
         ),
     ]

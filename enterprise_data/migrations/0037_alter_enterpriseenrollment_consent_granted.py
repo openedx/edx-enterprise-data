@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('enterprise_data', '0036_enterprisesubsidybudget_subsidy_access_policy_display_name'),
+        ("enterprise_data", "0036_enterprisesubsidybudget_subsidy_access_policy_display_name"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='enterpriseenrollment',
-            name='consent_granted',
+            model_name="enterpriseenrollment",
+            name="consent_granted",
             field=models.BooleanField(default=None, null=True),
         ),
     ]

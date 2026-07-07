@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('enterprise_data', '0026_auto_20210916_0414'),
+        ("enterprise_data", "0026_auto_20210916_0414"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='enterpriselearnerenrollment',
-            name='total_learning_time_seconds',
+            model_name="enterpriselearnerenrollment",
+            name="total_learning_time_seconds",
             field=models.PositiveIntegerField(default=0),
         ),
     ]

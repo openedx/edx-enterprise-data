@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('enterprise_data', '0030_auto_20230609_1353'),
+        ("enterprise_data", "0030_auto_20230609_1353"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='enterpriselearnerenrollment',
-            name='course_product_line',
+            model_name="enterpriselearnerenrollment",
+            name="course_product_line",
             field=models.CharField(max_length=64, null=True),
         ),
         migrations.AddField(
-            model_name='enterpriselearnerenrollment',
-            name='is_subsidy',
+            model_name="enterpriselearnerenrollment",
+            name="is_subsidy",
             field=models.BooleanField(default=False),
         ),
     ]

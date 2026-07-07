@@ -1,16 +1,16 @@
 """
 Advance Analytics for API endpoints to fetch enterprise enrollments data.
 """
+
 from datetime import date
 from logging import getLogger
 
+from django.http import StreamingHttpResponse
 from edx_rbac.decorators import permission_required
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
-
-from django.http import StreamingHttpResponse
 
 from enterprise_data.admin_analytics.constants import ResponseType
 from enterprise_data.admin_analytics.database.tables import FactEnrollmentAdminDashTable
@@ -30,16 +30,17 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
     1. `enterprise_data_api_v1.enterprise-learner-enrollment-list`: Get individual enrollment data.
     2. `enterprise_data_api_v1.enterprise-learner-enrollment-stats`: Get enrollment stats data.
     """
-    authentication_classes = (JwtAuthentication,)
-    http_method_names = ('get', )
 
-    @permission_required('can_access_enterprise', fn=lambda request, enterprise_uuid: enterprise_uuid)
+    authentication_classes = (JwtAuthentication,)
+    http_method_names = ("get",)
+
+    @permission_required("can_access_enterprise", fn=lambda request, enterprise_uuid: enterprise_uuid)
     def list(self, request, enterprise_uuid):
         """
         Get individual enrollments data for the enterprise.
         """
         # Remove hyphens from the UUID
-        enterprise_uuid = enterprise_uuid.replace('-', '')
+        enterprise_uuid = enterprise_uuid.replace("-", "")
 
         serializer = AdvanceAnalyticsQueryParamSerializer(data=request.GET)
         serializer.is_valid(raise_exception=True)
@@ -48,11 +49,11 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
         )
 
         # get values from query params or use default values
-        start_date = serializer.data.get('start_date', min_enrollment_date)
-        end_date = serializer.data.get('end_date', date.today())
-        page = serializer.data.get('page', 1)
-        page_size = serializer.data.get('page_size', 100)
-        group_uuid = serializer.data.get('group_uuid')
+        start_date = serializer.data.get("start_date", min_enrollment_date)
+        end_date = serializer.data.get("end_date", date.today())
+        page = serializer.data.get("page", 1)
+        page_size = serializer.data.get("page_size", 100)
+        group_uuid = serializer.data.get("group_uuid")
 
         enrollments = FactEnrollmentAdminDashTable().get_all_enrollments(
             enterprise_customer_uuid=enterprise_uuid,
@@ -68,7 +69,7 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
             start_date=start_date,
             end_date=end_date,
         )
-        response_type = request.query_params.get('response_type', ResponseType.JSON.value)
+        response_type = request.query_params.get("response_type", ResponseType.JSON.value)
 
         LOGGER.info(
             "Individual enrollments data requested for enterprise [%s] from [%s] to [%s]",
@@ -81,9 +82,9 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
             filename = f"""Individual Enrollments, {start_date} - {end_date}.csv"""
 
             return StreamingHttpResponse(
-                IndividualEnrollmentsCSVRenderer().render(self._stream_serialized_data(
-                    enterprise_uuid, group_uuid, start_date, end_date, total_count
-                )),
+                IndividualEnrollmentsCSVRenderer().render(
+                    self._stream_serialized_data(enterprise_uuid, group_uuid, start_date, end_date, total_count)
+                ),
                 content_type="text/csv",
                 headers={"Content-Disposition": f'attachment; filename="{filename}"'},
             )
@@ -114,8 +115,8 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
             yield from enrollments
             offset += page_size
 
-    @permission_required('can_access_enterprise', fn=lambda request, enterprise_uuid: enterprise_uuid)
-    @action(detail=False, methods=['get'], name='Enterprise enrollments data for charts', url_path='stats')
+    @permission_required("can_access_enterprise", fn=lambda request, enterprise_uuid: enterprise_uuid)
+    @action(detail=False, methods=["get"], name="Enterprise enrollments data for charts", url_path="stats")
     def stats(self, request, enterprise_uuid):
         """
         Get data to populate enterprise enrollment charts.
@@ -126,7 +127,7 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
         3. `top_subjects_by_enrollments`: This will show the top subjects by enrollments.
         """
         # Remove hyphens from the UUID
-        enterprise_uuid = enterprise_uuid.replace('-', '')
+        enterprise_uuid = enterprise_uuid.replace("-", "")
 
         serializer = AdvanceAnalyticsQueryParamSerializer(data=request.GET)
         serializer.is_valid(raise_exception=True)
@@ -135,22 +136,22 @@ class AdvanceAnalyticsEnrollmentsView(AnalyticsPaginationMixin, ViewSet):
             enterprise_uuid,
         )
         # get values from query params or use default
-        start_date = serializer.data.get('start_date', min_enrollment_date)
-        end_date = serializer.data.get('end_date', date.today())
-        group_uuid = serializer.data.get('group_uuid')
-        course_type = serializer.data.get('course_type')
-        course_key = serializer.data.get('course_key')
-        budget_uuid = serializer.data.get('budget_uuid')
+        start_date = serializer.data.get("start_date", min_enrollment_date)
+        end_date = serializer.data.get("end_date", date.today())
+        group_uuid = serializer.data.get("group_uuid")
+        course_type = serializer.data.get("course_type")
+        course_key = serializer.data.get("course_key")
+        budget_uuid = serializer.data.get("budget_uuid")
 
-        with timer('construct_enrollment_all_stats'):
+        with timer("construct_enrollment_all_stats"):
             data = {
-                'enrollments_over_time': FactEnrollmentAdminDashTable().get_enrolment_time_series_data(
+                "enrollments_over_time": FactEnrollmentAdminDashTable().get_enrolment_time_series_data(
                     enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
                 ),
-                'top_courses_by_enrollments': FactEnrollmentAdminDashTable().get_top_courses_by_enrollments(
+                "top_courses_by_enrollments": FactEnrollmentAdminDashTable().get_top_courses_by_enrollments(
                     enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
                 ),
-                'top_subjects_by_enrollments': FactEnrollmentAdminDashTable().get_top_subjects_by_enrollments(
+                "top_subjects_by_enrollments": FactEnrollmentAdminDashTable().get_top_subjects_by_enrollments(
                     enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
                 ),
             }

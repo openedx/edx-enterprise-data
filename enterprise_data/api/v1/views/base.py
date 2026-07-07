@@ -1,6 +1,7 @@
 """
 Base views for enterprise data api v1.
 """
+
 import math
 
 from edx_rbac.mixins import PermissionRequiredMixin
@@ -17,16 +18,17 @@ class EnterpriseViewSetMixin(PermissionRequiredMixin):
     """
     Base class for all Enterprise view sets.
     """
+
     authentication_classes = (JwtAuthentication,)
     pagination_class = DefaultPagination
-    permission_required = 'can_access_enterprise'
+    permission_required = "can_access_enterprise"
     API_VERSION = ANALYTICS_API_VERSION_1
 
     def paginate_queryset(self, queryset):
         """
         Allows no_page query param to skip pagination
         """
-        if 'no_page' in self.request.query_params:
+        if "no_page" in self.request.query_params:
             return None
         return super().paginate_queryset(queryset)
 
@@ -35,8 +37,9 @@ class AnalyticsPaginationMixin:
     """
     Mixin that provides utility methods to allow pagination on views.
     """
-    page_query_param = 'page'
-    page_size_query_param = 'page_size'
+
+    page_query_param = "page"
+    page_size_query_param = "page_size"
 
     def get_next_link(self, request, page_number, page_count):
         """
@@ -93,13 +96,15 @@ class AnalyticsPaginationMixin:
         """
         page_count = math.ceil(total_count / page_size)
         if page_count > 0 and (page <= 0 or page > page_count):
-            raise NotFound('Invalid page.')
+            raise NotFound("Invalid page.")
 
-        return Response({
-            'next': self.get_next_link(request, page, page_count),
-            'previous': self.get_previous_link(request, page),
-            'count': total_count,
-            'num_pages': page_count,
-            'current_page': page,
-            'results': records,
-        })
+        return Response(
+            {
+                "next": self.get_next_link(request, page, page_count),
+                "previous": self.get_previous_link(request, page),
+                "count": total_count,
+                "num_pages": page_count,
+                "current_page": page,
+                "results": records,
+            }
+        )

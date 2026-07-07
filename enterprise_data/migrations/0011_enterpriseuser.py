@@ -5,30 +5,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('enterprise_data', '0010_enterpriseenrollment_created'),
+        ("enterprise_data", "0010_enterpriseenrollment_created"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='EnterpriseUser',
+            name="EnterpriseUser",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('enterprise_id', models.UUIDField()),
-                ('lms_user_id', models.PositiveIntegerField()),
-                ('enterprise_user_id', models.PositiveIntegerField(unique=True)),
-                ('enterprise_sso_uid', models.CharField(max_length=255, null=True)),
-                ('user_account_creation_timestamp', models.DateTimeField(null=True)),
-                ('user_email', models.CharField(max_length=255, null=True)),
-                ('user_username', models.CharField(max_length=255, null=True)),
-                ('user_country_code', models.CharField(max_length=2, null=True)),
-                ('last_activity_date', models.DateField(null=True)),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("enterprise_id", models.UUIDField()),
+                ("lms_user_id", models.PositiveIntegerField()),
+                ("enterprise_user_id", models.PositiveIntegerField(unique=True)),
+                ("enterprise_sso_uid", models.CharField(max_length=255, null=True)),
+                ("user_account_creation_timestamp", models.DateTimeField(null=True)),
+                ("user_email", models.CharField(max_length=255, null=True)),
+                ("user_username", models.CharField(max_length=255, null=True)),
+                ("user_country_code", models.CharField(max_length=2, null=True)),
+                ("last_activity_date", models.DateField(null=True)),
             ],
             options={
-                'db_table': 'enterprise_user',
-                'verbose_name': 'Enterprise User',
-                'verbose_name_plural': 'Enterprise Users',
+                "db_table": "enterprise_user",
+                "verbose_name": "Enterprise User",
+                "verbose_name_plural": "Enterprise Users",
             },
         ),
     ]

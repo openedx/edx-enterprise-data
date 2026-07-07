@@ -1,8 +1,9 @@
 """Unittests for analytics_enrollments.py"""
+
 from datetime import datetime
+from unittest.mock import patch
 
 import ddt
-from mock import patch
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITransactionTestCase
@@ -27,12 +28,8 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
         """
         super().setUp()
         self.user = UserFactory(is_staff=True)
-        role, __ = EnterpriseDataFeatureRole.objects.get_or_create(
-            name=ENTERPRISE_DATA_ADMIN_ROLE
-        )
-        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
-            role=role, user=self.user
-        )
+        role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
+        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(role=role, user=self.user)
         self.client.force_authenticate(user=self.user)
 
         self.enterprise_uuid = "ee5e6b3a-069a-4947-bb8d-d2dbc323396c"
@@ -44,15 +41,15 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
         )
 
         get_enrollment_date_range_patcher = patch(
-            'enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrollment_date_range',
-            return_value=(datetime.now(), datetime.now())
+            "enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrollment_date_range",
+            return_value=(datetime.now(), datetime.now()),
         )
 
         get_enrollment_date_range_patcher.start()
         self.addCleanup(get_enrollment_date_range_patcher.stop)
 
-    @patch('enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrollment_count')
-    @patch('enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_all_enrollments')
+    @patch("enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrollment_count")
+    @patch("enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_all_enrollments")
     def test_get(self, mock_get_all_enrollments, mock_get_enrollment_count):
         """
         Test the GET method for the AdvanceAnalyticsIndividualEnrollmentsView works.
@@ -60,7 +57,7 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
         mock_get_all_enrollments.return_value = ENROLLMENTS
         mock_get_enrollment_count.return_value = len(ENROLLMENTS)
 
-        response = self.client.get(self.url + '?page_size=2')
+        response = self.client.get(self.url + "?page_size=2")
         assert response.status_code == status.HTTP_200_OK
         assert response["Content-Type"] == "application/json"
         data = response.json()
@@ -70,7 +67,7 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
         assert data["num_pages"] == 3
         assert data["count"] == 5
 
-        response = self.client.get(self.url + '?page_size=2&page=2')
+        response = self.client.get(self.url + "?page_size=2&page=2")
         assert response.status_code == status.HTTP_200_OK
         assert response["Content-Type"] == "application/json"
         data = response.json()
@@ -80,7 +77,7 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
         assert data["num_pages"] == 3
         assert data["count"] == 5
 
-        response = self.client.get(self.url + '?page_size=2&page=3')
+        response = self.client.get(self.url + "?page_size=2&page=3")
         assert response.status_code == status.HTTP_200_OK
         assert response["Content-Type"] == "application/json"
         data = response.json()
@@ -90,7 +87,7 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
         assert data["num_pages"] == 3
         assert data["count"] == 5
 
-        response = self.client.get(self.url + '?page_size=5')
+        response = self.client.get(self.url + "?page_size=5")
         assert response.status_code == status.HTTP_200_OK
         assert response["Content-Type"] == "application/json"
         data = response.json()
@@ -100,8 +97,8 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
         assert data["num_pages"] == 1
         assert data["count"] == 5
 
-    @patch('enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrollment_count')
-    @patch('enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_all_enrollments')
+    @patch("enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrollment_count")
+    @patch("enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_all_enrollments")
     def test_get_csv(self, mock_get_all_enrollments, mock_get_enrollment_count):
         """
         Test the GET method for the AdvanceAnalyticsIndividualEnrollmentsView return correct CSV data.
@@ -119,54 +116,36 @@ class TestIndividualEnrollmentsAPI(JWTTestMixin, APITransactionTestCase):
         assert len(content) == 6
 
         # Verify CSV header.
-        assert 'email,course_title,course_subject,enroll_type,enterprise_enrollment_date' == content[0]
+        assert "email,course_title,course_subject,enroll_type,enterprise_enrollment_date" == content[0]
 
         # verify the content
         assert (
-            'rebeccanelson@example.com,Re-engineered tangible approach,business-management,certificate,2021-07-04'
+            "rebeccanelson@example.com,Re-engineered tangible approach,business-management,certificate,2021-07-04"
             in content
         )
         assert (
-            'taylorjames@example.com,Re-engineered tangible approach,business-management,certificate,2021-07-03'
+            "taylorjames@example.com,Re-engineered tangible approach,business-management,certificate,2021-07-03"
             in content
         )
+        assert "ssmith@example.com,Secured static capability,medicine,certificate,2021-05-11" in content
+        assert "amber79@example.com,Streamlined zero-defect attitude,communication,certificate,2020-04-08" in content
         assert (
-            'ssmith@example.com,Secured static capability,medicine,certificate,2021-05-11'
-            in content
-        )
-        assert (
-            'amber79@example.com,Streamlined zero-defect attitude,communication,certificate,2020-04-08'
-            in content
-        )
-        assert (
-            'kathleenmartin@example.com,Horizontal solution-oriented hub,social-sciences,certificate,2020-04-03'
+            "kathleenmartin@example.com,Horizontal solution-oriented hub,social-sciences,certificate,2020-04-03"
             in content
         )
 
     @ddt.data(
         {
             "params": {"start_date": 1},
-            "error": {
-                "start_date": [
-                    "Date has wrong format. Use one of these formats instead: YYYY-MM-DD."
-                ]
-            },
+            "error": {"start_date": ["Date has wrong format. Use one of these formats instead: YYYY-MM-DD."]},
         },
         {
             "params": {"end_date": 2},
-            "error": {
-                "end_date": [
-                    "Date has wrong format. Use one of these formats instead: YYYY-MM-DD."
-                ]
-            },
+            "error": {"end_date": ["Date has wrong format. Use one of these formats instead: YYYY-MM-DD."]},
         },
         {
             "params": {"start_date": "2024-01-01", "end_date": "2023-01-01"},
-            "error": {
-                "non_field_errors": [
-                    "start_date should be less than or equal to end_date."
-                ]
-            },
+            "error": {"non_field_errors": ["start_date should be less than or equal to end_date."]},
         },
     )
     @ddt.unpack
@@ -191,12 +170,8 @@ class TestEnrollmentStatsAPI(JWTTestMixin, APITransactionTestCase):
         """
         super().setUp()
         self.user = UserFactory(is_staff=True)
-        role, __ = EnterpriseDataFeatureRole.objects.get_or_create(
-            name=ENTERPRISE_DATA_ADMIN_ROLE
-        )
-        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
-            role=role, user=self.user
-        )
+        role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
+        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(role=role, user=self.user)
         self.client.force_authenticate(user=self.user)
 
         self.enterprise_uuid = "ee5e6b3a-069a-4947-bb8d-d2dbc323396c"
@@ -208,28 +183,28 @@ class TestEnrollmentStatsAPI(JWTTestMixin, APITransactionTestCase):
         )
 
         get_enrollment_date_range_patcher = patch(
-            'enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrollment_date_range',
-            return_value=(datetime.now(), datetime.now())
+            "enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrollment_date_range",
+            return_value=(datetime.now(), datetime.now()),
         )
 
         get_enrollment_date_range_patcher.start()
         self.addCleanup(get_enrollment_date_range_patcher.stop)
 
     @patch(
-        'enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.'
-        'get_top_subjects_by_enrollments'
+        "enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable."
+        "get_top_subjects_by_enrollments"
     )
     @patch(
-        'enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_top_courses_by_enrollments'
+        "enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_top_courses_by_enrollments"
     )
     @patch(
-        'enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrolment_time_series_data'
+        "enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrolment_time_series_data"
     )
     def test_get(
-            self,
-            mock_get_enrolment_time_series_data,
-            mock_get_top_courses_by_enrollments,
-            mock_get_top_subjects_by_enrollments,
+        self,
+        mock_get_enrolment_time_series_data,
+        mock_get_top_courses_by_enrollments,
+        mock_get_top_subjects_by_enrollments,
     ):
         """
         Test the GET method for the AdvanceAnalyticsEnrollmentStatsView works.
@@ -242,34 +217,22 @@ class TestEnrollmentStatsAPI(JWTTestMixin, APITransactionTestCase):
         assert response.status_code == status.HTTP_200_OK
         assert response["Content-Type"] == "application/json"
         data = response.json()
-        assert 'enrollments_over_time' in data
-        assert 'top_courses_by_enrollments' in data
-        assert 'top_subjects_by_enrollments' in data
+        assert "enrollments_over_time" in data
+        assert "top_courses_by_enrollments" in data
+        assert "top_subjects_by_enrollments" in data
 
     @ddt.data(
         {
             "params": {"start_date": 1},
-            "error": {
-                "start_date": [
-                    "Date has wrong format. Use one of these formats instead: YYYY-MM-DD."
-                ]
-            },
+            "error": {"start_date": ["Date has wrong format. Use one of these formats instead: YYYY-MM-DD."]},
         },
         {
             "params": {"end_date": 2},
-            "error": {
-                "end_date": [
-                    "Date has wrong format. Use one of these formats instead: YYYY-MM-DD."
-                ]
-            },
+            "error": {"end_date": ["Date has wrong format. Use one of these formats instead: YYYY-MM-DD."]},
         },
         {
             "params": {"start_date": "2024-01-01", "end_date": "2023-01-01"},
-            "error": {
-                "non_field_errors": [
-                    "start_date should be less than or equal to end_date."
-                ]
-            },
+            "error": {"non_field_errors": ["start_date should be less than or equal to end_date."]},
         },
     )
     @ddt.unpack

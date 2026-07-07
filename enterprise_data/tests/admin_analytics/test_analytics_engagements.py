@@ -1,9 +1,9 @@
 """Unittests for analytics_enrollments.py"""
 
 from datetime import datetime
+from unittest.mock import patch
 
 import ddt
-from mock import patch
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITransactionTestCase
@@ -26,32 +26,28 @@ class TestIndividualEngagementsAPI(JWTTestMixin, APITransactionTestCase):
         """
         super().setUp()
         self.user = UserFactory(is_staff=True)
-        role, __ = EnterpriseDataFeatureRole.objects.get_or_create(
-            name=ENTERPRISE_DATA_ADMIN_ROLE
-        )
-        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
-            role=role, user=self.user
-        )
+        role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
+        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(role=role, user=self.user)
         self.client.force_authenticate(user=self.user)
 
-        self.enterprise_uuid = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
+        self.enterprise_uuid = "ee5e6b3a-069a-4947-bb8d-d2dbc323396c"
         self.set_jwt_cookie()
 
         self.url = reverse(
-            'v1:enterprise-admin-analytics-engagements',
+            "v1:enterprise-admin-analytics-engagements",
             kwargs={"enterprise_uuid": self.enterprise_uuid},
         )
 
         get_enrollment_date_range_patcher = patch(
-            'enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrollment_date_range',
-            return_value=(datetime.now(), datetime.now())
+            "enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrollment_date_range",
+            return_value=(datetime.now(), datetime.now()),
         )
 
         get_enrollment_date_range_patcher.start()
         self.addCleanup(get_enrollment_date_range_patcher.stop)
 
-    @patch('enterprise_data.api.v1.views.analytics_engagements.FactEngagementAdminDashTable.get_engagement_count')
-    @patch('enterprise_data.api.v1.views.analytics_engagements.FactEngagementAdminDashTable.get_all_engagements')
+    @patch("enterprise_data.api.v1.views.analytics_engagements.FactEngagementAdminDashTable.get_engagement_count")
+    @patch("enterprise_data.api.v1.views.analytics_engagements.FactEngagementAdminDashTable.get_all_engagements")
     def test_get(self, mock_get_all_engagements, mock_get_engagement_count):
         """
         Test the GET method for the AdvanceAnalyticsIndividualEngagementsView works.
@@ -59,44 +55,44 @@ class TestIndividualEngagementsAPI(JWTTestMixin, APITransactionTestCase):
         mock_get_all_engagements.return_value = ENGAGEMENTS
         mock_get_engagement_count.return_value = len(ENGAGEMENTS)
 
-        response = self.client.get(self.url + '?page_size=2')
+        response = self.client.get(self.url + "?page_size=2")
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        assert data['next'] == f"http://testserver{self.url}?page=2&page_size=2"
-        assert data['previous'] is None
-        assert data['current_page'] == 1
-        assert data['num_pages'] == 6
-        assert data['count'] == 12
+        assert data["next"] == f"http://testserver{self.url}?page=2&page_size=2"
+        assert data["previous"] is None
+        assert data["current_page"] == 1
+        assert data["num_pages"] == 6
+        assert data["count"] == 12
 
-        response = self.client.get(self.url + '?page_size=2&page=2')
+        response = self.client.get(self.url + "?page_size=2&page=2")
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        assert data['next'] == f"http://testserver{self.url}?page=3&page_size=2"
-        assert data['previous'] == f"http://testserver{self.url}?page_size=2"
-        assert data['current_page'] == 2
-        assert data['num_pages'] == 6
-        assert data['count'] == 12
+        assert data["next"] == f"http://testserver{self.url}?page=3&page_size=2"
+        assert data["previous"] == f"http://testserver{self.url}?page_size=2"
+        assert data["current_page"] == 2
+        assert data["num_pages"] == 6
+        assert data["count"] == 12
 
-        response = self.client.get(self.url + '?page_size=2&page=6')
+        response = self.client.get(self.url + "?page_size=2&page=6")
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        assert data['next'] is None
-        assert data['previous'] == f"http://testserver{self.url}?page=5&page_size=2"
-        assert data['current_page'] == 6
-        assert data['num_pages'] == 6
-        assert data['count'] == 12
+        assert data["next"] is None
+        assert data["previous"] == f"http://testserver{self.url}?page=5&page_size=2"
+        assert data["current_page"] == 6
+        assert data["num_pages"] == 6
+        assert data["count"] == 12
 
-        response = self.client.get(self.url + '?page_size=12')
+        response = self.client.get(self.url + "?page_size=12")
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        assert data['next'] is None
-        assert data['previous'] is None
-        assert data['current_page'] == 1
-        assert data['num_pages'] == 1
-        assert data['count'] == 12
+        assert data["next"] is None
+        assert data["previous"] is None
+        assert data["current_page"] == 1
+        assert data["num_pages"] == 1
+        assert data["count"] == 12
 
-    @patch('enterprise_data.api.v1.views.analytics_engagements.FactEngagementAdminDashTable.get_engagement_count')
-    @patch('enterprise_data.api.v1.views.analytics_engagements.FactEngagementAdminDashTable.get_all_engagements')
+    @patch("enterprise_data.api.v1.views.analytics_engagements.FactEngagementAdminDashTable.get_engagement_count")
+    @patch("enterprise_data.api.v1.views.analytics_engagements.FactEngagementAdminDashTable.get_all_engagements")
     def test_get_csv(self, mock_get_all_engagements, mock_get_engagement_count):
         """
         Test the GET method for the AdvanceAnalyticsIndividualEngagementsView return correct CSV data.
@@ -116,56 +112,40 @@ class TestIndividualEngagementsAPI(JWTTestMixin, APITransactionTestCase):
 
         # Verify CSV header.
         assert (
-            'email,course_title,course_subject,enroll_type,activity_date,learning_time_hours,'
-            'is_engaged_video,is_engaged_forum,is_engaged_problem'
+            "email,course_title,course_subject,enroll_type,activity_date,learning_time_hours,"
+            "is_engaged_video,is_engaged_forum,is_engaged_problem"
         ) == content[0]
 
         # verify the content
         assert (
-                'padillamichelle@example.org,Synergized reciprocal encoding,business-management,certificate,2021-08-05,'
-                '1.0344444444444445,1,0,1'
-                in content
+            "padillamichelle@example.org,Synergized reciprocal encoding,business-management,certificate,2021-08-05,"
+            "1.0344444444444445,1,0,1" in content
         )
         assert (
-                'yallison@example.org,Synergized reciprocal encoding,business-management,certificate,2021-07-27,'
-                '1.2041666666666666,1,0,1'
-                in content
+            "yallison@example.org,Synergized reciprocal encoding,business-management,certificate,2021-07-27,"
+            "1.2041666666666666,1,0,1" in content
         )
         assert (
-                'weaverpatricia@example.net,Synergized reciprocal encoding,business-management,certificate,2021-08-05,'
-                '2.6225,1,0,1'
-                in content
+            "weaverpatricia@example.net,Synergized reciprocal encoding,business-management,certificate,2021-08-05,"
+            "2.6225,1,0,1" in content
         )
         assert (
-                'seth57@example.org,Synergized reciprocal encoding,business-management,certificate,2021-08-21,'
-                '2.7494444444444444,1,1,1'
-                in content
+            "seth57@example.org,Synergized reciprocal encoding,business-management,certificate,2021-08-21,"
+            "2.7494444444444444,1,1,1" in content
         )
 
     @ddt.data(
         {
-            'params': {'start_date': 1},
-            'error': {
-                'start_date': [
-                    'Date has wrong format. Use one of these formats instead: YYYY-MM-DD.'
-                ]
-            },
+            "params": {"start_date": 1},
+            "error": {"start_date": ["Date has wrong format. Use one of these formats instead: YYYY-MM-DD."]},
         },
         {
-            'params': {'end_date': 2},
-            'error': {
-                'end_date': [
-                    'Date has wrong format. Use one of these formats instead: YYYY-MM-DD.'
-                ]
-            },
+            "params": {"end_date": 2},
+            "error": {"end_date": ["Date has wrong format. Use one of these formats instead: YYYY-MM-DD."]},
         },
         {
-            'params': {"start_date": "2024-01-01", "end_date": "2023-01-01"},
-            'error': {
-                'non_field_errors': [
-                    'start_date should be less than or equal to end_date.'
-                ]
-            },
+            "params": {"start_date": "2024-01-01", "end_date": "2023-01-01"},
+            "error": {"non_field_errors": ["start_date should be less than or equal to end_date."]},
         },
     )
     @ddt.unpack
@@ -188,39 +168,35 @@ class TestEngagementStatsAPI(JWTTestMixin, APITransactionTestCase):
         """
         super().setUp()
         self.user = UserFactory(is_staff=True)
-        role, __ = EnterpriseDataFeatureRole.objects.get_or_create(
-            name=ENTERPRISE_DATA_ADMIN_ROLE
-        )
-        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
-            role=role, user=self.user
-        )
+        role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
+        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(role=role, user=self.user)
         self.client.force_authenticate(user=self.user)
 
-        self.enterprise_uuid = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
+        self.enterprise_uuid = "ee5e6b3a-069a-4947-bb8d-d2dbc323396c"
         self.set_jwt_cookie()
 
         self.url = reverse(
-            'v1:enterprise-admin-analytics-engagements-stats',
-            kwargs={'enterprise_uuid': self.enterprise_uuid},
+            "v1:enterprise-admin-analytics-engagements-stats",
+            kwargs={"enterprise_uuid": self.enterprise_uuid},
         )
 
         get_enrollment_date_range_patcher = patch(
-            'enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrollment_date_range',
-            return_value=(datetime.now(), datetime.now())
+            "enterprise_data.api.v1.views.analytics_enrollments.FactEnrollmentAdminDashTable.get_enrollment_date_range",
+            return_value=(datetime.now(), datetime.now()),
         )
 
         get_enrollment_date_range_patcher.start()
         self.addCleanup(get_enrollment_date_range_patcher.stop)
 
     @patch(
-        'enterprise_data.api.v1.views.analytics_engagements.FactEngagementAdminDashTable.'
-        'get_engagement_time_series_data'
+        "enterprise_data.api.v1.views.analytics_engagements.FactEngagementAdminDashTable."
+        "get_engagement_time_series_data"
     )
     @patch(
-        'enterprise_data.api.v1.views.analytics_engagements.FactEngagementAdminDashTable.get_top_courses_by_engagement'
+        "enterprise_data.api.v1.views.analytics_engagements.FactEngagementAdminDashTable.get_top_courses_by_engagement"
     )
     @patch(
-        'enterprise_data.api.v1.views.analytics_engagements.FactEngagementAdminDashTable.get_top_subjects_by_engagement'
+        "enterprise_data.api.v1.views.analytics_engagements.FactEngagementAdminDashTable.get_top_subjects_by_engagement"
     )
     def test_get(self, mock_get_top_subjects_by_engagement, mock_get_top_courses_by_engagement, mock_get_time_series):
         """
@@ -233,34 +209,22 @@ class TestEngagementStatsAPI(JWTTestMixin, APITransactionTestCase):
         response = self.client.get(self.url)
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        assert 'engagement_over_time' in data
-        assert 'top_courses_by_engagement' in data
-        assert 'top_subjects_by_engagement' in data
+        assert "engagement_over_time" in data
+        assert "top_courses_by_engagement" in data
+        assert "top_subjects_by_engagement" in data
 
     @ddt.data(
         {
-            'params': {'start_date': 1},
-            'error': {
-                'start_date': [
-                    'Date has wrong format. Use one of these formats instead: YYYY-MM-DD.'
-                ]
-            },
+            "params": {"start_date": 1},
+            "error": {"start_date": ["Date has wrong format. Use one of these formats instead: YYYY-MM-DD."]},
         },
         {
-            'params': {'end_date': 2},
-            'error': {
-                'end_date': [
-                    'Date has wrong format. Use one of these formats instead: YYYY-MM-DD.'
-                ]
-            },
+            "params": {"end_date": 2},
+            "error": {"end_date": ["Date has wrong format. Use one of these formats instead: YYYY-MM-DD."]},
         },
         {
-            'params': {'start_date': '2024-01-01', 'end_date': '2023-01-01'},
-            'error': {
-                'non_field_errors': [
-                    'start_date should be less than or equal to end_date.'
-                ]
-            },
+            "params": {"start_date": "2024-01-01", "end_date": "2023-01-01"},
+            "error": {"non_field_errors": ["start_date should be less than or equal to end_date."]},
         },
     )
     @ddt.unpack

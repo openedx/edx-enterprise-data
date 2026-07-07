@@ -1,6 +1,7 @@
 """
 Query filter for comparison operations.
 """
+
 from .base import QueryFilter
 
 

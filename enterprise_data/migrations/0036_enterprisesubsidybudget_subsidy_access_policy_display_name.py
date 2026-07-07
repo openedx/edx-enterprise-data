@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('enterprise_data', '0035_auto_20230907_1154'),
+        ("enterprise_data", "0035_auto_20230907_1154"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='enterprisesubsidybudget',
-            name='subsidy_access_policy_display_name',
+            model_name="enterprisesubsidybudget",
+            name="subsidy_access_policy_display_name",
             field=models.CharField(max_length=512, null=True),
         ),
     ]

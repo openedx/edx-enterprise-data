@@ -2,7 +2,6 @@
 External Resource Link Report Generation Code.
 """
 
-
 import logging
 import operator
 import os
@@ -19,7 +18,7 @@ from enterprise_reporting.utils import send_email_with_attachment
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
-AGGREGATE_REPORT_CSV_HEADER_ROW = 'Course Key,Course Title,Partner,External Domain,Count\n'
+AGGREGATE_REPORT_CSV_HEADER_ROW = "Course Key,Course Title,Partner,External Domain,Count\n"
 
 
 def create_csv_string(processed_results, header_row, additional_columns):
@@ -40,8 +39,8 @@ def create_csv_string(processed_results, header_row, additional_columns):
     for course_key, data in list(processed_results.items()):
         header_row += '{},"{}",{},{}\n'.format(
             course_key,
-            data['course_title'],
-            data['organization'],
+            data["course_title"],
+            data["organization"],
             additional_columns(data),
         )
     return header_row
@@ -51,16 +50,9 @@ def create_columns_for_aggregate_report(data):
     """
     Creates a csv string for additional columns in report
     """
-    urls_sorted_by_counts = sorted(
-        list(data['domain_count'].items()),
-        key=operator.itemgetter(1),
-        reverse=True
-    )
-    stringified_urls_and_counts = [
-        f'{url},{count}'
-        for url, count in urls_sorted_by_counts
-    ]
-    return '\n,,,'.join(stringified_urls_and_counts)
+    urls_sorted_by_counts = sorted(data["domain_count"].items(), key=operator.itemgetter(1), reverse=True)
+    stringified_urls_and_counts = [f"{url},{count}" for url, count in urls_sorted_by_counts]
+    return "\n,,,".join(stringified_urls_and_counts)
 
 
 def gather_links_from_html(html_string):
@@ -71,13 +63,18 @@ def gather_links_from_html(html_string):
     pattern = 'https?://.*?[" <]'
 
     links = []
-    for link in re.findall(pattern, html_string,):
+    for link in re.findall(
+        pattern,
+        html_string,
+    ):
         link = link[0:-1].strip()
-        if (link.lower().endswith('.png"') or
-            link.lower().endswith('.jpg"') or
-            link.lower().endswith('.jpeg"') or
-            link.lower().endswith('.gif"') or
-            '.edx.org' in link):
+        if (
+            link.lower().endswith('.png"')
+            or link.lower().endswith('.jpg"')
+            or link.lower().endswith('.jpeg"')
+            or link.lower().endswith('.gif"')
+            or ".edx.org" in link
+        ):
             continue
 
         # Want to verify the link captured is a proper url
@@ -85,9 +82,7 @@ def gather_links_from_html(html_string):
         try:
             urlparse(link)
         except ValueError:
-            LOGGER.warning(
-                "Unparsable URL found. Not including in report: %s" % link
-            )
+            LOGGER.warning(f"Unparsable URL found. Not including in report: {link}")
             continue
 
         links.append(link)
@@ -103,12 +98,12 @@ def process_coursegraph_results(raw_results):
     """
     processed_results = {}
     for entry in raw_results:
-        course_key = entry['h.course_key']
+        course_key = entry["h.course_key"]
         # Only want new style course keys to exclude archived courses
-        if not course_key.startswith('course-'):
+        if not course_key.startswith("course-"):
             continue
 
-        external_links = gather_links_from_html(entry['h.data'])
+        external_links = gather_links_from_html(entry["h.data"])
 
         if not external_links:
             continue
@@ -116,27 +111,24 @@ def process_coursegraph_results(raw_results):
         # Create entry in processed_results and keep external_links up to date
         if course_key not in processed_results:
             processed_results[course_key] = {
-                'course_title': entry['course_title'],
-                'organization': entry['organization'],
-                'external_links': set(external_links),
-                'domain_count': {},
+                "course_title": entry["course_title"],
+                "organization": entry["organization"],
+                "external_links": set(external_links),
+                "domain_count": {},
             }
         else:
-            processed_results[course_key]['external_links'].update(external_links)
+            processed_results[course_key]["external_links"].update(external_links)
 
         # Now use external links to create the domains and counts
-        domains = [
-            '{uri.scheme}://{uri.netloc}'.format(uri=urlparse(link))
-            for link in external_links
-        ]
+        domains = ["{uri.scheme}://{uri.netloc}".format(uri=urlparse(link)) for link in external_links]
         # calculate the unique counts for all the urls
         domains_with_counts = dict(Counter(domains))
 
         for domain, count in list(domains_with_counts.items()):
-            if domain in processed_results[course_key]['domain_count']:
-                processed_results[course_key]['domain_count'][domain] += count
+            if domain in processed_results[course_key]["domain_count"]:
+                processed_results[course_key]["domain_count"][domain] += count
             else:
-                processed_results[course_key]['domain_count'][domain] = count
+                processed_results[course_key]["domain_count"][domain] = count
 
     return processed_results
 
@@ -150,12 +142,12 @@ def query_coursegraph():
     """
     graph = Graph(
         bolt=True,
-        http_port=os.environ.get('COURSEGRAPH_PORT'),
-        host=os.environ.get('COURSEGRAPH_HOST'),
+        http_port=os.environ.get("COURSEGRAPH_PORT"),
+        host=os.environ.get("COURSEGRAPH_HOST"),
         secure=True,
     )
-    query = '''MATCH
-                (c:course)-[:PARENT_OF*]->(h:html) 
+    query = """MATCH
+                (c:course)-[:PARENT_OF*]->(h:html)
               WHERE (
                 h.data CONTAINS 'https://'
                 OR
@@ -164,8 +156,8 @@ def query_coursegraph():
               RETURN
                 c.display_name as course_title,
                 c.org as organization,
-                h.course_key, 
-                h.data'''
+                h.course_key,
+                h.data"""
     results = graph.run(query)
     return results.data()
 
@@ -199,10 +191,10 @@ def generate_and_email_report():
     Generates a report an sends it as an email with an attachment
     """
 
-    from_email = os.environ.get('SEND_EMAIL_FROM')
+    from_email = os.environ.get("SEND_EMAIL_FROM")
     today = str(date.today())
-    subject = 'External Resource Link Report'
-    body = '''Dear Customer Success,
+    subject = "External Resource Link Report"
+    body = """Dear Customer Success,
 Find attached a file containing course keys and their respective
 external resource links.
 
@@ -210,7 +202,7 @@ If you have any questions/concerns with the report, please ask the
 Enterprise Team!
 
 Sincerely,
-The Enterprise Team'''
+The Enterprise Team"""
 
     LOGGER.info("Querying Course Graph DB...")
     raw_results = query_coursegraph()
@@ -223,32 +215,17 @@ The Enterprise Team'''
     for index, result in enumerate(result_dicts):
         readable_number = index + 1
 
-        LOGGER.info(
-            "Generating aggregate external links spreadsheet part %s..." % readable_number
-        )
+        LOGGER.info(f"Generating aggregate external links spreadsheet part {readable_number}...")
         aggregate_report_data = create_csv_string(
-            result,
-            AGGREGATE_REPORT_CSV_HEADER_ROW,
-            create_columns_for_aggregate_report
+            result, AGGREGATE_REPORT_CSV_HEADER_ROW, create_columns_for_aggregate_report
         )
-        filename = 'external-resource-domain-report-part{}-{}.csv'.format(
-            readable_number,
-            today,
-        )
-        attachment_data = {filename: aggregate_report_data.encode('utf-8')}
+        filename = f"external-resource-domain-report-part{readable_number}-{today}.csv"
+        attachment_data = {filename: aggregate_report_data.encode("utf-8")}
 
-        LOGGER.info(
-            "Emailing aggregate spreadsheet part %s..." % readable_number
-        )
-        send_email_with_attachment(
-            subject,
-            body,
-            from_email,
-            TO_EMAILS.split(','),
-            attachment_data
-        )
+        LOGGER.info(f"Emailing aggregate spreadsheet part {readable_number}...")
+        send_email_with_attachment(subject, body, from_email, TO_EMAILS.split(","), attachment_data)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     TO_EMAILS = sys.argv[1]
     generate_and_email_report()

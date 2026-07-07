@@ -1,12 +1,12 @@
 """
 Utility functions for interacting with the database.
 """
+
 from contextlib import closing
 from logging import getLogger
 
-from mysql.connector import connect
-
 from django.conf import settings
+from mysql.connector import connect
 
 from enterprise_data.utils import timeit
 
@@ -21,11 +21,11 @@ def get_db_connection(database=settings.ENTERPRISE_REPORTING_DB_ALIAS):
         (mysql.connector.connection.MySQLConnection): The database connection.
     """
     return connect(
-        host=settings.DATABASES[database]['HOST'],
-        port=settings.DATABASES[database]['PORT'],
-        database=settings.DATABASES[database]['NAME'],
-        user=settings.DATABASES[database]['USER'],
-        password=settings.DATABASES[database]['PASSWORD'],
+        host=settings.DATABASES[database]["HOST"],
+        port=settings.DATABASES[database]["PORT"],
+        database=settings.DATABASES[database]["NAME"],
+        user=settings.DATABASES[database]["USER"],
+        password=settings.DATABASES[database]["PASSWORD"],
     )
 
 
@@ -48,7 +48,7 @@ def run_query(query, params: dict = None, as_dict=False):
                 cursor.execute(query, params=params)
                 if as_dict:
                     columns = [column[0] for column in cursor.description]
-                    return [dict(zip(columns, row)) for row in cursor.fetchall()]
+                    return [dict(zip(columns, row, strict=False)) for row in cursor.fetchall()]
                 else:
                     return cursor.fetchall()
     except Exception:

@@ -8,12 +8,12 @@ from django.db import migrations
 
 def apply_mariadb_migration(apps, schema_editor):
     connection = schema_editor.connection
-    if connection.vendor != 'mysql':
+    if connection.vendor != "mysql":
         return
     with connection.cursor() as cursor:
         cursor.execute("SELECT VERSION()")
         version = cursor.fetchone()[0]
-        if 'mariadb' not in version.lower():
+        if "mariadb" not in version.lower():
             return
     with connection.cursor() as cursor:
         cursor.execute("ALTER TABLE enterprise_data_roles_enterprisedataroleassignment MODIFY enterprise_id uuid NULL")
@@ -21,20 +21,22 @@ def apply_mariadb_migration(apps, schema_editor):
 
 def reverse_mariadb_migration(apps, schema_editor):
     connection = schema_editor.connection
-    if connection.vendor != 'mysql':
+    if connection.vendor != "mysql":
         return
     with connection.cursor() as cursor:
         cursor.execute("SELECT VERSION()")
         version = cursor.fetchone()[0]
-        if 'mariadb' not in version.lower():
+        if "mariadb" not in version.lower():
             return
     with connection.cursor() as cursor:
-        cursor.execute("ALTER TABLE enterprise_data_roles_enterprisedataroleassignment MODIFY enterprise_id char(32) NULL")
+        cursor.execute(
+            "ALTER TABLE enterprise_data_roles_enterprisedataroleassignment MODIFY enterprise_id char(32) NULL"
+        )
 
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('enterprise_data_roles', '0007_enterprisedataroleassignment_applies_to_all_contexts'),
+        ("enterprise_data_roles", "0007_enterprisedataroleassignment_applies_to_all_contexts"),
     ]
     operations = [
         migrations.RunPython(

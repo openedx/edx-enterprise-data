@@ -8,12 +8,11 @@ from unittest import mock
 from uuid import UUID, uuid4
 
 import ddt
+from django.utils import timezone
 from pytest import mark
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITransactionTestCase
-
-from django.utils import timezone
 
 from enterprise_data.api.v1.serializers import EnterpriseOfferSerializer
 from enterprise_data.api.v1.views.enterprise_learner import EnterpriseLearnerEnrollmentViewSet
@@ -45,20 +44,17 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
         super().setUp()
         self.user = UserFactory(is_staff=True)
         role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
-        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
-            role=role,
-            user=self.user
-        )
+        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(role=role, user=self.user)
         self.client.force_authenticate(user=self.user)
 
         mocked_get_enterprise_customer = mock.patch(
-            'enterprise_data.filters.EnterpriseApiClient.get_enterprise_customer',
-            return_value=get_dummy_enterprise_api_data()
+            "enterprise_data.filters.EnterpriseApiClient.get_enterprise_customer",
+            return_value=get_dummy_enterprise_api_data(),
         )
 
         self.mocked_get_enterprise_customer = mocked_get_enterprise_customer.start()
         self.addCleanup(mocked_get_enterprise_customer.stop)
-        self.enterprise_id = 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
+        self.enterprise_id = "ee5e6b3a-069a-4947-bb8d-d2dbc323396c"
         self.set_jwt_cookie()
 
     def tearDown(self):
@@ -66,109 +62,99 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
         EnterpriseLearnerEnrollment.objects.all().delete()
 
     def test_filter_by_offer_id(self):
-        enterprise_learner = EnterpriseLearnerFactory(
-            enterprise_customer_uuid=self.enterprise_id
-        )
+        enterprise_learner = EnterpriseLearnerFactory(enterprise_customer_uuid=self.enterprise_id)
 
-        offer_1_id = '1234'
-        offer_2_id = '2ThisIsmyOfferId'
+        offer_1_id = "1234"
+        offer_2_id = "2ThisIsmyOfferId"
 
         learner_enrollment_1 = EnterpriseLearnerEnrollmentFactory(
             offer_id=offer_1_id,
             enterprise_customer_uuid=self.enterprise_id,
             is_consent_granted=True,
-            enterprise_user_id=enterprise_learner.enterprise_user_id
+            enterprise_user_id=enterprise_learner.enterprise_user_id,
         )
         EnterpriseLearnerEnrollmentFactory(
             offer_id=offer_2_id,
             enterprise_customer_uuid=self.enterprise_id,
             is_consent_granted=True,
-            enterprise_user_id=enterprise_learner.enterprise_user_id
+            enterprise_user_id=enterprise_learner.enterprise_user_id,
         )
 
-        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
-        response = self.client.get(url, data={'offer_id': offer_1_id})
-        results = response.json()['results']
+        url = reverse("v1:enterprise-learner-enrollment-list", kwargs={"enterprise_id": self.enterprise_id})
+        response = self.client.get(url, data={"offer_id": offer_1_id})
+        results = response.json()["results"]
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0]['enrollment_id'], learner_enrollment_1.enrollment_id)
+        self.assertEqual(results[0]["enrollment_id"], learner_enrollment_1.enrollment_id)
 
     def test_filter_by_ignore_null_course_list_price(self):
-        enterprise_learner = EnterpriseLearnerFactory(
-            enterprise_customer_uuid=self.enterprise_id
-        )
+        enterprise_learner = EnterpriseLearnerFactory(enterprise_customer_uuid=self.enterprise_id)
 
         EnterpriseLearnerEnrollmentFactory(
             course_list_price=None,
             enterprise_customer_uuid=self.enterprise_id,
             is_consent_granted=True,
-            enterprise_user_id=enterprise_learner.enterprise_user_id
+            enterprise_user_id=enterprise_learner.enterprise_user_id,
         )
         learner_enrollment_with_price = EnterpriseLearnerEnrollmentFactory(
             enterprise_customer_uuid=self.enterprise_id,
             is_consent_granted=True,
-            enterprise_user_id=enterprise_learner.enterprise_user_id
+            enterprise_user_id=enterprise_learner.enterprise_user_id,
         )
 
-        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
-        response = self.client.get(url, data={'ignore_null_course_list_price': True})
-        results = response.json()['results']
+        url = reverse("v1:enterprise-learner-enrollment-list", kwargs={"enterprise_id": self.enterprise_id})
+        response = self.client.get(url, data={"ignore_null_course_list_price": True})
+        results = response.json()["results"]
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0]['enrollment_id'], learner_enrollment_with_price.enrollment_id)
+        self.assertEqual(results[0]["enrollment_id"], learner_enrollment_with_price.enrollment_id)
 
     def test_get_course_product_line(self):
-        """ Test that the course product line information is returned correctly """
-        enterprise_learner = EnterpriseLearnerFactory(
-            enterprise_customer_uuid=self.enterprise_id
-        )
+        """Test that the course product line information is returned correctly"""
+        enterprise_learner = EnterpriseLearnerFactory(enterprise_customer_uuid=self.enterprise_id)
         learner_enrollment_executive_ed = EnterpriseLearnerEnrollmentFactory(
             enterprise_customer_uuid=self.enterprise_id,
             is_consent_granted=True,
             enterprise_user_id=enterprise_learner.enterprise_user_id,
-            course_product_line='Executive Education'
+            course_product_line="Executive Education",
         )
         EnterpriseLearnerEnrollmentFactory(
             enterprise_customer_uuid=self.enterprise_id,
             is_consent_granted=True,
             enterprise_user_id=enterprise_learner.enterprise_user_id,
-            course_product_line='OCM'
+            course_product_line="OCM",
         )
 
-        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
-        response = self.client.get(url, data={'course_product_line': 'Executive Education'})
-        results = response.json()['results']
+        url = reverse("v1:enterprise-learner-enrollment-list", kwargs={"enterprise_id": self.enterprise_id})
+        response = self.client.get(url, data={"course_product_line": "Executive Education"})
+        results = response.json()["results"]
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0]['enrollment_id'], learner_enrollment_executive_ed.enrollment_id)
+        self.assertEqual(results[0]["enrollment_id"], learner_enrollment_executive_ed.enrollment_id)
 
     def test_get_subsidy_flag(self):
-        """ Test that the subsidy information is returned correctly """
-        enterprise_learner = EnterpriseLearnerFactory(
-            enterprise_customer_uuid=self.enterprise_id
-        )
+        """Test that the subsidy information is returned correctly"""
+        enterprise_learner = EnterpriseLearnerFactory(enterprise_customer_uuid=self.enterprise_id)
         learner_enrollment_subsidized = EnterpriseLearnerEnrollmentFactory(
             enterprise_customer_uuid=self.enterprise_id,
             is_consent_granted=True,
             enterprise_user_id=enterprise_learner.enterprise_user_id,
-            is_subsidy=True
+            is_subsidy=True,
         )
         EnterpriseLearnerEnrollmentFactory(
             enterprise_customer_uuid=self.enterprise_id,
             is_consent_granted=True,
             enterprise_user_id=enterprise_learner.enterprise_user_id,
-            is_subsidy=False
+            is_subsidy=False,
         )
 
-        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
-        response = self.client.get(url, data={'is_subsidy': True})
-        results = response.json()['results']
+        url = reverse("v1:enterprise-learner-enrollment-list", kwargs={"enterprise_id": self.enterprise_id})
+        response = self.client.get(url, data={"is_subsidy": True})
+        results = response.json()["results"]
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0]['enrollment_id'], learner_enrollment_subsidized.enrollment_id)
+        self.assertEqual(results[0]["enrollment_id"], learner_enrollment_subsidized.enrollment_id)
 
     def test_search_by_course_title(self):
         """Test that the course title search works correctly"""
-        enterprise_learner = EnterpriseLearnerFactory(
-            enterprise_customer_uuid=self.enterprise_id
-        )
-        course_titles = ['Introduction to Python', 'Introduction to Java', 'Introduction to C++']
+        enterprise_learner = EnterpriseLearnerFactory(enterprise_customer_uuid=self.enterprise_id)
+        course_titles = ["Introduction to Python", "Introduction to Java", "Introduction to C++"]
 
         for title in course_titles:
             EnterpriseLearnerEnrollmentFactory(
@@ -178,155 +164,151 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
                 course_title=title,
             )
 
-        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
-        response = self.client.get(url, data={'search_all': 'Introduction to'})
-        results = response.json()['results']
+        url = reverse("v1:enterprise-learner-enrollment-list", kwargs={"enterprise_id": self.enterprise_id})
+        response = self.client.get(url, data={"search_all": "Introduction to"})
+        results = response.json()["results"]
         self.assertEqual(len(results), 3)
 
     def test_search_by_email(self):
         """Test that the email search works correctly"""
         enterprise_learner = EnterpriseLearnerFactory(
-            enterprise_customer_uuid=self.enterprise_id,
-            user_email="johndoe@example.com"
+            enterprise_customer_uuid=self.enterprise_id, user_email="johndoe@example.com"
         )
         EnterpriseLearnerEnrollmentFactory(
             enterprise_customer_uuid=self.enterprise_id,
             is_consent_granted=True,
             enterprise_user_id=enterprise_learner.enterprise_user_id,
             course_title="Sample course",
-            user_email="johndoe@example.com"
+            user_email="johndoe@example.com",
         )
-        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
-        response = self.client.get(url, data={'search_all': 'john'})
-        results = response.json()['results']
+        url = reverse("v1:enterprise-learner-enrollment-list", kwargs={"enterprise_id": self.enterprise_id})
+        response = self.client.get(url, data={"search_all": "john"})
+        results = response.json()["results"]
         self.assertEqual(len(results), 1)
 
     def test_search_no_results(self):
         """Test that the search returns no results if no matches are found"""
-        EnterpriseLearnerFactory(
-            enterprise_customer_uuid=self.enterprise_id,
-            user_email="test@example.com"
-        )
-        search_term = 'nonexistentemail@example.com'
-        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
-        response = self.client.get(url, data={'search_all': search_term})
+        EnterpriseLearnerFactory(enterprise_customer_uuid=self.enterprise_id, user_email="test@example.com")
+        search_term = "nonexistentemail@example.com"
+        url = reverse("v1:enterprise-learner-enrollment-list", kwargs={"enterprise_id": self.enterprise_id})
+        response = self.client.get(url, data={"search_all": search_term})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json()['count'], 0)
+        self.assertEqual(response.json()["count"], 0)
 
-    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.SnowflakeCourseProgressSource')
+    @mock.patch("enterprise_data.api.v1.views.enterprise_learner.SnowflakeCourseProgressSource")
     def test_list_enriches_course_progress_from_snowflake(self, mock_source_cls):
         enterprise_learner = EnterpriseLearnerFactory(
             enterprise_customer_uuid=self.enterprise_id,
-            user_email='johndoe@example.com',
+            user_email="johndoe@example.com",
         )
         enrollment = EnterpriseLearnerEnrollmentFactory(
             enterprise_customer_uuid=self.enterprise_id,
             is_consent_granted=True,
             enterprise_user_id=enterprise_learner.enterprise_user_id,
-            user_email='johndoe@example.com',
-            courserun_key='course-v1:edX+Demo+2024',
+            user_email="johndoe@example.com",
+            courserun_key="course-v1:edX+Demo+2024",
         )
         mock_source_cls.return_value.get_course_progress_map.return_value = {
-            ('johndoe@example.com', 'course-v1:edX+Demo+2024'): 0.87,
+            ("johndoe@example.com", "course-v1:edX+Demo+2024"): 0.87,
         }
 
-        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
+        url = reverse("v1:enterprise-learner-enrollment-list", kwargs={"enterprise_id": self.enterprise_id})
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['results'][0]['enrollment_id'], enrollment.enrollment_id)
-        self.assertEqual(response.data['results'][0]['course_progress'], 0.87)
+        self.assertEqual(response.data["results"][0]["enrollment_id"], enrollment.enrollment_id)
+        self.assertEqual(response.data["results"][0]["course_progress"], 0.87)
 
-    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.SnowflakeCourseProgressSource')
+    @mock.patch("enterprise_data.api.v1.views.enterprise_learner.SnowflakeCourseProgressSource")
     def test_list_returns_200_when_snowflake_enrichment_fails(self, mock_source_cls):
         enterprise_learner = EnterpriseLearnerFactory(
             enterprise_customer_uuid=self.enterprise_id,
-            user_email='johndoe@example.com',
+            user_email="johndoe@example.com",
         )
         EnterpriseLearnerEnrollmentFactory(
             enterprise_customer_uuid=self.enterprise_id,
             is_consent_granted=True,
             enterprise_user_id=enterprise_learner.enterprise_user_id,
-            user_email='johndoe@example.com',
-            courserun_key='course-v1:edX+Demo+2024',
+            user_email="johndoe@example.com",
+            courserun_key="course-v1:edX+Demo+2024",
         )
-        mock_source_cls.return_value.get_course_progress_map.side_effect = RuntimeError('Snowflake unavailable')
+        mock_source_cls.return_value.get_course_progress_map.side_effect = RuntimeError("Snowflake unavailable")
 
-        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
+        url = reverse("v1:enterprise-learner-enrollment-list", kwargs={"enterprise_id": self.enterprise_id})
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIsNone(response.data['results'][0]['course_progress'])
+        self.assertIsNone(response.data["results"][0]["course_progress"])
 
-    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.SnowflakeCourseProgressSource')
+    @mock.patch("enterprise_data.api.v1.views.enterprise_learner.SnowflakeCourseProgressSource")
     def test_enrich_course_progress_returns_when_no_results(self, mock_source_cls):
-        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
+        url = reverse("v1:enterprise-learner-enrollment-list", kwargs={"enterprise_id": self.enterprise_id})
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['results'], [])
+        self.assertEqual(response.data["results"], [])
         mock_source_cls.assert_not_called()
 
-    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.SnowflakeCourseProgressSource')
+    @mock.patch("enterprise_data.api.v1.views.enterprise_learner.SnowflakeCourseProgressSource")
     def test_stream_serialized_data_enriches_course_progress_from_snowflake(self, mock_source_cls):
         enterprise_learner = EnterpriseLearnerFactory(
             enterprise_customer_uuid=self.enterprise_id,
-            user_email='johndoe@example.com',
+            user_email="johndoe@example.com",
         )
         EnterpriseLearnerEnrollmentFactory(
             enterprise_customer_uuid=self.enterprise_id,
             is_consent_granted=True,
             enterprise_user_id=enterprise_learner.enterprise_user_id,
-            user_email='johndoe@example.com',
-            courserun_key='course-v1:edX+Demo+2024',
+            user_email="johndoe@example.com",
+            courserun_key="course-v1:edX+Demo+2024",
         )
         mock_source_cls.return_value.get_course_progress_map.return_value = {
-            ('johndoe@example.com', 'course-v1:edX+Demo+2024'): 0.87,
+            ("johndoe@example.com", "course-v1:edX+Demo+2024"): 0.87,
         }
 
-        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
-        response = self.client.get(url, HTTP_ACCEPT='text/csv')
+        url = reverse("v1:enterprise-learner-enrollment-list", kwargs={"enterprise_id": self.enterprise_id})
+        response = self.client.get(url, HTTP_ACCEPT="text/csv")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        content = b''.join(response.streaming_content).decode('utf-8')
+        content = b"".join(response.streaming_content).decode("utf-8")
         # course_progress column should appear in the CSV header and data rows
-        self.assertIn('course_progress', content)
-        self.assertIn('0.87', content)
+        self.assertIn("course_progress", content)
+        self.assertIn("0.87", content)
 
     def test_course_passing_grade_field_in_response(self):
         """Test that course_passing_grade field is included in the API response"""
         enterprise_learner = EnterpriseLearnerFactory(
             enterprise_customer_uuid=self.enterprise_id,
-            user_email='student@example.com',
+            user_email="student@example.com",
         )
         EnterpriseLearnerEnrollmentFactory(
             enterprise_customer_uuid=self.enterprise_id,
             is_consent_granted=True,
             enterprise_user_id=enterprise_learner.enterprise_user_id,
-            user_email='student@example.com',
-            courserun_key='course-v1:edX+Demo+2024',
+            user_email="student@example.com",
+            courserun_key="course-v1:edX+Demo+2024",
         )
 
-        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
+        url = reverse("v1:enterprise-learner-enrollment-list", kwargs={"enterprise_id": self.enterprise_id})
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        results = response.json()['results']
+        results = response.json()["results"]
         self.assertEqual(len(results), 1)
         # Verify course_passing_grade field is present in the response
-        self.assertIn('course_passing_grade', results[0])
+        self.assertIn("course_passing_grade", results[0])
         # The field remains null unless passing-grade enrichment supplies a value.
-        self.assertIsNone(results[0]['course_passing_grade'])
+        self.assertIsNone(results[0]["course_passing_grade"])
 
-    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.EnterpriseLearnerEnrollment.objects.filter')
-    @mock.patch.object(EnterpriseLearnerEnrollmentViewSet, 'apply_filters')
+    @mock.patch("enterprise_data.api.v1.views.enterprise_learner.EnterpriseLearnerEnrollment.objects.filter")
+    @mock.patch.object(EnterpriseLearnerEnrollmentViewSet, "apply_filters")
     def test_get_queryset_adds_placeholder_metadata_columns(self, mock_apply_filters, mock_filter):
         viewset = EnterpriseLearnerEnrollmentViewSet()
         enrollments = mock.Mock()
         with_placeholders = mock.Mock()
         filtered_enrollments = mock.Mock()
 
-        viewset.kwargs = {'enterprise_id': self.enterprise_id}
+        viewset.kwargs = {"enterprise_id": self.enterprise_id}
         viewset.request = mock.Mock()
         mock_filter.return_value = enrollments
         enrollments.extra.return_value = with_placeholders
@@ -335,48 +317,54 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
         result = viewset.get_queryset()
 
         mock_filter.assert_called_once_with(enterprise_customer_uuid=self.enterprise_id)
-        enrollments.extra.assert_called_once_with(select={
-            'course_progress': 'NULL',
-            'course_passing_grade': 'NULL',
-        })
+        enrollments.extra.assert_called_once_with(
+            select={
+                "course_progress": "NULL",
+                "course_passing_grade": "NULL",
+            }
+        )
         mock_apply_filters.assert_called_once_with(with_placeholders)
         self.assertEqual(result, filtered_enrollments)
 
-    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.SnowflakeCoursePassingGradeSource')
+    @mock.patch("enterprise_data.api.v1.views.enterprise_learner.SnowflakeCoursePassingGradeSource")
     def test_enrich_course_passing_grade_uses_source_results(
         self,
         mock_grade_source_cls,
     ):
         viewset = EnterpriseLearnerEnrollmentViewSet()
-        viewset.kwargs = {'enterprise_id': self.enterprise_id}
+        viewset.kwargs = {"enterprise_id": self.enterprise_id}
         mock_grade_source_cls.return_value.get_passing_grade_map.return_value = {
-            'course-v1:edX+Demo+2024': 0.7,
+            "course-v1:edX+Demo+2024": 0.7,
         }
-        rows = [{'courserun_key': 'course-v1:edX+Demo+2024', 'course_passing_grade': None}]
+        rows = [{"courserun_key": "course-v1:edX+Demo+2024", "course_passing_grade": None}]
 
         result = viewset._enrich_course_passing_grade_rows(rows)  # pylint: disable=protected-access
 
-        self.assertEqual(result[0]['course_passing_grade'], 0.7)
-        mock_grade_source_cls.return_value.get_passing_grade_map.assert_called_once_with([
-            'course-v1:edX+Demo+2024',
-        ])
+        self.assertEqual(result[0]["course_passing_grade"], 0.7)
+        mock_grade_source_cls.return_value.get_passing_grade_map.assert_called_once_with(
+            [
+                "course-v1:edX+Demo+2024",
+            ]
+        )
 
-    @mock.patch('enterprise_data.api.v1.views.enterprise_learner.SnowflakeCoursePassingGradeSource')
+    @mock.patch("enterprise_data.api.v1.views.enterprise_learner.SnowflakeCoursePassingGradeSource")
     def test_enrich_course_passing_grade_returns_rows_when_source_fails(
         self,
         mock_grade_source_cls,
     ):
         viewset = EnterpriseLearnerEnrollmentViewSet()
-        viewset.kwargs = {'enterprise_id': self.enterprise_id}
-        mock_grade_source_cls.return_value.get_passing_grade_map.side_effect = RuntimeError('Snowflake unavailable')
-        rows = [{'courserun_key': 'course-v1:edX+Demo+2024', 'course_passing_grade': None}]
+        viewset.kwargs = {"enterprise_id": self.enterprise_id}
+        mock_grade_source_cls.return_value.get_passing_grade_map.side_effect = RuntimeError("Snowflake unavailable")
+        rows = [{"courserun_key": "course-v1:edX+Demo+2024", "course_passing_grade": None}]
 
         result = viewset._enrich_course_passing_grade_rows(rows)  # pylint: disable=protected-access
 
-        self.assertIsNone(result[0]['course_passing_grade'])
-        mock_grade_source_cls.return_value.get_passing_grade_map.assert_called_once_with([
-            'course-v1:edX+Demo+2024',
-        ])
+        self.assertIsNone(result[0]["course_passing_grade"])
+        mock_grade_source_cls.return_value.get_passing_grade_map.assert_called_once_with(
+            [
+                "course-v1:edX+Demo+2024",
+            ]
+        )
 
 
 @ddt.ddt
@@ -390,24 +378,20 @@ class TestEnterpriseOffersViewSet(JWTTestMixin, APITransactionTestCase):
         super().setUp()
         self.user = UserFactory(is_staff=True)
         role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
-        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
-            role=role,
-            user=self.user
-        )
+        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(role=role, user=self.user)
         self.client.force_authenticate(user=self.user)
 
         self.enterprise_customer_uuid_1 = uuid4()
         self.enterprise_offer_1_offer_id = str(uuid4())
         self.enterprise_offer_1 = EnterpriseOfferFactory(
-            offer_id=self.enterprise_offer_1_offer_id.replace('-', ''),
-            enterprise_customer_uuid=self.enterprise_customer_uuid_1
+            offer_id=self.enterprise_offer_1_offer_id.replace("-", ""),
+            enterprise_customer_uuid=self.enterprise_customer_uuid_1,
         )
 
         self.enterprise_customer_2_uuid = uuid4()
-        self.enterprise_offer_2_offer_id = '11111'
+        self.enterprise_offer_2_offer_id = "11111"
         self.enterprise_offer_2 = EnterpriseOfferFactory(
-            offer_id=self.enterprise_offer_2_offer_id,
-            enterprise_customer_uuid=self.enterprise_customer_2_uuid
+            offer_id=self.enterprise_offer_2_offer_id, enterprise_customer_uuid=self.enterprise_customer_2_uuid
         )
 
         self.set_jwt_cookie()
@@ -418,17 +402,14 @@ class TestEnterpriseOffersViewSet(JWTTestMixin, APITransactionTestCase):
 
     def test_list_offers(self):
         enterprise_id = self.enterprise_offer_1.enterprise_customer_uuid
-        url = reverse(
-            'v1:enterprise-offers-list',
-            kwargs={'enterprise_id': enterprise_id}
-        )
+        url = reverse("v1:enterprise-offers-list", kwargs={"enterprise_id": enterprise_id})
 
         response = self.client.get(url)
         assert response.status_code == status.HTTP_200_OK
 
         expected_results = [EnterpriseOfferSerializer(self.enterprise_offer_1).data]
         response_json = response.json()
-        results = response_json['results']
+        results = response_json["results"]
         assert results == expected_results
 
     def test_retrieve_offers_uuid(self):
@@ -437,10 +418,7 @@ class TestEnterpriseOffersViewSet(JWTTestMixin, APITransactionTestCase):
         """
         enterprise_id = self.enterprise_offer_1.enterprise_customer_uuid
         url = os.path.join(
-            reverse(
-                'v1:enterprise-offers-list',
-                kwargs={'enterprise_id': enterprise_id}
-            ),
+            reverse("v1:enterprise-offers-list", kwargs={"enterprise_id": enterprise_id}),
             self.enterprise_offer_1_offer_id + "/",
         )
         response = self.client.get(url)
@@ -448,7 +426,7 @@ class TestEnterpriseOffersViewSet(JWTTestMixin, APITransactionTestCase):
 
         response_json = response.json()
         results = response_json
-        assert results['offer_id'] == str(UUID(self.enterprise_offer_1_offer_id))
+        assert results["offer_id"] == str(UUID(self.enterprise_offer_1_offer_id))
 
     def test_retrieve_offer_offer_id_int(self):
         """
@@ -456,10 +434,7 @@ class TestEnterpriseOffersViewSet(JWTTestMixin, APITransactionTestCase):
         """
         enterprise_id = self.enterprise_offer_2.enterprise_customer_uuid
         url = os.path.join(
-            reverse(
-                'v1:enterprise-offers-list',
-                kwargs={'enterprise_id': enterprise_id}
-            ),
+            reverse("v1:enterprise-offers-list", kwargs={"enterprise_id": enterprise_id}),
             self.enterprise_offer_2_offer_id + "/",
         )
         response = self.client.get(url)
@@ -467,7 +442,7 @@ class TestEnterpriseOffersViewSet(JWTTestMixin, APITransactionTestCase):
 
         response_json = response.json()
         results = response_json
-        assert results['offer_id'] == self.enterprise_offer_2_offer_id
+        assert results["offer_id"] == self.enterprise_offer_2_offer_id
 
 
 @ddt.ddt
@@ -482,7 +457,7 @@ class TestEnterpriseAdminInsightsView(JWTTestMixin, APITransactionTestCase):
         self.user = UserFactory()
         self.enterprise_customer_uuid_1 = uuid4()
         self.enterprise_customer_uuid_2 = uuid4()
-        self.set_jwt_cookie(context=f'{self.enterprise_customer_uuid_1}')
+        self.set_jwt_cookie(context=f"{self.enterprise_customer_uuid_1}")
 
     def verify_data(self, received, expected):
         """
@@ -510,22 +485,22 @@ class TestEnterpriseAdminInsightsView(JWTTestMixin, APITransactionTestCase):
             enterprise_customer_uuid=enterprise_customer_uuid
         )
 
-        url = reverse('v1:enterprise-admin-insights', kwargs={'enterprise_id': enterprise_customer_uuid})
+        url = reverse("v1:enterprise-admin-insights", kwargs={"enterprise_id": enterprise_customer_uuid})
         response = self.client.get(url)
         assert response.status_code == status.HTTP_200_OK
 
         response_json = response.json()
 
-        learner_progress = response_json['learner_progress']
+        learner_progress = response_json["learner_progress"]
         self.verify_data(learner_progress, learner_progress_obj)
-        learner_engagement = response_json['learner_engagement']
+        learner_engagement = response_json["learner_engagement"]
         self.verify_data(learner_engagement, learner_engagement_obj)
 
     def test_retrieve_enterprise_admin_insights_no_data(self):
         """
         Verify that `EnterpriseAdminInsightsView` gives correct response if the user has access but no data exists.
         """
-        url = reverse('v1:enterprise-admin-insights', kwargs={'enterprise_id': self.enterprise_customer_uuid_1})
+        url = reverse("v1:enterprise-admin-insights", kwargs={"enterprise_id": self.enterprise_customer_uuid_1})
         response = self.client.get(url)
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
@@ -534,7 +509,7 @@ class TestEnterpriseAdminInsightsView(JWTTestMixin, APITransactionTestCase):
         Verify that `EnterpriseAdminInsightsView` give 401 if the user has access to enterprise.
         """
         enterprise_customer_uuid = self.enterprise_customer_uuid_2
-        url = reverse('v1:enterprise-admin-insights', kwargs={'enterprise_id': enterprise_customer_uuid})
+        url = reverse("v1:enterprise-admin-insights", kwargs={"enterprise_id": enterprise_customer_uuid})
         response = self.client.get(url)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -550,27 +525,19 @@ class TestSearchEnrollmentFilter(JWTTestMixin, APITransactionTestCase):
         super().setUp()
         self.user = UserFactory(is_staff=True)
         role, __ = EnterpriseDataFeatureRole.objects.get_or_create(name=ENTERPRISE_DATA_ADMIN_ROLE)
-        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(
-            role=role,
-            user=self.user
-        )
+        self.role_assignment = EnterpriseDataRoleAssignment.objects.create(role=role, user=self.user)
         self.client.force_authenticate(user=self.user)
 
         mocked_get_enterprise_customer = mock.patch(
-            'enterprise_data.filters.EnterpriseApiClient.get_enterprise_customer',
-            return_value=get_dummy_enterprise_api_data()
+            "enterprise_data.filters.EnterpriseApiClient.get_enterprise_customer",
+            return_value=get_dummy_enterprise_api_data(),
         )
         self.mocked_get_enterprise_customer = mocked_get_enterprise_customer.start()
         self.addCleanup(mocked_get_enterprise_customer.stop)
 
-        self.enterprise_id = 'fd0d9cd4-bc35-45e8-ba35-e73be3fc5a07'
-        self.url = reverse(
-            'v1:enterprise-learner-enrollment-list',
-            kwargs={'enterprise_id': self.enterprise_id}
-        )
-        self.enterprise_learner = EnterpriseLearnerFactory(
-            enterprise_customer_uuid=self.enterprise_id
-        )
+        self.enterprise_id = "fd0d9cd4-bc35-45e8-ba35-e73be3fc5a07"
+        self.url = reverse("v1:enterprise-learner-enrollment-list", kwargs={"enterprise_id": self.enterprise_id})
+        self.enterprise_learner = EnterpriseLearnerFactory(enterprise_customer_uuid=self.enterprise_id)
         self.set_jwt_cookie()
 
     def tearDown(self):
@@ -601,10 +568,7 @@ class TestSearchEnrollmentFilter(JWTTestMixin, APITransactionTestCase):
         # Unenrolled learner(NOT NULL)
         self.create_unenrolled()
 
-        response = self.client.get(
-            self.url,
-            data={"search_enrollment": "enrolled"}
-        )
+        response = self.client.get(self.url, data={"search_enrollment": "enrolled"})
 
         results = response.json()["results"]
         self.assertEqual(len(results), 1)
@@ -617,10 +581,7 @@ class TestSearchEnrollmentFilter(JWTTestMixin, APITransactionTestCase):
         # Unenrolled learner (NOT NULL)
         unenrolled = self.create_unenrolled()
 
-        response = self.client.get(
-            self.url,
-            data={"search_enrollment": "unenrolled"}
-        )
+        response = self.client.get(self.url, data={"search_enrollment": "unenrolled"})
 
         results = response.json()["results"]
         self.assertEqual(len(results), 1)

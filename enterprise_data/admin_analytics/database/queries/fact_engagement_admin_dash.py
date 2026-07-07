@@ -9,6 +9,7 @@ class FactEngagementAdminDashQueries:
     """
     Queries related to the fact_enrollment_engagement_day_admin_dash table.
     """
+
     @staticmethod
     def get_learning_hours_and_daily_sessions_query(query_filters: QueryFilters) -> str:
         """

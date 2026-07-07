@@ -4,11 +4,9 @@
 Signals for enterprise-data.
 """
 
-
-from edx_django_utils.cache import TieredCache
-
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
+from edx_django_utils.cache import TieredCache
 
 from enterprise_data.models import EnterpriseLearner, EnterpriseLearnerEnrollment
 from enterprise_data.utils import get_cache_key
@@ -20,7 +18,7 @@ def clear_cache(instance, **kwargs):
     Signal receiver function to clear the cache of specified model.
     """
     cache_key = get_cache_key(
-        resource='enterprise-learner',
+        resource="enterprise-learner",
         enterprise_customer=instance.enterprise_customer_uuid,
     )
     TieredCache.delete_all_tiers(cache_key)

@@ -2,7 +2,6 @@
 Serializers for enterprise api version 0 endpoint.
 """
 
-
 from datetime import date
 
 from rest_framework import serializers
@@ -14,6 +13,7 @@ class EnterpriseEnrollmentSerializer(serializers.ModelSerializer):
     """
     Serializer for EnterpriseEnrollment model.
     """
+
     course_api_url = serializers.SerializerMethodField()
     unenrollment_end_within_date = serializers.SerializerMethodField()
     progress_status = serializers.SerializerMethodField()
@@ -21,9 +21,7 @@ class EnterpriseEnrollmentSerializer(serializers.ModelSerializer):
 
     def get_course_api_url(self, obj):
         """Constructs course api url"""
-        return '/enterprise/v1/enterprise-catalogs/{enterprise_id}/courses/{course_id}'.format(
-            enterprise_id=obj.enterprise_id, course_id=obj.course_id
-        )
+        return f"/enterprise/v1/enterprise-catalogs/{obj.enterprise_id}/courses/{obj.course_id}"
 
     def get_unenrollment_end_within_date(self, obj):
         """
@@ -33,9 +31,9 @@ class EnterpriseEnrollmentSerializer(serializers.ModelSerializer):
         unenrollment_within_date = None
         if obj.unenrollment_timestamp:
             unenrollment_within_date = (
-                not obj.course_start or
-                (obj.unenrollment_timestamp - obj.course_start).days <= 14 or
-                (obj.unenrollment_timestamp - obj.enrollment_created_timestamp).days <= 14
+                not obj.course_start
+                or (obj.unenrollment_timestamp - obj.course_start).days <= 14
+                or (obj.unenrollment_timestamp - obj.enrollment_created_timestamp).days <= 14
             )
 
         return unenrollment_within_date
@@ -55,7 +53,7 @@ class EnterpriseEnrollmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EnterpriseEnrollment
-        exclude = ('created', )
+        exclude = ("created",)
 
 
 class EnterpriseUserSerializer(serializers.ModelSerializer):
@@ -65,25 +63,26 @@ class EnterpriseUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EnterpriseUser
-        exclude = ('created', )
+        exclude = ("created",)
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
 
-        if hasattr(instance, 'enrollment_count'):
-            representation['enrollment_count'] = instance.enrollment_count
-        if hasattr(instance, 'course_completion_count'):
-            representation['course_completion_count'] = instance.course_completion_count
+        if hasattr(instance, "enrollment_count"):
+            representation["enrollment_count"] = instance.enrollment_count
+        if hasattr(instance, "course_completion_count"):
+            representation["course_completion_count"] = instance.course_completion_count
 
         return representation
 
 
-class LearnerCompletedCoursesSerializer(serializers.Serializer):    # pylint: disable=abstract-method
+class LearnerCompletedCoursesSerializer(serializers.Serializer):  # pylint: disable=abstract-method
     """
     Serializer for learner's completed courses.
     """
+
     class Meta:
-        ref_name = 'v0.LearnerCompletedCoursesSerializer'
+        ref_name = "v0.LearnerCompletedCoursesSerializer"
 
     user_email = serializers.EmailField()
     completed_courses = serializers.IntegerField()

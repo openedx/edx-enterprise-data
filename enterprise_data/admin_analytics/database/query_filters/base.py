@@ -1,6 +1,7 @@
 """
 Base Query Filter.
 """
+
 from abc import ABC, abstractmethod
 
 
@@ -8,6 +9,7 @@ class QueryFilter(ABC):
     """
     Base Query filter class for functionality common to all filters.
     """
+
     @abstractmethod
     def to_sql(self) -> str:
         """
@@ -28,9 +30,9 @@ class QueryFilter(ABC):
             value_placeholder: The placeholder for the value.
         """
         if value is not None and value_placeholder is not None:
-            raise ValueError('Both value and value_placeholder cannot be provided at the same time.')
+            raise ValueError("Both value and value_placeholder cannot be provided at the same time.")
         if value is None and value_placeholder is None:
-            raise ValueError('Either value or value_placeholder must be provided.')
+            raise ValueError("Either value or value_placeholder must be provided.")
         return True
 
     def value_to_sql(self, value):
@@ -61,8 +63,9 @@ class QueryFilters(list):
     """
     A list of QueryFilter objects.
     """
+
     def to_sql(self) -> str:
         """
         Convert the filters to a SQL string.
         """
-        return ' AND '.join([_filter.to_sql() for _filter in self])
+        return " AND ".join([_filter.to_sql() for _filter in self])

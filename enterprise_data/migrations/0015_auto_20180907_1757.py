@@ -5,14 +5,17 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('enterprise_data', '0014_enterpriseuser_created'),
+        ("enterprise_data", "0014_enterpriseuser_created"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='enterpriseuser',
-            options={'ordering': ['-user_email'], 'verbose_name': 'Enterprise User', 'verbose_name_plural': 'Enterprise Users'},
+            name="enterpriseuser",
+            options={
+                "ordering": ["-user_email"],
+                "verbose_name": "Enterprise User",
+                "verbose_name_plural": "Enterprise Users",
+            },
         ),
     ]

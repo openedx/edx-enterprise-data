@@ -1,6 +1,7 @@
 """
 Views for enterprise admin api v1.
 """
+
 from datetime import date, datetime
 
 from edx_rbac.decorators import permission_required
@@ -37,9 +38,7 @@ class EnterpriseAdminInsightsView(APIView):
     authentication_classes = (JwtAuthentication,)
     http_method_names = ["get"]
 
-    @permission_required(
-        "can_access_enterprise", fn=lambda request, enterprise_id: enterprise_id
-    )
+    @permission_required("can_access_enterprise", fn=lambda request, enterprise_id: enterprise_id)
     def get(self, request, enterprise_id):
         """
         HTTP GET endpoint to retrieve the enterprise admin insights
@@ -49,23 +48,15 @@ class EnterpriseAdminInsightsView(APIView):
         learner_engagement = {}
 
         try:
-            learner_progress = EnterpriseAdminLearnerProgress.objects.get(
-                enterprise_customer_uuid=enterprise_id
-            )
-            learner_progress = serializers.EnterpriseAdminLearnerProgressSerializer(
-                learner_progress
-            ).data
+            learner_progress = EnterpriseAdminLearnerProgress.objects.get(enterprise_customer_uuid=enterprise_id)
+            learner_progress = serializers.EnterpriseAdminLearnerProgressSerializer(learner_progress).data
             response_data["learner_progress"] = learner_progress
         except EnterpriseAdminLearnerProgress.DoesNotExist:
             pass
 
         try:
-            learner_engagement = EnterpriseAdminSummarizeInsights.objects.get(
-                enterprise_customer_uuid=enterprise_id
-            )
-            learner_engagement = serializers.EnterpriseAdminSummarizeInsightsSerializer(
-                learner_engagement
-            ).data
+            learner_engagement = EnterpriseAdminSummarizeInsights.objects.get(enterprise_customer_uuid=enterprise_id)
+            learner_engagement = serializers.EnterpriseAdminSummarizeInsightsSerializer(learner_engagement).data
             response_data["learner_engagement"] = learner_engagement
         except EnterpriseAdminSummarizeInsights.DoesNotExist:
             pass
@@ -85,15 +76,13 @@ class EnterpriseAdminAnalyticsAggregatesView(APIView):
     authentication_classes = (JwtAuthentication,)
     http_method_names = ["get"]
 
-    @permission_required(
-        "can_access_enterprise", fn=lambda request, enterprise_id: enterprise_id
-    )
+    @permission_required("can_access_enterprise", fn=lambda request, enterprise_id: enterprise_id)
     def get(self, request, enterprise_id):
         """
         HTTP GET endpoint to retrieve the enterprise admin aggregate data.
         """
         # Validate the enterprise_id
-        enterprise_id = enterprise_id.replace('-', '')
+        enterprise_id = enterprise_id.replace("-", "")
         serializer = serializers.AdvanceAnalyticsQueryParamSerializer(data=request.GET)
         serializer.is_valid(raise_exception=True)
 
@@ -102,12 +91,12 @@ class EnterpriseAdminAnalyticsAggregatesView(APIView):
             enterprise_id,
         )
 
-        start_date = serializer.data.get('start_date', min_enrollment_date)
-        end_date = serializer.data.get('end_date', datetime.today())
-        group_uuid = serializer.data.get('group_uuid')
-        course_type = serializer.data.get('course_type')
-        course_key = serializer.data.get('course_key')
-        budget_uuid = serializer.data.get('budget_uuid')
+        start_date = serializer.data.get("start_date", min_enrollment_date)
+        end_date = serializer.data.get("end_date", datetime.today())
+        group_uuid = serializer.data.get("group_uuid")
+        course_type = serializer.data.get("course_type")
+        course_key = serializer.data.get("course_key")
+        budget_uuid = serializer.data.get("budget_uuid")
 
         enrolls, courses = FactEnrollmentAdminDashTable().get_enrollment_and_course_count(
             enterprise_id, start_date, end_date, group_uuid, course_type, course_key, budget_uuid
@@ -130,17 +119,17 @@ class EnterpriseAdminAnalyticsAggregatesView(APIView):
 
         return Response(
             data={
-                'enrolls': enrolls,
-                'courses': courses,
-                'completions': completions,
-                'hours': hours,
-                'sessions': sessions,
-                'unique_skills_gained': unique_skills_gained,
-                'upskilled_learners': upskilled_learners,
-                'new_skills_learned': new_skills_learned,
-                'last_updated_at': last_updated_at if last_updated_at else None,
-                'min_enrollment_date': min_enrollment_date,
-                'max_enrollment_date': max_enrollment_date,
+                "enrolls": enrolls,
+                "courses": courses,
+                "completions": completions,
+                "hours": hours,
+                "sessions": sessions,
+                "unique_skills_gained": unique_skills_gained,
+                "upskilled_learners": upskilled_learners,
+                "new_skills_learned": new_skills_learned,
+                "last_updated_at": last_updated_at if last_updated_at else None,
+                "min_enrollment_date": min_enrollment_date,
+                "max_enrollment_date": max_enrollment_date,
             },
             status=HTTP_200_OK,
         )
@@ -150,12 +139,11 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
     """
     API for getting the enterprise admin analytics skills data.
     """
-    authentication_classes = (JwtAuthentication,)
-    http_method_names = ['get']
 
-    @permission_required(
-        'can_access_enterprise', fn=lambda request, enterprise_id: enterprise_id
-    )
+    authentication_classes = (JwtAuthentication,)
+    http_method_names = ["get"]
+
+    @permission_required("can_access_enterprise", fn=lambda request, enterprise_id: enterprise_id)
     def get(self, request, enterprise_id):
         """HTTP GET endpoint to retrieve the enterprise admin skills aggregated data.
 
@@ -166,20 +154,20 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
         Returns:
             response(HttpResponse): response object
         """
-        enterprise_id = enterprise_id.replace('-', '')
+        enterprise_id = enterprise_id.replace("-", "")
         serializer = serializers.AdvanceAnalyticsQueryParamSerializer(data=request.GET)
         serializer.is_valid(raise_exception=True)
 
-        if (start_date := serializer.data.get('start_date')) is None:
+        if (start_date := serializer.data.get("start_date")) is None:
             start_date, _ = FactEnrollmentAdminDashTable().get_enrollment_date_range(enterprise_id)
 
-        end_date = serializer.data.get('end_date', date.today())
-        course_type = serializer.data.get('course_type')
-        course_key = serializer.data.get('course_key')
-        budget_uuid = serializer.data.get('budget_uuid')
-        group_uuid = serializer.data.get('group_uuid')
+        end_date = serializer.data.get("end_date", date.today())
+        course_type = serializer.data.get("course_type")
+        course_key = serializer.data.get("course_key")
+        budget_uuid = serializer.data.get("budget_uuid")
+        group_uuid = serializer.data.get("group_uuid")
 
-        with timer('top_skills'):
+        with timer("top_skills"):
             skills = SkillsDailyRollupAdminDashTable().get_top_skills(
                 enterprise_id,
                 start_date,
@@ -190,7 +178,7 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
                 group_uuid,
             )
 
-        with timer('top_skills_by_enrollments'):
+        with timer("top_skills_by_enrollments"):
             top_skills_by_enrollments = SkillsDailyRollupAdminDashTable().get_top_skills_by_enrollment(
                 enterprise_id,
                 start_date,
@@ -200,7 +188,7 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
                 budget_uuid,
                 group_uuid,
             )
-        with timer('top_skills_by_completions'):
+        with timer("top_skills_by_completions"):
             top_skills_by_completions = SkillsDailyRollupAdminDashTable().get_top_skills_by_completion(
                 enterprise_id,
                 start_date,
@@ -211,7 +199,7 @@ class EnterpriseAdminAnalyticsSkillsView(APIView):
                 group_uuid,
             )
 
-        with timer('skills_by_learning_hours'):
+        with timer("skills_by_learning_hours"):
             skills_by_learning_hours = SkillsDailyRollupAdminDashTable().get_skills_by_learning_hours(
                 enterprise_id,
                 start_date,
@@ -236,21 +224,19 @@ class EnterpriseExecEdLCModulePerformanceViewSet(EnterpriseViewSetMixin, viewset
     """
     View to for getting enterprise exec ed learner module performance records.
     """
+
     serializer_class = serializers.EnterpriseExecEdLCModulePerformanceSerializer
     filter_backends = (filters.OrderingFilter, filters.SearchFilter)
-    ordering_fields = '__all__'
-    ordering = ['username', 'module_name', 'last_access']
-    search_fields = (
-        'username',
-        'course_name'
-    )
+    ordering_fields = "__all__"
+    ordering = ["username", "module_name", "last_access"]
+    search_fields = ("username", "course_name")
 
     def get_queryset(self):
         """
         Return the queryset of EnterpriseExecEdLCModulePerformance objects.
         """
         return EnterpriseExecEdLCModulePerformance.objects.filter(
-            enterprise_customer_uuid=self.kwargs['enterprise_id'],
+            enterprise_customer_uuid=self.kwargs["enterprise_id"],
         )
 
 
@@ -258,6 +244,7 @@ class EnterpriseBudgetView(APIView):
     """
     View for getting budgets information for an enterprise.
     """
+
     authentication_classes = (JwtAuthentication,)
     http_method_names = ["get"]
 
@@ -269,8 +256,8 @@ class EnterpriseBudgetView(APIView):
         budgets = EnterpriseSubsidyBudget.objects.filter(
             enterprise_customer_uuid=enterprise_uuid,
         ).values(
-            'subsidy_access_policy_uuid',
-            'subsidy_access_policy_display_name',
+            "subsidy_access_policy_uuid",
+            "subsidy_access_policy_display_name",
         )
 
         serializer = serializers.EnterpriseBudgetSerializer(budgets, many=True)
@@ -281,6 +268,7 @@ class EnterpriseGroupMembershipView(APIView):
     """
     View for getting Group Memberships information for an enterprise.
     """
+
     authentication_classes = (JwtAuthentication,)
     http_method_names = ["get"]
 
@@ -289,10 +277,14 @@ class EnterpriseGroupMembershipView(APIView):
         """
         Returns the groups and budgets for an enterprise.
         """
-        groups = EnterpriseGroupMembership.objects.filter(
-            enterprise_customer_id=enterprise_uuid,
-            group_type='flex',
-        ).values('enterprise_group_uuid', 'enterprise_group_name').distinct()
+        groups = (
+            EnterpriseGroupMembership.objects.filter(
+                enterprise_customer_id=enterprise_uuid,
+                group_type="flex",
+            )
+            .values("enterprise_group_uuid", "enterprise_group_name")
+            .distinct()
+        )
 
         serializer = serializers.EnterpriseGroupMembershipSerializer(groups, many=True)
         return Response(serializer.data)
@@ -302,6 +294,7 @@ class EnterpriseEnrolledCoursesView(APIView):
     """
     View for getting enrolled courses information for an enterprise.
     """
+
     authentication_classes = (JwtAuthentication,)
     http_method_names = ["get"]
 
@@ -311,7 +304,7 @@ class EnterpriseEnrolledCoursesView(APIView):
         Return the queryset of EnterpriseSubsidyBudget objects.
         """
         # Remove hyphens from the UUID
-        enterprise_uuid = enterprise_uuid.replace('-', '')
+        enterprise_uuid = enterprise_uuid.replace("-", "")
 
         serializer = serializers.AdvanceAnalyticsQueryParamSerializer(data=request.GET)
         serializer.is_valid(raise_exception=True)
@@ -320,11 +313,11 @@ class EnterpriseEnrolledCoursesView(APIView):
             enterprise_uuid,
         )
         # get values from query params or use default
-        start_date = serializer.data.get('start_date', min_enrollment_date)
-        end_date = serializer.data.get('end_date', date.today())
-        group_uuid = serializer.data.get('group_uuid')
-        course_type = serializer.data.get('course_type')
-        budget_uuid = serializer.data.get('budget_uuid')
+        start_date = serializer.data.get("start_date", min_enrollment_date)
+        end_date = serializer.data.get("end_date", date.today())
+        group_uuid = serializer.data.get("group_uuid")
+        course_type = serializer.data.get("course_type")
+        budget_uuid = serializer.data.get("budget_uuid")
 
         enrolled_courses = FactEnrollmentAdminDashTable().get_all_enrolled_courses(
             enterprise_customer_uuid=enterprise_uuid,

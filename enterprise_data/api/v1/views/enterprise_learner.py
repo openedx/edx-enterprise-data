@@ -6,12 +6,6 @@ from datetime import date, timedelta
 from logging import getLogger
 from uuid import UUID
 
-from rest_framework import filters, viewsets
-from rest_framework.decorators import action
-from rest_framework.exceptions import NotFound
-from rest_framework.renderers import JSONRenderer
-from rest_framework.response import Response
-
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.db.models import Count, Exists, Max, OuterRef, Prefetch, Q, Subquery, Value
@@ -19,6 +13,11 @@ from django.db.models.fields import IntegerField
 from django.db.models.functions import Coalesce
 from django.http import StreamingHttpResponse
 from django.utils import timezone
+from rest_framework import filters, viewsets
+from rest_framework.decorators import action
+from rest_framework.exceptions import NotFound
+from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
 
 from enterprise_data.api.v1 import serializers
 from enterprise_data.clients import EnterpriseApiClient
@@ -41,43 +40,84 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
     """
     Viewset for routes related to Enterprise course enrollments.
     """
+
     serializer_class = serializers.EnterpriseLearnerEnrollmentSerializer
     pagination_class = EnterpriseEnrollmentsPagination
     renderer_classes = (JSONRenderer, EnrollmentsCSVRenderer)
     filter_backends = (filters.OrderingFilter,)
-    ordering_fields = '__all__'
-    ordering = ('-last_activity_date',)
-    ENROLLMENT_MODE_FILTER = 'user_current_enrollment_mode'
-    COUPON_CODE_FILTER = 'coupon_code'
-    OFFER_FILTER = 'offer_type'
+    ordering_fields = "__all__"
+    ordering = ("-last_activity_date",)
+    ENROLLMENT_MODE_FILTER = "user_current_enrollment_mode"
+    COUPON_CODE_FILTER = "coupon_code"
+    OFFER_FILTER = "offer_type"
     # TODO: Remove after we release the streaming csv changes
     # This will be used as CSV header for csv generated from `admin-portal`.
     # Do not change the order of fields below. Ordering is important because csv generated
     # on `admin-portal` should match `progress_v3` csv generated in `enterprise_reporting`
     # Order and field names below should match with `EnterpriseLearnerEnrollmentSerializer.fields`
     header = [
-        'enrollment_id', 'enterprise_enrollment_id', 'is_consent_granted', 'paid_by',
-        'user_current_enrollment_mode', 'enrollment_date', 'unenrollment_date',
-        'unenrollment_end_within_date', 'is_refunded', 'seat_delivery_method',
-        'offer_id', 'offer_name', 'offer_type', 'coupon_code', 'coupon_name', 'contract_id',
-        'course_list_price', 'amount_learner_paid', 'course_key', 'courserun_key',
-        'course_title', 'course_pacing_type', 'course_start_date', 'course_end_date',
-        'course_duration_weeks', 'course_max_effort', 'course_min_effort',
-        'course_primary_program', 'primary_program_type', 'course_primary_subject', 'has_passed',
-        'last_activity_date', 'progress_status', 'passed_date', 'current_grade',
-        'letter_grade', 'enterprise_user_id', 'user_email', 'user_account_creation_date',
-        'user_country_code', 'user_username', 'user_first_name', 'user_last_name', 'enterprise_name',
-        'enterprise_customer_uuid', 'enterprise_sso_uid', 'created', 'course_api_url', 'total_learning_time_hours',
-        'is_subsidy', 'course_product_line', 'budget_id',
-        'enterprise_flex_group_name', 'enterprise_flex_group_uuid',
-        'course_progress',
-        'course_passing_grade',
+        "enrollment_id",
+        "enterprise_enrollment_id",
+        "is_consent_granted",
+        "paid_by",
+        "user_current_enrollment_mode",
+        "enrollment_date",
+        "unenrollment_date",
+        "unenrollment_end_within_date",
+        "is_refunded",
+        "seat_delivery_method",
+        "offer_id",
+        "offer_name",
+        "offer_type",
+        "coupon_code",
+        "coupon_name",
+        "contract_id",
+        "course_list_price",
+        "amount_learner_paid",
+        "course_key",
+        "courserun_key",
+        "course_title",
+        "course_pacing_type",
+        "course_start_date",
+        "course_end_date",
+        "course_duration_weeks",
+        "course_max_effort",
+        "course_min_effort",
+        "course_primary_program",
+        "primary_program_type",
+        "course_primary_subject",
+        "has_passed",
+        "last_activity_date",
+        "progress_status",
+        "passed_date",
+        "current_grade",
+        "letter_grade",
+        "enterprise_user_id",
+        "user_email",
+        "user_account_creation_date",
+        "user_country_code",
+        "user_username",
+        "user_first_name",
+        "user_last_name",
+        "enterprise_name",
+        "enterprise_customer_uuid",
+        "enterprise_sso_uid",
+        "created",
+        "course_api_url",
+        "total_learning_time_hours",
+        "is_subsidy",
+        "course_product_line",
+        "budget_id",
+        "enterprise_flex_group_name",
+        "enterprise_flex_group_uuid",
+        "course_progress",
+        "course_passing_grade",
     ]
 
     # TODO: Remove after we release the streaming csv changes
     def get_renderer_context(self):
         renderer_context = super().get_renderer_context()
-        renderer_context['header'] = self.header
+        renderer_context["header"] = self.header
         return renderer_context
 
     def get_queryset(self):
@@ -88,12 +128,12 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         ``EnterpriseLearnerEnrollment``, so we add synthetic placeholder columns
         here and enrich both later from Snowflake in the response path.
         """
-        if getattr(self, 'swagger_fake_view', False):
+        if getattr(self, "swagger_fake_view", False):
             # queryset just for schema generation metadata
             # See: https://github.com/axnsan12/drf-yasg/issues/333
             return EnterpriseLearnerEnrollment.objects.none()
 
-        enterprise_customer_uuid = self.kwargs['enterprise_id']
+        enterprise_customer_uuid = self.kwargs["enterprise_id"]
 
         # TODO: Created a ticket ENT0-9531 to add the cache on this viewset
 
@@ -102,10 +142,12 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         # values are merged in later from Snowflake during enrichment.
         enrollments = EnterpriseLearnerEnrollment.objects.filter(
             enterprise_customer_uuid=enterprise_customer_uuid
-        ).extra(select={
-            'course_progress': 'NULL',
-            'course_passing_grade': 'NULL',
-        })
+        ).extra(
+            select={
+                "course_progress": "NULL",
+                "course_passing_grade": "NULL",
+            }
+        )
         enrollments = self.apply_filters(enrollments)
 
         return enrollments
@@ -116,7 +158,7 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         the ``course_progress`` and ``course_passing_grade`` fields from
         Snowflake's internal LPR table and course-overviews table respectively.
         """
-        if request.accepted_renderer.format == 'csv':
+        if request.accepted_renderer.format == "csv":
             return StreamingHttpResponse(
                 EnrollmentsCSVRenderer().render(self._stream_serialized_data()),
                 content_type="text/csv",
@@ -139,18 +181,18 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         try:
             if not rows:
                 return rows
-            enterprise_uuid = self.kwargs['enterprise_id']
+            enterprise_uuid = self.kwargs["enterprise_id"]
             progress_map = SnowflakeCourseProgressSource().get_course_progress_map(enterprise_uuid, rows)
             for row in rows:
                 key = (
-                    row.get('user_email', '').strip(),
-                    row.get('courserun_key', '').strip(),
+                    row.get("user_email", "").strip(),
+                    row.get("courserun_key", "").strip(),
                 )
                 if key in progress_map:
-                    row['course_progress'] = progress_map[key]
+                    row["course_progress"] = progress_map[key]
             return rows
         except Exception:  # pylint: disable=broad-exception-caught
-            LOGGER.warning('Could not enrich course_progress from Snowflake', exc_info=True)
+            LOGGER.warning("Could not enrich course_progress from Snowflake", exc_info=True)
             return rows
 
     def _enrich_lpr_fields(self, response):
@@ -162,7 +204,7 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         Silently skips enrichment on any error so the ORM response is always
         returned intact.
         """
-        results = response.data.get('results', [])
+        results = response.data.get("results", [])
         self._enrich_course_progress_rows(results)
         self._enrich_course_passing_grade_rows(results)
 
@@ -180,21 +222,21 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
                 return rows
             # Deduplicate here so we pass a clean list to the source (which also
             # deduplicates internally, but being explicit avoids unnecessary work).
-            courseruns = list(dict.fromkeys(
-                (row.get('courserun_key') or '').strip()
-                for row in rows
-                if (row.get('courserun_key') or '').strip()
-            ))
+            courseruns = list(
+                dict.fromkeys(
+                    (row.get("courserun_key") or "").strip() for row in rows if (row.get("courserun_key") or "").strip()
+                )
+            )
             if not courseruns:
                 return rows
             grades = SnowflakeCoursePassingGradeSource().get_passing_grade_map(courseruns)
             for row in rows:
-                courserun = (row.get('courserun_key') or '').strip()
+                courserun = (row.get("courserun_key") or "").strip()
                 if courserun and courserun in grades:
-                    row['course_passing_grade'] = grades[courserun]
+                    row["course_passing_grade"] = grades[courserun]
             return rows
         except Exception:  # pylint: disable=broad-exception-caught
-            LOGGER.warning('Could not enrich course_passing_grade from Snowflake', exc_info=True)
+            LOGGER.warning("Could not enrich course_passing_grade from Snowflake", exc_info=True)
             return rows
 
     def _stream_serialized_data(self):
@@ -221,65 +263,64 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         past_week_date = date.today() - timedelta(weeks=1)
         past_month_date = subtract_one_month(date.today())
 
-        passed_date_param = query_filters.get('passed_date')
-        if passed_date_param == 'last_week':
+        passed_date_param = query_filters.get("passed_date")
+        if passed_date_param == "last_week":
             queryset = self.filter_past_week_completions(queryset)
 
-        learner_activity_param = query_filters.get('learner_activity')
+        learner_activity_param = query_filters.get("learner_activity")
         if learner_activity_param:
             queryset = self.filter_active_enrollments(queryset)
-        if learner_activity_param == 'active_past_week':
+        if learner_activity_param == "active_past_week":
             queryset = self.filter_active_learners(queryset, past_week_date)
-        elif learner_activity_param == 'inactive_past_week':
+        elif learner_activity_param == "inactive_past_week":
             queryset = self.filter_inactive_learners(queryset, past_week_date)
-        elif learner_activity_param == 'inactive_past_month':
+        elif learner_activity_param == "inactive_past_month":
             queryset = self.filter_inactive_learners(queryset, past_month_date)
 
-        search_email = query_filters.get('search')
+        search_email = query_filters.get("search")
         if search_email:
             queryset = queryset.filter(user_email__icontains=search_email)
-        search_all_param = query_filters.get('search_all')
+        search_all_param = query_filters.get("search_all")
         if search_all_param:
             queryset = queryset.filter(
-                Q(user_email__icontains=search_all_param)
-                | Q(course_title__icontains=search_all_param)
+                Q(user_email__icontains=search_all_param) | Q(course_title__icontains=search_all_param)
             )
-        search_course = query_filters.get('search_course')
+        search_course = query_filters.get("search_course")
         if search_course:
             queryset = queryset.filter(course_title__icontains=search_course)
-        search_start_date = query_filters.get('search_start_date')
+        search_start_date = query_filters.get("search_start_date")
         if search_start_date:
             queryset = queryset.filter(course_start_date=search_start_date)
 
-        budget_uuid = query_filters.get('budget_uuid')
+        budget_uuid = query_filters.get("budget_uuid")
         if budget_uuid:
             queryset = queryset.filter(budget_id=budget_uuid)
 
-        offer_id = query_filters.get('offer_id')
+        offer_id = query_filters.get("offer_id")
         if offer_id:
             queryset = self.filter_by_offer_id(queryset, offer_id)
 
-        budget_id = query_filters.get('budget_id')
+        budget_id = query_filters.get("budget_id")
         if budget_id:
             queryset = queryset.filter(budget_id=budget_id)
 
-        ignore_null_course_list_price = query_filters.get('ignore_null_course_list_price')
+        ignore_null_course_list_price = query_filters.get("ignore_null_course_list_price")
         if ignore_null_course_list_price:
             queryset = queryset.filter(course_list_price__isnull=False)
 
-        course_product_line = query_filters.get('course_product_line')
+        course_product_line = query_filters.get("course_product_line")
         if course_product_line:
             queryset = queryset.filter(course_product_line=course_product_line)
 
-        is_subsidy = query_filters.get('is_subsidy')
+        is_subsidy = query_filters.get("is_subsidy")
         if is_subsidy:
             queryset = queryset.filter(is_subsidy=is_subsidy)
 
-        group_uuid = query_filters.get('group_uuid')
+        group_uuid = query_filters.get("group_uuid")
         if group_uuid:
             queryset = self.filter_by_group_uuid(queryset, group_uuid)
 
-        search_enrollment = query_filters.get('search_enrollment')
+        search_enrollment = query_filters.get("search_enrollment")
         if search_enrollment in ("enrolled", "unenrolled"):
             queryset = self.filter_search_enrollment(queryset, search_enrollment)
 
@@ -298,9 +339,9 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
             QuerySet: The filtered queryset.
         """
         flex_group_exists = EnterpriseGroupMembership.objects.filter(
-            enterprise_customer_user_id=OuterRef('enterprise_user_id'),
+            enterprise_customer_user_id=OuterRef("enterprise_user_id"),
             enterprise_group_uuid=group_uuid,
-            group_type='flex'
+            group_type="flex",
         )
 
         # First, filter the queryset using flex_group_exists
@@ -313,10 +354,10 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
                 enterprise_user_id__in=EnterpriseApiClient.get_enterprise_user_ids_in_group(group_uuid)
             )
         except EnterpriseApiClientException as error:
-            LOGGER.warning(f'No group learners found for group: {group_uuid}')
-            raise NotFound(f'No learners found for group: {group_uuid}') from error
+            LOGGER.warning(f"No group learners found for group: {group_uuid}")
+            raise NotFound(f"No learners found for group: {group_uuid}") from error
         except Exception as e:  # pylint: disable=broad-exception-caught
-            LOGGER.error('Failed to fetch group learners from API: %s', e)
+            LOGGER.error("Failed to fetch group learners from API: %s", e)
             return queryset.none()  # API call failed or unexpected error, return an empty queryset
 
     def filter_by_offer_id(self, queryset, offer_id):
@@ -334,7 +375,7 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         try:
             offer_id_uuid_obj = UUID(offer_id, version=4)
             offer_id = str(offer_id_uuid_obj)
-            offer_id = offer_id.replace('-', '')
+            offer_id = offer_id.replace("-", "")
         except ValueError:
             pass
 
@@ -354,7 +395,7 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         """
         Filters queryset to include enrollments with a distinct `enterprise_user_id`.
         """
-        return queryset.values_list('enterprise_user_id', flat=True).distinct()
+        return queryset.values_list("enterprise_user_id", flat=True).distinct()
 
     def filter_active_learners(self, queryset, last_activity_date):
         """
@@ -396,14 +437,14 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         """
         Returns number of enterprise users (enrolled AND not enrolled learners)
         """
-        return EnterpriseLearner.objects.filter(enterprise_customer_uuid=self.kwargs['enterprise_id'])
+        return EnterpriseLearner.objects.filter(enterprise_customer_uuid=self.kwargs["enterprise_id"])
 
     def get_max_created_date(self, queryset):
         """
         Gets the maximum created timestamp from the queryset.
         """
-        created_max = queryset.aggregate(Max('created'))
-        return created_max['created__max']
+        created_max = queryset.aggregate(Max("created"))
+        return created_max["created__max"]
 
     def filter_search_enrollment(self, queryset, status):
         """
@@ -446,14 +487,14 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         active_learners_month = self.filter_distinct_active_learners(enrollments, past_month_date)
         enterprise_users = self.filter_number_of_users()
         content = {
-            'enrolled_learners': distinct_learners.count(),
-            'active_learners': {
-                'past_week': active_learners_week.count(),
-                'past_month': active_learners_month.count(),
+            "enrolled_learners": distinct_learners.count(),
+            "active_learners": {
+                "past_week": active_learners_week.count(),
+                "past_month": active_learners_month.count(),
             },
-            'course_completions': course_completions.count(),
-            'last_updated_date': last_updated_date,
-            'number_of_users': enterprise_users.count(),
+            "course_completions": course_completions.count(),
+            "last_updated_date": last_updated_date,
+            "number_of_users": enterprise_users.count(),
         }
         return Response(content)
 
@@ -462,57 +503,60 @@ class EnterpriseLearnerViewSet(EnterpriseViewSetMixin, viewsets.ReadOnlyModelVie
     """
     Viewset for routes related to Enterprise Learners.
     """
+
     queryset = EnterpriseLearner.objects.all()
     serializer_class = serializers.EnterpriseLearnerSerializer
     filter_backends = (filters.OrderingFilter,)
-    ordering_fields = '__all__'
-    ordering = ('user_email',)
+    ordering_fields = "__all__"
+    ordering = ("user_email",)
 
     def get_queryset(self):
         LOGGER.info("[ELV_ANALYTICS_API_V1] QueryParams: [%s]", self.request.query_params)
-        queryset = super().get_queryset().prefetch_related(
-            Prefetch(
-                'enrollments',
-                queryset=EnterpriseLearnerEnrollment.objects.filter(
-                    enterprise_customer_uuid=self.kwargs['enterprise_id']
-                )
-            ),
+        queryset = (
+            super()
+            .get_queryset()
+            .prefetch_related(
+                Prefetch(
+                    "enrollments",
+                    queryset=EnterpriseLearnerEnrollment.objects.filter(
+                        enterprise_customer_uuid=self.kwargs["enterprise_id"]
+                    ),
+                ),
+            )
         )
 
-        has_enrollments = self.request.query_params.get('has_enrollments')
-        if has_enrollments == 'true':
+        has_enrollments = self.request.query_params.get("has_enrollments")
+        if has_enrollments == "true":
             queryset = queryset.filter(enrollments__isnull=False).distinct()
-        elif has_enrollments == 'false':
+        elif has_enrollments == "false":
             queryset = queryset.filter(enrollments__isnull=True)
 
-        active_courses = self.request.query_params.get('active_courses')
-        if active_courses == 'true':
+        active_courses = self.request.query_params.get("active_courses")
+        if active_courses == "true":
             queryset = queryset.filter(
-                Q(enrollments__is_consent_granted=True),
-                enrollments__course_end_date__gte=timezone.now()
+                Q(enrollments__is_consent_granted=True), enrollments__course_end_date__gte=timezone.now()
             )
-        elif active_courses == 'false':
+        elif active_courses == "false":
             queryset = queryset.filter(
-                Q(enrollments__is_consent_granted=True),
-                enrollments__course_end_date__lte=timezone.now()
+                Q(enrollments__is_consent_granted=True), enrollments__course_end_date__lte=timezone.now()
             )
 
-        all_enrollments_passed = self.request.query_params.get('all_enrollments_passed')
-        if all_enrollments_passed == 'true':
+        all_enrollments_passed = self.request.query_params.get("all_enrollments_passed")
+        if all_enrollments_passed == "true":
             queryset = queryset.filter(enrollments__has_passed=True)
-        elif all_enrollments_passed == 'false':
+        elif all_enrollments_passed == "false":
             queryset = queryset.filter(enrollments__has_passed=False)
 
-        extra_fields = self.request.query_params.getlist('extra_fields')
-        if 'enrollment_count' in extra_fields:
+        extra_fields = self.request.query_params.getlist("extra_fields")
+        if "enrollment_count" in extra_fields:
             enrollment_subquery = (
                 EnterpriseLearnerEnrollment.objects.filter(
                     enterprise_user=OuterRef("enterprise_user_id"),
                     is_consent_granted=True,
                 )
-                .values('enterprise_user')
-                .annotate(enrollment_count=Count('pk', distinct=True))
-                .values('enrollment_count')
+                .values("enterprise_user")
+                .annotate(enrollment_count=Count("pk", distinct=True))
+                .values("enrollment_count")
             )
             queryset = queryset.annotate(
                 enrollment_count=Coalesce(
@@ -522,16 +566,16 @@ class EnterpriseLearnerViewSet(EnterpriseViewSetMixin, viewsets.ReadOnlyModelVie
             )
 
         # based on https://stackoverflow.com/questions/43770118/simple-subquery-with-outerref
-        if 'course_completion_count' in extra_fields:
+        if "course_completion_count" in extra_fields:
             enrollment_subquery = (
                 EnterpriseLearnerEnrollment.objects.filter(
                     enterprise_user=OuterRef("enterprise_user_id"),
                     has_passed=True,
                     is_consent_granted=True,
                 )
-                .values('enterprise_user')
-                .annotate(course_completion_count=Count('pk', distinct=True))
-                .values('course_completion_count')
+                .values("enterprise_user")
+                .annotate(course_completion_count=Count("pk", distinct=True))
+                .values("course_completion_count")
             )
             # Coalesce and Value used here so we don't return "null" to the
             # frontend if the count is 0
@@ -548,7 +592,7 @@ class EnterpriseLearnerViewSet(EnterpriseViewSetMixin, viewsets.ReadOnlyModelVie
         """
         List view for learner records for a given enterprise.
         """
-        users = self.get_queryset().filter(enterprise_customer_uuid=kwargs['enterprise_id'])
+        users = self.get_queryset().filter(enterprise_customer_uuid=kwargs["enterprise_id"])
 
         # do the sorting
         users = self.filter_queryset(users)
@@ -567,24 +611,30 @@ class EnterpriseLearnerCompletedCoursesViewSet(EnterpriseViewSetMixin, viewsets.
     """
     View to manage enterprise learner completed course enrollments.
     """
+
     serializer_class = serializers.LearnerCompletedCoursesSerializer
     filter_backends = (filters.OrderingFilter,)
-    ordering_fields = '__all__'
-    ordering = ('user_email',)
+    ordering_fields = "__all__"
+    ordering = ("user_email",)
 
     def get_queryset(self):
         """
         Returns number of completed courses against each learner.
         """
-        if getattr(self, 'swagger_fake_view', False):
+        if getattr(self, "swagger_fake_view", False):
             # queryset just for schema generation metadata
             # See: https://github.com/axnsan12/drf-yasg/issues/333
             return EnterpriseLearnerEnrollment.objects.none()
 
         # Get the number of completed courses against a learner.
-        enrollments = EnterpriseLearnerEnrollment.objects.filter(
-            enterprise_customer_uuid=self.kwargs['enterprise_id'],
-            has_passed=True,
-            is_consent_granted=True,  # DSC check required
-        ).values('user_email').annotate(completed_courses=Count('courserun_key')).order_by('user_email')
+        enrollments = (
+            EnterpriseLearnerEnrollment.objects.filter(
+                enterprise_customer_uuid=self.kwargs["enterprise_id"],
+                has_passed=True,
+                is_consent_granted=True,  # DSC check required
+            )
+            .values("user_email")
+            .annotate(completed_courses=Count("courserun_key"))
+            .order_by("user_email")
+        )
         return enrollments

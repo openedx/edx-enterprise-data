@@ -2,7 +2,6 @@
 Test factories.
 """
 
-
 import factory
 from faker import Factory as FakerFactory
 from faker.providers import misc
@@ -20,10 +19,11 @@ class EnterpriseDataFeatureRoleFactory(factory.django.DjangoModelFactory):
 
     Creates an instance of EnterpriseDataFeatureRole with minimal boilerplate
     """
+
     class Meta:
         model = EnterpriseDataFeatureRole
 
-    name = factory.Sequence('User Role-{}'.format)
+    name = factory.Sequence("User Role-{}".format)
     description = factory.lazy_attribute(lambda x: FAKER.text(max_nb_chars=255))  # pylint: disable=no-member
 
 
@@ -33,6 +33,7 @@ class EnterpriseDataRoleAssignmentFactory(factory.django.DjangoModelFactory):
 
     Creates an instance of EnterpriseDataRoleAssignment with minimal boilerplate
     """
+
     class Meta:
         model = EnterpriseDataRoleAssignment
 

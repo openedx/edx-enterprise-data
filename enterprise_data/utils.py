@@ -1,6 +1,7 @@
 """
 Utility functions for Enterprise Data app.
 """
+
 import hashlib
 import random
 import time
@@ -31,9 +32,9 @@ def get_cache_key(**kwargs):
     Returns:
          An MD5 encoded key uniquely identified by the key word arguments.
     """
-    key = '__'.join([f'{item}:{value}' for item, value in kwargs.items()])
+    key = "__".join([f"{item}:{value}" for item, value in kwargs.items()])
 
-    return hashlib.md5(key.encode('utf-8')).hexdigest()
+    return hashlib.md5(key.encode("utf-8")).hexdigest()
 
 
 def get_unique_id():
@@ -58,12 +59,13 @@ def timeit(func):
     """
     Measure time taken by a function.
     """
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         start = time.time()
         result = func(*args, **kwargs)
         end = time.time()
-        LOGGER.info(f'Time taken by {func.__name__}: {end - start} seconds')
+        LOGGER.info(f"Time taken by {func.__name__}: {end - start} seconds")
         return result
 
     return wrapper

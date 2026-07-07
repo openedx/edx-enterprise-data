@@ -74,6 +74,9 @@ test-base = [
     "flaky",
     "freezegun",
     "mock",
+    "paramiko",
+    "pgpy",
+    "py2neo",
     "pytest-cov",
     "pytest-django",
     "pytest>=7.0",
@@ -154,6 +157,9 @@ select = [
 ]
 ignore = [
     "E501",   # line too long (handled by formatter)
+    "DJ001",  # null=True on string fields — pre-existing model pattern
+    "DJ008",  # missing __str__ on models — pre-existing
+    "DJ012",  # model field order — pre-existing
 ]
 
 [tool.ruff.lint.isort]

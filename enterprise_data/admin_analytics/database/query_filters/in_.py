@@ -1,6 +1,7 @@
 """
 Query filter for between operation.
 """
+
 from .base import QueryFilter
 
 
@@ -26,5 +27,5 @@ class INQueryFilter(QueryFilter):
             value_str = f"({', '.join(repr(v) for v in self.values)})"
             return f"{self.column} IN {value_str}"
         else:
-            placeholders = ', '.join(f"%({item})s" for item in self.values_placeholders)
+            placeholders = ", ".join(f"%({item})s" for item in self.values_placeholders)
             return f"{self.column} IN ({placeholders})"

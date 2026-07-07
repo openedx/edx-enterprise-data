@@ -9,15 +9,14 @@ import unittest
 from enterprise_reporting.utils import extract_catalog_uuids_from_reporting_config
 
 REPO_DIR = os.getcwd()
-FIXTURE_DIR = os.path.join(REPO_DIR, 'enterprise_reporting/fixtures')
+FIXTURE_DIR = os.path.join(REPO_DIR, "enterprise_reporting/fixtures")
 
 
 class TestEnterpriseClient(unittest.TestCase):
-
     def setUp(self):
         super().setUp()
 
-        json_path = os.path.join(FIXTURE_DIR, 'enterprise_customer_reporting.json')
+        json_path = os.path.join(FIXTURE_DIR, "enterprise_customer_reporting.json")
         with open(json_path) as fh:
             self.reporting_response = json.load(fh)
 
@@ -26,11 +25,11 @@ class TestEnterpriseClient(unittest.TestCase):
         _extract_catalog_uuids_from_reporting_config should return correct dict
         that includes catalog uuids
         """
-        config = self.reporting_response['results'][0]
+        config = self.reporting_response["results"][0]
         expected = {
-            'results': [
-                {'uuid': '049bea56-b6a2-4a06-b6c2-42d1b5cbb28d'},
-                {'uuid': '495321e1-4726-40d6-bbe5-3e9276f5ad78'},
+            "results": [
+                {"uuid": "049bea56-b6a2-4a06-b6c2-42d1b5cbb28d"},
+                {"uuid": "495321e1-4726-40d6-bbe5-3e9276f5ad78"},
             ]
         }
         assert extract_catalog_uuids_from_reporting_config(config) == expected

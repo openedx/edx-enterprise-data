@@ -20,11 +20,13 @@ class EdxOAuth2APIMixin:
     """
     Base API Client Mixin for accessing edX IDA API endpoints.
     """
+
     @staticmethod
     def refresh_token(func):
         """
         Use this method decorator to ensure the JWT token is refreshed when needed.
         """
+
         @wraps(func)
         def inner(self, *args, **kwargs):
             """
@@ -33,6 +35,7 @@ class EdxOAuth2APIMixin:
             if self.token_expired():
                 self.connect()
             return func(self, *args, **kwargs)
+
         return inner
 
 
@@ -41,10 +44,10 @@ class EdxOAuth2APIClient(EdxOAuth2APIMixin):
     Base API Client for accessing edX IDA API endpoints.
     """
 
-    LMS_ROOT_URL = os.getenv('LMS_ROOT_URL', default='')
-    ENTERPRISE_CATALOG_ROOT_URL = os.getenv('ENTERPRISE_CATALOG_ROOT_URL', default='https://enterprise-catalog.edx.org')
-    LMS_OAUTH_HOST = os.getenv('LMS_OAUTH_HOST', default='')
-    API_BASE_URL = LMS_ROOT_URL + '/api/'
+    LMS_ROOT_URL = os.getenv("LMS_ROOT_URL", default="")
+    ENTERPRISE_CATALOG_ROOT_URL = os.getenv("ENTERPRISE_CATALOG_ROOT_URL", default="https://enterprise-catalog.edx.org")
+    LMS_OAUTH_HOST = os.getenv("LMS_OAUTH_HOST", default="")
+    API_BASE_URL = LMS_ROOT_URL + "/api/"
     ACCESS_TOKEN_EXPIRY_THRESHOLD_IN_SECONDS = 60
 
     DEFAULT_VALUE_SAFEGUARD = object()
@@ -53,8 +56,8 @@ class EdxOAuth2APIClient(EdxOAuth2APIMixin):
         """
         Connect to the REST API.
         """
-        self.client_id = client_id or os.environ.get('LMS_OAUTH_KEY')
-        self.client_secret = client_secret or os.environ.get('LMS_OAUTH_SECRET')
+        self.client_id = client_id or os.environ.get("LMS_OAUTH_KEY")
+        self.client_secret = client_secret or os.environ.get("LMS_OAUTH_SECRET")
         self.expires_at = datetime.utcnow()
         self.access_token = None
 
@@ -63,7 +66,7 @@ class EdxOAuth2APIClient(EdxOAuth2APIMixin):
         """
         Connect to the REST API, authenticating with an access token retrieved with our client credentials.
         """
-        url = urljoin(f'{self.LMS_OAUTH_HOST}/', 'oauth2/access_token')
+        url = urljoin(f"{self.LMS_OAUTH_HOST}/", "oauth2/access_token")
         self.access_token, self.expires_at = get_oauth_access_token(url, self.client_id, self.client_secret)
 
     def token_expired(self):
@@ -74,24 +77,20 @@ class EdxOAuth2APIClient(EdxOAuth2APIMixin):
 
     @EdxOAuth2APIMixin.refresh_token
     def _requests(self, url, querystring):
-        headers = {'Authorization': "JWT {}".format(self.access_token)}
-        response = requests.get(
-            url,
-            headers=headers,
-            params=querystring
-        )
+        headers = {"Authorization": f"JWT {self.access_token}"}
+        response = requests.get(url, headers=headers, params=querystring)
         response.raise_for_status()
         data = response.json()
         return data
 
     def _load_data(
-            self,
-            resource,
-            detail_resource=None,
-            resource_id=None,
-            querystring=None,
-            should_traverse_pagination=False,
-            default=DEFAULT_VALUE_SAFEGUARD,
+        self,
+        resource,
+        detail_resource=None,
+        resource_id=None,
+        querystring=None,
+        should_traverse_pagination=False,
+        default=DEFAULT_VALUE_SAFEGUARD,
     ):
         """
         Loads a response from a call to one of the API endpoints.
@@ -111,20 +110,20 @@ class EdxOAuth2APIClient(EdxOAuth2APIMixin):
         querystring = querystring or {}
         path = resource
         if resource_id:
-            path += '/' + resource_id
+            path += "/" + resource_id
         if detail_resource:
-            path += '/' + detail_resource
+            path += "/" + detail_resource
 
-        url = urljoin(f'{self.API_BASE_URL}/', path)
+        url = urljoin(f"{self.API_BASE_URL}/", path)
         data = self._requests(url, querystring)
 
         if should_traverse_pagination:
             results = self.traverse_pagination(data, url)
             data = {
-                'count': len(results),
-                'next': None,
-                'previous': None,
-                'results': results,
+                "count": len(results),
+                "next": None,
+                "previous": None,
+                "results": results,
             }
 
         return data or default_val
@@ -143,14 +142,14 @@ class EdxOAuth2APIClient(EdxOAuth2APIMixin):
         Returns:
             list of dict.
         """
-        results = data.get('results', [])
+        results = data.get("results", [])
 
-        next_page = data.get('next')
+        next_page = data.get("next")
         while next_page:
             querystring = parse_qs(urlparse(next_page).query, True)
             request_data = self._requests(url, querystring)
 
-            results += request_data.get('results', [])
-            next_page = request_data.get('next')
+            results += request_data.get("results", [])
+            next_page = request_data.get("next")
 
         return results

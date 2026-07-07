@@ -4,10 +4,9 @@ Filters for enterprise data views.
 
 from logging import getLogger
 
-from rest_framework import filters
-
 from django.conf import settings
 from django.db.models import Q
+from rest_framework import filters
 
 from enterprise_data.clients import EnterpriseApiClient
 from enterprise_data.constants import ANALYTICS_API_VERSION_0, ANALYTICS_API_VERSION_1, ANALYTICS_API_VERSION_ATTR
@@ -54,11 +53,11 @@ class ConsentGrantedFilterBackend(filters.BaseFilterBackend, FiltersMixin):
         """
         Filter a queryset for results where consent has been granted.
         """
-        enterprise_uuid = view.kwargs['enterprise_id']
+        enterprise_uuid = view.kwargs["enterprise_id"]
         enterprise_customer = self.get_enterprise_customer(enterprise_uuid)
         # if the enterprise is configured for "externally managed" data sharing consent,
         # ignore the consent_granted column.
-        if enterprise_customer.get('enforce_data_sharing_consent') != 'externally_managed':
+        if enterprise_customer.get("enforce_data_sharing_consent") != "externally_managed":
             filter_kwargs = {view.CONSENT_GRANTED_FILTER: True}
             queryset = queryset.filter(**filter_kwargs)
         return queryset
@@ -78,26 +77,26 @@ class AuditEnrollmentsFilterBackend(filters.BaseFilterBackend, FiltersMixin):
         Determine if audit enrollments should be excluded.
         """
         # this will be passed from admin-portal to avoid api call to lms
-        audit_enrollments = view.request.query_params.get('audit_enrollments')
+        audit_enrollments = view.request.query_params.get("audit_enrollments")
         if audit_enrollments:
-            return audit_enrollments == 'false'
+            return audit_enrollments == "false"
 
-        enterprise_uuid = view.kwargs['enterprise_id']
+        enterprise_uuid = view.kwargs["enterprise_id"]
         enterprise_customer = self.get_enterprise_customer(enterprise_uuid)
-        return enterprise_customer.get('enable_audit_data_reporting') is False
+        return enterprise_customer.get("enable_audit_data_reporting") is False
 
     def filter_queryset(self, request, queryset, view):
         """
         Filter out queryset for results where enrollment mode is `audit`.
         """
         if self.exclude_audit_enrollments(view):
-            enterprise_uuid = view.kwargs['enterprise_id']
-            LOGGER.info(f'[AuditEnrollmentsFilterBackend] excluding audit enrollments for: {enterprise_uuid}')
+            enterprise_uuid = view.kwargs["enterprise_id"]
+            LOGGER.info(f"[AuditEnrollmentsFilterBackend] excluding audit enrollments for: {enterprise_uuid}")
             # Filter out enrollments that have audit mode and do not have a coupon code or an offer.
             filter_query = {
-                view.ENROLLMENT_MODE_FILTER: 'audit',
+                view.ENROLLMENT_MODE_FILTER: "audit",
                 view.COUPON_CODE_FILTER: None,
-                view.OFFER_FILTER: None
+                view.OFFER_FILTER: None,
             }
             queryset = queryset.exclude(**filter_query)
 
@@ -115,16 +114,18 @@ class AuditUsersEnrollmentFilterBackend(filters.BaseFilterBackend, FiltersMixin)
 
         If `enable_audit_data_reporting` is not enabled then it will exclude the Users with 'audit' mode enrollment.
         """
-        enterprise_uuid = view.kwargs['enterprise_id']
+        enterprise_uuid = view.kwargs["enterprise_id"]
         enterprise_customer = self.get_enterprise_customer(enterprise_uuid)
 
-        enable_audit_data_reporting = enterprise_customer.get('enable_audit_data_reporting')
+        enable_audit_data_reporting = enterprise_customer.get("enable_audit_data_reporting")
 
         version = getattr(view, ANALYTICS_API_VERSION_ATTR)
 
         if version == ANALYTICS_API_VERSION_0:
-            queryset = queryset if enable_audit_data_reporting else queryset.filter(
-                ~Q(enrollments__user_current_enrollment_mode='audit')
+            queryset = (
+                queryset
+                if enable_audit_data_reporting
+                else queryset.filter(~Q(enrollments__user_current_enrollment_mode="audit"))
             )
         elif version == ANALYTICS_API_VERSION_1:
             if not enable_audit_data_reporting:
@@ -132,16 +133,13 @@ class AuditUsersEnrollmentFilterBackend(filters.BaseFilterBackend, FiltersMixin)
                     enterprise_customer_uuid=enterprise_uuid,
                     enterprise_user_id__isnull=False,
                     user_current_enrollment_mode="audit",
-                ).values_list(
-                    'enterprise_user_id',
-                    flat=True
-                )
+                ).values_list("enterprise_user_id", flat=True)
                 audit_enrollments_enterprise_user_ids = list(audit_enrollments_enterprise_user_ids)
                 LOGGER.info(
                     "[ELV_ANALYTICS_API_V1] Enterprise: [%s], AuditDataReporting: [%s], AuditEnrollments: [%s]",
                     enterprise_uuid,
                     enable_audit_data_reporting,
-                    len(audit_enrollments_enterprise_user_ids)
+                    len(audit_enrollments_enterprise_user_ids),
                 )
                 queryset = queryset.exclude(enterprise_user_id__in=audit_enrollments_enterprise_user_ids)
 

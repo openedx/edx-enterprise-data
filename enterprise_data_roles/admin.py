@@ -2,9 +2,8 @@
 Django admin integration for enterprise-data.
 """
 
-from edx_rbac.admin import UserRoleAssignmentAdmin, UserRoleAssignmentAdminForm
-
 from django.contrib import admin
+from edx_rbac.admin import UserRoleAssignmentAdmin, UserRoleAssignmentAdminForm
 
 from enterprise_data_roles.models import EnterpriseDataRoleAssignment
 
@@ -36,5 +35,5 @@ class EnterpriseDataRoleAssignmentAdmin(UserRoleAssignmentAdmin):
 
         model = EnterpriseDataRoleAssignment
 
-    fields = ('user', 'role', 'enterprise_id')
+    fields = ("user", "role", "enterprise_id")
     form = EnterpriseDataRoleAssignmentAdminForm

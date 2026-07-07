@@ -1,11 +1,11 @@
 """
 Tests for create_enterprise_user management command
 """
+
 from unittest import TestCase, mock
 
-from pytest import mark
-
 from django.core.management import call_command
+from pytest import mark
 
 from enterprise_data.models import EnterpriseUser
 from enterprise_data.tests.test_utils import EnterpriseUserFactory
@@ -13,11 +13,11 @@ from enterprise_data.tests.test_utils import EnterpriseUserFactory
 
 @mark.django_db
 class TestCreateEnterpriseUserCommand(TestCase):
-    """ test class here """
+    """test class here"""
 
     def setUp(self):
         super().setUp()
-        self.uuid = 'a'*32
+        self.uuid = "a" * 32
 
     def test_create_enterpriseuser(self):
         """
@@ -26,7 +26,7 @@ class TestCreateEnterpriseUserCommand(TestCase):
         assert EnterpriseUser.objects.count() == 0
 
         args = [self.uuid]
-        call_command('create_enterprise_user', *args)
+        call_command("create_enterprise_user", *args)
 
         assert EnterpriseUser.objects.count() == 1
         assert EnterpriseUser.objects.filter(enterprise_id=args[0]).count() == 1
@@ -39,9 +39,9 @@ class TestCreateEnterpriseUserCommand(TestCase):
         assert EnterpriseUser.objects.count() == 1
 
         args = [self.uuid]
-        with mock.patch('enterprise_data.tests.test_utils.EnterpriseUserFactory') as mock_factory:
+        with mock.patch("enterprise_data.tests.test_utils.EnterpriseUserFactory") as mock_factory:
             mock_factory.side_effect = [Exception]
-            with self.assertRaises(Exception):
-                call_command('create_enterprise_user', *args)
+            with self.assertRaises(Exception):  # noqa: B017
+                call_command("create_enterprise_user", *args)
 
         assert EnterpriseUser.objects.count() == 1

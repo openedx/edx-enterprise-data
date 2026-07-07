@@ -2,10 +2,8 @@
 Database models for enterprise data.
 """
 
-
-from edx_rbac.models import UserRole, UserRoleAssignment
-
 from django.db import models
+from edx_rbac.models import UserRole, UserRoleAssignment
 
 
 class EnterpriseDataFeatureRole(UserRole):
@@ -36,13 +34,13 @@ class EnterpriseDataRoleAssignment(UserRoleAssignment):
     """
 
     role_class = EnterpriseDataFeatureRole
-    enterprise_id = models.UUIDField(blank=True, null=True, verbose_name='Enterprise Customer UUID')
+    enterprise_id = models.UUIDField(blank=True, null=True, verbose_name="Enterprise Customer UUID")
 
     def get_context(self):
         """
         Return the enterprise customer id or `*` if the user has access to all resources.
         """
-        enterprise_id = '*'
+        enterprise_id = "*"
         if self.enterprise_id:
             # converting the UUID('ee5e6b3a-069a-4947-bb8d-d2dbc323396c') to 'ee5e6b3a-069a-4947-bb8d-d2dbc323396c'
             enterprise_id = str(self.enterprise_id)
@@ -53,10 +51,7 @@ class EnterpriseDataRoleAssignment(UserRoleAssignment):
         """
         Return human-readable string representation.
         """
-        return "EnterpriseDataRoleAssignment(name={name}, user={user})".format(
-            name=self.role.name,  # pylint: disable=no-member
-            user=self.user.id,
-        )
+        return f"EnterpriseDataRoleAssignment(name={self.role.name}, user={self.user.id})"  # pylint: disable=no-member
 
     def __repr__(self):
         """

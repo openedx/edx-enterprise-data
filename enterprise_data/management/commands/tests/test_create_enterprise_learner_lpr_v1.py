@@ -1,11 +1,11 @@
 """
 Tests for create_enterprise_learner_lpr_v1 management command
 """
+
 from unittest import TestCase, mock
 
-from pytest import mark
-
 from django.core.management import call_command
+from pytest import mark
 
 from enterprise_data.models import EnterpriseLearner
 from enterprise_data.tests.test_utils import EnterpriseLearnerFactory
@@ -19,7 +19,7 @@ class TestCreateEnterpriseLearnerCommand(TestCase):
 
     def setUp(self):
         super().setUp()
-        self.uuid = 'a'*32
+        self.uuid = "a" * 32
 
     def test_create_enterprise_learner(self):
         """
@@ -28,7 +28,7 @@ class TestCreateEnterpriseLearnerCommand(TestCase):
         assert EnterpriseLearner.objects.count() == 0
 
         args = [self.uuid]
-        call_command('create_enterprise_learner_lpr_v1', *args)
+        call_command("create_enterprise_learner_lpr_v1", *args)
 
         assert EnterpriseLearner.objects.count() == 1
         assert EnterpriseLearner.objects.filter(enterprise_customer_uuid=args[0]).count() == 1
@@ -41,9 +41,9 @@ class TestCreateEnterpriseLearnerCommand(TestCase):
         assert EnterpriseLearner.objects.count() == 1
 
         args = [self.uuid]
-        with mock.patch('enterprise_data.tests.test_utils.EnterpriseLearnerFactory') as mock_factory:
+        with mock.patch("enterprise_data.tests.test_utils.EnterpriseLearnerFactory") as mock_factory:
             mock_factory.side_effect = [Exception]
-            with self.assertRaises(Exception):
-                call_command('create_enterprise_learner_lpr_v1', *args)
+            with self.assertRaises(Exception):  # noqa: B017
+                call_command("create_enterprise_learner_lpr_v1", *args)
 
         assert EnterpriseLearner.objects.count() == 1

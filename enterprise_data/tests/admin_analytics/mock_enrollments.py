@@ -69,7 +69,7 @@ ENROLLMENTS = [
         "cert_awarded": 0,
         "date_certificate_created_raw": None,
         "passed_date_raw": None,
-        "passed_date": '2022-08-24',
+        "passed_date": "2022-08-24",
         "has_passed": 0,
         "enterprise_user_id": 1,
     },

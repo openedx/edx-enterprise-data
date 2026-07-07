@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('enterprise_data', '0031_auto_20230615_0705'),
+        ("enterprise_data", "0031_auto_20230615_0705"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='enterpriseoffer',
-            name='amount_offer_spent_exec_ed',
+            model_name="enterpriseoffer",
+            name="amount_offer_spent_exec_ed",
             field=models.FloatField(null=True),
         ),
         migrations.AddField(
-            model_name='enterpriseoffer',
-            name='amount_offer_spent_ocm',
+            model_name="enterpriseoffer",
+            name="amount_offer_spent_ocm",
             field=models.FloatField(null=True),
         ),
     ]

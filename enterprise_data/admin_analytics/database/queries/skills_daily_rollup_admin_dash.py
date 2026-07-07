@@ -1,6 +1,7 @@
 """
 Module containing queries for the skills_daily_rollup_admin_dash table.
 """
+
 from ..query_filters import QueryFilters
 
 
@@ -8,6 +9,7 @@ class SkillsDailyRollupAdminDashQueries:
     """
     Queries related to the skills_daily_rollup_admin_dash table.
     """
+
     @staticmethod
     def get_top_skills(query_filters: QueryFilters):
         """
@@ -169,10 +171,7 @@ class SkillsDailyRollupAdminDashQueries:
         """
 
     @staticmethod
-    def get_upskilled_learners_count(
-        skills_query_filters: QueryFilters,
-        enrollment_query_filters: QueryFilters
-    ) -> str:
+    def get_upskilled_learners_count(skills_query_filters: QueryFilters, enrollment_query_filters: QueryFilters) -> str:
         """
         Get the query to fetch the count of upskilled learners for an enterprise customer.
         """
@@ -213,8 +212,7 @@ class SkillsDailyRollupAdminDashQueries:
 
     @staticmethod
     def get_new_skills_learned_count(
-        historical_skills_filters: QueryFilters,
-        current_skills_filters: QueryFilters
+        historical_skills_filters: QueryFilters, current_skills_filters: QueryFilters
     ) -> str:
         """
         Get the query to fetch the count of new skills learned for an enterprise customer.

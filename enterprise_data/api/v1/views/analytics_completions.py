@@ -5,13 +5,12 @@ Views for enterprise admin completions analytics.
 from datetime import date
 from logging import getLogger
 
+from django.http import StreamingHttpResponse
 from edx_rbac.decorators import permission_required
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
-
-from django.http import StreamingHttpResponse
 
 from enterprise_data.admin_analytics.constants import ResponseType
 from enterprise_data.admin_analytics.database.tables import FactEnrollmentAdminDashTable
@@ -31,16 +30,17 @@ class AdvanceAnalyticsCompletionsView(AnalyticsPaginationMixin, ViewSet):
     1. `enterprise_data_api_v1.enterprise-learner-completion-list`: Get individual completion data.
     2. `enterprise_data_api_v1.enterprise-learner-completion-stats`: Get completion stats data.
     """
-    authentication_classes = (JwtAuthentication,)
-    http_method_names = ('get', )
 
-    @permission_required('can_access_enterprise', fn=lambda request, enterprise_uuid: enterprise_uuid)
+    authentication_classes = (JwtAuthentication,)
+    http_method_names = ("get",)
+
+    @permission_required("can_access_enterprise", fn=lambda request, enterprise_uuid: enterprise_uuid)
     def list(self, request, enterprise_uuid):
         """
         Get individual completions data for the enterprise.
         """
         # Remove hyphens from the UUID
-        enterprise_uuid = enterprise_uuid.replace('-', '')
+        enterprise_uuid = enterprise_uuid.replace("-", "")
 
         serializer = AdvanceAnalyticsQueryParamSerializer(data=request.GET)
         serializer.is_valid(raise_exception=True)
@@ -49,14 +49,14 @@ class AdvanceAnalyticsCompletionsView(AnalyticsPaginationMixin, ViewSet):
         )
 
         # get values from query params or use default values
-        start_date = serializer.data.get('start_date', min_enrollment_date)
-        end_date = serializer.data.get('end_date', date.today())
-        group_uuid = serializer.data.get('group_uuid')
-        course_type = serializer.data.get('course_type')
-        course_key = serializer.data.get('course_key')
-        budget_uuid = serializer.data.get('budget_uuid')
-        page = serializer.data.get('page', 1)
-        page_size = serializer.data.get('page_size', 100)
+        start_date = serializer.data.get("start_date", min_enrollment_date)
+        end_date = serializer.data.get("end_date", date.today())
+        group_uuid = serializer.data.get("group_uuid")
+        course_type = serializer.data.get("course_type")
+        course_key = serializer.data.get("course_key")
+        budget_uuid = serializer.data.get("budget_uuid")
+        page = serializer.data.get("page", 1)
+        page_size = serializer.data.get("page_size", 100)
         completions = FactEnrollmentAdminDashTable().get_all_completions(
             enterprise_customer_uuid=enterprise_uuid,
             group_uuid=group_uuid,
@@ -77,7 +77,7 @@ class AdvanceAnalyticsCompletionsView(AnalyticsPaginationMixin, ViewSet):
             course_key=course_key,
             budget_uuid=budget_uuid,
         )
-        response_type = request.query_params.get('response_type', ResponseType.JSON.value)
+        response_type = request.query_params.get("response_type", ResponseType.JSON.value)
 
         LOGGER.info(
             "Individual completions data requested for enterprise [%s] from [%s] to [%s]",
@@ -90,9 +90,18 @@ class AdvanceAnalyticsCompletionsView(AnalyticsPaginationMixin, ViewSet):
             filename = f"""Individual Completions, {start_date} - {end_date}.csv"""
 
             return StreamingHttpResponse(
-                IndividualCompletionsCSVRenderer().render(self._stream_serialized_data(
-                    enterprise_uuid, group_uuid, start_date, end_date, total_count, course_type, course_key, budget_uuid
-                )),
+                IndividualCompletionsCSVRenderer().render(
+                    self._stream_serialized_data(
+                        enterprise_uuid,
+                        group_uuid,
+                        start_date,
+                        end_date,
+                        total_count,
+                        course_type,
+                        course_key,
+                        budget_uuid,
+                    )
+                ),
                 content_type="text/csv",
                 headers={"Content-Disposition": f'attachment; filename="{filename}"'},
             )
@@ -115,7 +124,7 @@ class AdvanceAnalyticsCompletionsView(AnalyticsPaginationMixin, ViewSet):
         course_type=None,
         course_key=None,
         budget_uuid=None,
-        page_size=50000
+        page_size=50000,
     ):
         """
         Stream the serialized data.
@@ -136,8 +145,8 @@ class AdvanceAnalyticsCompletionsView(AnalyticsPaginationMixin, ViewSet):
             yield from completions
             offset += page_size
 
-    @permission_required('can_access_enterprise', fn=lambda request, enterprise_uuid: enterprise_uuid)
-    @action(detail=False, methods=['get'], name='Enterprise completions data for charts', url_path='stats')
+    @permission_required("can_access_enterprise", fn=lambda request, enterprise_uuid: enterprise_uuid)
+    @action(detail=False, methods=["get"], name="Enterprise completions data for charts", url_path="stats")
     def stats(self, request, enterprise_uuid):
         """
         Get data to populate enterprise completion charts.
@@ -148,7 +157,7 @@ class AdvanceAnalyticsCompletionsView(AnalyticsPaginationMixin, ViewSet):
         3. `top_subjects_by_completions`: This will show the top subjects by completions.
         """
         # Remove hyphens from the UUID
-        enterprise_uuid = enterprise_uuid.replace('-', '')
+        enterprise_uuid = enterprise_uuid.replace("-", "")
 
         serializer = AdvanceAnalyticsQueryParamSerializer(data=request.GET)
         serializer.is_valid(raise_exception=True)
@@ -157,22 +166,22 @@ class AdvanceAnalyticsCompletionsView(AnalyticsPaginationMixin, ViewSet):
             enterprise_uuid,
         )
         # get values from query params or use default
-        start_date = serializer.data.get('start_date', min_enrollment_date)
-        end_date = serializer.data.get('end_date', date.today())
-        group_uuid = serializer.data.get('group_uuid')
-        course_type = serializer.data.get('course_type')
-        course_key = serializer.data.get('course_key')
-        budget_uuid = serializer.data.get('budget_uuid')
+        start_date = serializer.data.get("start_date", min_enrollment_date)
+        end_date = serializer.data.get("end_date", date.today())
+        group_uuid = serializer.data.get("group_uuid")
+        course_type = serializer.data.get("course_type")
+        course_key = serializer.data.get("course_key")
+        budget_uuid = serializer.data.get("budget_uuid")
 
-        with timer('construct_completion_all_stats'):
+        with timer("construct_completion_all_stats"):
             data = {
-                'completions_over_time': FactEnrollmentAdminDashTable().get_completions_time_series_data(
+                "completions_over_time": FactEnrollmentAdminDashTable().get_completions_time_series_data(
                     enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
                 ),
-                'top_courses_by_completions': FactEnrollmentAdminDashTable().get_top_courses_by_completions(
+                "top_courses_by_completions": FactEnrollmentAdminDashTable().get_top_courses_by_completions(
                     enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
                 ),
-                'top_subjects_by_completions': FactEnrollmentAdminDashTable().get_top_subjects_by_completions(
+                "top_subjects_by_completions": FactEnrollmentAdminDashTable().get_top_subjects_by_completions(
                     enterprise_uuid, group_uuid, start_date, end_date, course_type, course_key, budget_uuid
                 ),
             }

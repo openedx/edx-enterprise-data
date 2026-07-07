@@ -10,4 +10,4 @@ class EnterpriseDataRolesConfig(AppConfig):
     Configuration for the Enterprise Data Roles Django application.
     """
 
-    name = 'enterprise_data_roles'
+    name = "enterprise_data_roles"

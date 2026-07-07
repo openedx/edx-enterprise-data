@@ -2,7 +2,6 @@
 Client for connecting to a Vertica database.
 """
 
-
 import datetime
 import os
 from logging import getLogger
@@ -23,10 +22,10 @@ class VerticaClient:
         If there are none configured, throw an exception.
         """
         self.connection_info = {
-            'host': host or os.environ.get('VERTICA_HOST'),
-            'user': username or os.environ.get('VERTICA_USERNAME'),
-            'password': password or os.environ.get('VERTICA_PASSWORD'),
-            'database': 'warehouse',
+            "host": host or os.environ.get("VERTICA_HOST"),
+            "user": username or os.environ.get("VERTICA_USERNAME"),
+            "password": password or os.environ.get("VERTICA_PASSWORD"),
+            "database": "warehouse",
         }
 
         self.connection = None
@@ -54,7 +53,7 @@ class VerticaClient:
             formatted_row = []
             for value in row:
                 if isinstance(value, datetime.datetime):
-                    formatted_row.append(value.strftime('%Y-%m-%d %H:%M:%S'))
+                    formatted_row.append(value.strftime("%Y-%m-%d %H:%M:%S"))
                 else:
                     formatted_row.append(value)
             yield formatted_row

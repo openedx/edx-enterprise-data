@@ -5,15 +5,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('enterprise_data_roles', '0003_add_role_based_access_control_switch'),
+        ("enterprise_data_roles", "0003_add_role_based_access_control_switch"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='enterprisedataroleassignment',
-            name='enterprise_id',
-            field=models.UUIDField(blank=True, null=True, verbose_name='Enterprise Customer UUID'),
+            model_name="enterprisedataroleassignment",
+            name="enterprise_id",
+            field=models.UUIDField(blank=True, null=True, verbose_name="Enterprise Customer UUID"),
         ),
     ]

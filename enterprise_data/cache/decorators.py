@@ -1,6 +1,7 @@
 """
 Decorators for caching the result of a function.
 """
+
 from functools import wraps
 from logging import getLogger
 
@@ -38,5 +39,7 @@ def cache_it(timeout=cache.DEFAULT_TIMEOUT):
             result = func(self, *args, **kwargs)
             cache.set(cache_key, result, timeout=timeout)
             return result
+
         return wrapper
+
     return inner_decorator
