@@ -77,6 +77,8 @@ test-base = [
     "paramiko",
     "pgpy",
     "py2neo",
+    "pyminizip",
+    "vertica-python",
     "pytest-cov",
     "pytest-django",
     "pytest>=7.0",

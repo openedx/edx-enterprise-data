@@ -953,6 +953,7 @@ dev = [
     { name = "pgpy" },
     { name = "pip-tools" },
     { name = "py2neo" },
+    { name = "pyminizip" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-django" },
@@ -964,6 +965,7 @@ dev = [
     { name = "tox" },
     { name = "tox-uv" },
     { name = "twine" },
+    { name = "vertica-python" },
 ]
 django42 = [
     { name = "coverage" },
@@ -979,11 +981,13 @@ django42 = [
     { name = "paramiko" },
     { name = "pgpy" },
     { name = "py2neo" },
+    { name = "pyminizip" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-django" },
     { name = "responses" },
     { name = "testfixtures" },
+    { name = "vertica-python" },
 ]
 doc = [
     { name = "coverage" },
@@ -999,6 +1003,7 @@ doc = [
     { name = "paramiko" },
     { name = "pgpy" },
     { name = "py2neo" },
+    { name = "pyminizip" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-django" },
@@ -1006,6 +1011,7 @@ doc = [
     { name = "sphinx" },
     { name = "sphinx-book-theme" },
     { name = "testfixtures" },
+    { name = "vertica-python" },
 ]
 quality = [
     { name = "edx-lint" },
@@ -1025,11 +1031,13 @@ test = [
     { name = "paramiko" },
     { name = "pgpy" },
     { name = "py2neo" },
+    { name = "pyminizip" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-django" },
     { name = "responses" },
     { name = "testfixtures" },
+    { name = "vertica-python" },
 ]
 test-base = [
     { name = "coverage" },
@@ -1042,11 +1050,13 @@ test-base = [
     { name = "paramiko" },
     { name = "pgpy" },
     { name = "py2neo" },
+    { name = "pyminizip" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-django" },
     { name = "responses" },
     { name = "testfixtures" },
+    { name = "vertica-python" },
 ]
 
 [package.metadata]
@@ -1102,6 +1112,7 @@ dev = [
     { name = "pgpy" },
     { name = "pip-tools" },
     { name = "py2neo" },
+    { name = "pyminizip" },
     { name = "pytest", specifier = ">=7.0" },
     { name = "pytest-cov" },
     { name = "pytest-django" },
@@ -1113,6 +1124,7 @@ dev = [
     { name = "tox" },
     { name = "tox-uv" },
     { name = "twine" },
+    { name = "vertica-python" },
 ]
 django42 = [
     { name = "coverage" },
@@ -1128,11 +1140,13 @@ django42 = [
     { name = "paramiko" },
     { name = "pgpy" },
     { name = "py2neo" },
+    { name = "pyminizip" },
     { name = "pytest", specifier = ">=7.0" },
     { name = "pytest-cov" },
     { name = "pytest-django" },
     { name = "responses" },
     { name = "testfixtures" },
+    { name = "vertica-python" },
 ]
 doc = [
     { name = "coverage" },
@@ -1148,6 +1162,7 @@ doc = [
     { name = "paramiko" },
     { name = "pgpy" },
     { name = "py2neo" },
+    { name = "pyminizip" },
     { name = "pytest", specifier = ">=7.0" },
     { name = "pytest-cov" },
     { name = "pytest-django" },
@@ -1155,6 +1170,7 @@ doc = [
     { name = "sphinx" },
     { name = "sphinx-book-theme" },
     { name = "testfixtures" },
+    { name = "vertica-python" },
 ]
 quality = [
     { name = "edx-lint" },
@@ -1174,11 +1190,13 @@ test = [
     { name = "paramiko" },
     { name = "pgpy" },
     { name = "py2neo" },
+    { name = "pyminizip" },
     { name = "pytest", specifier = ">=7.0" },
     { name = "pytest-cov" },
     { name = "pytest-django" },
     { name = "responses" },
     { name = "testfixtures" },
+    { name = "vertica-python" },
 ]
 test-base = [
     { name = "coverage" },
@@ -1191,11 +1209,13 @@ test-base = [
     { name = "paramiko" },
     { name = "pgpy" },
     { name = "py2neo" },
+    { name = "pyminizip" },
     { name = "pytest", specifier = ">=7.0" },
     { name = "pytest-cov" },
     { name = "pytest-django" },
     { name = "responses" },
     { name = "testfixtures" },
+    { name = "vertica-python" },
 ]
 
 [[package]]
