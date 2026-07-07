@@ -1,57 +1,42 @@
-name: Python CI
+name: CI
 
 on:
   push:
     branches: [master]
   pull_request:
-    branches:
-    - '**'
+  # Allow this workflow to be called from other workflows
+  workflow_call:
 
 jobs:
   run_tests:
-    name: Tests
-    runs-on: ${{ matrix.os }}
-    continue-on-error: true
+    name: ${{ matrix.toxenv }}
+    runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest]
-        python-version: ['3.12']
-        toxenv: [quality, data-django42, reporting-django42]
+        python-version: ["3.12"]
+        toxenv: [quality, py312-django42, py312-django52]
 
     steps:
-    - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
-    - name: setup python
-      uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
-      with:
-        python-version: ${{ matrix.python-version }}
+      - name: Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
-    - name: Install pip
-      run: pip install -r requirements/pip.txt
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: true
+          python-version: "${{ matrix.python-version }}"
 
-    - name: Set env variable
-      run: export AWS_CONFIG_FILE=/dev/null
+      - name: Install CI dependencies
+        run: uv sync --group ci
 
-    - name: check pip version
-      run: pip --version
+      - name: Run tox
+        run: uv run tox -e ${{ matrix.toxenv }}
 
-    - name: check pip-tools version
-      run: pip freeze
-
-    - name: Install Dependencies
-      run: pip install -r requirements/ci.txt
-
-    - name: Install GNU gettext
-      run: sudo apt-get install gettext
-
-    - name: Run Tests
-      env:
-        TOXENV: ${{ matrix.toxenv }}
-      run: tox
-
-    - name: Run Coverage
-      if: matrix.python-version == '3.12' && (matrix.toxenv=='django42-data' || matrix.toxenv=='django42-reporting')
-      uses: codecov/codecov-action@75cd11691c0faa626561e295848008c8a7dddffe # v5.5.4
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        flags: unittests
-        fail_ci_if_error: true
+      - name: Upload coverage to Codecov
+        if: matrix.toxenv == 'py312-django52'
+        uses: codecov/codecov-action@75cd11691c0faa626561e295848008c8a7dddffe # v5.5.4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: unittests
+          fail_ci_if_error: true

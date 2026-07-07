@@ -1,0 +1,232 @@
+[build-system]
+requires = ["setuptools>=61.0", "setuptools-scm>=8.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "edx-enterprise-data"
+dynamic = ["version"]
+description = "Enterprise Reporting"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "AGPL-3.0"
+license-files = ["LICENSE"]
+authors = [
+    {name = "edX", email = "oscm@edx.org"},
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Framework :: Django",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.2",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+]
+keywords = [
+    "Python",
+    "edx",
+    "enterprise",
+    "data",
+]
+dependencies = [
+    "Django>=4.2,<6",
+    "django-fernet-fields-v2",
+    "django-filter",
+    "django-model-utils",
+    "djangorestframework-csv",
+    "edx-django-utils",
+    "edx-drf-extensions",
+    "edx-opaque-keys",
+    "edx-rbac",
+    "edx-rest-api-client",
+    "factory_boy",
+    "mysql-connector-python<9.6",
+    "requests",
+    "rules",
+    "snowflake-connector-python",
+]
+
+[project.urls]
+Repository = "https://github.com/openedx/edx-enterprise-data"
+
+[project.optional-dependencies]
+reporting = [
+    "awscli",
+    "boto3",
+    "celery==5.3.6",
+    "cryptography",
+    "paramiko",
+    "PGPy",
+    "pyminizip",
+    "snowflake-connector-python",
+    "unicodecsv==0.14.1",
+    "vertica-python",
+]
+
+[dependency-groups]
+# Base test packages, no Django version pinned
+test-base = [
+    "coverage",
+    "ddt",
+    "edx-lint",
+    "factory_boy",
+    "flaky",
+    "freezegun",
+    "mock",
+    "pytest-cov",
+    "pytest-django",
+    "pytest>=7.0",
+    "responses",
+    "testfixtures",
+]
+# Default test group: current supported Django version
+# Update Django pin here when bumping the default; add a legacy group for older versions
+test = [
+    {include-group = "test-base"},
+    "Django>=5.2,<6.0",
+    "djangorestframework",
+    "edx-drf-extensions",
+]
+# Legacy Django 4.2 support
+django42 = [
+    {include-group = "test-base"},
+    "Django>=4.2,<5.0",
+    "djangorestframework",
+    "edx-drf-extensions",
+]
+quality = [
+    "edx-lint",
+    "ruff",
+]
+doc = [
+    {include-group = "test"},
+    "sphinx",
+    "sphinx-book-theme",
+]
+ci = [
+    "tox",
+    "tox-uv",
+]
+dev = [
+    {include-group = "test"},
+    {include-group = "quality"},
+    {include-group = "doc"},
+    {include-group = "ci"},
+    "build",
+    "diff-cover",
+    "edx-i18n-tools",
+    "pip-tools",
+    "ruff",
+    "twine",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+exclude = ["tests*", "*.tests", "*.tests.*"]
+
+[tool.setuptools.package-data]
+"*" = [
+    "conf/**/*",
+    "static/**/*",
+    "templates/**/*",
+    "translations/**/*",
+]
+
+# Ruff configuration
+# https://docs.astral.sh/ruff/configuration/
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "I",      # isort
+    "B",      # flake8-bugbear
+    "C4",     # flake8-comprehensions
+    "UP",     # pyupgrade
+    "DJ",     # flake8-django
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+]
+
+[tool.ruff.lint.isort]
+known-third-party = ["django", "rest_framework"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+# Pytest configuration
+# https://docs.pytest.org/en/stable/reference/customize.html
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "enterprise_data.settings.test"
+addopts = "--cov enterprise_reporting --cov enterprise_data --cov enterprise_data_roles --cov-report term-missing --cov-report xml"
+norecursedirs = [".git", ".tox", "docs", "requirements", "node_modules"]
+
+# Coverage configuration
+# https://coverage.readthedocs.io/en/latest/config.html
+[tool.coverage.run]
+branch = true
+source = ["enterprise_data", "enterprise_data_roles", "enterprise_reporting"]
+omit = [
+    "*/tests/*",
+    "*/migrations/*",
+    "*/__pycache__/*",
+    "*/settings.py",
+    "manage.py",
+]
+
+[tool.coverage.report]
+fail_under = 70
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+# uv configuration
+# https://docs.astral.sh/uv/reference/settings/
+[tool.uv]
+package = true
+conflicts = [
+    [
+        {group = "test"},
+        {group = "django42"},
+    ],
+]
+
+# edx-lint constraint management
+# https://github.com/openedx/edx-lint
+[tool.edx_lint]
+uv_constraints = true
+
+# constraint-dependencies is machine-managed by edx-lint — do not edit directly.
+# Run: uv run --with edx-lint edx_lint write_uv_constraints pyproject.toml
+constraint-dependencies = []
+
+# Setuptools SCM configuration
+# https://setuptools-scm.readthedocs.io/
+[tool.setuptools_scm]
+version_scheme = "only-version"
+local_scheme = "no-local-version"
+
+# Semantic Release configuration
+# https://python-semantic-release.readthedocs.io/
+[tool.semantic_release]
+# Use SETUPTOOLS_SCM_PRETEND_VERSION to set version at build time since the
+# build step happens before the repo gets tagged.
+build_command = "pip install build && SETUPTOOLS_SCM_PRETEND_VERSION=$NEW_VERSION python -m build"
