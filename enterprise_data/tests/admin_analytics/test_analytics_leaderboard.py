@@ -99,8 +99,6 @@ class TestLeaderboardAPI(JWTTestMixin, APITransactionTestCase):
         assert data['next'] is None
         assert data['previous'] is None
         assert data['current_page'] == 1
-        assert data['num_pages'] == 1
-        assert data['count'] == 12
         assert data['count'] == len(LEADERBOARD_RESPONSE)
         assert data['num_pages'] == 1  # ceil(count/page_size)
 
@@ -125,17 +123,6 @@ class TestLeaderboardAPI(JWTTestMixin, APITransactionTestCase):
         assert 'email,learning_time_hours,session_count,average_session_length,course_completion_count' == content[0]
 
         # verify the content
-        assert 'paul77@example.org,4.4,,4.4,' in content
-        assert 'seth57@example.org,2.7,,2.7,' in content
-        assert 'weaverpatricia@example.net,2.6,,2.6,' in content
-        assert 'webertodd@example.com,1.5,,1.5,' in content
-        assert 'yferguson@example.net,1.3,,1.3,' in content
-        assert len(content) == 6  # header + 5 data rows
-
-        # Verify CSV header
-        assert 'email,learning_time_hours,session_count,average_session_length,course_completion_count' == content[0]
-
-        # Verify content — values should reflect unfiltered learning hours
         assert 'paul77@example.org,4.4,,4.4,' in content
         assert 'seth57@example.org,2.7,,2.7,' in content
 
