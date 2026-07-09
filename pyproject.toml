@@ -121,6 +121,9 @@ version_scheme = "only-version"
 local_scheme = "no-local-version"
 fallback_version = "0.0.0.dev0"
 
+[tool.semantic_release]
+build_command = "pip install build && SETUPTOOLS_SCM_PRETEND_VERSION=$NEW_VERSION python -m build"
+
 [tool.uv]
 #  DO NOT EDIT constraint-dependencies DIRECTLY.
 #  This list is managed by `edx_lint write_uv_constraints`
