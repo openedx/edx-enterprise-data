@@ -6,6 +6,7 @@ on:
   pull_request:
     branches:
     - '**'
+  workflow_call:
 
 jobs:
   run_tests:
@@ -25,20 +26,14 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install pip
-      run: pip install -r requirements/pip.txt
-
     - name: Set env variable
       run: export AWS_CONFIG_FILE=/dev/null
 
-    - name: check pip version
-      run: pip --version
-
-    - name: check pip-tools version
-      run: pip freeze
+    - name: Install uv
+      uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
 
     - name: Install Dependencies
-      run: pip install -r requirements/ci.txt
+      run: uv sync --group ci
 
     - name: Install GNU gettext
       run: sudo apt-get install gettext
@@ -46,7 +41,7 @@ jobs:
     - name: Run Tests
       env:
         TOXENV: ${{ matrix.toxenv }}
-      run: tox
+      run: uv run tox
 
     - name: Run Coverage
       if: matrix.python-version == '3.12' && (matrix.toxenv=='django42-data' || matrix.toxenv=='django42-reporting')

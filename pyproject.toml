@@ -56,6 +56,56 @@ reporting = [
 Homepage = "https://github.com/openedx/edx-enterprise-data"
 Repository = "https://github.com/openedx/edx-enterprise-data"
 
+[dependency-groups]
+test-base = [
+    "ddt",
+    "django-model-utils",
+    "factory_boy",
+    "freezegun",
+    "mock",
+    "pytest-cov",
+    "pytest-django",
+    "responses",
+    "testfixtures",
+    "flaky",
+]
+test = [
+    {include-group = "test-base"},
+    "edx-enterprise-data[reporting]",
+    "djangorestframework",
+]
+test-reporting = [
+    "edx-enterprise-data[reporting]",
+    "responses",
+    "tox",
+    "pytest==8.0.2",
+    "ddt==1.1.2",
+    "mock==2.0.0",
+    "pytest-cov==4.1.0",
+]
+quality = [
+    {include-group = "test"},
+    "edx-lint",
+    "isort",
+    "pycodestyle",
+    "pydocstyle",
+    "testfixtures",
+]
+ci = [
+    "coverage",
+    "tox",
+    "tox-uv",
+]
+dev = [
+    {include-group = "quality"},
+    {include-group = "test-reporting"},
+    {include-group = "ci"},
+    "diff-cover",
+    "edx-i18n-tools",
+    "twine",
+    "wheel",
+]
+
 [tool.setuptools]
 include-package-data = true
 
@@ -70,6 +120,28 @@ exclude = ["*tests*"]
 version_scheme = "only-version"
 local_scheme = "no-local-version"
 fallback_version = "0.0.0.dev0"
+
+[tool.uv]
+#  DO NOT EDIT constraint-dependencies DIRECTLY.
+#  This list is managed by `edx_lint write_uv_constraints`
+#  and will be overwritten the next time `make upgrade` is run.
+#  - GLOBAL constraints: edit edx_lint/files/common_constraints.txt
+#  - REPO-SPECIFIC constraints: edit [tool.edx_lint].uv_constraints in this file
+constraint-dependencies = [
+    "Django<5",
+    "elasticsearch<7.14.0",
+    "mysql-connector-python<9.6",
+]
+
+[tool.edx_lint]
+uv_constraints = [
+    # This package is installed in the edx-analytics-data-api service,
+    # which only supports Django<5. We're hard pinning here, too, to avoid
+    # dependency management hell of supporting both Django 4 and 5.
+    "Django<5",
+    # AED 2026-02-04: No idea why we can't find version 9.6
+    "mysql-connector-python<9.6",
+]
 
 [tool.isort]
 line_length = 120
