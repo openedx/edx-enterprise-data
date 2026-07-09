@@ -1,0 +1,86 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm>8.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "edx-enterprise-data"
+description = "Enterprise Reporting"
+requires-python = ">=3.12"
+license = "AGPL-3.0-or-later"
+authors = [
+    {name = "edX", email = "oscm@edx.org"},
+]
+classifiers = [
+    'Framework :: Django',
+    'Framework :: Django :: 4.2',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.12',
+]
+
+dynamic = ["readme", "version"]
+
+dependencies = [
+    "requests",
+    "edx-rest-api-client",
+    "edx-django-utils",
+    "edx-drf-extensions",
+    "edx-opaque-keys",
+    "Django",
+    "django-fernet-fields-v2",
+    "djangorestframework-csv",
+    "django-filter",
+    "django-model-utils",
+    "edx-rbac",
+    "rules",
+    "factory_boy",
+    "mysql-connector-python",
+    "snowflake-connector-python",
+]
+
+[project.optional-dependencies]
+reporting = [
+    "awscli",
+    "boto3",
+    "celery==5.3.6",
+    "cryptography",
+    "paramiko",
+    "PGPy",
+    "pyminizip",
+    "unicodecsv==0.14.1",
+    "vertica-python",
+    "snowflake-connector-python",
+    "py2neo @ https://github.com/overhangio/py2neo/releases/download/2021.2.3/py2neo-2021.2.3.tar.gz",
+]
+
+[project.urls]
+Homepage = "https://github.com/openedx/edx-enterprise-data"
+Repository = "https://github.com/openedx/edx-enterprise-data"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.md"], content-type = "text/markdown"}
+
+[tool.setuptools.packages.find]
+include = ["enterprise_data*", "enterprise_reporting*", "enterprise_data_roles*"]
+exclude = ["*tests*"]
+
+[tool.setuptools_scm]
+version_scheme = "only-version"
+local_scheme = "no-local-version"
+fallback_version = "0.0.0.dev0"
+
+[tool.isort]
+line_length = 120
+known_django = ["django"]
+known_djangoapp = ["model_utils"]
+known_first_party = ["enterprise_data", "enterprise_reporting", "enterprise_data_roles"]
+include_trailing_comma = true
+multi_line_output = 3
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "DJANGO", "DJANGOAPP", "EDX", "FIRSTPARTY", "LOCALFOLDER"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "enterprise_data.settings.test"
+addopts = "--cov enterprise_reporting --cov enterprise_data --cov enterprise_data_roles --cov-report term-missing --cov-report xml"
+norecursedirs = [".*", "docs", "requirements", "node_modules"]
