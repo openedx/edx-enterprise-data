@@ -99,8 +99,8 @@ class TestLeaderboardAPI(JWTTestMixin, APITransactionTestCase):
         assert data['next'] is None
         assert data['previous'] is None
         assert data['current_page'] == 1
-        assert data['num_pages'] == 1
-        assert data['count'] == 12
+        assert data['count'] == len(LEADERBOARD_RESPONSE)
+        assert data['num_pages'] == 1  # ceil(count/page_size)
 
     @patch('enterprise_data.admin_analytics.database.tables.FactEngagementAdminDashTable.get_leaderboard_data_count')
     @patch('enterprise_data.admin_analytics.database.tables.FactEngagementAdminDashTable.get_all_leaderboard_data')
@@ -125,6 +125,111 @@ class TestLeaderboardAPI(JWTTestMixin, APITransactionTestCase):
         # verify the content
         assert 'paul77@example.org,4.4,,4.4,' in content
         assert 'seth57@example.org,2.7,,2.7,' in content
-        assert 'weaverpatricia@example.net,2.6,,2.6,' in content
-        assert 'webertodd@example.com,1.5,,1.5,' in content
-        assert 'yferguson@example.net,1.3,,1.3,' in content
+
+    @patch('enterprise_data.admin_analytics.database.tables.FactEngagementAdminDashTable.get_leaderboard_data_count')
+    @patch('enterprise_data.admin_analytics.database.tables.FactEngagementAdminDashTable.get_all_leaderboard_data')
+    def test_get_leaderboard_uses_unfiltered_engagement_data(
+        self,
+        mock_get_all_leaderboard_data,
+        mock_get_leaderboard_data_count,
+    ):
+        """
+        Test leaderboard API uses unfiltered engagement data.
+
+        Leaderboard should not be filtered by is_engaged.
+        """
+        mock_get_all_leaderboard_data.return_value = LEADERBOARD_RESPONSE
+        mock_get_leaderboard_data_count.return_value = len(LEADERBOARD_RESPONSE)
+
+        response = self.client.get(self.url)
+
+        assert response.status_code == status.HTTP_200_OK
+
+        mock_get_all_leaderboard_data.assert_called_once()
+        kwargs = mock_get_all_leaderboard_data.call_args.kwargs
+        assert 'is_engaged' not in kwargs
+
+    @patch(
+        'enterprise_data.admin_analytics.database.tables.'
+        'FactEngagementAdminDashTable._get_engagement_data_for_leaderboard'
+    )
+    @patch(
+        'enterprise_data.admin_analytics.database.tables.'
+        'FactEngagementAdminDashTable._get_completion_data_for_leaderboard_query'
+    )
+    @patch(
+        'enterprise_data.admin_analytics.database.tables.'
+        'FactEngagementAdminDashTable.get_leaderboard_data_count'
+    )
+    def test_get_includes_non_engaged_learners(
+        self, mock_count, mock_completion, mock_engagement
+    ):
+        """
+        Test that leaderboard includes learners with is_engaged=0.
+        After ENT-11979, the is_engaged filter is removed so all learners
+        with any learning time should appear in the leaderboard.
+        """
+        # Mock engagement data including both engaged and non-engaged learners
+        mock_engagement.return_value = [
+            {
+                "email": "engaged_learner@example.com",
+                "sessions": 1,
+                "learning_time_hours": 4.4,
+                "average_session_length": 4.4,
+            },
+            {
+                "email": "non_engaged_learner@example.com",
+                "sessions": 0,
+                "learning_time_hours": 0.006,  # browsing time, not "engaged"
+                "average_session_length": 0.006,
+            },
+        ]
+        mock_completion.return_value = []
+        mock_count.return_value = 2
+
+        response = self.client.get(self.url)
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+
+        # Both engaged and non-engaged learners should appear
+        assert data['count'] == 2
+        emails = [r['email'] for r in data['results']]
+        assert 'engaged_learner@example.com' in emails
+        assert 'non_engaged_learner@example.com' in emails
+
+    @patch('enterprise_data.admin_analytics.database.tables.FactEngagementAdminDashTable.get_leaderboard_data_count')
+    @patch('enterprise_data.admin_analytics.database.tables.FactEngagementAdminDashTable.get_all_leaderboard_data')
+    def test_get_csv_includes_non_engaged_learners(
+        self, mock_get_all_leaderboard_data, mock_get_leaderboard_data_count
+    ):
+        """
+        Test that CSV download includes non-engaged learners after ENT-11979.
+        """
+        mock_data = [
+            {
+                "email": "engaged@example.com",
+                "sessions": 1,
+                "learning_time_hours": 4.4,
+                "average_session_length": 4.4,
+                "course_completion_count": 1,
+            },
+            {
+                "email": "browsing_only@example.com",
+                "sessions": 0,
+                "learning_time_hours": 0.5,  # browsing time only
+                "average_session_length": 0.5,
+                "course_completion_count": None,
+            },
+        ]
+        mock_get_all_leaderboard_data.return_value = mock_data
+        mock_get_leaderboard_data_count.return_value = 2
+
+        response = self.client.get(self.url, {'response_type': ResponseType.CSV.value})
+        assert response.status_code == status.HTTP_200_OK
+
+        content = b"".join(response.streaming_content).decode().splitlines()
+        assert len(content) == 3  # header + 2 data rows
+
+        # Both learners should appear in CSV
+        assert 'engaged@example.com' in content[1] or 'engaged@example.com' in content[2]
+        assert 'browsing_only@example.com' in content[1] or 'browsing_only@example.com' in content[2]

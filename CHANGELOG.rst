@@ -13,6 +13,10 @@ Change Log
 
 Unreleased
 ----------
+[10.22.9] - 2026-06-17
+-----------------------
+  * feat: Remove deprecated analytics filter
+
 [10.22.8] - 2026-06-17
 -----------------------
   * feat: add segmented engagement fields to individual engagements API and CSV

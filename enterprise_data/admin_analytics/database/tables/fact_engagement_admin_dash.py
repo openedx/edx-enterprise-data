@@ -315,7 +315,7 @@ class FactEngagementAdminDashTable(BaseTable):
             start_date (date): The start date for the query.
             end_date (date): The end date for the query.
             equality_filters (dict, optional): Dictionary of column names and their values to filter by.
-                Example: {'course_type': 'OCM', 'is_engaged': 1}
+                Example: {'course_type': 'OCM', }
             null_filters (list, optional): List of columns to check for NULL or NOT NULL. Each item should be
                 a dict with 'column' and 'null_check' keys.
                 Example: [{'column': 'email', 'null_check': True}]
@@ -409,7 +409,6 @@ class FactEngagementAdminDashTable(BaseTable):
             'course_product_line': course_type,
             'course_key': course_key,
             'subsidy_access_policy_uuid': budget_uuid,
-            'is_engaged': 1
         }
         query_filters, params = self.build_query_filters_for_leaderboard(
             enterprise_customer_uuid=enterprise_customer_uuid,
@@ -670,7 +669,6 @@ class FactEngagementAdminDashTable(BaseTable):
             'course_product_line': course_type,
             'course_key': course_key,
             'subsidy_access_policy_uuid': budget_uuid,
-            'is_engaged': 1
         }
 
         query_filters, params = self.build_query_filters_for_leaderboard(
