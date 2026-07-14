@@ -232,6 +232,8 @@ constraint-dependencies = [
 # edx-lint constraint management
 # https://github.com/openedx/edx-lint
 [tool.edx_lint]
+# Django<5 from old constraints.txt was intentionally widened to <6 to add Django 5.2 support.
+# See: https://github.com/openedx/edx-enterprise-data/pull/692
 uv_constraints = ["mysql-connector-python<9.6"]
 
 # Setuptools SCM configuration
