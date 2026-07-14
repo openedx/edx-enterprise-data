@@ -131,7 +131,9 @@ include-package-data = true
 
 [tool.setuptools.packages.find]
 exclude = ["tests*", "*.tests", "*.tests.*"]
-namespaces = false
+
+[tool.setuptools.exclude-package-data]
+"*" = ["assume-role.sh"]
 
 [tool.setuptools.package-data]
 "*" = [
