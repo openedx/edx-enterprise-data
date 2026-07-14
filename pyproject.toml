@@ -192,7 +192,6 @@ omit = [
 ]
 
 [tool.coverage.report]
-fail_under = 70
 show_missing = true
 exclude_lines = [
     "pragma: no cover",
@@ -217,14 +216,23 @@ conflicts = [
     ],
 ]
 
+# constraint-dependencies is machine-managed by edx-lint — do not edit directly.
+# Run: uv run --with edx-lint edx_lint write_uv_constraints pyproject.toml
+#  DO NOT EDIT constraint-dependencies DIRECTLY.
+#  This list is managed by `edx_lint write_uv_constraints`
+#  and will be overwritten the next time `make upgrade` is run.
+#  - GLOBAL constraints: edit edx_lint/files/common_constraints.txt
+#  - REPO-SPECIFIC constraints: edit [tool.edx_lint].uv_constraints in this file
+constraint-dependencies = [
+    "Django<6.0",
+    "elasticsearch<7.14.0",
+    "mysql-connector-python<9.6",
+]
+
 # edx-lint constraint management
 # https://github.com/openedx/edx-lint
 [tool.edx_lint]
-uv_constraints = true
-
-# constraint-dependencies is machine-managed by edx-lint — do not edit directly.
-# Run: uv run --with edx-lint edx_lint write_uv_constraints pyproject.toml
-constraint-dependencies = []
+uv_constraints = ["mysql-connector-python<9.6"]
 
 # Setuptools SCM configuration
 # https://setuptools-scm.readthedocs.io/

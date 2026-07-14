@@ -12,6 +12,13 @@ conflicts = [[
     { package = "edx-enterprise-data", group = "django42" },
 ]]
 
+[manifest]
+constraints = [
+    { name = "django", specifier = "<6.0" },
+    { name = "elasticsearch", specifier = "<7.14.0" },
+    { name = "mysql-connector-python", specifier = "<9.6" },
+]
+
 [[package]]
 name = "accessible-pygments"
 version = "0.0.5"
