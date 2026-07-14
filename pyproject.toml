@@ -130,7 +130,7 @@ dev = [
 include-package-data = true
 
 [tool.setuptools.packages.find]
-exclude = ["tests*", "*.tests", "*.tests.*"]
+exclude = ["tests*", "*.tests", "*.tests.*", "util*"]
 
 [tool.setuptools.package-data]
 "*" = [
