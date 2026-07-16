@@ -101,7 +101,8 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         # always includes `course_progress` and `course_passing_grade`; real
         # values are merged in later from Snowflake during enrichment.
         enrollments = EnterpriseLearnerEnrollment.objects.filter(
-            enterprise_customer_uuid=enterprise_customer_uuid
+            enterprise_customer_uuid=enterprise_customer_uuid,
+            enterprise_user__is_linked=True,
         ).extra(select={
             'course_progress': 'NULL',
             'course_passing_grade': 'NULL',
@@ -396,7 +397,10 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         """
         Returns number of enterprise users (enrolled AND not enrolled learners)
         """
-        return EnterpriseLearner.objects.filter(enterprise_customer_uuid=self.kwargs['enterprise_id'])
+        return EnterpriseLearner.objects.filter(
+            enterprise_customer_uuid=self.kwargs['enterprise_id'],
+            is_linked=True,
+        )
 
     def get_max_created_date(self, queryset):
         """

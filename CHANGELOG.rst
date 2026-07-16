@@ -13,6 +13,10 @@ Change Log
 
 Unreleased
 ----------
+[10.22.10] - 2026-07-16
+-----------------------
+  * fix: Remove unlinked users from Learner Progress Report
+
 [10.22.9] - 2026-06-17
 -----------------------
   * feat: Remove deprecated analytics filter
