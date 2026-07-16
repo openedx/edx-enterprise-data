@@ -237,6 +237,60 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
         self.assertEqual(response.data['results'][0]['enrollment_id'], enrollment.enrollment_id)
         self.assertEqual(response.data['results'][0]['course_progress'], 0.87)
 
+    def test_list_excludes_enrollments_of_unlinked_learners(self):
+        """
+        Test that the enrollment list endpoint excludes enrollments belonging to unlinked learners.
+        """
+        linked_learner = EnterpriseLearnerFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            is_linked=True,
+        )
+        unlinked_learner = EnterpriseLearnerFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            is_linked=False,
+        )
+        linked_enrollment = EnterpriseLearnerEnrollmentFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            is_consent_granted=True,
+            enterprise_user_id=linked_learner.enterprise_user_id,
+        )
+        EnterpriseLearnerEnrollmentFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            is_consent_granted=True,
+            enterprise_user_id=unlinked_learner.enterprise_user_id,
+        )
+
+        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()['results']
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]['enrollment_id'], linked_enrollment.enrollment_id)
+
+    def test_overview_number_of_users_excludes_unlinked_learners(self):
+        """
+        Test that `number_of_users` in the overview response only counts learners with `is_linked=True`.
+        """
+        EnterpriseLearnerFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            is_linked=True,
+        )
+        EnterpriseLearnerFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            is_linked=True,
+        )
+        EnterpriseLearnerFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            is_linked=False,
+        )
+
+        url = reverse('v1:enterprise-learner-enrollment-overview', kwargs={'enterprise_id': self.enterprise_id})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()['number_of_users'], 2)
+
     @mock.patch('enterprise_data.api.v1.views.enterprise_learner.SnowflakeCourseProgressSource')
     def test_list_returns_200_when_snowflake_enrichment_fails(self, mock_source_cls):
         enterprise_learner = EnterpriseLearnerFactory(
@@ -334,7 +388,10 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
 
         result = viewset.get_queryset()
 
-        mock_filter.assert_called_once_with(enterprise_customer_uuid=self.enterprise_id)
+        mock_filter.assert_called_once_with(
+            enterprise_customer_uuid=self.enterprise_id,
+            enterprise_user__is_linked=True,
+        )
         enrollments.extra.assert_called_once_with(select={
             'course_progress': 'NULL',
             'course_passing_grade': 'NULL',

@@ -135,7 +135,7 @@ class EnterpriseLearnerFactory(factory.django.DjangoModelFactory):
     lms_user_id = factory.lazy_attribute(
         lambda x: FAKER.random_int(min=1, max=999999)  # pylint: disable=no-member
     )
-    is_linked = FAKER.pybool()
+    is_linked = True
     user_username = factory.Sequence('robot{}'.format)
     user_email = factory.lazy_attribute(lambda x: FAKER.email())  # pylint: disable=no-member
     lms_user_created = FAKER.past_datetime(start_date='-60d')
