@@ -39,6 +39,6 @@ validate: test ## run tests and quality checks
 	uv run tox -e quality
 
 isort: ## call isort on packages/files that are checked in quality tests
-	isort --recursive tests enterprise_reporting enterprise_data enterprise_data_roles manage.py
+	isort --recursive tests src/enterprise_reporting src/enterprise_data src/enterprise_data_roles manage.py
 
 .PHONY: requirements upgrade help compile-requirements

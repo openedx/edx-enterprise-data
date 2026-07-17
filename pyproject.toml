@@ -113,6 +113,7 @@ include-package-data = true
 readme = {file = ["README.md"], content-type = "text/markdown"}
 
 [tool.setuptools.packages.find]
+where = ["src"]
 include = ["enterprise_data*", "enterprise_reporting*", "enterprise_data_roles*"]
 exclude = ["*tests*"]
 
