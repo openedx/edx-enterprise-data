@@ -20,25 +20,14 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
-    - name: Setup Python ${{ matrix.python-version }}
-      uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
-      with:
-        python-version: ${{ matrix.python-version }}
-
     - name: Install system Packages
       run: |
         sudo apt-get update
-    - name: Get pip cache dir
-      id: pip-cache-dir
-      run: |
-        echo "::set-output name=dir::$(pip cache dir)"
-    - name: Cache pip dependencies
-      id: cache-dependencies
-      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+    - name: Install uv
+      uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
       with:
-        path: ${{ steps.pip-cache-dir.outputs.dir }}
-        key: ${{ runner.os }}-pip-${{ hashFiles('requirements/pip_tools.txt') }}
-        restore-keys: ${{ runner.os }}-pip-
+        enable-cache: true
+        python-version: ${{ matrix.python-version }}
 
     - name: Ubuntu and sql Versions
       run: |
@@ -46,9 +35,9 @@ jobs:
         mysql -V
     - name: Install Python dependencies
       run: |
-        pip install -r requirements/dev.txt
-        pip uninstall -y mysqlclient
-        pip install --no-binary mysqlclient mysqlclient
+        uv sync --group dev
+        uv pip uninstall mysqlclient
+        uv pip install --no-binary mysqlclient mysqlclient
     - name: Initiate Services
       run: |
         sudo /etc/init.d/mysql start
@@ -72,5 +61,5 @@ jobs:
         do
           echo "CREATE DATABASE IF NOT EXISTS db_$db;" | sudo mysql -u root
           export DB_NAME=db_$db
-          python manage.py migrate --noinput --run-syncdb --database "$db" --settings=enterprise_data.settings.test
+          uv run python manage.py migrate --noinput --run-syncdb --database "$db" --settings=enterprise_data.settings.test
         done
