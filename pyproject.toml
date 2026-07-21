@@ -135,6 +135,7 @@ major_on_zero = false
 allow_zero_version = true
 
 [tool.uv]
+package = true
 # Every `uv sync`/`uv run` invocation in this repo names an explicit --group.
 # Without this, uv's implicit default group (named "dev") would be synced *in
 # addition* to whatever --group is passed, silently pulling the entire

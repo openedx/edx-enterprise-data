@@ -1,7 +1,6 @@
-include CHANGELOG.rst
 include CONTRIBUTING.rst
 include LICENSE.txt
-include README.rst
+include README.md
 recursive-include src/enterprise_data *.html *.png *.gif *js *.css *jpg *jpeg *svg *py *.txt *.json
 recursive-include src/enterprise_reporting *.html *.png *.gif *js *.css *jpg *jpeg *svg *py *.txt *.json
 recursive-include src/enterprise_data_roles *.html *.png *.gif *js *.css *jpg *jpeg *svg *py *.txt *.json
