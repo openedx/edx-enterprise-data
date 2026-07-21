@@ -13,6 +13,10 @@ Change Log
 
 Unreleased
 ----------
+[10.22.11] - 2026-07-22
+-----------------------
+  * fix: align engagement metrics learning-hours aggregation with leaderboard totals
+
 [10.22.10] - 2026-07-16
 -----------------------
   * fix: Remove unlinked users from Learner Progress Report

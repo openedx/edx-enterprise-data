@@ -103,6 +103,16 @@ class TestEnterpriseAdminAnalyticsAggregatesView(JWTTestMixin, APITransactionTes
             end_date='2021-12-31',
         )
 
+    def test_learning_hours_query_uses_learner_level_rollup(self):
+        """
+        Engagement hours should match leaderboard semantics by rolling up per learner first.
+        """
+        query = self.engagement_queries.get_learning_hours_and_daily_sessions_query(self.engagement_query_filters)
+
+        assert 'GROUP BY email' in query
+        assert 'ROUND(SUM(learning_time_seconds) / 60 / 60, 1) as learning_time_hours' in query
+        assert 'ROUND(SUM(learning_time_hours), 1) as hours' in query
+
     def _mock_run_query(self, query, *args, **kwargs):
         """
         mock implementation of run_query.
