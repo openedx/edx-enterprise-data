@@ -1,8 +1,8 @@
 """
 Test cases for enterprise_admin views
 """
-from datetime import datetime
 import sqlite3
+from datetime import datetime
 from unittest import mock
 
 import ddt
@@ -108,12 +108,12 @@ class TestEnterpriseAdminAnalyticsAggregatesView(JWTTestMixin, APITransactionTes
         """
         Learning hours should be rounded for each learner before calculating
         the enterprise total.
-    
+
         Each learner has 1584 seconds, which is 0.44 hours and rounds to 0.4.
         Therefore, the final total should be 0.8 rather than 0.9.
         """
         connection = sqlite3.connect(':memory:')
-    
+
         try:
             connection.execute(
                 """
@@ -124,7 +124,7 @@ class TestEnterpriseAdminAnalyticsAggregatesView(JWTTestMixin, APITransactionTes
                 )
                 """
             )
-    
+
             connection.executemany(
                 """
                 INSERT INTO fact_enrollment_engagement_day_admin_dash (
@@ -139,17 +139,17 @@ class TestEnterpriseAdminAnalyticsAggregatesView(JWTTestMixin, APITransactionTes
                     ('learner2@example.com', 1584, 1),
                 ],
             )
-    
+
             query_filters = mock.Mock()
             query_filters.to_sql.return_value = '1 = 1'
-    
+
             query = (
                 self.engagement_queries
                 .get_learning_hours_and_daily_sessions_query(query_filters)
             )
-    
+
             result = connection.execute(query).fetchone()
-    
+
             assert result[0] == 0.8
             assert result[1] == 2
         finally:
