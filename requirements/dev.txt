@@ -14,17 +14,17 @@ astroid==4.0.4
     # via
     #   pylint
     #   pylint-celery
-awscli==1.45.50
+awscli==1.45.55
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
 billiard==4.2.4
     # via celery
-boto3==1.43.50
+boto3==1.43.55
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.43.50
+botocore==1.43.55
     # via
     #   awscli
     #   boto3
@@ -32,11 +32,11 @@ botocore==1.43.50
     #   snowflake-connector-python
 build==1.5.0
     # via pip-tools
-cachetools==7.1.4
+cachetools==7.1.6
     # via tox
 celery==5.3.6
     # via -r requirements/reporting.in
-certifi==2026.6.17
+certifi==2026.7.22
     # via
     #   py2neo
     #   requests
@@ -86,7 +86,7 @@ cryptography==49.0.0
     #   pyopenssl
     #   secretstorage
     #   snowflake-connector-python
-diff-cover==10.3.0
+diff-cover==10.4.0
     # via -r requirements/dev-enterprise_data.in
 dill==0.4.1
     # via pylint
@@ -164,9 +164,9 @@ edx-rest-api-client==7.0.0
     # via -r requirements/base.in
 factory-boy==3.3.3
     # via -r requirements/base.in
-faker==40.31.0
+faker==40.35.0
     # via factory-boy
-filelock==3.30.2
+filelock==3.32.0
     # via
     #   python-discovery
     #   snowflake-connector-python
@@ -254,9 +254,9 @@ pgpy==0.6.0
     # via -r requirements/reporting.in
 pillow==12.3.0
     # via pansi
-pip-tools==7.5.3
+pip-tools==7.6.0
     # via -r requirements/dev-enterprise_data.in
-platformdirs==4.10.0
+platformdirs==4.11.0
     # via
     #   pylint
     #   python-discovery
@@ -321,7 +321,7 @@ pynacl==1.6.2
     #   paramiko
 pyopenssl==26.3.0
     # via snowflake-connector-python
-pyproject-api==1.10.1
+pyproject-api==1.11.0
     # via tox
 pyproject-hooks==1.2.0
     # via
@@ -332,7 +332,7 @@ python-dateutil==2.9.0.post0
     #   botocore
     #   celery
     #   vertica-python
-python-discovery==1.4.4
+python-discovery==1.5.0
     # via
     #   tox
     #   virtualenv
@@ -367,7 +367,7 @@ rsa==4.7.2
     # via awscli
 rules==3.5
     # via -r requirements/base.in
-s3transfer==0.19.1
+s3transfer==0.19.2
     # via
     #   awscli
     #   boto3
@@ -409,7 +409,7 @@ tomlkit==0.15.1
     #   edx-lint
     #   pylint
     #   snowflake-connector-python
-tox==4.56.4
+tox==4.58.0
     # via -r requirements/dev-enterprise_data.in
 twine==6.2.0
     # via -r requirements/dev-enterprise_data.in
@@ -439,7 +439,7 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==21.6.1
+virtualenv==21.7.0
     # via tox
 wcwidth==0.8.2
     # via prompt-toolkit
