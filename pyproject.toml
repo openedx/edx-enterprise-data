@@ -16,8 +16,9 @@ classifiers = [
     'Programming Language :: Python :: 3',
     'Programming Language :: Python :: 3.12',
 ]
+readme = "README.md"
 
-dynamic = ["readme", "version"]
+dynamic = ["version"]
 
 dependencies = [
     "requests",
@@ -102,15 +103,11 @@ dev = [
     {include-group = "ci"},
     "diff-cover",
     "edx-i18n-tools",
-    "twine",
     "wheel",
 ]
 
 [tool.setuptools]
 include-package-data = true
-
-[tool.setuptools.dynamic]
-readme = {file = ["README.md"], content-type = "text/markdown"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -176,3 +173,18 @@ sections = ["FUTURE", "STDLIB", "THIRDPARTY", "DJANGO", "DJANGOAPP", "EDX", "FIR
 DJANGO_SETTINGS_MODULE = "enterprise_data.settings.test"
 addopts = "--cov enterprise_reporting --cov enterprise_data --cov enterprise_data_roles --cov-report term-missing --cov-report xml"
 norecursedirs = [".*", "docs", "requirements", "node_modules"]
+
+[tool.coverage.run]
+branch = true
+source_pkgs = ["enterprise_data", "enterprise_reporting", "enterprise_data_roles"]
+omit = ["*/tests/*", "*/migrations/*", "*/__pycache__/*", "*/settings/*"]
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"
