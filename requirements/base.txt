@@ -10,17 +10,17 @@ asgiref==3.12.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.45.50
+awscli==1.45.55
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
 billiard==4.2.4
     # via celery
-boto3==1.43.50
+boto3==1.43.55
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.43.50
+botocore==1.43.55
     # via
     #   awscli
     #   boto3
@@ -28,7 +28,7 @@ botocore==1.43.50
     #   snowflake-connector-python
 celery==5.3.6
     # via -r requirements/reporting.in
-certifi==2026.6.17
+certifi==2026.7.22
     # via
     #   py2neo
     #   requests
@@ -128,9 +128,9 @@ edx-rest-api-client==7.0.0
     # via -r requirements/base.in
 factory-boy==3.3.3
     # via -r requirements/base.in
-faker==40.31.0
+faker==40.35.0
     # via factory-boy
-filelock==3.30.2
+filelock==3.32.0
     # via snowflake-connector-python
 idna==3.18
     # via
@@ -165,7 +165,7 @@ pgpy==0.6.0
     # via -r requirements/reporting.in
 pillow==12.3.0
     # via pansi
-platformdirs==4.10.0
+platformdirs==4.11.0
     # via snowflake-connector-python
 prompt-toolkit==3.0.52
     # via click-repl
@@ -218,7 +218,7 @@ rsa==4.7.2
     # via awscli
 rules==3.5
     # via -r requirements/base.in
-s3transfer==0.19.1
+s3transfer==0.19.2
     # via
     #   awscli
     #   boto3

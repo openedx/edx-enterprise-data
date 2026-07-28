@@ -12,6 +12,11 @@ Change Log
 .. There should always be an "Unreleased" section for changes pending release.
 
 Unreleased
+
+[10.22.11] - 2026-07-27
+-----------------------
+  * chore: upgrade python requirements
+
 ----------
 [10.22.11] - 2026-07-22
 -----------------------
