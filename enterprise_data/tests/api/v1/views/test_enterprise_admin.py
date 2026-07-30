@@ -112,6 +112,7 @@ class TestEnterpriseAdminAnalyticsAggregatesView(JWTTestMixin, APITransactionTes
         Each learner has 1584 seconds, which is 0.44 hours and rounds to 0.4.
         Therefore, the final total should be 0.8 rather than 0.9.
         """
+        # TODO: ENT-12151 - Refactor this test to align with the shared raw SQL query test pattern.
         connection = sqlite3.connect(':memory:')
 
         try:
