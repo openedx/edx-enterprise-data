@@ -13,14 +13,13 @@ Change Log
 
 Unreleased
 
+[10.22.12] - 2026-07-30
+-----------------------
+  * fix: align engagement metrics learning-hours aggregation with leaderboard totals
+
 [10.22.11] - 2026-07-27
 -----------------------
   * chore: upgrade python requirements
-
-----------
-[10.22.11] - 2026-07-22
------------------------
-  * fix: align engagement metrics learning-hours aggregation with leaderboard totals
 
 [10.22.10] - 2026-07-16
 -----------------------
