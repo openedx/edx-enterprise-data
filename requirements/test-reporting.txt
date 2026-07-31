@@ -8,17 +8,17 @@ amqp==5.3.1
     # via kombu
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.45.55
+awscli==1.45.60
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
 billiard==4.2.4
     # via celery
-boto3==1.43.55
+boto3==1.43.60
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.43.55
+botocore==1.43.60
     # via
     #   awscli
     #   boto3
@@ -72,7 +72,7 @@ distlib==0.4.3
     # via virtualenv
 docutils==0.19
     # via awscli
-filelock==3.32.0
+filelock==3.32.2
     # via
     #   python-discovery
     #   snowflake-connector-python
@@ -126,7 +126,7 @@ pluggy==1.6.0
     # via
     #   pytest
     #   tox
-prompt-toolkit==3.0.52
+prompt-toolkit==3.0.53
     # via click-repl
 py2neo @ https://github.com/overhangio/py2neo/releases/download/2021.2.3/py2neo-2021.2.3.tar.gz
     # via -r requirements/reporting.in
@@ -163,7 +163,7 @@ python-discovery==1.5.0
     # via
     #   tox
     #   virtualenv
-pytz==2026.2
+pytz==2026.3.post1
     # via
     #   interchange
     #   snowflake-connector-python
@@ -223,7 +223,7 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==21.7.0
+virtualenv==21.7.1
     # via tox
 wcwidth==0.8.2
     # via prompt-toolkit
