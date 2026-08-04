@@ -14,17 +14,17 @@ astroid==4.0.4
     # via
     #   pylint
     #   pylint-celery
-awscli==1.45.55
+awscli==1.45.60
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
 billiard==4.2.4
     # via celery
-boto3==1.43.55
+boto3==1.43.60
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.43.55
+botocore==1.43.60
     # via
     #   awscli
     #   boto3
@@ -86,7 +86,7 @@ cryptography==49.0.0
     #   pyopenssl
     #   secretstorage
     #   snowflake-connector-python
-diff-cover==10.4.0
+diff-cover==10.4.1
     # via -r requirements/dev-enterprise_data.in
 dill==0.4.1
     # via pylint
@@ -164,9 +164,9 @@ edx-rest-api-client==7.0.0
     # via -r requirements/base.in
 factory-boy==3.3.3
     # via -r requirements/base.in
-faker==40.35.0
+faker==40.36.0
     # via factory-boy
-filelock==3.32.0
+filelock==3.32.2
     # via
     #   python-discovery
     #   snowflake-connector-python
@@ -269,7 +269,7 @@ pluggy==1.6.0
     #   tox
 polib==1.2.0
     # via edx-i18n-tools
-prompt-toolkit==3.0.52
+prompt-toolkit==3.0.53
     # via click-repl
 psutil==7.2.2
     # via edx-django-utils
@@ -338,7 +338,7 @@ python-discovery==1.5.0
     #   virtualenv
 python-slugify==8.0.4
     # via code-annotations
-pytz==2026.2
+pytz==2026.3.post1
     # via
     #   interchange
     #   snowflake-connector-python
@@ -411,7 +411,7 @@ tomlkit==0.15.1
     #   snowflake-connector-python
 tox==4.58.0
     # via -r requirements/dev-enterprise_data.in
-twine==6.2.0
+twine==7.0.0
     # via -r requirements/dev-enterprise_data.in
 typing-extensions==4.16.0
     # via
@@ -439,7 +439,7 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==21.7.0
+virtualenv==21.7.1
     # via tox
 wcwidth==0.8.2
     # via prompt-toolkit
