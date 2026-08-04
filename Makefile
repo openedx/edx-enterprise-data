@@ -31,14 +31,23 @@ requirements: ## install development environment requirements
 test: clean ## run tests in the current virtualenv
 	uv run pytest
 
+quality: ## check coding style with isort, pylint, pycodestyle, and pydocstyle
+	uv run isort --check-only src/enterprise_data src/enterprise_data_roles manage.py
+	touch tests/__init__.py
+	uv run pylint -j 0 src/enterprise_data src/enterprise_data_roles
+	rm tests/__init__.py
+	uv run pycodestyle src/enterprise_data src/enterprise_data_roles
+	uv run pydocstyle src/enterprise_data src/enterprise_data_roles
+
 test-all: clean ## run tests on every supported Python/Django combination
-	uv run tox
-	uv run tox -e quality
+	uv run pytest -Wd --ignore src/enterprise_reporting/
+	uv run pytest -Wd --cov enterprise_reporting --cov-report term-missing --cov-report xml src/enterprise_reporting/tests
+	$(MAKE) quality
 
 validate: test ## run tests and quality checks
-	uv run tox -e quality
+	$(MAKE) quality
 
 isort: ## call isort on packages/files that are checked in quality tests
 	uv run isort --recursive tests src/enterprise_reporting src/enterprise_data src/enterprise_data_roles manage.py
 
-.PHONY: requirements upgrade help compile-requirements
+.PHONY: requirements upgrade help compile-requirements quality test-all validate
