@@ -13,6 +13,10 @@ Change Log
 
 Unreleased
 
+[10.22.13] - 2026-08-03
+-----------------------
+  * fix: keep non-DSC enrollments visible in the Learner Progress Report [ENT-12136]
+
 [10.22.12] - 2026-07-30
 -----------------------
   * fix: align engagement metrics learning-hours aggregation with leaderboard totals

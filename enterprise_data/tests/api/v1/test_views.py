@@ -13,6 +13,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITransactionTestCase
 
+from django.db.models import Q
 from django.utils import timezone
 
 from enterprise_data.api.v1.serializers import EnterpriseOfferSerializer
@@ -268,6 +269,65 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]['enrollment_id'], linked_enrollment.enrollment_id)
 
+    def test_list_includes_non_consented_enrollments_with_no_enterprise_user(self):
+        """
+        Enrollments without DSC still show up even when `enterprise_user` is NULL,
+        since non-DSC enrollments have this FK scrubbed the same way unlinked learners do.
+
+        Uses direct model creation instead of ``EnterpriseLearnerEnrollmentFactory``: that
+        factory's own default ``enterprise_user``/``enterprise_user_id`` declarations don't
+        agree with each other when neither is explicitly overridden, and its
+        ``is_consent_granted``-driven cleanup unconditionally nulls ``enterprise_user_id``
+        regardless of any override -- neither behavior is controllable enough for this test.
+        """
+        non_consented_enrollment = EnterpriseLearnerEnrollment.objects.create(
+            enterprise_customer_uuid=self.enterprise_id,
+            is_consent_granted=False,
+            user_current_enrollment_mode='verified',
+            enrollment_date='2018-01-01',
+            course_key='course-v1:Test+101',
+            courserun_key='course-v1:Test+101',
+            enterprise_name='Test Enterprise',
+            enterprise_user=None,
+        )
+
+        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()['results']
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]['enrollment_id'], non_consented_enrollment.enrollment_id)
+        self.assertFalse(results[0]['is_consent_granted'])
+
+    def test_list_excludes_non_consented_enrollments_of_genuinely_unlinked_learners(self):
+        """
+        A learner who is actually unlinked (has an EnterpriseLearner row with is_linked=False)
+        stays excluded even without DSC -- only a NULL `enterprise_user` (the scrubbed,
+        never-had-a-chance-to-consent case) should be let through.
+        """
+        unlinked_learner = EnterpriseLearnerFactory(
+            enterprise_customer_uuid=self.enterprise_id,
+            is_linked=False,
+        )
+        EnterpriseLearnerEnrollment.objects.create(
+            enterprise_customer_uuid=self.enterprise_id,
+            is_consent_granted=False,
+            user_current_enrollment_mode='verified',
+            enrollment_date='2018-01-01',
+            course_key='course-v1:Test+102',
+            courserun_key='course-v1:Test+102',
+            enterprise_name='Test Enterprise',
+            enterprise_user=unlinked_learner,
+        )
+
+        url = reverse('v1:enterprise-learner-enrollment-list', kwargs={'enterprise_id': self.enterprise_id})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()['results']
+        self.assertEqual(len(results), 0)
+
     def test_overview_number_of_users_excludes_unlinked_learners(self):
         """
         Test that `number_of_users` in the overview response only counts learners with `is_linked=True`.
@@ -380,19 +440,22 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
         with_placeholders = mock.Mock()
         filtered_enrollments = mock.Mock()
 
+        consent_filtered = mock.Mock()
+
         viewset.kwargs = {'enterprise_id': self.enterprise_id}
         viewset.request = mock.Mock()
         mock_filter.return_value = enrollments
-        enrollments.extra.return_value = with_placeholders
+        enrollments.filter.return_value = consent_filtered
+        consent_filtered.extra.return_value = with_placeholders
         mock_apply_filters.return_value = filtered_enrollments
 
         result = viewset.get_queryset()
 
-        mock_filter.assert_called_once_with(
-            enterprise_customer_uuid=self.enterprise_id,
-            enterprise_user__is_linked=True,
+        mock_filter.assert_called_once_with(enterprise_customer_uuid=self.enterprise_id)
+        enrollments.filter.assert_called_once_with(
+            Q(enterprise_user__is_linked=True) | Q(enterprise_user__isnull=True, is_consent_granted=False)
         )
-        enrollments.extra.assert_called_once_with(select={
+        consent_filtered.extra.assert_called_once_with(select={
             'course_progress': 'NULL',
             'course_passing_grade': 'NULL',
         })
