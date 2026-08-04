@@ -10,17 +10,17 @@ asgiref==3.12.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.45.55
+awscli==1.45.60
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
 billiard==4.2.4
     # via celery
-boto3==1.43.55
+boto3==1.43.60
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.43.55
+botocore==1.43.60
     # via
     #   awscli
     #   boto3
@@ -137,9 +137,9 @@ factory-boy==3.3.3
     # via
     #   -r requirements/base.in
     #   -r requirements/test.in
-faker==40.35.0
+faker==40.36.0
     # via factory-boy
-filelock==3.32.0
+filelock==3.32.2
     # via snowflake-connector-python
 flaky==3.8.1
     # via -r requirements/test.in
@@ -189,7 +189,7 @@ pluggy==1.6.0
     # via
     #   pytest
     #   pytest-cov
-prompt-toolkit==3.0.52
+prompt-toolkit==3.0.53
     # via click-repl
 psutil==7.2.2
     # via edx-django-utils
@@ -235,7 +235,7 @@ python-dateutil==2.9.0.post0
     #   celery
     #   freezegun
     #   vertica-python
-pytz==2026.2
+pytz==2026.3.post1
     # via
     #   interchange
     #   snowflake-connector-python
