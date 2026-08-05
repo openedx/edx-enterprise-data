@@ -15,6 +15,19 @@ Change Log
 
 Unreleased
 ----------
+
+[10.22.13] - 2026-08-03
+-----------------------
+  * fix: keep non-DSC enrollments visible in the Learner Progress Report [ENT-12136]
+
+[10.22.12] - 2026-07-30
+-----------------------
+  * fix: align engagement metrics learning-hours aggregation with leaderboard totals
+
+[10.22.11] - 2026-07-27
+-----------------------
+  * chore: upgrade python requirements
+
 [10.22.10] - 2026-07-16
 -----------------------
   * fix: Remove unlinked users from Learner Progress Report
