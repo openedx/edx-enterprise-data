@@ -14,25 +14,24 @@ astroid==4.0.4
     # via
     #   pylint
     #   pylint-celery
-awscli==1.45.60
+awscli==1.46.0
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
 billiard==4.2.4
     # via celery
-boto3==1.43.60
+boto3==1.43.66
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.43.60
+botocore==1.43.66
     # via
-    #   awscli
     #   boto3
     #   s3transfer
     #   snowflake-connector-python
 build==1.5.0
     # via pip-tools
-cachetools==7.1.6
+cachetools==7.1.7
     # via tox
 celery==5.3.6
     # via -r requirements/reporting.in
@@ -41,11 +40,11 @@ certifi==2026.7.22
     #   py2neo
     #   requests
     #   snowflake-connector-python
-cffi==2.1.0
+cffi==2.1.1
     # via
     #   cryptography
     #   pynacl
-chardet==7.4.3
+chardet==7.5.1
     # via diff-cover
 charset-normalizer==3.4.9
     # via
@@ -76,7 +75,7 @@ colorama==0.4.6
     # via
     #   awscli
     #   tox
-cryptography==49.0.0
+cryptography==50.0.0
     # via
     #   -r requirements/reporting.in
     #   django-fernet-fields-v2
@@ -86,7 +85,7 @@ cryptography==49.0.0
     #   pyopenssl
     #   secretstorage
     #   snowflake-connector-python
-diff-cover==10.4.1
+diff-cover==10.4.2
     # via -r requirements/dev-enterprise_data.in
 dill==0.4.1
     # via pylint
@@ -124,7 +123,7 @@ django-waffle==5.0.0
     # via
     #   edx-django-utils
     #   edx-drf-extensions
-djangorestframework==3.17.1
+djangorestframework==3.17.2
     # via
     #   djangorestframework-csv
     #   drf-jwt
@@ -202,6 +201,7 @@ jinja2==3.1.6
     #   diff-cover
 jmespath==1.1.0
     # via
+    #   awscli
     #   boto3
     #   botocore
 keyring==25.7.0
@@ -234,7 +234,7 @@ mysql-connector-python==9.5.0
     #   -r requirements/base.in
 nh3==0.3.6
     # via readme-renderer
-packaging==26.2
+packaging==26.3
     # via
     #   build
     #   kombu
@@ -259,7 +259,6 @@ pip-tools==7.6.0
 platformdirs==4.11.0
     # via
     #   pylint
-    #   python-discovery
     #   snowflake-connector-python
     #   tox
     #   virtualenv
@@ -319,7 +318,7 @@ pynacl==1.6.2
     # via
     #   edx-django-utils
     #   paramiko
-pyopenssl==26.3.0
+pyopenssl==26.4.0
     # via snowflake-connector-python
 pyproject-api==1.11.0
     # via tox
@@ -329,10 +328,11 @@ pyproject-hooks==1.2.0
     #   pip-tools
 python-dateutil==2.9.0.post0
     # via
+    #   awscli
     #   botocore
     #   celery
     #   vertica-python
-python-discovery==1.5.0
+python-discovery==1.5.1
     # via
     #   tox
     #   virtualenv
@@ -368,9 +368,7 @@ rsa==4.7.2
 rules==3.5
     # via -r requirements/base.in
 s3transfer==0.19.2
-    # via
-    #   awscli
-    #   boto3
+    # via boto3
 secretstorage==3.5.0
     # via keyring
 semantic-version==2.10.0
@@ -427,6 +425,7 @@ unicodecsv==0.14.1
     # via -r requirements/reporting.in
 urllib3==2.7.0
     # via
+    #   awscli
     #   botocore
     #   id
     #   py2neo

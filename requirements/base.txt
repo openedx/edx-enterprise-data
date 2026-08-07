@@ -10,19 +10,18 @@ asgiref==3.12.1
     # via django
 asn1crypto==1.5.1
     # via snowflake-connector-python
-awscli==1.45.60
+awscli==1.46.0
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
 billiard==4.2.4
     # via celery
-boto3==1.43.60
+boto3==1.43.66
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.43.60
+botocore==1.43.66
     # via
-    #   awscli
     #   boto3
     #   s3transfer
     #   snowflake-connector-python
@@ -33,7 +32,7 @@ certifi==2026.7.22
     #   py2neo
     #   requests
     #   snowflake-connector-python
-cffi==2.1.0
+cffi==2.1.1
     # via
     #   cryptography
     #   pynacl
@@ -56,7 +55,7 @@ click-repl==0.3.0
     # via celery
 colorama==0.4.6
     # via awscli
-cryptography==49.0.0
+cryptography==50.0.0
     # via
     #   -r requirements/reporting.in
     #   django-fernet-fields-v2
@@ -96,7 +95,7 @@ django-waffle==5.0.0
     # via
     #   edx-django-utils
     #   edx-drf-extensions
-djangorestframework==3.17.1
+djangorestframework==3.17.2
     # via
     #   djangorestframework-csv
     #   drf-jwt
@@ -142,6 +141,7 @@ invoke==3.0.3
     # via paramiko
 jmespath==1.1.0
     # via
+    #   awscli
     #   boto3
     #   botocore
 kombu==5.6.2
@@ -152,7 +152,7 @@ mysql-connector-python==9.5.0
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/base.in
-packaging==26.2
+packaging==26.3
     # via
     #   kombu
     #   py2neo
@@ -195,10 +195,11 @@ pynacl==1.6.2
     # via
     #   edx-django-utils
     #   paramiko
-pyopenssl==26.3.0
+pyopenssl==26.4.0
     # via snowflake-connector-python
 python-dateutil==2.9.0.post0
     # via
+    #   awscli
     #   botocore
     #   celery
     #   vertica-python
@@ -219,9 +220,7 @@ rsa==4.7.2
 rules==3.5
     # via -r requirements/base.in
 s3transfer==0.19.2
-    # via
-    #   awscli
-    #   boto3
+    # via boto3
 semantic-version==2.10.0
     # via edx-drf-extensions
 six==1.17.0
@@ -258,6 +257,7 @@ unicodecsv==0.14.1
     # via -r requirements/reporting.in
 urllib3==2.7.0
     # via
+    #   awscli
     #   botocore
     #   py2neo
     #   requests
