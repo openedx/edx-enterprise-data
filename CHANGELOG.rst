@@ -13,6 +13,10 @@ Change Log
 
 Unreleased
 
+[10.22.14] - 2026-08-06
+-----------------------
+  * fix: simplify unlinked-learner exclusion in the Learner Progress Report [ENT-12136]
+
 [10.22.13] - 2026-08-03
 -----------------------
   * fix: keep non-DSC enrollments visible in the Learner Progress Report [ENT-12136]
