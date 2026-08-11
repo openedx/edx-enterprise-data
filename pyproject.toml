@@ -97,6 +97,13 @@ ci = [
     "tox",
     "tox-uv",
 ]
+# Only needed by the mysql8-migrations.yml CI job, which rebuilds mysqlclient
+# from source (--no-binary) to test against a specific libmysqlclient. Not a
+# real project dependency otherwise -- master's pip-based equivalent pulled it
+# in only via this same workflow's own uninstall+reinstall step.
+mysql8 = [
+    "mysqlclient",
+]
 dev = [
     {include-group = "quality"},
     {include-group = "test-reporting"},

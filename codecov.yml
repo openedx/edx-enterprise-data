@@ -13,14 +13,15 @@ coverage:
         #   2. [tool.coverage.run] now sets branch = true (the old config had
         #      no branch coverage at all), so partially-exercised branches now
         #      count against coverage instead of only line hits.
-        # Combined, that dropped the reported total from 88.70% (107 files,
+        # Combined, that drops the reported total from 88.70% (107 files,
         # including tests/migrations, line coverage only) to 81.56% (79
         # files, production code only, branch coverage enabled) on this PR --
-        # a one-time drop in the reported baseline, not a regression in
-        # production-code coverage. This threshold accommodates that one-time
-        # methodology change (with some margin) while still catching real
-        # future regressions.
-        threshold: 9%
+        # a one-time discontinuity in this PR's own base-vs-head comparison,
+        # not a regression in production-code coverage. No threshold added:
+        # `target: auto` compares against each PR's own base commit, so once
+        # this PR merges, 81.56% becomes the new baseline for every
+        # subsequent PR -- there's no lingering gap to accommodate, and this
+        # status check isn't required for merging anyway.
     patch:
       default:
         # Left at the (default) auto target rather than a fixed 90% like some
