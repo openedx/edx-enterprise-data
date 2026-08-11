@@ -102,8 +102,8 @@ class EnterpriseLearnerEnrollmentViewSet(EnterpriseViewSetMixin, viewsets.ReadOn
         # values are merged in later from Snowflake during enrichment.
         enrollments = EnterpriseLearnerEnrollment.objects.filter(
             enterprise_customer_uuid=enterprise_customer_uuid,
-        ).filter(
-            Q(enterprise_user__is_linked=True) | Q(enterprise_user__isnull=True, is_consent_granted=False)
+        ).exclude(
+            enterprise_user__is_linked=False,
         ).extra(select={
             'course_progress': 'NULL',
             'course_passing_grade': 'NULL',
