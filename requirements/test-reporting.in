@@ -1,9 +1,0 @@
--c constraints.txt
--r reporting.in
-
-responses                           # utility library for mocking out the requests library
-tox
-pytest==8.0.2
-ddt==1.1.2
-mock==2.0.0
-pytest-cov==4.1.0
