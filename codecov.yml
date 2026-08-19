@@ -3,31 +3,10 @@ coverage:
     project:
       default:
         target: auto
-        # This tooling migration (openedx/public-engineering#506) changed the
-        # coverage measurement methodology in two ways at once:
-        #   1. [tool.coverage.run] now omits */tests/*, */migrations/*,
-        #      */__pycache__/* and */settings/* from measurement (the old
-        #      tox.ini/pytest addopts had no such exclusions, so test files'
-        #      own -- trivially self-covered -- statements were previously
-        #      counted toward the package's coverage percentage).
-        #   2. [tool.coverage.run] now sets branch = true (the old config had
-        #      no branch coverage at all), so partially-exercised branches now
-        #      count against coverage instead of only line hits.
-        # Combined, that drops the reported total from 88.70% (107 files,
-        # including tests/migrations, line coverage only) to 81.56% (79
-        # files, production code only, branch coverage enabled) on this PR --
-        # a one-time discontinuity in this PR's own base-vs-head comparison,
-        # not a regression in production-code coverage. No threshold added:
-        # `target: auto` compares against each PR's own base commit, so once
-        # this PR merges, 81.56% becomes the new baseline for every
-        # subsequent PR -- there's no lingering gap to accommodate, and this
-        # status check isn't required for merging anyway.
+        # One-time coverage-measurement shift from this migration; see PR description.
     patch:
       default:
-        # Left at the (default) auto target rather than a fixed 90% like some
-        # sibling repos: this PR's patch coverage (85.93%) is already passing
-        # under the default policy, and codecov/patch was green before this
-        # file was added -- no change needed here.
+        # Already passing under the default policy; see PR description.
         target: auto
 
 comment: false
