@@ -13,7 +13,6 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITransactionTestCase
 
-from django.db.models import Q
 from django.utils import timezone
 
 from enterprise_data.api.v1.serializers import EnterpriseOfferSerializer
@@ -440,22 +439,20 @@ class TestEnterpriseLearnerEnrollmentViewSet(JWTTestMixin, APITransactionTestCas
         with_placeholders = mock.Mock()
         filtered_enrollments = mock.Mock()
 
-        consent_filtered = mock.Mock()
+        linked_filtered = mock.Mock()
 
         viewset.kwargs = {'enterprise_id': self.enterprise_id}
         viewset.request = mock.Mock()
         mock_filter.return_value = enrollments
-        enrollments.filter.return_value = consent_filtered
-        consent_filtered.extra.return_value = with_placeholders
+        enrollments.exclude.return_value = linked_filtered
+        linked_filtered.extra.return_value = with_placeholders
         mock_apply_filters.return_value = filtered_enrollments
 
         result = viewset.get_queryset()
 
         mock_filter.assert_called_once_with(enterprise_customer_uuid=self.enterprise_id)
-        enrollments.filter.assert_called_once_with(
-            Q(enterprise_user__is_linked=True) | Q(enterprise_user__isnull=True, is_consent_granted=False)
-        )
-        consent_filtered.extra.assert_called_once_with(select={
+        enrollments.exclude.assert_called_once_with(enterprise_user__is_linked=False)
+        linked_filtered.extra.assert_called_once_with(select={
             'course_progress': 'NULL',
             'course_passing_grade': 'NULL',
         })
