@@ -20,3 +20,10 @@ Django<5
 
 # AED 2026-02-04: No idea why we can't find version 9.6
 mysql-connector-python<9.6
+
+# pytest-django 4.13.0 dropped Django 4.2 support: it now unconditionally
+# reads TestCase._pre_setup_ran_eagerly, an attribute Django only sets
+# starting in 5.x, breaking every django_db test under the data-django42
+# tox env. Pin below the breaking release until this repo drops Django 4.2.
+# https://pypi.org/project/pytest-django/4.13.0/#history
+pytest-django<4.13.0
