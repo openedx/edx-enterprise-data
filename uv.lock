@@ -7,6 +7,7 @@ constraints = [
     { name = "django", specifier = "<5" },
     { name = "elasticsearch", specifier = "<7.14.0" },
     { name = "mysql-connector-python", specifier = "<9.6" },
+    { name = "pytest-django", specifier = "<4.13.0" },
 ]
 
 [[package]]
