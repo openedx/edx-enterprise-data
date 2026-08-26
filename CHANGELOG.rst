@@ -12,6 +12,12 @@ Change Log
 .. There should always be an "Unreleased" section for changes pending release.
 
 Unreleased
+----------
+* Nothing
+
+10.22.15
+--------
+* build: upgrade python dependencies, add pylintrc `pii_terms` directive
 
 [10.22.14] - 2026-08-06
 -----------------------

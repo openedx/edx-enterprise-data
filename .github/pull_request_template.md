@@ -16,9 +16,7 @@
 
 **Post merge:**
 - [ ] Tag pushed and a new [version](https://github.com/openedx/edx-enterprise-data/releases) released
-    - *Note*: Assets will be added automatically. You just need to provide a tag (should match your version number) and title and description.
-- [ ] After versioned build finishes in [Travis](https://travis-ci.org/github/edx/edx-enterprise-data), verify version has been pushed to [PyPI](https://pypi.org/project/edx-enterprise-data/)
-    - Each step in the release build has a condition flag that checks if the rest of the steps are done and if so will deploy to PyPi.
+- [ ] After the [PyPI publish action](https://github.com/openedx/edx-enterprise-data/actions/workflows/pypi-publish.yml) finishes, verify version has been pushed to [PyPI](https://pypi.org/project/edx-enterprise-data/)
     (so basically once your build finishes, after maybe a minute you should see the new version in PyPi automatically (on refresh))
 - [ ] PR created in [edx-analytics-data-api](https://github.com/openedx/edx-analytics-data-api) to upgrade dependencies (including edx-enterprise-data)
     - This **must** be done after the version is visible in PyPi as `make upgrade` in edx-analytics-data-api will look for the latest version in PyPi.
