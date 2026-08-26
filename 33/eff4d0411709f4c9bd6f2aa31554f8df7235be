@@ -1,0 +1,19 @@
+requirements/dev.txt
+  s_efddea62befad9::t_2f61f629058c83 2,19-20,25,29,49,51,74,90,148,154,168,170,178,182-183,215,239,262-265,293,305,341,392,398,400,416,426,448,452,456-457
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "33eff4d0411709f4c9bd6f2aa31554f8df7235be",
+  "prompts": {},
+  "sessions": {
+    "s_efddea62befad9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a65a501d-caf3-4f78-9cb5-3252d18d640a",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Alexander Dusenbery <adusenbery@2u.com>"
+    }
+  }
+}
