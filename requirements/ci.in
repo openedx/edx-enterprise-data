@@ -1,5 +1,0 @@
-# Requirements for running tests in Github actions
--c constraints.txt
-
-coverage                  # Calculate code coverage of tests.
-tox                       # Virtualenv management for tests
