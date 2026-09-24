@@ -32,12 +32,7 @@ test: clean ## run tests in the current virtualenv
 	uv run pytest
 
 quality: ## check coding style with isort, pylint, pycodestyle, and pydocstyle
-	uv run isort --check-only src/enterprise_data src/enterprise_data_roles manage.py
-	touch tests/__init__.py
-	uv run pylint -j 0 src/enterprise_data src/enterprise_data_roles
-	rm tests/__init__.py
-	uv run pycodestyle src/enterprise_data src/enterprise_data_roles
-	uv run pydocstyle src/enterprise_data src/enterprise_data_roles
+	uv run tox -e quality
 
 test-all: clean ## run tests on every supported Python/Django combination
 	uv run pytest -Wd --ignore src/enterprise_reporting/
