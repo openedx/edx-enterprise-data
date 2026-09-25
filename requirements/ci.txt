@@ -12,7 +12,7 @@ coverage==7.16.1
     # via -r requirements/ci.in
 distlib==0.4.3
     # via virtualenv
-filelock==3.32.7
+filelock==4.0.3
     # via
     #   python-discovery
     #   tox
@@ -21,23 +21,23 @@ packaging==26.3
     # via
     #   pyproject-api
     #   tox
-platformdirs==4.11.9
+platformdirs==4.11.12
     # via
     #   tox
     #   virtualenv
 pluggy==1.6.0
     # via tox
-pyproject-api==1.11.1
+pyproject-api==1.11.2
     # via tox
-python-discovery==1.6.0
+python-discovery==1.6.1
     # via
     #   tox
     #   virtualenv
 tomli-w==1.2.0
     # via tox
-tox==4.61.5
+tox==4.64.2
     # via -r requirements/ci.in
 typing-extensions==4.16.0
     # via tox
-virtualenv==21.7.10
+virtualenv==21.12.1
     # via tox
