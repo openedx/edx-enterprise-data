@@ -25,7 +25,7 @@ def root(*args):
     """
     Return the absolute path to some file from the project's root.
     """
-    return abspath(join(abspath(here('../..')), *args))
+    return abspath(join(abspath(here('../../..')), *args))
 
 
 DATABASES = {
