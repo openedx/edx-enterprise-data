@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-amqp==5.4.0
+amqp==5.4.1
     # via kombu
 asgiref==3.12.1
     # via django
@@ -14,13 +14,13 @@ awscli==1.46.1
     # via -r requirements/reporting.in
 bcrypt==5.0.0
     # via paramiko
-billiard==4.3.0
+billiard==4.3.1
     # via celery
-boto3==1.43.107
+boto3==1.43.110
     # via
     #   -r requirements/reporting.in
     #   snowflake-connector-python
-botocore==1.43.107
+botocore==1.43.110
     # via
     #   boto3
     #   s3transfer
@@ -51,7 +51,7 @@ click-didyoumean==0.3.1
     # via celery
 click-plugins==1.1.1.2
     # via celery
-click-repl==0.4.0
+click-repl==0.4.1
     # via celery
 colorama==0.4.6
     # via awscli
@@ -102,7 +102,7 @@ djangorestframework==3.17.2
     #   edx-drf-extensions
 djangorestframework-csv==3.0.2
     # via -r requirements/base.in
-dnspython==2.8.0
+dnspython==2.9.0
     # via pymongo
 docutils==0.19
     # via awscli
@@ -127,7 +127,7 @@ edx-rest-api-client==7.1.0
     # via -r requirements/base.in
 factory-boy==3.3.3
     # via -r requirements/base.in
-faker==40.40.0
+faker==40.41.0
     # via factory-boy
 filelock==3.32.7
     # via snowflake-connector-python
@@ -165,7 +165,7 @@ pgpy==0.6.0
     # via -r requirements/reporting.in
 pillow==12.3.0
     # via pansi
-platformdirs==4.12.2
+platformdirs==4.12.4
     # via snowflake-connector-python
 prompt-toolkit==3.0.53
     # via click-repl
@@ -177,7 +177,7 @@ pyasn1==0.6.4
     # via
     #   pgpy
     #   rsa
-pycparser==3.0
+pycparser==3.1
     # via cffi
 pygments==2.21.0
     # via py2neo
@@ -189,7 +189,7 @@ pyjwt[crypto]==2.15.1
     #   snowflake-connector-python
 pyminizip==0.2.6
     # via -r requirements/reporting.in
-pymongo==4.18.2
+pymongo==4.18.3
     # via edx-opaque-keys
 pynacl==1.6.2
     # via
@@ -203,7 +203,7 @@ python-dateutil==2.9.0.post0
     #   botocore
     #   celery
     #   vertica-python
-pytz==2026.4
+pytz==2026.5
     # via
     #   interchange
     #   snowflake-connector-python
@@ -250,7 +250,7 @@ typing-extensions==4.16.0
     #   edx-opaque-keys
     #   pyopenssl
     #   snowflake-connector-python
-tzdata==2026.4
+tzdata==2026.5
     # via
     #   celery
     #   kombu
@@ -269,7 +269,7 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-wcwidth==0.9.1
+wcwidth==0.9.2
     # via prompt-toolkit
 
 # The following packages are considered to be unsafe in a requirements file:
