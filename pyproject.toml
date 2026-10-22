@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "edx-enterprise-data"
 description = "Enterprise Reporting"
 requires-python = ">=3.12"
-license = "AGPL-3.0-or-later"
+license = "AGPL-3.0-only"
 authors = [
     {name = "Open edX Project", email = "oscm@openedx.org"},
 ]
@@ -26,7 +26,7 @@ dependencies = [
     "edx-django-utils",
     "edx-drf-extensions",
     "edx-opaque-keys",
-    "Django",
+    "Django<5",
     "django-fernet-fields-v2",
     "djangorestframework-csv",
     "django-filter",
@@ -34,7 +34,7 @@ dependencies = [
     "edx-rbac",
     "rules",
     "factory_boy",
-    "mysql-connector-python",
+    "mysql-connector-python<9.6",
     "snowflake-connector-python",
 ]
 
@@ -50,7 +50,7 @@ reporting = [
     "unicodecsv==0.14.1",
     "vertica-python",
     "snowflake-connector-python",
-    "py2neo @ https://github.com/overhangio/py2neo/releases/download/2021.2.3/py2neo-2021.2.3.tar.gz",
+    "py2neo",
 ]
 
 [project.urls]
@@ -127,9 +127,7 @@ local_scheme = "no-local-version"
 fallback_version = "0.0.0"
 
 [tool.semantic_release]
-# Existing release tags are bare version numbers (e.g. "10.22.8"), not the
-# "v{version}" python-semantic-release defaults to. Without this, semantic-release
-# wouldn't recognize any prior release and would restart versioning from scratch.
+# Explicitly set the tag format (same as default).
 tag_format = "v{version}"
 build_command = "pip install build && SETUPTOOLS_SCM_PRETEND_VERSION=$NEW_VERSION python -m build"
 # Already past 1.0 (10.x), so major_on_zero is a no-op today -- it only governs
@@ -157,6 +155,9 @@ constraint-dependencies = [
     "mysql-connector-python<9.6",
     "pytest-django<4.13.0",
 ]
+
+[tool.uv.sources]
+py2neo = { url = "https://github.com/overhangio/py2neo/releases/download/2021.2.3/py2neo-2021.2.3.tar.gz" }
 
 [tool.edx_lint]
 uv_constraints = [
