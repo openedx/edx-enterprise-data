@@ -1,8 +1,8 @@
 **Merge checklist:**
-- [ ] Any new requirements are in the right place (do **not** manually modify the `requirements/*.txt` files)
-    - `base.in` if needed in production but edx-analytics-data-api doesn't install it
-    - `test-master.in` if edx-analytics-data-api pins it, with a matching version
-    - `make upgrade && make requirements` have been run to regenerate requirements
+- [ ] Any new requirements are in the right place in `pyproject.toml` (do **not** manually modify `uv.lock`)
+    - `[project].dependencies` if needed in production but edx-analytics-data-api doesn't install it
+    - the `test` dependency group if edx-analytics-data-api pins it, with a matching version
+    - `make upgrade` has been run to regenerate `uv.lock`
 - [ ] `make static` has been run to update webpack bundling if any static content was updated
 - [ ] `./manage.py makemigrations` has been run
     - Checkout the [Database Migration](https://openedx.atlassian.net/wiki/spaces/AC/pages/23003228/Everything+About+Database+Migrations) Confluence page for helpful tips on creating migrations.
@@ -10,8 +10,6 @@
       - It may or may not make a migration depending on exactly what you modified, but it should still be run.
     - This should be run from either a venv with all the edx-analytics-data-api requirements installed or if you checked out edx-enterprise-data into the src directory used by edx-analytics-data-api, you can run this command through an edx-analytics-data-api shell.
         - It would be `./manage.py makemigrations` in the shell.
-- [ ] [Version](https://github.com/openedx/edx-enterprise-data/blob/master/enterprise/__init__.py) bumped
-- [ ] [Changelog](https://github.com/openedx/edx-enterprise-data/blob/master/CHANGELOG.rst) record added
 - [ ] Translations updated (see docs/internationalization.rst but also this isn't blocking for merge atm)
 
 **Post merge:**
