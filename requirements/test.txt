@@ -14,9 +14,9 @@ bcrypt==5.0.0
     # via paramiko
 billiard==4.3.1
     # via celery
-boto3==1.43.117
+boto3==1.43.118
     # via -r requirements/reporting.in
-botocore==1.43.117
+botocore==1.43.118
     # via
     #   boto3
     #   s3transfer
@@ -47,7 +47,7 @@ click-repl==0.4.1
     # via celery
 colorama==0.4.6
     # via awscli
-coverage[toml]==7.16.2
+coverage[toml]==7.17.0
     # via pytest-cov
 cryptography==50.0.2
     # via
@@ -183,7 +183,7 @@ pyasn1==0.6.4
     # via
     #   pgpy
     #   rsa
-pycparser==3.11
+pycparser==3.12
     # via cffi
 pygments==2.21.0
     # via
@@ -250,7 +250,7 @@ six==1.17.0
     #   py2neo
     #   python-dateutil
     #   vertica-python
-snowflake-connector-python==5.0.0
+snowflake-connector-python==5.1.0
     # via
     #   -r requirements/base.in
     #   -r requirements/reporting.in
