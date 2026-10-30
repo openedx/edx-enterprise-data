@@ -35,8 +35,7 @@ quality: ## check coding style with isort, pylint, pycodestyle, and pydocstyle
 	tox -e quality
 
 test-all: clean ## run tests on every supported Python/Django combination
-	pytest -Wd --ignore src/enterprise_reporting/
-	pytest -Wd --cov enterprise_reporting --cov-report term-missing --cov-report xml src/enterprise_reporting/tests
+	tox
 	$(MAKE) quality
 
 validate: test ## run tests and quality checks
