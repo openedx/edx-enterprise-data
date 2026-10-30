@@ -106,7 +106,6 @@ mysql8 = [
 ]
 dev = [
     {include-group = "quality"},
-    {include-group = "test-reporting"},
     {include-group = "ci"},
     "diff-cover",
     "edx-i18n-tools",
@@ -144,6 +143,11 @@ package = true
 # dev/reporting superset into every target, defeating the point of having
 # separate groups.
 default-groups = []
+conflicts = [
+    [{group = "test-reporting"}, {group = "test"}],
+    [{group = "test-reporting"}, {group = "quality"}],
+    [{group = "test-reporting"}, {group = "dev"}],
+]
 #  DO NOT EDIT constraint-dependencies DIRECTLY.
 #  This list is managed by `edx_lint write_uv_constraints`
 #  and will be overwritten the next time `make upgrade` is run.
@@ -152,6 +156,9 @@ default-groups = []
 constraint-dependencies = [
     "Django<5",
     "elasticsearch<7.14.0",
+    "social-auth-app-django<6.0.0",
+    "social-auth-core<5.0.0",
+    "pip<26.2.1",
     "mysql-connector-python<9.6",
     "pytest-django<4.13.0",
 ]
