@@ -10,7 +10,6 @@ jobs:
   run_tests:
     name: Tests
     runs-on: ${{ matrix.os }}
-    continue-on-error: true
     strategy:
       matrix:
         os: [ubuntu-latest]
