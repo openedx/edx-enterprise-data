@@ -13,6 +13,10 @@ Change Log
 
 Unreleased
 
+[10.22.15] - 2026-09-06
+-----------------------
+  * chore: added Django 5.2 tox and CI compatibility checks
+
 [10.22.14] - 2026-08-06
 -----------------------
   * fix: simplify unlinked-learner exclusion in the Learner Progress Report [ENT-12136]
