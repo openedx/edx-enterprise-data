@@ -15,49 +15,60 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ 3.12 ]
+        mysql-version: [ "8" ]
+    services:
+      mysql:
+        image: mysql:${{ matrix.mysql-version }}
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_DATABASE: "edxapp"
+          MYSQL_USER: "edxapp001"
+          MYSQL_PASSWORD: "password"
+          MYSQL_RANDOM_ROOT_PASSWORD: true
+        # Ping over TCP, not the socket. On first start the image creates the
+        # database and user using a temporary server with networking turned off,
+        # so a socket ping can report healthy before MySQL accepts connections.
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
 
     steps:
     - name: Checkout repo
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-    - name: Install system Packages
+    # mysqlclient has no Linux wheels, so uv builds it from source. Runner images
+    # may already have these along with their own mysql-server. --no-upgrade
+    # leaves those alone: upgrading the client pulls in a mysql-server upgrade,
+    # whose post-install script fails on ubuntu-26.04 runners.
+    - name: Install system packages
       run: |
         sudo apt-get update
+        sudo apt-get install -y --no-upgrade libmysqlclient-dev mysql-client pkg-config
+
     - name: Install uv
       uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
       with:
         enable-cache: true
         python-version: ${{ matrix.python-version }}
 
-    - name: Ubuntu and sql Versions
+    - name: Verify mysql db credentials
       run: |
-        lsb_release -a
-        mysql -V
+        mysql -h 127.0.0.1 -uedxapp001 -ppassword -e "select version();" edxapp
+
     - name: Install Python dependencies
       run: |
         uv sync --locked --group dev --group mysql8 --no-binary-package mysqlclient
-    - name: Initiate Services
-      run: |
-        sudo /etc/init.d/mysql start
-    - name: Reset mysql password
-      run: |
-        cat <<EOF | mysql -h 127.0.0.1 -u root --password=root
-          UPDATE mysql.user SET authentication_string = null WHERE user = 'root';
-          FLUSH PRIVILEGES;
-        EOF
+
     - name: Run migrations
       env:
-        DATABASES: default
         DB_ENGINE: django.db.backends.mysql
-        DB_USER: root
-        DB_PASSWORD: ""
-        DB_HOST: localhost
+        DB_NAME: edxapp
+        DB_USER: edxapp001
+        DB_PASS: password
+        DB_HOST: 127.0.0.1
         DB_PORT: 3306
       run: |
-        echo "Running the migrations."
-        for db in $DATABASES;
-        do
-          echo "CREATE DATABASE IF NOT EXISTS db_$db;" | sudo mysql -u root
-          export DB_NAME=db_$db
-          uv run --locked python manage.py migrate --noinput --run-syncdb --database "$db" --settings=enterprise_data.settings.test
-        done
+        uv run --no-sync python manage.py migrate --noinput --run-syncdb --settings=enterprise_data.settings.test
